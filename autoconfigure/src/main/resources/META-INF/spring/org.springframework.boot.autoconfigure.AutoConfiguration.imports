@@ -1,0 +1,4 @@
+se.swedenconnect.spring.saml.idp.autoconfigure.base.OpenSAMLConfiguration
+se.swedenconnect.spring.saml.idp.autoconfigure.base.ConvertersConfiguration
+se.swedenconnect.spring.saml.idp.autoconfigure.settings.IdentityProviderAutoConfiguration
+se.swedenconnect.spring.saml.idp.autoconfigure.web.security.IdentityProviderSecurityFilterChainAutoConfiguration

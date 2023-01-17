@@ -1,0 +1,27 @@
+
+saml:
+  idp:
+    entity-id: https://demo.swedenconnect.se/idp
+    base-url: https://demo.swedenconnect.se/idp
+    hok-base-url: https://hok.swedenconnect.se/idp    
+    credentials:
+      sign:
+        resource: classpath:idp-credentials.jks
+        alias: sign
+        password: secret
+        type: JKS
+      encrypt:
+        resource: classpath:idp-credentials.jks
+        alias: encrypt
+        password: secret
+        type: JKS
+      metadata-sign:
+        resource: classpath:idp-credentials.jks
+        alias: metadata
+        password: secret
+        type: JKS
+    endpoints:
+      hok-redirect-authn: /saml2/redirect/hok/authn
+      hok-post-authn: /saml2/post/hok/authn
+        
+

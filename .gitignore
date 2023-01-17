@@ -1,0 +1,33 @@
+.DS_Store
+
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+
+.metadata
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+target
+Servers
+logs
+generated
+MANIFEST.MF
+test-output
+
+# Intelij
+*.iml
+.idea
+out
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+/.apt_generated/

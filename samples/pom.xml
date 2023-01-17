@@ -1,0 +1,55 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <artifactId>spring-saml-idp-samples-parent</artifactId>
+  <packaging>pom</packaging>
+
+  <parent>
+    <groupId>se.swedenconnect.spring.saml.idp</groupId>
+    <artifactId>spring-saml-idp-parent</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+  </parent>
+
+  <name>Sweden Connect :: Spring SAML Identity Provider :: Samples :: Parent POM</name>
+  <description>Parent POM for Samples for Spring SAML Identity Provider</description>
+  <url>https://docs.swedenconnect.se/spring-saml-identity-provider</url>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:https://github.com/swedenconnect/spring-saml-identity-provider.git</connection>
+    <developerConnection>scm:git:https://github.com/swedenconnect/spring-saml-identity-provider.git</developerConnection>
+    <url>https://github.com/swedenconnect/spring-saml-identity-provider/tree/master</url>
+  </scm>
+
+  <organization>
+    <name>Sweden Connect</name>
+    <url>https://www.swedenconnect.se</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <name>Martin Lindström</name>
+      <email>martin@idsec.se</email>
+      <organization>IDsec Solutions AB</organization>
+      <organizationUrl>https://www.idsec.se</organizationUrl>
+    </developer>
+  </developers>
+
+  <properties>
+  </properties>
+
+  <modules>
+    <module>demo-idp</module>
+    <module>demo-boot-idp</module>
+  </modules>
+
+</project>
