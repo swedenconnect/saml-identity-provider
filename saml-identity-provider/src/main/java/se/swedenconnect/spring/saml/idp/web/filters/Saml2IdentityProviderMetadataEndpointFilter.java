@@ -18,6 +18,11 @@ package se.swedenconnect.spring.saml.idp.web.filters;
 import java.io.IOException;
 import java.util.Objects;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.springframework.http.HttpMethod;
@@ -28,10 +33,6 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorContainer;
 import se.swedenconnect.spring.saml.idp.metadata.Saml2MetadataHttpMessageConverter;
@@ -42,7 +43,7 @@ import se.swedenconnect.spring.saml.idp.metadata.Saml2MetadataHttpMessageConvert
  * @author Martin Lindström
  */
 @Slf4j
-public class IdentityProviderMetadataEndpointFilter extends OncePerRequestFilter {
+public class Saml2IdentityProviderMetadataEndpointFilter extends OncePerRequestFilter {
 
   /** Media type for SAML metadata in XML format. */
   public static final MediaType APPLICATION_SAML_METADATA = new MediaType("application", "samlmetadata+xml");
@@ -64,7 +65,7 @@ public class IdentityProviderMetadataEndpointFilter extends OncePerRequestFilter
    *
    * @param entityDescriptorContainer the IdP metadata container
    */
-  public IdentityProviderMetadataEndpointFilter(final EntityDescriptorContainer entityDescriptorContainer) {
+  public Saml2IdentityProviderMetadataEndpointFilter(final EntityDescriptorContainer entityDescriptorContainer) {
     this(entityDescriptorContainer, DEFAULT_METADATA_ENDPOINT_URI);
   }
 
@@ -74,7 +75,7 @@ public class IdentityProviderMetadataEndpointFilter extends OncePerRequestFilter
    * @param entityDescriptorContainer the IdP metadata container
    * @param endpoint the metadata publishing endpoint
    */
-  public IdentityProviderMetadataEndpointFilter(
+  public Saml2IdentityProviderMetadataEndpointFilter(
       final EntityDescriptorContainer entityDescriptorContainer, final String endpoint) {
     this(entityDescriptorContainer, new AntPathRequestMatcher(
         Objects.requireNonNull(endpoint, "endpoint must be set"), HttpMethod.GET.name()));
@@ -86,7 +87,7 @@ public class IdentityProviderMetadataEndpointFilter extends OncePerRequestFilter
    * @param entityDescriptorContainer the IdP metadata container
    * @param requestMatcher the request matcher
    */
-  public IdentityProviderMetadataEndpointFilter(
+  public Saml2IdentityProviderMetadataEndpointFilter(
       final EntityDescriptorContainer entityDescriptorContainer, final RequestMatcher requestMatcher) {
     this.entityDescriptorContainer =
         Objects.requireNonNull(entityDescriptorContainer, "entityDescriptorContainer must not be null");

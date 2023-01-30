@@ -15,6 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.config.annotation.web.configuration;
 
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -22,7 +26,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import net.shibboleth.utilities.java.support.primitive.NonnullSupplier;
+import se.swedenconnect.spring.saml.idp.InternalIdentityProviderException;
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdentityProviderConfigurer;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
@@ -59,8 +67,17 @@ public class Saml2IdentityProviderConfiguration {
     final Saml2IdentityProviderConfigurer idpConfigurer = new Saml2IdentityProviderConfigurer();
     final RequestMatcher endpointsMatcher = idpConfigurer.getEndpointsMatcher();
 
+//    final NonnullSupplier<HttpServletRequest> servletRequestSupplier = () -> {
+//      return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
+//          .map(ServletRequestAttributes.class::cast)
+//          .map(ServletRequestAttributes::getRequest)
+//          .orElseThrow(() -> new InternalIdentityProviderException("No request available"));
+//    };
+//
+//    http.setSharedObject(NonnullSupplier.class, servletRequestSupplier);
+
     http
-      .securityMatcher(endpointsMatcher)
+      .requestMatcher(endpointsMatcher)
       .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
       .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
       .apply(idpConfigurer);

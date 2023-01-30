@@ -49,12 +49,12 @@ public class Saml2IdentityProviderConfigurer
   /**
    * Configures the IdP metadata endpoint.
    *
-   * @param customizer the {@link Customizer} providing access to the {@link IdentityProviderMetadataEndpointConfigurer}
+   * @param customizer the {@link Customizer} providing access to the {@link Saml2IdentityProviderMetadataEndpointConfigurer}
    * @return the {@link Saml2IdentityProviderConfigurer} for further configuration
    */
   public Saml2IdentityProviderConfigurer idpMetadataEndpoint(
-      final Customizer<IdentityProviderMetadataEndpointConfigurer> customizer) {
-    customizer.customize(this.getConfigurer(IdentityProviderMetadataEndpointConfigurer.class));
+      final Customizer<Saml2IdentityProviderMetadataEndpointConfigurer> customizer) {
+    customizer.customize(this.getConfigurer(Saml2IdentityProviderMetadataEndpointConfigurer.class));
     return this;
   }
 
@@ -122,8 +122,8 @@ public class Saml2IdentityProviderConfigurer
    */
   private Map<Class<? extends AbstractSaml2Configurer>, AbstractSaml2Configurer> createConfigurers() {
     final Map<Class<? extends AbstractSaml2Configurer>, AbstractSaml2Configurer> configurers = new LinkedHashMap<>();
-    configurers.put(IdentityProviderMetadataEndpointConfigurer.class,
-        new IdentityProviderMetadataEndpointConfigurer(this::postProcess));
+    configurers.put(Saml2IdentityProviderMetadataEndpointConfigurer.class,
+        new Saml2IdentityProviderMetadataEndpointConfigurer(this::postProcess));
 //    configurers.put(OAuth2ClientAuthenticationConfigurer.class, new OAuth2ClientAuthenticationConfigurer(this::postProcess));
 //    configurers.put(OAuth2AuthorizationServerMetadataEndpointConfigurer.class, new OAuth2AuthorizationServerMetadataEndpointConfigurer(this::postProcess));
 //    configurers.put(OAuth2AuthorizationEndpointConfigurer.class, new OAuth2AuthorizationEndpointConfigurer(this::postProcess));

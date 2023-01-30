@@ -18,12 +18,13 @@ package se.swedenconnect.spring.saml.idp.config.annotation.web.configurers;
 import java.io.IOException;
 import java.util.Objects;
 
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import se.swedenconnect.spring.saml.idp.context.IdentityProviderContext;
 import se.swedenconnect.spring.saml.idp.context.IdentityProviderContextHolder;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;

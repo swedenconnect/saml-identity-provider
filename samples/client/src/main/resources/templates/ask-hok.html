@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> 
+<head th:include="fragments/base :: headerFragment">
+  <title id="pageTitle" th:inline="text">[[#{sp.msg.title}]]</title>
+</head>
+<body>
+
+  <div th:replace="fragments/header :: logotype"></div>
+  
+  <div class="container main">
+
+    <div th:replace="fragments/header :: language(languages = ${languages}, path='/')"></div>
+    
+    <div class="row" id="mainDiv">
+      <div class="col-sm-12 content-container">
+
+        <div class="row">
+          <div class="col-sm-12 content-heading">
+            <h2 th:text="#{sp.msg.heading}">Heading</h2>
+          </div>
+          <div class="col-sm-12">
+            <p class="info" th:text="#{sp.msg.hok-or-plain.1}">Hok</p>
+            <p class="info" th:text="#{sp.msg.hok-or-plain.2}">Hok</p>
+          </div>
+        </div>
+        
+        <hr class="full-width">
+        
+        <div class="providers" id="submitDiv">
+          <div class="row">
+            <div class="col-12">
+              <form method="POST" action="#" th:action="@{/saml2/request}">
+                <input type="hidden" name="selectedIdp" th:value="${selectedIdp}"/>
+                <input type="hidden" name="debug" th:value="${debug}"/>
+                
+                <div class="col-sm-12 section">
+                  <button class="btn btn-secondary" type="submit" name="useHok" th:value="true">   
+                    <span th:text="#{sp.msg.hok-button}">Use HoK</span>
+                  </button>
+                  <button class="btn btn-primary" type="submit" name="useHok" th:value="false">   
+                    <span th:text="#{sp.msg.websso-button}">Use WebSSO</span>
+                  </button>
+                </div>                                
+              </form>
+            </div>
+          </div>  
+        </div>        
+        
+      </div> <!-- /.col-sm-12 content-container -->
+      
+      <div th:replace="fragments/footer :: copyright"></div>      
+      
+    </div> <!-- /#mainDiv -->
+
+  </div> <!-- /.container main -->
+
+  <th:block th:include="fragments/base :: scriptFragment"></th:block>
+
+</body>
+</html>

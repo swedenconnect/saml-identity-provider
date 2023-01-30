@@ -1,0 +1,475 @@
+html,
+body {
+  background-color: #F5F5F5;
+  font-family: "Open Sans", sans-serif;
+}
+
+hr {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+a {
+  color: #000000;
+  text-decoration: underline;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.top-logo {
+  padding: 19px 0;
+}
+
+@media (min-width: 576px) {
+  .top-logo-dim {
+    height: 60px;
+    width: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .top-logo-dim {
+    height: 40px;
+    width: auto;
+  }
+}
+
+.lang {
+  padding-top: 29px;
+  padding-bottom: 5px;
+  padding-left: 15px;
+  padding-right: 15px;
+  display: block;
+}
+
+.content-container {
+  background: #FFFFFF;
+  padding: 29px;
+  margin-top: 20px;
+  -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.5);
+}
+
+.info-intro {
+  padding-top: 27px;
+}
+
+.sign-provider {
+  padding-bottom: 27px;
+}
+
+.content-heading {
+  padding-bottom: 27px;
+}
+
+.content-heading h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 24px;
+}
+
+.content-heading h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.content-heading-text {
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.authn-listing {
+	padding: 20px;
+}
+
+.authn-listing .row {
+	padding-bottom: 10px;
+	padding-top: 10px;
+}
+
+.authn-listing .attribute-row {
+  border-bottom: 1px solid #D0CACA;
+  padding-bottom: 10px;
+  padding-top: 10px;
+}
+
+.authn-listing .attribute-value {
+	font-weight: bold;
+	
+  /* These are technically the same, but use both */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  -ms-word-break: break-all;
+  /* This is the dangerous one in WebKit, as it breaks things wherever */
+  word-break: break-all;
+  /* Instead use this non-standard one: */
+  word-break: break-word;
+
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;	
+}
+
+.dont-break-out {
+
+  /* These are technically the same, but use both */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  -ms-word-break: break-all;
+  /* This is the dangerous one in WebKit, as it breaks things wherever */
+  word-break: break-all;
+  /* Instead use this non-standard one: */
+  word-break: break-word;
+
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+.expand-button {
+  background-image: url("../images/arrow_dropdown_down.svg");
+  background-size: 8px 8px;
+}
+
+.collapse-button {
+  background-image: url("../images/arrow_dropdown_up.svg");
+  background-size: 8px 8px;
+}
+
+.copyright {
+  margin-top: 23px;
+  margin-bottom: 23px;
+}
+
+.copyright p {
+  font-size: 10px;
+  line-height: 24px;
+  margin-right: 10px;
+}
+
+.copyright img {
+  transform: translateY(5%);
+}
+
+.btn-link {
+  font-weight: inherit;
+  background-color: transparent;
+
+  color: #000000;
+  text-decoration: underline;
+  font-size: 14px;
+  line-height: 16px;
+}
+
+.section {
+  margin-top: 20px;
+}
+
+.error-div {
+}
+
+.noscripthide {
+  display: none;
+}
+
+.underlined-clickable {
+	cursor: pointer;
+	text-decoration: underline;
+}
+
+.drop-down-container .drop-down {
+  padding: 0;
+  background-color: #F7F7F7;
+  border: 1px solid #D8D8D8;
+  border-radius: 3px;
+  margin-top: 9px;
+}
+
+.drop-down-container .drop-down.open {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.drop-down-container .drop-down > p {
+  cursor: pointer;
+  background-image: url("../images/arrow_dropdown.svg");
+  background-repeat: no-repeat;
+  background-size: 8px 8px;
+  background-position: calc(100% - 20px) 50%;
+}
+
+.drop-down-container .drop-down p {
+  padding: 15px 20px;
+}
+
+.drop-down-container .drop-down.open > p {
+  background-image: url("../images/arrow_dropdown_up.svg");
+}
+
+.drop-down-container .drop-down.open .drop-down-info {
+  display: block;
+}
+
+.drop-down-container .drop-down-info {
+  display: none;
+  background-color: #FFFFFF;
+}
+
+.drop-down-container .drop-down:first-of-type {
+  margin-top: 20px;
+}
+
+.drop-down-container .drop-down p {
+  margin: 0;
+}
+
+.drop-down-info a {
+  font-size: inherit;
+}
+
+.providers {
+  margin-top: 20px;
+}
+
+.providers p.info {
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.providers .provider {
+  /*margin-top: 9px;*/
+  padding: 20px;
+  background-color: #F7F7F7;
+  border: 1px solid #D8D8D8;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.providers .provider-button {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 0;
+  margin-top: 9px;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  width: calc(100%);
+}
+
+.providers .provider img,
+.providers .provider p {
+  display: inline-block;
+}
+
+.providers .provider img {
+  width: 53px;
+}
+
+.providers .provider p {
+  margin: 0 0 0 8px;
+  width: calc(100% - 66px);
+  vertical-align: middle;
+  text-align: left;
+}
+
+.providers .provider p.idp-description {
+  margin-left: 65px;
+  font-style: italic;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.providers ..provider-button:first-of-type {
+  margin-top: 23px;
+}
+
+/*
+.providers .provider:first-of-type {
+  margin-top: 23px;
+}
+*/
+
+.ns-providers {
+  margin-top: 44px;
+}
+
+.ns-providers p.info {
+  font-size: 14px;
+  line-height: 24px;
+  margin-bottom: 23px;
+}
+
+.ns-providers .ns-provider img {
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+  width: 25px;
+  height: auto;
+  opacity: 0.6;
+}
+
+@media (min-width: 576px) {
+  .ns-providers .ns-provider img {
+    margin-right: 8px;
+    margin-left: 32px;
+    display: inline-block;
+  }
+}
+
+.ns-providers .ns-provider p {
+  margin: 10px 0 0;
+  width: 100%;
+  text-align: center;
+  vertical-align: middle;
+  display: inline-block;
+  font-size: 12px;
+  line-height: 17px;
+}
+
+@media (min-width: 576px) {
+  .ns-providers .ns-provider p {
+    width: calc(100% - 70px);
+    margin: 0;
+    text-align: left;
+  }
+}
+
+.ns-providers .ns-provider:first-of-type {
+  margin-bottom: 13px;
+}
+
+.advanced {
+  margin-top: 0px;
+}
+
+.advanced .box {
+  margin-top: 9px;
+  padding: 20px 32px;
+  background-color: #F7F7F7;
+  border: 1px solid #D8D8D8;
+  border-radius: 3px;
+  margin-bottom: 33px;
+}
+
+.verification {
+  margin-top: 0px;
+}
+
+.verification .box {
+  margin-top: 9px;
+  padding: 20px 32px;
+  background-color: #F7F7F7;
+  border: 1px solid #D8D8D8;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-bottom: 33px;
+}
+
+.verification .box span {
+  display: block;
+  margin-top: 5px;
+}
+
+.verification .box .name {
+  margin: 0;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.verification .box button {
+  margin-top: 20px;
+  font-size: 14px;
+  padding: 10px 75px;
+  font-weight: 700;
+}
+
+.verification p {
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.error h2 {
+  font-size: 24px;
+  line-height: 26px;
+  margin: 0;
+  font-weight: 700;
+}
+
+.error p {
+  margin-top: 6px;
+}
+
+.error p:last-child {
+  margin-bottom: 0;
+}
+
+.error .error-details {
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.sign-message {
+  margin-bottom: 30px;
+  background-color: #F7F7F7;
+  border: 1px solid #D0CACA;
+  padding: 23px 28px;
+}
+
+.sign-message div {
+  margin: 0;
+  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.header {
+  background-color: #fff;
+  -webkit-box-shadow: 0 -3px 10px 0 rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 0 -3px 10px 0 rgba(0, 0, 0, 0.5);
+  box-shadow: 0 -3px 10px 0 rgba(0, 0, 0, 0.5);
+}
+
+.tablet-up {
+  display: none;
+}
+
+@media (min-width: 576px) {
+  .container {
+    width: 620px;
+  }
+
+  .tablet-up {
+    display: block;
+  }
+
+  .tablet-down {
+    display: none;
+  }
+}
+
+/* Return */
+
+.return {
+  padding: 23px;
+  /* border-bottom: 1px solid #D0CACA;*/
+}
+
+/* Helpers */
+
+.full-width {
+  margin-left: -29px;
+  margin-right: -29px;
+}
+
+.hide {
+  display: none;
+}

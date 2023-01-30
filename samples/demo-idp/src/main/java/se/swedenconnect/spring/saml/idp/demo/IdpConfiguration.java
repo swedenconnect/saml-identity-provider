@@ -39,7 +39,7 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
  * Configuration class for the demo application.
- * 
+ *
  * @author Martin Lindström
  */
 @Configuration
@@ -67,10 +67,10 @@ public class IdpConfiguration {
 
     return http.build();
   }
-  
+
   @Bean
   WebSecurityCustomizer webSecurityCustomizer() {
-    return (web) -> web.ignoring().requestMatchers("/images/**", "/css/**", "/scripts/**", "/webjars/**");
+    return (web) -> web.ignoring().antMatchers("/images/**", "/css/**", "/scripts/**", "/webjars/**");
   }
 
   @Bean
@@ -104,7 +104,7 @@ public class IdpConfiguration {
         .entityId("https://demo.swedenconnect.se/idp")
         .build();
   }
-    
+
   @Bean("openSAML")
   OpenSAMLInitializer openSAML() throws Exception {
     OpenSAMLInitializer.getInstance()

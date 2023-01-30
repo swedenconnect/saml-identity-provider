@@ -50,6 +50,7 @@
   <modules>
     <module>demo-idp</module>
     <module>demo-boot-idp</module>
+    <module>client</module>
   </modules>
 
 </project>

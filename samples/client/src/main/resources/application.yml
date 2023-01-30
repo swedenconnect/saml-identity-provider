@@ -1,0 +1,63 @@
+server:
+  port: 8445
+  servlet:
+    context-path: /client    
+  ssl:
+    enabled: true
+    key-store: classpath:keys.jks
+    key-store-type: JKS
+    key-alias: localhost
+    key-store-password: secret
+    key-password: secret
+    
+
+#spring:
+#  security:
+#    saml2:
+#      relyingparty:      
+#        registration:
+#          refidp:
+#            assertingparty:
+#              entity-id:            
+      
+
+#
+# App settings
+#
+demosp:
+  ui:
+    languages:
+    - tag: sv
+      text: Svenska
+    - tag: en
+      text: English
+
+saml:
+  sp:
+    entity-id: https://demo.swedenconnect.se/local-client
+    registration-id: demo
+    credential:
+      resource: classpath:keys.jks
+      type: JKS
+      alias: sp
+      password: secret
+      key-password: secret
+      name: "Demo SP"
+    assertion-consumer-url: https://localhost:${server.port}${server.servlet.context-path}/saml/${saml.sp.registration-id}
+    metadata:
+      entity-categories:
+      - http://id.elegnamnden.se/ec/1.0/loa3-pnr
+      - http://id.elegnamnden.se/ec/1.0/eidas-naturalperson
+      - http://id.elegnamnden.se/st/1.0/public-sector-sp
+      - http://id.swedenconnect.se/contract/sc/sweden-connect
+      - http://id.swedenconnect.se/general-ec/1.0/secure-authenticator-binding
+      - http://id.swedenconnect.se/general-ec/1.0/accepts-coordination-number
+      
+logging:
+  level:
+    org:
+      springframework:
+        context:
+          support:
+            ResourceBundleMessageSource: TRACE
+            

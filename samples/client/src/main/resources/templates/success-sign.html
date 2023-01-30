@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="fragments/base :: headerFragment">
+<title id="pageTitle" th:inline="text">[[#{sp.msg.title}]]</title>
+</head>
+<body>
+
+  <div th:replace="fragments/header :: logotype"></div>
+
+  <div class="container main">
+  
+    <div th:replace="fragments/header :: language(languages = ${languages}, path='/result')"></div>  
+
+    <div class="row" id="mainDiv">
+      <div class="col-sm-12 content-container">
+
+        <div class="row">
+          <div class="col-sm-12 content-heading">
+            <h2 th:text="#{sp.msg.heading}">Heading</h2>
+          </div>
+          <div class="col-sm-12">
+            <p class="info" th:text="#{sp.msg.success-sign-intro}">Intro</p>
+          </div>
+        </div>
+
+        <hr class="full-width" />
+        
+        <div class="row info-intro">
+          <div class="col-sm-12">
+            <p class="info" th:text="#{sp.msg.signed-text}">You signed the following text:</p>
+            <div class="sign-message">
+              <div><span th:text="${signMessage}">Text that was signed</span></div>
+            </div>
+          </div>
+        </div>
+        
+        <hr class="full-width" />
+        
+        <div class="authn-listing">
+        
+          <p th:text="#{sp.msg.success-sign-intro2}">Information received:</p>
+        
+          <div class="row attribute-row" th:each="info: ${authenticationInfo.attributes}">
+            <div class="col-sm-4" th:text="#{${info.attributeNameCode}}">ID name</div>
+            <div class="col-sm-8">
+              <span class="attribute-value" th:text="${info.attributeValue}">Attribute value</span>
+              <th:block th:if="${info.infoCode}">
+              <img src="/images/SC-info-yellow.svg" th:src="@{/images/SC-info-yellow.svg}" height="24"
+                   width="24" class="float-right" title="" data-container="body" data-toggle="popover"
+                   data-placement="left"
+                   th:attr="data-content=#{${info.infoCode}}"
+                   data-content="The data content"
+                   data-original-title="" />
+              </th:block>
+            </div>
+          </div>
+          
+          <div id="more-attributes-div" class="row noscripthide" 
+               th:if="${authenticationInfo.advancedAttributes != null && !authenticationInfo.advancedAttributes.isEmpty()}">
+            <div class="col-sm-12 noscripthide" id="more-attributes-div2">
+              <span class="float-right underlined-clickable" th:text="#{sp.msg.more-attributes}">More attributes</span>
+            </div>
+          </div> <!-- /#more-attributes-div -->
+          
+          <div id="advancedAttributes" th:if="${authenticationInfo.advancedAttributes != null && !authenticationInfo.advancedAttributes.isEmpty()}">
+            <div class="row attribute-row" th:each="info: ${authenticationInfo.advancedAttributes}">
+              <div class="col-sm-4" th:text="#{${info.attributeNameCode}}">ID name</div>
+              <div class="col-sm-8">
+                <span class="attribute-value" th:text="${info.attributeValue}">Attribute value</span>
+                <th:block th:if="${info.infoCode}">
+                <img src="/images/SC-info-yellow.svg" th:src="@{/images/SC-info-yellow.svg}" height="24"
+                     width="24" class="float-right" title="" data-container="body" data-toggle="popover"
+                     data-placement="left"
+                     th:attr="data-content=#{${info.infoCode}}"
+                     data-content="The data content"
+                     data-original-title="" />
+                </th:block>
+              </div>
+            </div>          
+          </div> <!-- /#advancedAttributes -->
+          
+        </div>
+        
+        <div class="authn-listing">  
+          <div th:if="${authenticationInfo.loaLevelMessageCode != null}" class="row" id="assuranceLevel">
+            <div class="col-sm-12">
+              <p style="overflow: auto;">
+                <th:block th:if="${authenticationInfo.loaLevelDescriptionCode != null}">
+                  <img src="/images/SC-info-yellow.svg" th:src="@{/images/SC-info-yellow.svg}" height="24"
+                       width="24" class="float-right" title="" data-container="body" data-toggle="popover"
+                       data-placement="left"
+                       th:attr="data-content=#{${authenticationInfo.loaLevelDescriptionCode}}"
+                       data-content="The data content"
+                       data-original-title="" />
+                </th:block>
+                <span th:text="#{${authenticationInfo.loaLevelMessageCode}}">Loa Info</span>
+                <br />
+                <i><span th:text="${authenticationInfo.loaUri}">Loa Info</span></i>
+              </p>
+              <th:block th:if="${authenticationInfo.notifiedInfoMessageCode != null}">
+                <p th:text="#{${authenticationInfo.notifiedInfoMessageCode}}">Info about notified/non-notified</p>
+              </th:block>
+            </div>            
+          </div> <!-- /#assuranceLevel -->
+        
+        </div> <!-- /.authn-listing -->
+        
+        <th:block th:if="${signIdp != null}">
+        <hr class="full-width" />
+        
+        <div class="row sign-intro">
+          <div class="col-sm-12">
+            <p class="info" th:text="#{sp.msg.next-sign}">Click to sign test message</p>
+          </div>
+        </div>
+        <div class="providers sign-provider" id="submitDiv">
+          <div class="row">
+            <div class="col-12">
+              <form method="POST" action="#" th:action="@{/saml2/request/next}">
+                <input type="hidden" name="debug" th:value="${debug}" />
+                <button class="provider-button" type="submit" name="idp" th:value="${signIdp.getEntityID()}">
+                  <div class="provider">                    
+                    <img th:src="@{${signIdp.getLogotype()}}"/>
+                    <p><span th:text="#{sp.msg.sign-using}">Test signature using</span> <span th:text='${signIdp.getDisplayName()}'>IdP Name</span></p>
+                  </div>
+                </button>
+              </form>
+            </div>
+          </div>  
+        </div>
+        
+        <hr class="full-width" />
+        
+        </th:block>
+        
+        <th:block th:if="${authenticationInfo.eidasAssertion == true}">
+        
+        <div class="drop-down-container noscripthide">
+          <div class="drop-down">
+            <p th:text="#{sp.msg.help1.title}">What is eIDAS?</p>
+            <div class="drop-down-info">
+              <p>
+                <span th:text="#{sp.msg.help1.text1a}">T1</span> <a href="http://elegitimation.se" target="_blank">elegitimation.se</a>
+                <span th:text="#{sp.msg.help1.text1b}">T2</span> 
+                <a href="https://ec.europa.eu/cefdigital/wiki/display/CEFDIGITAL/What+is+eID" target="_blank" th:text="#{sp.msg.help1.text1c}">CEF</a>.
+              </p>
+            </div>
+          </div> <!-- /drop-down -->
+          <div class="drop-down">
+            <p th:text="#{sp.msg.help2.title}">Title</p>
+            <div class="drop-down-info">
+              <p th:text="#{sp.msg.help2.text1}">Text1</p>
+              <p th:text="#{sp.msg.help2.text2}">Text2</p>
+              <p th:text="#{sp.msg.help2.text3}">Text3</p>              
+            </div>
+          </div> <!-- /drop-down -->          
+        </div> <!-- ./drop-down-container -->
+        </th:block>
+
+      </div> <!-- /.col-sm-12 content-container -->
+      
+      <div class="row section" id="backDiv">
+        <div class="col-sm-12 return">
+          <a href="#" th:href="@{/}"><span th:text="#{sp.msg.back}">Tillbaka</span></a>
+        </div>
+      </div> <!-- /#backDiv -->      
+
+      <div th:replace="fragments/footer :: copyright"></div>
+
+    </div> <!-- /#mainDiv -->
+
+  </div> <!-- /.container main -->
+
+  <th:block th:include="fragments/base :: scriptFragment"></th:block>
+  <script type="text/javascript" th:src="@{/scripts/saml-result.js}" src="/scripts/saml-result.js"></script>
+
+</body>
+</html>
