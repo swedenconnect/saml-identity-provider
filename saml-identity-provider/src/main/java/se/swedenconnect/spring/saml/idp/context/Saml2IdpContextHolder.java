@@ -16,34 +16,34 @@
 package se.swedenconnect.spring.saml.idp.context;
 
 /**
- * A holder of the {@link IdentityProviderContext} that associates it with the current thread using a
+ * A holder of the {@link Saml2IdpContext} that associates it with the current thread using a
  * {@code ThreadLocal}.
  *
  * @author Martin Lindström
  */
-public final class IdentityProviderContextHolder {
+public final class Saml2IdpContextHolder {
 
-  private static final ThreadLocal<IdentityProviderContext> holder = new ThreadLocal<>();
+  private static final ThreadLocal<Saml2IdpContext> holder = new ThreadLocal<>();
 
   // Hidden constructor
-  private IdentityProviderContextHolder() {
+  private Saml2IdpContextHolder() {
   }
 
   /**
-   * Returns the {@link IdentityProviderContext} bound to the current thread.
+   * Returns the {@link Saml2IdpContext} bound to the current thread.
    *
    * @return the context
    */
-  public static IdentityProviderContext getContext() {
+  public static Saml2IdpContext getContext() {
     return holder.get();
   }
 
   /**
-   * Binds the given {@link IdentityProviderContext} to the current thread.
+   * Binds the given {@link Saml2IdpContext} to the current thread.
    *
-   * @param context the {@link IdentityProviderContext}
+   * @param context the {@link Saml2IdpContext}
    */
-  public static void setContext(final IdentityProviderContext context) {
+  public static void setContext(final Saml2IdpContext context) {
     if (context == null) {
       resetContext();
     }
@@ -53,7 +53,7 @@ public final class IdentityProviderContextHolder {
   }
 
   /**
-   * Reset the {@link IdentityProviderContext} bound to the current thread.
+   * Reset the {@link Saml2IdpContext} bound to the current thread.
    */
   public static void resetContext() {
     holder.remove();

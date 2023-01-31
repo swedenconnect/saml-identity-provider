@@ -23,5 +23,11 @@ saml:
     endpoints:
       hok-redirect-authn: /saml2/redirect/hok/authn
       hok-post-authn: /saml2/post/hok/authn
+    metadata-providers:
+    - location: https://eid.svelegtest.se/metadata/mdx/role/sp.xml
+      backup-location: target/metadata-backup.xml
+      validation-certificate: classpath:sandbox-metadata.crt
+        
+        
         
 

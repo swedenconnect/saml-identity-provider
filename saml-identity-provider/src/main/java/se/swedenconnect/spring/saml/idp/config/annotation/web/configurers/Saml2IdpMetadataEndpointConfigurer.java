@@ -41,7 +41,7 @@ import se.swedenconnect.opensaml.saml2.metadata.build.SingleSignOnServiceBuilder
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
 import se.swedenconnect.spring.saml.idp.metadata.Saml2MetadataBuilder;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
-import se.swedenconnect.spring.saml.idp.web.filters.Saml2IdentityProviderMetadataEndpointFilter;
+import se.swedenconnect.spring.saml.idp.web.filters.Saml2IdpMetadataEndpointFilter;
 
 /**
  * Configurer for the metadata publishing endpoint.
@@ -49,7 +49,7 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2IdentityProviderMetadat
  * @author Martin Lindström
  */
 @Slf4j
-public class Saml2IdentityProviderMetadataEndpointConfigurer extends AbstractSaml2Configurer {
+public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer {
 
   private RequestMatcher requestMatcher;
   private Consumer<Saml2MetadataBuilder> entityDescriptorCustomizer;
@@ -60,7 +60,7 @@ public class Saml2IdentityProviderMetadataEndpointConfigurer extends AbstractSam
    *
    * @param objectPostProcessor the post processor
    */
-  Saml2IdentityProviderMetadataEndpointConfigurer(final ObjectPostProcessor<Object> objectPostProcessor) {
+  Saml2IdpMetadataEndpointConfigurer(final ObjectPostProcessor<Object> objectPostProcessor) {
     super(objectPostProcessor);
   }
 
@@ -69,9 +69,9 @@ public class Saml2IdentityProviderMetadataEndpointConfigurer extends AbstractSam
    * how the published IdP metadata is constructed.
    *
    * @param metadataCustomizer the {@code Consumer} providing access to the {@link Saml2MetadataBuilder}
-   * @return the {@link Saml2IdentityProviderMetadataEndpointConfigurer} for further configuration
+   * @return the {@link Saml2IdpMetadataEndpointConfigurer} for further configuration
    */
-  public Saml2IdentityProviderMetadataEndpointConfigurer entityDescriptorCustomizer(
+  public Saml2IdpMetadataEndpointConfigurer entityDescriptorCustomizer(
       final Consumer<Saml2MetadataBuilder> metadataCustomizer) {
     this.entityDescriptorCustomizer = metadataCustomizer;
     return this;
@@ -201,8 +201,8 @@ public class Saml2IdentityProviderMetadataEndpointConfigurer extends AbstractSam
         new EntityDescriptorContainer(this.entityDescriptorBuilder.build(), metadataSigning);
     container.setValidity(settings.getMetadata().getValidityPeriod());
 
-    final Saml2IdentityProviderMetadataEndpointFilter filter =
-        new Saml2IdentityProviderMetadataEndpointFilter(container, this.requestMatcher);
+    final Saml2IdpMetadataEndpointFilter filter =
+        new Saml2IdpMetadataEndpointFilter(container, this.requestMatcher);
     httpSecurity.addFilterBefore(postProcess(filter), AbstractPreAuthenticatedProcessingFilter.class);
   }
 

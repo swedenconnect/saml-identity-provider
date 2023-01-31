@@ -17,6 +17,7 @@ package se.swedenconnect.spring.saml.idp.settings;
 
 import java.util.Map;
 
+import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.springframework.util.Assert;
 
 import lombok.extern.slf4j.Slf4j;
@@ -152,6 +153,46 @@ public class IdentityProviderSettings extends AbstractSettings {
   }
 
   /**
+   * The Identity Provider metadata provider (resolver). May be assigned if the {@link MetadataResolver} is created
+   * "manually". See also {@link #IDP_METADATA_PROVIDER_CONFIGURATION} for an alternate way of configuring the metadata
+   * provider.
+   */
+  public static final String IDP_METADATA_PROVIDER = "metadata-provider";
+
+  /**
+   * Gets the Identity Provider metadata provider (resolver).
+   * <p>
+   * A metadata provider may also be set up using {@link #IDP_METADATA_PROVIDER_CONFIGURATION}.
+   * </p>
+   * 
+   * @return the metadata resolver to use or {@code null}
+   * @see #getMetadataProviderConfiguration()
+   */
+  public MetadataResolver getMetadataProvider() {
+    return this.getSetting(IDP_METADATA_PROVIDER);
+  }
+
+  /**
+   * The Identity Provider metadata provider configuration. An array of {@link MetadataProviderSettings}. By using this
+   * option instead of {@link #IDP_METADATA_PROVIDER} the application provides configuration for setting up a
+   * {@link MetadataResolver}, but the actual creation is done by the configurers.
+   */
+  public static final String IDP_METADATA_PROVIDER_CONFIGURATION = SETTINGS_PREFIX.concat("metadata-provider-config");
+
+  /**
+   * Gets the IdP metadata provider configuration settings.
+   * <p>
+   * A metadata provider may also be set up using {@link #IDP_METADATA_PROVIDER}.
+   * </p>
+   * 
+   * @return an array of metadata provider configuration settings
+   * @see #getMetadataProvider()
+   */
+  public MetadataProviderSettings[] getMetadataProviderConfiguration() {
+    return this.getSetting(IDP_METADATA_PROVIDER_CONFIGURATION);
+  }
+
+  /**
    * Constructs a new {@link Builder}.
    *
    * @return the builder
@@ -201,8 +242,8 @@ public class IdentityProviderSettings extends AbstractSettings {
     }
 
     /**
-     * Assigns the Identity Provider base URL for Holder-of-key support, i.e., the protocol, domain and context path. Must
-     * not end with an '/'.
+     * Assigns the Identity Provider base URL for Holder-of-key support, i.e., the protocol, domain and context path.
+     * Must not end with an '/'.
      * <p>
      * This setting is optional, and if HoK is being used <b>and</b> that requires a different IdP domain or context
      * path this setting represents this base URL.
@@ -253,6 +294,34 @@ public class IdentityProviderSettings extends AbstractSettings {
      */
     public Builder metadata(final MetadataSettings metadata) {
       return this.setting(IDP_METADATA, metadata);
+    }
+
+    /**
+     * Assigns the Identity Provider metadata provider (resolver).
+     * <p>
+     * A metadata provider may also be set up using {@link #metadataProviderConfiguration(MetadataProviderSettings...)}.
+     * </p>
+     * 
+     * @param metadataProvider the metadata resolver to use
+     * @return the builder
+     * @see #metadataProviderConfiguration(MetadataProviderSettings...)
+     */
+    public Builder metadataProvider(final MetadataResolver metadataProvider) {
+      return this.setting(IDP_METADATA_PROVIDER, metadataProvider);
+    }
+
+    /**
+     * Assigns the IdP metadata provider configuration settings.
+     * <p>
+     * A metadata provider may also be set up using {@link #metadataProvider(MetadataResolver)}.
+     * </p>
+     * 
+     * @param metadataProviders an array of metadata provider configuration settings
+     * @return the builder
+     * @see #metadataProvider(MetadataResolver)
+     */
+    public Builder metadataProviderConfiguration(final MetadataProviderSettings... metadataProviders) {
+      return this.setting(IDP_METADATA_PROVIDER_CONFIGURATION, metadataProviders);
     }
 
     /**

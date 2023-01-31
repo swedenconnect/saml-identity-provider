@@ -17,6 +17,7 @@ package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
 import java.security.cert.X509Certificate;
 
+import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -28,10 +29,11 @@ import org.springframework.context.annotation.Import;
 
 import lombok.Setter;
 import se.swedenconnect.security.credential.PkiCredential;
-import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdentityProviderConfigurer;
+import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurer;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.EndpointSettings;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
 
 /**
@@ -79,6 +81,11 @@ public class IdentityProviderAutoConfiguration {
   @Qualifier("saml.idp.credentials.MetadataSign")
   private PkiCredential metadataSignCredential;
 
+  @Setter
+  @Autowired(required = false)
+  @Qualifier("saml.idp.metadata.Provider")
+  private MetadataResolver metadataProvider;
+
   @ConditionalOnMissingBean
   @Bean
   IdentityProviderSettings identityProviderSettings() {
@@ -117,9 +124,34 @@ public class IdentityProviderAutoConfiguration {
               .validityPeriod(this.properties.getMetadata().getValidityPeriod())
               .build());
     }
+    if (this.metadataProvider != null) {
+      builder.metadataProvider(this.metadataProvider);
+    }
+    else if (this.properties.getMetadataProviders() != null) {
+      final MetadataProviderSettings[] settings =
+          new MetadataProviderSettings[this.properties.getMetadataProviders().size()];
+      int pos = 0;
+      for (final MetadataProviderConfigurationProperties p : this.properties.getMetadataProviders()) {
+        settings[pos] = MetadataProviderSettings.builder()
+            .location(p.getLocation())
+            .backupLocation(p.getBackupLocation())
+            .mdq(p.getMdq())
+            .validationCertificate(p.getValidationCertificate())
+            .httpProxy(p.getHttpProxy() != null
+                ? MetadataProviderSettings.HttpProxySettings.builder()
+                    .host(p.getHttpProxy().getHost())
+                    .port(p.getHttpProxy().getPort())
+                    .userName(p.getHttpProxy().getUserName())
+                    .password(p.getHttpProxy().getPassword())
+                    .build()
+                : null)
+            .build();
+      }
+      builder.metadataProviderConfiguration(settings);
+    }
 
     final IdentityProviderSettings settings = builder.build();
-    Saml2IdentityProviderConfigurer.validateIdentityProviderSettings(settings);
+    Saml2IdpConfigurer.validateIdentityProviderSettings(settings);
 
     return settings;
 

@@ -48,26 +48,32 @@ import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
-import se.swedenconnect.spring.saml.idp.InternalIdentityProviderException;
+import se.swedenconnect.spring.saml.idp.InternalSaml2IdpException;
 
 /**
- * An {@link AuthenticationConverter} responsible of decoding a SAML authentication request and checking that is is correct.
+ * An {@link AuthenticationConverter} responsible of decoding a SAML authentication request and checking that is is
+ * correct.
  *
  * @author Martin Lindström
  */
 @Slf4j
 public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationConverter {
-
+ 
   private final MetadataResolver metadataResolver;
-
   private BindingDescriptor redirectBindingDescriptor;
   private BindingDescriptor postBindingDescriptor;
 
+  /**
+   * Constructor.
+   * 
+   * @param metadataResolver the metadata resolver that we use when finding SP metadata
+   */
   public Saml2AuthnRequestAuthenticationConverter(final MetadataResolver metadataResolver) {
     this.metadataResolver = Objects.requireNonNull(metadataResolver, "metadataResolver must not be null");
     this.initializeBindingDescriptors();
   }
 
+  /** {@inheritDoc} */
   @Override
   public Authentication convert(final HttpServletRequest request) {
 
@@ -84,7 +90,8 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       final AuthnRequest authnRequest = AuthnRequest.class.cast(msgContext.getMessage());
       final String relayState = SAMLBindingSupport.getRelayState(msgContext);
 
-      final Saml2AuthnRequestAuthenticationToken token = new Saml2AuthnRequestAuthenticationToken(authnRequest, relayState);
+      final Saml2AuthnRequestAuthenticationToken token =
+          new Saml2AuthnRequestAuthenticationToken(authnRequest, relayState);
 
       // Save the binding context for later actions ...
       token.setSamlBindingContext(msgContext.getSubcontext(SAMLBindingContext.class, false));
@@ -165,14 +172,14 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       messageDecoder = decoder;
     }
     else {
-      throw new InternalIdentityProviderException("Illegal HTTP verb - " + method);
+      throw new InternalSaml2IdpException("Illegal HTTP verb - " + method);
     }
     try {
       messageDecoder.initialize();
       return messageDecoder;
     }
     catch (final ComponentInitializationException e) {
-      throw new InternalIdentityProviderException("Failed to initialize message decoder");
+      throw new InternalSaml2IdpException("Failed to initialize message decoder");
     }
   }
 
@@ -183,7 +190,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       handler.initialize();
     }
     catch (final ComponentInitializationException e) {
-      throw new InternalIdentityProviderException("Failed to initialize endpoint security handler");
+      throw new InternalSaml2IdpException("Failed to initialize endpoint security handler");
     }
     return handler;
   }

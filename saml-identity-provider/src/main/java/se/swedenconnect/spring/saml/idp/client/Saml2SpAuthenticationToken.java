@@ -40,13 +40,13 @@ import net.shibboleth.utilities.java.support.xml.XMLParserException;
  *
  * @author Martin Lindström
  */
-public class ServiceProviderAuthenticationToken extends AbstractAuthenticationToken {
+public class Saml2SpAuthenticationToken extends AbstractAuthenticationToken {
 
   private static final long serialVersionUID = 595345017528335123L;
 
   private final SerializableEntityDescriptor entityDescriptor;
 
-  public ServiceProviderAuthenticationToken(final EntityDescriptor entityDescriptor) {
+  public Saml2SpAuthenticationToken(final EntityDescriptor entityDescriptor) {
     super(Collections.emptyList());
     this.entityDescriptor = new SerializableEntityDescriptor(
         Objects.requireNonNull(entityDescriptor, "entityDescriptor must not be null"));

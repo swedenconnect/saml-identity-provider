@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2022-2023 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,22 +13,35 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.context;
+package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
-import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+import java.time.Duration;
+
+import org.springframework.core.io.Resource;
+
+import lombok.Data;
 
 /**
- * A context that holds information of the Identity Provider runtime environment.
- *
+ * Configuration properties for IdP metadata.
+ * 
  * @author Martin Lindström
  */
-public interface IdentityProviderContext {
+@Data
+public class MetadataConfigurationProperties {
 
   /**
-   * Gets the IdP settings (configuration)
-   *
-   * @return the IdP settings
+   * A template for the IdP metadata.
    */
-  IdentityProviderSettings getSettings();
+  private Resource template;
+  
+  /**
+   * Tells how long the published IdP metadata can remain in a cache.
+   */
+  private Duration cacheDuration;
+
+  /**
+   * Tells for how long a published metadata entry should be valid.
+   */
+  private Duration validityPeriod;  
 
 }

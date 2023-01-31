@@ -43,7 +43,7 @@ import se.swedenconnect.spring.saml.idp.metadata.Saml2MetadataHttpMessageConvert
  * @author Martin Lindström
  */
 @Slf4j
-public class Saml2IdentityProviderMetadataEndpointFilter extends OncePerRequestFilter {
+public class Saml2IdpMetadataEndpointFilter extends OncePerRequestFilter {
 
   /** Media type for SAML metadata in XML format. */
   public static final MediaType APPLICATION_SAML_METADATA = new MediaType("application", "samlmetadata+xml");
@@ -65,7 +65,7 @@ public class Saml2IdentityProviderMetadataEndpointFilter extends OncePerRequestF
    *
    * @param entityDescriptorContainer the IdP metadata container
    */
-  public Saml2IdentityProviderMetadataEndpointFilter(final EntityDescriptorContainer entityDescriptorContainer) {
+  public Saml2IdpMetadataEndpointFilter(final EntityDescriptorContainer entityDescriptorContainer) {
     this(entityDescriptorContainer, DEFAULT_METADATA_ENDPOINT_URI);
   }
 
@@ -75,7 +75,7 @@ public class Saml2IdentityProviderMetadataEndpointFilter extends OncePerRequestF
    * @param entityDescriptorContainer the IdP metadata container
    * @param endpoint the metadata publishing endpoint
    */
-  public Saml2IdentityProviderMetadataEndpointFilter(
+  public Saml2IdpMetadataEndpointFilter(
       final EntityDescriptorContainer entityDescriptorContainer, final String endpoint) {
     this(entityDescriptorContainer, new AntPathRequestMatcher(
         Objects.requireNonNull(endpoint, "endpoint must be set"), HttpMethod.GET.name()));
@@ -87,7 +87,7 @@ public class Saml2IdentityProviderMetadataEndpointFilter extends OncePerRequestF
    * @param entityDescriptorContainer the IdP metadata container
    * @param requestMatcher the request matcher
    */
-  public Saml2IdentityProviderMetadataEndpointFilter(
+  public Saml2IdpMetadataEndpointFilter(
       final EntityDescriptorContainer entityDescriptorContainer, final RequestMatcher requestMatcher) {
     this.entityDescriptorContainer =
         Objects.requireNonNull(entityDescriptorContainer, "entityDescriptorContainer must not be null");

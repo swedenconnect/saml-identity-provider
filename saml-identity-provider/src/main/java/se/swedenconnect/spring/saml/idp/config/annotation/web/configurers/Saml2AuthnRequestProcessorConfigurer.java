@@ -28,12 +28,15 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
-public class Saml2IdentityProviderAuthnRequestDecoderConfigurer extends AbstractSaml2Configurer {
+/**
+ * A configurer for the processing of SAML2 {@code AuthnRequest} messages.
+ */
+public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configurer {
 
   private RequestMatcher requestMatcher;
   private final List<AuthenticationConverter> authnRequestConverters = new ArrayList<>();
 
-  Saml2IdentityProviderAuthnRequestDecoderConfigurer(final ObjectPostProcessor<Object> objectPostProcessor) {
+  Saml2AuthnRequestProcessorConfigurer(final ObjectPostProcessor<Object> objectPostProcessor) {
     super(objectPostProcessor);
   }
 
@@ -50,6 +53,7 @@ public class Saml2IdentityProviderAuthnRequestDecoderConfigurer extends Abstract
   void configure(final HttpSecurity httpSecurity) {
   }
 
+  /** {@inheritDoc} */
   @Override
   RequestMatcher getRequestMatcher() {
     return this.requestMatcher;

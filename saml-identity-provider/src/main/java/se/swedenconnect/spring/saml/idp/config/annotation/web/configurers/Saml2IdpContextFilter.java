@@ -25,16 +25,16 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import se.swedenconnect.spring.saml.idp.context.IdentityProviderContext;
-import se.swedenconnect.spring.saml.idp.context.IdentityProviderContextHolder;
+import se.swedenconnect.spring.saml.idp.context.Saml2IdpContext;
+import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
- * A {@code Filter} that associates the {@link IdentityProviderContext} to the {@link IdentityProviderContextHolder}.
+ * A {@code Filter} that associates the {@link Saml2IdpContext} to the {@link Saml2IdpContextHolder}.
  *
  * @author Martin Lindström
  */
-class IdentityProviderContextFilter extends OncePerRequestFilter {
+class Saml2IdpContextFilter extends OncePerRequestFilter {
 
   private final IdentityProviderSettings settings;
 
@@ -43,7 +43,7 @@ class IdentityProviderContextFilter extends OncePerRequestFilter {
    *
    * @param settings the IdP settings
    */
-  IdentityProviderContextFilter(final IdentityProviderSettings settings) {
+  Saml2IdpContextFilter(final IdentityProviderSettings settings) {
     this.settings = Objects.requireNonNull(settings, "settings must not be null");
   }
 
@@ -53,15 +53,15 @@ class IdentityProviderContextFilter extends OncePerRequestFilter {
       final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
       throws ServletException, IOException {
     try {
-      IdentityProviderContextHolder.setContext(new DefaultIdentityProviderContext(this.settings));
+      Saml2IdpContextHolder.setContext(new DefaultIdentityProviderContext(this.settings));
       filterChain.doFilter(request, response);
     }
     finally {
-      IdentityProviderContextHolder.resetContext();
+      Saml2IdpContextHolder.resetContext();
     }
   }
 
-  private static class DefaultIdentityProviderContext implements IdentityProviderContext {
+  private static class DefaultIdentityProviderContext implements Saml2IdpContext {
 
     private final IdentityProviderSettings settings;
 

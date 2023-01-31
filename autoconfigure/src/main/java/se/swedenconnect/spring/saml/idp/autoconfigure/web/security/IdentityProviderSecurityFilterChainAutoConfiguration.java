@@ -23,7 +23,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 
-import se.swedenconnect.spring.saml.idp.config.annotation.web.configuration.Saml2IdentityProviderConfiguration;
+import se.swedenconnect.spring.saml.idp.config.annotation.web.configuration.Saml2IdpConfiguration;
 
 /**
  * Auto configuration class for setting up the {@link SecurityFilterChain} for the SAML IdP.
@@ -40,7 +40,7 @@ public class IdentityProviderSecurityFilterChainAutoConfiguration {
 
     // Apply the default configuration for the IdP.
     //
-    Saml2IdentityProviderConfiguration.applyDefaultSecurity(http);
+    Saml2IdpConfiguration.applyDefaultSecurity(http);
 
 //    http
 //        .anonymous().disable()

@@ -15,11 +15,15 @@
  */
 package se.swedenconnect.spring.saml.idp.demo;
 
+import java.io.File;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -34,8 +38,10 @@ import se.swedenconnect.opensaml.OpenSAMLInitializer;
 import se.swedenconnect.opensaml.OpenSAMLSecurityDefaultsConfig;
 import se.swedenconnect.opensaml.OpenSAMLSecurityExtensionConfig;
 import se.swedenconnect.opensaml.sweid.xmlsec.config.SwedishEidSecurityConfiguration;
-import se.swedenconnect.spring.saml.idp.config.annotation.web.configuration.Saml2IdentityProviderConfiguration;
+import se.swedenconnect.security.credential.utils.X509Utils;
+import se.swedenconnect.spring.saml.idp.config.annotation.web.configuration.Saml2IdpConfiguration;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
 
 /**
  * Configuration class for the demo application.
@@ -53,7 +59,7 @@ public class IdpConfiguration {
 
     // Apply the default configuration for the IdP.
     //
-    Saml2IdentityProviderConfiguration.applyDefaultSecurity(http);
+    Saml2IdpConfiguration.applyDefaultSecurity(http);
 
 //    http
 //        .anonymous().disable()
@@ -99,9 +105,14 @@ public class IdpConfiguration {
   }
 
   @Bean
-  IdentityProviderSettings identityProviderSettings() {
+  IdentityProviderSettings identityProviderSettings() throws Exception {
     return IdentityProviderSettings.builder()
         .entityId("https://demo.swedenconnect.se/idp")
+        .metadataProviderConfiguration(MetadataProviderSettings.builder()
+            .location(new UrlResource("https://eid.svelegtest.se/metadata/mdx/role/sp.xml"))
+            .backupLocation(new File("target/metadata-backup.xml"))
+            .validationCertificate(X509Utils.decodeCertificate(new ClassPathResource("sandbox-metadata.crt").getInputStream()))
+            .build())                
         .build();
   }
 

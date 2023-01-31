@@ -13,20 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp;
+package se.swedenconnect.spring.saml.idp.context;
 
-import org.springframework.security.access.AccessDeniedException;
+import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
-public class InternalIdentityProviderException extends AccessDeniedException {
+/**
+ * A context that holds information of the Identity Provider runtime environment.
+ *
+ * @author Martin Lindström
+ */
+public interface Saml2IdpContext {
 
-  private static final long serialVersionUID = 4511560688310949802L;
-
-  public InternalIdentityProviderException(String msg) {
-    super(msg);
-  }
-
-  public InternalIdentityProviderException(String msg, Throwable cause) {
-    super(msg, cause);
-  }
+  /**
+   * Gets the IdP settings (configuration)
+   *
+   * @return the IdP settings
+   */
+  IdentityProviderSettings getSettings();
 
 }

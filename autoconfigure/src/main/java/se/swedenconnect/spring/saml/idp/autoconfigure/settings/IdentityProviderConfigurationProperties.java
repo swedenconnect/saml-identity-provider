@@ -15,6 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
+import java.util.List;
+
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
@@ -70,7 +72,12 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
   /**
    * The IdP metadata.
    */
-  private MetadataConfiguration metadata;
+  private MetadataConfigurationProperties metadata;
+
+  /**
+   * The IdP metadata provider(s).
+   */
+  private List<MetadataProviderConfigurationProperties> metadataProviders;
 
   /** {@inheritDoc} */
   @Override
