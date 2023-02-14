@@ -19,6 +19,8 @@ import java.util.Map;
 
 import org.springframework.util.Assert;
 
+import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
+
 /**
  * Settings for the IdP endpoints.
  *
@@ -26,7 +28,7 @@ import org.springframework.util.Assert;
  */
 public class EndpointSettings extends AbstractSettings {
 
-  private static final long serialVersionUID = -5543563950193396308L;
+  private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /**
    * Constructor.
@@ -194,15 +196,14 @@ public class EndpointSettings extends AbstractSettings {
     /** {@inheritDoc} */
     @Override
     protected void applyDefaultSettings() {
-      if (!this.getSettings().containsValue(SAML_REDIRECT_AUTHN_ENDPOINT)) {
+      if (this.getSettings().get(SAML_REDIRECT_AUTHN_ENDPOINT) == null) {
         this.redirectAuthnEndpoint("/saml2/redirect/authn");
       }
-      if (!this.getSettings().containsValue(SAML_POST_AUTHN_ENDPOINT)) {
+      if (this.getSettings().get(SAML_POST_AUTHN_ENDPOINT) == null) {
         this.postAuthnEndpoint("/saml2/post/authn");
       }
-      // No defaults for HoK ...
-      if (!this.getSettings().containsValue(EndpointSettings.SAML_METADATA_PUBLISH_ENDPOINT)) {
-        this.metadataEndpoint("/metadata");
+      if (this.getSettings().get(SAML_METADATA_PUBLISH_ENDPOINT) == null) {
+        this.metadataEndpoint("/saml2/metadata");
       }
     }
 

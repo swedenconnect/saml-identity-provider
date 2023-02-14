@@ -1,9 +1,19 @@
+server:
+  port: 8443
+  servlet:
+    context-path: /idp    
+  ssl:
+    enabled: true
+    key-store: classpath:ssl.jks
+    key-store-type: JKS
+    key-alias: local
+    key-store-password: secret
+    key-password: secret
 
 saml:
   idp:
     entity-id: https://demo.swedenconnect.se/idp
-    base-url: https://demo.swedenconnect.se/idp
-    hok-base-url: https://hok.swedenconnect.se/idp    
+    base-url: https://local.dev.swedenconnect.se:8443/idp    
     credentials:
       sign:
         resource: classpath:idp-credentials.jks
@@ -21,13 +31,22 @@ saml:
         password: secret
         type: JKS
     endpoints:
-      hok-redirect-authn: /saml2/redirect/hok/authn
-      hok-post-authn: /saml2/post/hok/authn
+      metadata: /saml2/metadata
     metadata-providers:
     - location: https://eid.svelegtest.se/metadata/mdx/role/sp.xml
       backup-location: target/metadata-backup.xml
       validation-certificate: classpath:sandbox-metadata.crt
+    metadata:
+      entity-categories:
+      - http://id.elegnamnden.se/ec/1.0/loa3-pnr
+      - http://id.swedenconnect.se/ec/1.0/loa3-name
+      - http://id.elegnamnden.se/sprop/1.0/mobile-auth
         
-        
+logging:
+  level:
+    se:
+      swedenconnect:
+        spring:
+          saml: TRACE
         
 

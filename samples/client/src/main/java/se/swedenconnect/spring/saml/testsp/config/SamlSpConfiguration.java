@@ -170,7 +170,8 @@ public class SamlSpConfiguration {
       throws Exception {
     final PkiCredential credential = loadCredential(properties.getCredential());
     RelyingPartyRegistration relayingParty = RelyingPartyRegistrations
-        .fromMetadataLocation("https://idp.sandbox.swedenconnect.se/idp/metadata/idp.xml")
+        //.fromMetadataLocation("https://idp.sandbox.swedenconnect.se/idp/metadata/idp.xml")
+        .fromMetadata(properties.getIdpMetadataLocation().getInputStream())
         .entityId(properties.getEntityId())
 //        .assertionConsumerServiceLocation(properties.getAssertionConsumerUrl())
         .registrationId(properties.getRegistrationId())

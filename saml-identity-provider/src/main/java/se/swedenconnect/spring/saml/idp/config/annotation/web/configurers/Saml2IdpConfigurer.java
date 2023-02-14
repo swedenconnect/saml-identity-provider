@@ -32,8 +32,15 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.conn.ssl.DefaultHostnameVerifier;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
+import org.opensaml.saml.metadata.resolver.impl.PredicateRoleDescriptorResolver;
+import org.opensaml.saml.security.impl.MetadataCredentialResolver;
+import org.opensaml.xmlsec.SignatureValidationConfiguration;
+import org.opensaml.xmlsec.config.impl.DefaultSecurityConfigurationBootstrap;
+import org.opensaml.xmlsec.signature.support.SignatureTrustEngine;
+import org.opensaml.xmlsec.signature.support.impl.ExplicitKeySignatureTrustEngine;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -57,6 +64,7 @@ import se.swedenconnect.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.MDQMetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.MetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.StaticMetadataProvider;
+import se.swedenconnect.opensaml.xmlsec.config.SecurityConfiguration;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
@@ -78,7 +86,7 @@ public class Saml2IdpConfigurer
   private RequestMatcher endpointsMatcher;
 
   /**
-   * Configures the IdP metadata endpoint.
+   * Customizes the IdP metadata endpoint.
    *
    * @param customizer the {@link Customizer} providing access to the {@link Saml2IdpMetadataEndpointConfigurer}
    * @return the {@link Saml2IdpConfigurer} for further configuration
@@ -90,13 +98,34 @@ public class Saml2IdpConfigurer
   }
 
   /**
+   * Customizes the {@code AuthnRequest} processor.
+   * 
+   * @param customizer the {@link Customizer} providing access to the {@link Saml2AuthnRequestProcessorConfigurer}
+   * @return the {@link Saml2IdpConfigurer} for further configuration
+   */
+  public Saml2IdpConfigurer authnRequestProcessor(
+      final Customizer<Saml2AuthnRequestProcessorConfigurer> customizer) {
+    customizer.customize(this.getConfigurer(Saml2AuthnRequestProcessorConfigurer.class));
+    return this;
+  }
+
+  /**
+   * Customizes the SAML response processor.
+   * 
+   * @param customizer the {@link Customizer} providing access to the {@link Saml2ResponseConfigurer}
+   * @return the {@link Saml2IdpConfigurer} for further configuration
+   */
+  public Saml2IdpConfigurer responseProcessor(final Customizer<Saml2ResponseConfigurer> customizer) {
+    customizer.customize(this.getConfigurer(Saml2ResponseConfigurer.class));
+    return this;
+  }
+
+  /**
    * Returns a {@link RequestMatcher} for the SAML Identity Provider endpoints.
    *
-   * @return a {@link RequestMatcher} for the SAML Identity Provider endpoints
+   * @return a {@link RequestMatcher}
    */
   public RequestMatcher getEndpointsMatcher() {
-    // Use a deferred RequestMatcher since endpointsMatcher is constructed in init(HttpSecurity).
-    //
     return (request) -> this.endpointsMatcher.matches(request);
   }
 
@@ -106,24 +135,56 @@ public class Saml2IdpConfigurer
     final IdentityProviderSettings identityProviderSettings =
         Saml2ConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     validateIdentityProviderSettings(identityProviderSettings);
-    
+
+    // TODO: ??
+    final SecurityConfiguration securityConfiguration = Saml2ConfigurerUtils.getSecurityConfiguration(httpSecurity);
+    SignatureValidationConfiguration svc = securityConfiguration.getSignatureValidationConfiguration();
+
     // Metadata resolver ...
     //
-    if (identityProviderSettings.getMetadataProvider() != null) {
-      httpSecurity.setSharedObject(MetadataResolver.class, identityProviderSettings.getMetadataProvider()); 
+    MetadataResolver metadataResolver = identityProviderSettings.getMetadataProvider();
+    if (metadataResolver != null) {
+      httpSecurity.setSharedObject(MetadataResolver.class, metadataResolver);
     }
     else {
-      httpSecurity.setSharedObject(MetadataResolver.class, 
-          createMetadataResolver(identityProviderSettings.getMetadataProviderConfiguration()));
+      metadataResolver = createMetadataResolver(identityProviderSettings.getMetadataProviderConfiguration());
+      httpSecurity.setSharedObject(MetadataResolver.class, metadataResolver);
     }
 
+    // Signature trust engine ...
+    //
+    SignatureTrustEngine signatureTrustEngine = httpSecurity.getSharedObject(SignatureTrustEngine.class);
+    if (signatureTrustEngine == null) {
+      try {
+
+        final PredicateRoleDescriptorResolver roleDescriptorResolver =
+            new PredicateRoleDescriptorResolver(metadataResolver);
+        roleDescriptorResolver.setRequireValidMetadata(true);
+        roleDescriptorResolver.initialize();
+
+        final MetadataCredentialResolver metadataCredentialResolver = new MetadataCredentialResolver();
+        metadataCredentialResolver.setKeyInfoCredentialResolver(
+            DefaultSecurityConfigurationBootstrap.buildBasicInlineKeyInfoCredentialResolver());
+        metadataCredentialResolver.setRoleDescriptorResolver(roleDescriptorResolver);
+        metadataCredentialResolver.initialize();
+
+        signatureTrustEngine = new ExplicitKeySignatureTrustEngine(metadataCredentialResolver,
+            DefaultSecurityConfigurationBootstrap.buildBasicInlineKeyInfoCredentialResolver());
+
+        httpSecurity.setSharedObject(SignatureTrustEngine.class, signatureTrustEngine);
+      }
+      catch (final ComponentInitializationException e) {
+        throw new InternalAuthenticationServiceException("Failed to initialize MetadataCredentialResolver", e);
+      }
+    }
+
+    // Configurers ...
+    //
     final List<RequestMatcher> requestMatchers = new ArrayList<>();
     this.configurers.values().forEach(configurer -> {
       configurer.init(httpSecurity);
       requestMatchers.add(configurer.getRequestMatcher());
     });
-//    requestMatchers.add(new AntPathRequestMatcher(
-//        authorizationServerSettings.getJwkSetEndpoint(), HttpMethod.GET.name()));
     this.endpointsMatcher = new OrRequestMatcher(requestMatchers);
 
     // TODO: Change
@@ -164,6 +225,9 @@ public class Saml2IdpConfigurer
     final Map<Class<? extends AbstractSaml2Configurer>, AbstractSaml2Configurer> configurers = new LinkedHashMap<>();
     configurers.put(Saml2IdpMetadataEndpointConfigurer.class,
         new Saml2IdpMetadataEndpointConfigurer(this::postProcess));
+    configurers.put(Saml2AuthnRequestProcessorConfigurer.class,
+        new Saml2AuthnRequestProcessorConfigurer(this::postProcess));
+    configurers.put(Saml2ResponseConfigurer.class, new Saml2ResponseConfigurer(this::postProcess));
 //    configurers.put(OAuth2ClientAuthenticationConfigurer.class, new OAuth2ClientAuthenticationConfigurer(this::postProcess));
 //    configurers.put(OAuth2AuthorizationServerMetadataEndpointConfigurer.class, new OAuth2AuthorizationServerMetadataEndpointConfigurer(this::postProcess));
 //    configurers.put(OAuth2AuthorizationEndpointConfigurer.class, new OAuth2AuthorizationEndpointConfigurer(this::postProcess));
@@ -232,8 +296,7 @@ public class Saml2IdpConfigurer
       if (mdConfig == null || mdConfig.length == 0) {
         throw new IllegalArgumentException("No metadata providers have been configured");
       }
-      
-      
+
       for (int i = 0; i < mdConfig.length; i++) {
         final MetadataProviderSettings md = mdConfig[i];
         if (md.getLocation() == null) {
@@ -353,7 +416,7 @@ public class Saml2IdpConfigurer
       throw new IllegalArgumentException("Failed to initialize HttpClient", e);
     }
   }
-  
+
   /**
    * Makes sure that all parent directories for the supplied file exists and returns the backup file as an absolute
    * path.
@@ -388,6 +451,5 @@ public class Saml2IdpConfigurer
       throw new IllegalArgumentException("Invalid backup-location");
     }
   }
-
 
 }

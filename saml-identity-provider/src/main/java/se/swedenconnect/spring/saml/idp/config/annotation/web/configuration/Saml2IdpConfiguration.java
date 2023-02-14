@@ -21,6 +21,7 @@ import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurer;
@@ -41,7 +42,7 @@ public class Saml2IdpConfiguration {
    * @return a SecurityFilterChain
    * @throws Exception for configuration errors
    */
-  @Bean
+  @Bean("identityProviderSecurityFilterChain")
   @Order(Ordered.HIGHEST_PRECEDENCE)
   public SecurityFilterChain identityProviderSecurityFilterChain(final HttpSecurity http) throws Exception {
     applyDefaultSecurity(http);
@@ -59,21 +60,19 @@ public class Saml2IdpConfiguration {
     final Saml2IdpConfigurer idpConfigurer = new Saml2IdpConfigurer();
     final RequestMatcher endpointsMatcher = idpConfigurer.getEndpointsMatcher();
 
-//    final NonnullSupplier<HttpServletRequest> servletRequestSupplier = () -> {
-//      return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
-//          .map(ServletRequestAttributes.class::cast)
-//          .map(ServletRequestAttributes::getRequest)
-//          .orElseThrow(() -> new InternalIdentityProviderException("No request available"));
-//    };
-//
-//    http.setSharedObject(NonnullSupplier.class, servletRequestSupplier);
-
     http
-      .requestMatcher(endpointsMatcher)
-      .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
-      .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
-      .apply(idpConfigurer);
+        .requestMatcher(endpointsMatcher)
+        .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
+
+        // TMP
+        .exceptionHandling(
+            exceptions -> exceptions.authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/login")))
+
+        .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+        .apply(idpConfigurer);
   }
+  
+  // TODO: SecurityContextRepository
 
   @Bean
   RegisterMissingBeanPostProcessor registerMissingBeanPostProcessor() {

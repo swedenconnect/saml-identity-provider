@@ -27,6 +27,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContext;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
+import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
@@ -61,17 +62,35 @@ class Saml2IdpContextFilter extends OncePerRequestFilter {
     }
   }
 
+  /**
+   * Implementation of the {@link Saml2IdpContext}.
+   */
   private static class DefaultIdentityProviderContext implements Saml2IdpContext {
 
     private final IdentityProviderSettings settings;
 
+    private final Saml2ResponseAttributes responseAttributes;
+
+    /**
+     * Constructor.
+     * 
+     * @param settings the IdP settings
+     */
     private DefaultIdentityProviderContext(final IdentityProviderSettings settings) {
       this.settings = settings;
+      this.responseAttributes = new Saml2ResponseAttributes();
     }
 
+    /** {@inheritDoc} */
     @Override
     public IdentityProviderSettings getSettings() {
       return this.settings;
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public Saml2ResponseAttributes getResponseAttributes() {
+      return this.responseAttributes;
     }
 
   }

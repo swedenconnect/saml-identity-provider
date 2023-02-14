@@ -30,7 +30,9 @@ import org.opensaml.saml.common.binding.BindingDescriptor;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.binding.decoding.SAMLMessageDecoder;
 import org.opensaml.saml.common.binding.security.impl.ReceivedEndpointSecurityHandler;
-import org.opensaml.saml.common.messaging.context.SAMLBindingContext;
+import org.opensaml.saml.common.messaging.context.SAMLMetadataContext;
+import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
+import org.opensaml.saml.common.messaging.context.SAMLProtocolContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.criterion.EntityRoleCriterion;
 import org.opensaml.saml.criterion.ProtocolCriterion;
@@ -43,25 +45,39 @@ import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationConverter;
+import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
-import se.swedenconnect.spring.saml.idp.InternalSaml2IdpException;
+import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
+import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+import se.swedenconnect.spring.saml.idp.utils.OpenSamlUtils;
 
 /**
  * An {@link AuthenticationConverter} responsible of decoding a SAML authentication request and checking that is is
- * correct.
+ * correct. It will produce an {@link Saml2AuthnRequestAuthenticationToken}.
  *
  * @author Martin Lindström
  */
 @Slf4j
 public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationConverter {
- 
+
+  /** A decoder for messages sent using the redirect binding. */
+  private final HTTPRedirectDeflateDecoder httpRedirectDeflateDecoder;
+
+  /** A decoder for messages sent using the POST binding. */
+  private final HTTPPostDecoder httpPostDecoder;
+
+  /**
+   * Message handler which checks the validity of the SAML protocol message receiver endpoint against requirements
+   * indicated in the message.
+   */
+  private ReceivedEndpointSecurityHandler receivedEndpointSecurityHandler;
+
+  /** Resolves peer metadata entries. */
   private final MetadataResolver metadataResolver;
-  private BindingDescriptor redirectBindingDescriptor;
-  private BindingDescriptor postBindingDescriptor;
 
   /**
    * Constructor.
@@ -70,7 +86,46 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
    */
   public Saml2AuthnRequestAuthenticationConverter(final MetadataResolver metadataResolver) {
     this.metadataResolver = Objects.requireNonNull(metadataResolver, "metadataResolver must not be null");
-    this.initializeBindingDescriptors();
+
+    // Initialize the decoders
+    //
+    try {
+      final BindingDescriptor redirectBindingDescriptor = new BindingDescriptor();
+      redirectBindingDescriptor.setId(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+      redirectBindingDescriptor.setShortName("Redirect");
+      redirectBindingDescriptor.setSignatureCapable(true);
+      redirectBindingDescriptor.initialize();
+      this.httpRedirectDeflateDecoder = new HTTPRedirectDeflateDecoder();
+      this.httpRedirectDeflateDecoder.setBindingDescriptor(redirectBindingDescriptor);
+      this.httpRedirectDeflateDecoder.setHttpServletRequestSupplier(OpenSamlUtils.getHttpServletRequestSupplier());
+      this.httpRedirectDeflateDecoder.setParserPool(XMLObjectProviderRegistrySupport.getParserPool());
+      this.httpRedirectDeflateDecoder.initialize();
+
+      final BindingDescriptor postBindingDescriptor = new BindingDescriptor();
+      postBindingDescriptor.setId(SAMLConstants.SAML2_POST_BINDING_URI);
+      postBindingDescriptor.setShortName("POST");
+      postBindingDescriptor.initialize();
+      this.httpPostDecoder = new HTTPPostDecoder();
+      this.httpPostDecoder.setBindingDescriptor(postBindingDescriptor);
+      this.httpPostDecoder.setHttpServletRequestSupplier(OpenSamlUtils.getHttpServletRequestSupplier());
+      this.httpPostDecoder.setParserPool(XMLObjectProviderRegistrySupport.getParserPool());
+      this.httpPostDecoder.initialize();
+    }
+    catch (final ComponentInitializationException e) {
+      throw new IllegalArgumentException("Failed to initialize OpenSAML message decoders", e);
+    }
+
+    // Initialize the endpoint security handler.
+    //
+    this.receivedEndpointSecurityHandler = new ReceivedEndpointSecurityHandler();
+    this.receivedEndpointSecurityHandler.setHttpServletRequestSupplier(OpenSamlUtils.getHttpServletRequestSupplier());
+    try {
+      this.receivedEndpointSecurityHandler.initialize();
+    }
+    catch (final ComponentInitializationException e) {
+      throw new IllegalArgumentException("Failed to initialize endpoint security handler");
+    }
+
   }
 
   /** {@inheritDoc} */
@@ -84,7 +139,8 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       log.debug("Incoming request decoded into a message of type {}", msgContext.getMessage().getClass().getName());
 
       if (!AuthnRequest.class.isInstance(msgContext.getMessage())) {
-        throw new InvalidSaml2AuthnRequestException("Incoming request is not an SAML V2 AuthnRequest message");
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT,
+            "Incoming request is not an SAML V2 AuthnRequest message");
       }
       log.debug("AuthnRequest successfully decoded");
       final AuthnRequest authnRequest = AuthnRequest.class.cast(msgContext.getMessage());
@@ -93,26 +149,39 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       final Saml2AuthnRequestAuthenticationToken token =
           new Saml2AuthnRequestAuthenticationToken(authnRequest, relayState);
 
-      // Save the binding context for later actions ...
-      token.setSamlBindingContext(msgContext.getSubcontext(SAMLBindingContext.class, false));
+      // Save the context for later actions ...
+      //
+      token.setMessageContext(msgContext);
+      final SAMLProtocolContext protocolContext = new SAMLProtocolContext();
+      protocolContext.setProtocol(org.opensaml.saml.common.xml.SAMLConstants.SAML20P_NS);
+      msgContext.addSubcontext(protocolContext);
 
       // Check version ...
       //
       final SAMLVersion version = authnRequest.getVersion();
       if (version.getMajorVersion() != 2) {
-        throw new InvalidSaml2AuthnRequestException("Unsupported version on AuthnRequest message");
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT,
+            "Unsupported version on AuthnRequest message");
+      }
+
+      // An ID is mandatory ...
+      //
+      if (!StringUtils.hasText(authnRequest.getID())) {
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT,
+            "Missing ID on received AuthnRequest message");
       }
 
       // Assert that we have the issuer ...
       //
       final String peerEntityId = Optional.ofNullable(authnRequest.getIssuer())
           .map(Issuer::getValue)
-          .orElseThrow(() -> new InvalidSaml2AuthnRequestException("Missing issuer of AuthnRequest message"));
+          .orElseThrow(() -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT,
+              "Missing issuer of received AuthnRequest message"));
 
       // Check the validity of the SAML protocol message receiver endpoint against requirements
       // indicated in the message.
       //
-      this.getReceivedEndpointSecurityHandler(request).invoke(msgContext);
+      this.receivedEndpointSecurityHandler.invoke(msgContext);
 
       // Locate peer metadata.
       //
@@ -124,15 +193,28 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
         if (spMetadata == null) {
           final String msg = String.format("Failed to lookup valid SAML metadata for SP %s", peerEntityId);
           log.info("{}", msg);
-          throw new Saml2PeerNotFoundException(msg);
+          throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT, msg);
         }
         log.debug("SAML metadata for SP {} successfully found", peerEntityId);
         token.setPeerMetadata(spMetadata);
+
+        // Add a context for future OpenSAML operations ...
+        //
+        final SAMLPeerEntityContext peerContext = new SAMLPeerEntityContext();
+        peerContext.setEntityId(spMetadata.getEntityID());
+        peerContext.setAuthenticated(false);
+        peerContext.setRole(SPSSODescriptor.DEFAULT_ELEMENT_NAME);
+        msgContext.addSubcontext(peerContext);
+
+        final SAMLMetadataContext mdContext = new SAMLMetadataContext();
+        mdContext.setEntityDescriptor(spMetadata);
+        mdContext.setRoleDescriptor(spMetadata.getSPSSODescriptor(SAMLConstants.SAML20P_NS));
+        msgContext.addSubcontext(mdContext);
       }
       catch (final ResolverException e) {
         final String msg = "Error during metadata lookup: " + e.getMessage();
         log.info("{}", msg, e);
-        throw new Saml2PeerNotFoundException(msg, e);
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT, msg, e);
       }
 
       return token;
@@ -140,12 +222,12 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
     catch (final MessageDecodingException e) {
       final String msg = "Unable to decode incoming authentication request";
       log.error("{}", msg, e);
-      throw new InvalidSaml2AuthnRequestException(msg, e);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.FAILED_DECODE, msg, e);
     }
     catch (final MessageHandlerException e) {
       final String msg = String.format("Receiver endpoint check failed: %s", e.getMessage());
       log.error("{}", msg, e);
-      throw new InvalidSaml2AuthnRequestException(msg, e);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.ENDPOINT_CHECK_FAILURE, msg, e);
     }
   }
 
@@ -156,60 +238,14 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
    */
   protected SAMLMessageDecoder getDecoder(final HttpServletRequest request) {
     final String method = request.getMethod();
-    final SAMLMessageDecoder messageDecoder;
     if ("GET".equals(method)) {
-      final HTTPRedirectDeflateDecoder decoder = new HTTPRedirectDeflateDecoder();
-      decoder.setBindingDescriptor(this.redirectBindingDescriptor);
-      decoder.setHttpServletRequestSupplier(() -> request);
-      decoder.setParserPool(XMLObjectProviderRegistrySupport.getParserPool());
-      messageDecoder = decoder;
+      return this.httpRedirectDeflateDecoder;
     }
     else if ("POST".equals(method)) {
-      HTTPPostDecoder decoder = new HTTPPostDecoder();
-      decoder.setBindingDescriptor(this.postBindingDescriptor);
-      decoder.setHttpServletRequestSupplier(() -> request);
-      decoder.setParserPool(XMLObjectProviderRegistrySupport.getParserPool());
-      messageDecoder = decoder;
+      return this.httpPostDecoder;
     }
     else {
-      throw new InternalSaml2IdpException("Illegal HTTP verb - " + method);
-    }
-    try {
-      messageDecoder.initialize();
-      return messageDecoder;
-    }
-    catch (final ComponentInitializationException e) {
-      throw new InternalSaml2IdpException("Failed to initialize message decoder");
-    }
-  }
-
-  private ReceivedEndpointSecurityHandler getReceivedEndpointSecurityHandler(final HttpServletRequest request) {
-    final ReceivedEndpointSecurityHandler handler = new ReceivedEndpointSecurityHandler();
-    handler.setHttpServletRequestSupplier(() -> request);
-    try {
-      handler.initialize();
-    }
-    catch (final ComponentInitializationException e) {
-      throw new InternalSaml2IdpException("Failed to initialize endpoint security handler");
-    }
-    return handler;
-  }
-
-  private void initializeBindingDescriptors() {
-    try {
-      this.redirectBindingDescriptor = new BindingDescriptor();
-      this.redirectBindingDescriptor.setId(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
-      this.redirectBindingDescriptor.setShortName("Redirect");
-      this.redirectBindingDescriptor.setSignatureCapable(true);
-      this.redirectBindingDescriptor.initialize();
-
-      this.postBindingDescriptor = new BindingDescriptor();
-      this.postBindingDescriptor.setId(SAMLConstants.SAML2_POST_BINDING_URI);
-      this.postBindingDescriptor.setShortName("POST");
-      this.postBindingDescriptor.initialize();
-    }
-    catch (final ComponentInitializationException e) {
-      throw new SecurityException("Failed to initialize OpenSAML BindingDescriptor", e);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Illegal HTTP verb - " + method);
     }
   }
 

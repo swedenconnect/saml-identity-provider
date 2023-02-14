@@ -21,6 +21,7 @@ import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.springframework.util.Assert;
 
 import lombok.extern.slf4j.Slf4j;
+import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
  * Identity Provider configuration settings.
@@ -30,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class IdentityProviderSettings extends AbstractSettings {
 
   /** For serializing. */
-  private static final long serialVersionUID = 2388562287961752801L;
+  private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** Prefix for all configuration settings. */
   public static final String SETTINGS_PREFIX = "idp.";
@@ -228,7 +229,7 @@ public class IdentityProviderSettings extends AbstractSettings {
      * @return the builder
      */
     public Builder entityId(final String entityId) {
-      return this.setting(IdentityProviderSettings.ENTITY_ID, entityId);
+      return this.setting(ENTITY_ID, entityId);
     }
 
     /**
@@ -273,7 +274,7 @@ public class IdentityProviderSettings extends AbstractSettings {
      * @return the builder
      */
     public Builder credentials(final CredentialSettings credentials) {
-      return this.setting(IdentityProviderSettings.IDP_CREDENTIALS, credentials);
+      return this.setting(IDP_CREDENTIALS, credentials);
     }
 
     /**
@@ -283,7 +284,7 @@ public class IdentityProviderSettings extends AbstractSettings {
      * @return the builder
      */
     public Builder endpoints(final EndpointSettings endpoints) {
-      return this.setting(IdentityProviderSettings.IDP_ENDPOINTS, endpoints);
+      return this.setting(IDP_ENDPOINTS, endpoints);
     }
 
     /**
@@ -337,15 +338,15 @@ public class IdentityProviderSettings extends AbstractSettings {
     /** {@inheritDoc} */
     @Override
     protected void applyDefaultSettings() {
-      if (!this.getSettings().containsValue(ENTITY_ID)) {
+      if (this.getSettings().get(ENTITY_ID) == null) {
         log.warn("Applying default setting for {} - Change this to your actual entityID", ENTITY_ID);
         this.entityId("https://demo.swedenconnect.se/idp");
       }
-      if (!this.getSettings().containsValue(BASE_URL)) {
+      if (this.getSettings().get(BASE_URL) == null) {
         log.warn("Applying default setting for {} - Change this to your actual base URL", BASE_URL);
         this.baseUrl("https://demo.swedenconnect.se/idp");
       }
-      if (!this.getSettings().containsValue(REQUIRES_SIGNED_REQUESTS)) {
+      if (this.getSettings().get(REQUIRES_SIGNED_REQUESTS) == null) {
         this.requiresSignedRequests(Boolean.TRUE);
       }
       if (!this.getSettings().containsKey(IDP_CREDENTIALS)) {

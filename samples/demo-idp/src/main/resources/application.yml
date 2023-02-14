@@ -1,0 +1,21 @@
+server:
+  port: 8443
+  servlet:
+    context-path: /idp    
+  ssl:
+    enabled: true
+    key-store: classpath:ssl.jks
+    key-store-type: JKS
+    key-alias: local
+    key-store-password: secret
+    key-password: secret
+
+        
+logging:
+  level:
+    se:
+      swedenconnect:
+        spring:
+          saml: TRACE
+        
+

@@ -24,6 +24,8 @@ import java.util.function.Consumer;
 
 import org.springframework.util.Assert;
 
+import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
+
 /**
  * Base implementation for configuration settings.
  *
@@ -32,7 +34,7 @@ import org.springframework.util.Assert;
 public abstract class AbstractSettings implements Serializable {
 
   /** For serializing. */
-  private static final long serialVersionUID = -5041707454509443015L;
+  private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The settings. */
   private final Map<String, Object> settings;

@@ -13,25 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.authnrequest;
-
-import org.springframework.security.access.AccessDeniedException;
+package se.swedenconnect.spring.saml.idp.utils;
 
 /**
- * An exception class for reporting errors for SAML peers that are not found (i.e., do not exist in metadata).
- *
+ * Internal class used for serialization across SAML Identity Provider classes.
+ * 
  * @author Martin Lindström
  */
-public class Saml2PeerNotFoundException extends AccessDeniedException {
+public final class Saml2IdentityProviderVersion {
 
-  private static final long serialVersionUID = -6661466153961143558L;
+  private static final int MAJOR = 1;
+  private static final int MINOR = 0;
+  private static final int PATCH = 0;
 
-  public Saml2PeerNotFoundException(String msg) {
-    super(msg);
-  }
+  /**
+   * Global serialization value for SAML Identity Provider classes.
+   */
+  public static final long SERIAL_VERSION_UID = getVersion().hashCode();
 
-  public Saml2PeerNotFoundException(String msg, Throwable cause) {
-    super(msg, cause);
+  /**
+   * Gets the version string.
+   * 
+   * @return the version string
+   */
+  public static String getVersion() {
+    return MAJOR + "." + MINOR + "." + PATCH;
   }
 
 }

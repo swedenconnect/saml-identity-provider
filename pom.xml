@@ -210,6 +210,12 @@
         <artifactId>opensaml-swedish-eid</artifactId>
         <version>1.2.3</version>
       </dependency>
+      
+      <dependency>
+        <groupId>se.litsec.eidas</groupId>
+        <artifactId>eidas-opensaml4</artifactId>
+        <version>2.1.2</version>
+      </dependency>      
 
       <dependency>
         <groupId>org.projectlombok</groupId>

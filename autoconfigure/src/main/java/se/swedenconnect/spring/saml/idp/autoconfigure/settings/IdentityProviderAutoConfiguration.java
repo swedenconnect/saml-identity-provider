@@ -122,6 +122,7 @@ public class IdentityProviderAutoConfiguration {
               .template(this.properties.getMetadata().getTemplate())
               .cacheDuration(this.properties.getMetadata().getCacheDuration())
               .validityPeriod(this.properties.getMetadata().getValidityPeriod())
+              .entityCategories(this.properties.getMetadata().getEntityCategories())
               .build());
     }
     if (this.metadataProvider != null) {

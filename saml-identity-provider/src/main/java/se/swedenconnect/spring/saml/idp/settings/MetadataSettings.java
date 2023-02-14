@@ -16,10 +16,14 @@
 package se.swedenconnect.spring.saml.idp.settings;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
+
+import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
  * Settings for the IdP metadata.
@@ -28,7 +32,7 @@ import org.springframework.util.Assert;
  */
 public class MetadataSettings extends AbstractSettings {
 
-  private static final long serialVersionUID = -2653234811543805509L;
+  private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /**
    * Constructor.
@@ -79,6 +83,24 @@ public class MetadataSettings extends AbstractSettings {
    */
   public Duration getValidityPeriod() {
     return this.getSetting(SAML_METADATA_VALIDITY);
+  }
+
+  /**
+   * The declared entity categories, see <a href=
+   * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
+   * Categories for the Swedish eID Framework</a>. A {@link List} of {@link String}s.
+   */
+  public static final String SAML_METADATA_ENTITY_CATEGORIES = "entity-categories";
+
+  /**
+   * Gets the declared entity categories, see <a href=
+   * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
+   * Categories for the Swedish eID Framework</a>.
+   * 
+   * @return the entity category URI:s (may be an empty list)
+   */
+  public List<String> getEntityCategories() {
+    return this.getSetting(SAML_METADATA_ENTITY_CATEGORIES);
   }
 
   /**
@@ -138,15 +160,30 @@ public class MetadataSettings extends AbstractSettings {
     public Builder validityPeriod(final Duration validityPeriod) {
       return this.setting(SAML_METADATA_VALIDITY, validityPeriod);
     }
+    
+    /**
+     * Assigns the declared entity categories, see <a href=
+     * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
+     * Categories for the Swedish eID Framework</a>.
+     * 
+     * @param entityCategories the entity category URI:s
+     * @return the builder
+     */
+    public Builder entityCategories(final List<String> entityCategories) {
+      return this.setting(SAML_METADATA_ENTITY_CATEGORIES, entityCategories);
+    }    
 
     /** {@inheritDoc} */
     @Override
     protected void applyDefaultSettings() {
-      if (!this.getSettings().containsValue(SAML_METADATA_CACHE_DURATION)) {
+      if (this.getSettings().get(SAML_METADATA_CACHE_DURATION) == null) {
         this.cacheDuration(Duration.ofHours(24));
       }
-      if (!this.getSettings().containsValue(SAML_METADATA_VALIDITY)) {
+      if (this.getSettings().get(SAML_METADATA_VALIDITY) == null) {
         this.validityPeriod(Duration.ofDays(7));
+      }
+      if (this.getSettings().get(SAML_METADATA_ENTITY_CATEGORIES) == null) {
+        this.entityCategories(Collections.emptyList());
       }
     }
 
@@ -157,5 +194,5 @@ public class MetadataSettings extends AbstractSettings {
     }
 
   }
-  
+
 }

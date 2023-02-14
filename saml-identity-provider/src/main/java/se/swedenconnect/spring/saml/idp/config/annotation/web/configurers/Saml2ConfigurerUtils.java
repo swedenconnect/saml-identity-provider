@@ -25,6 +25,8 @@ import org.springframework.core.ResolvableType;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.util.StringUtils;
 
+import se.swedenconnect.opensaml.xmlsec.config.DefaultSecurityConfiguration;
+import se.swedenconnect.opensaml.xmlsec.config.SecurityConfiguration;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
@@ -45,6 +47,22 @@ class Saml2ConfigurerUtils {
       httpSecurity.setSharedObject(IdentityProviderSettings.class, identityProviderSettings);
     }
     return identityProviderSettings;
+  }
+
+  /**
+   * Gets the OpenSAML {@link SecurityConfiguration}. If none is available a default is created.
+   * 
+   * @param httpSecurity the HTTP security object
+   * @return a {@link SecurityConfiguration} object
+   */
+  static SecurityConfiguration getSecurityConfiguration(final HttpSecurity httpSecurity) {
+    SecurityConfiguration securityConfiguration =
+        httpSecurity.getSharedObject(SecurityConfiguration.class);
+    if (securityConfiguration == null) {
+      securityConfiguration = new DefaultSecurityConfiguration();
+      httpSecurity.setSharedObject(SecurityConfiguration.class, securityConfiguration);
+    }
+    return securityConfiguration;
   }
 
   static <T> T getBean(final HttpSecurity httpSecurity, final Class<T> type) {

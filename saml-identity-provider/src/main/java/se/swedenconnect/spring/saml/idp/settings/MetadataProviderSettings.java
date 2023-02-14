@@ -22,6 +22,8 @@ import java.util.Map;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
+import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
+
 /**
  * Settings for configuring SAML metadata providers (resolvers).
  * 
@@ -29,7 +31,7 @@ import org.springframework.util.Assert;
  */
 public class MetadataProviderSettings extends AbstractSettings {
 
-  private static final long serialVersionUID = 6711028875446387987L;
+  private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /**
    * Constructor.
@@ -204,9 +206,10 @@ public class MetadataProviderSettings extends AbstractSettings {
     /** {@inheritDoc} */
     @Override
     protected void applyDefaultSettings() {
-      if (!this.getSettings().containsValue(SAML_METADATA_PROVIDER_MDQ)) {
+      if (this.getSettings().get(SAML_METADATA_PROVIDER_MDQ) == null) {
         this.mdq(false);
       }
+      // TODO: Default to Sweden Connect prod?
     }
 
     /** {@inheritDoc} */

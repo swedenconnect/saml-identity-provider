@@ -25,6 +25,7 @@ import org.springframework.util.Assert;
 import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.security.credential.KeyStoreCredential;
 import se.swedenconnect.security.credential.PkiCredential;
+import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
  * Settings for Identity Provider credentials.
@@ -33,7 +34,7 @@ import se.swedenconnect.security.credential.PkiCredential;
  */
 public class CredentialSettings extends AbstractSettings {
 
-  private static final long serialVersionUID = 6616974038738634389L;
+  private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /**
    * Constructor.
@@ -165,7 +166,7 @@ public class CredentialSettings extends AbstractSettings {
      * @return the builder
      */
     public Builder defaultCredential(final PkiCredential defaultCredential) {
-      return this.setting(CredentialSettings.DEFAULT_CREDENTIAL, defaultCredential);
+      return this.setting(DEFAULT_CREDENTIAL, defaultCredential);
     }
 
     /**
@@ -175,7 +176,7 @@ public class CredentialSettings extends AbstractSettings {
      * @return the builder
      */
     public Builder signCredential(final PkiCredential signCredential) {
-      return this.setting(CredentialSettings.SIGN_CREDENTIAL, signCredential);
+      return this.setting(SIGN_CREDENTIAL, signCredential);
     }
 
     /**
@@ -185,7 +186,7 @@ public class CredentialSettings extends AbstractSettings {
      * @return the builder
      */
     public Builder futureSignCertificate(final X509Certificate futureSignCertificate) {
-      return this.setting(CredentialSettings.FUTURE_SIGN_CERTIFICATE, futureSignCertificate);
+      return this.setting(FUTURE_SIGN_CERTIFICATE, futureSignCertificate);
     }
 
     /**
@@ -195,7 +196,7 @@ public class CredentialSettings extends AbstractSettings {
      * @return the builder
      */
     public Builder encryptCredential(final PkiCredential encryptCredential) {
-      return this.setting(CredentialSettings.ENCRYPT_CREDENTIAL, encryptCredential);
+      return this.setting(ENCRYPT_CREDENTIAL, encryptCredential);
     }
 
     /**
@@ -205,8 +206,7 @@ public class CredentialSettings extends AbstractSettings {
      * @return the builder
      */
     public Builder previousEncryptCredential(final PkiCredential previousEncryptCredential) {
-      return this.setting(CredentialSettings.PREVIOUS_ENCRYPT_CREDENTIAL,
-          previousEncryptCredential);
+      return this.setting(PREVIOUS_ENCRYPT_CREDENTIAL, previousEncryptCredential);
     }
 
     /**
@@ -215,8 +215,7 @@ public class CredentialSettings extends AbstractSettings {
      * @return the credential or null if none has been assigned
      */
     public Builder metadataSignCredential(final PkiCredential metadataSignCredential) {
-      return this.setting(CredentialSettings.METADATA_SIGN_CREDENTIAL,
-          metadataSignCredential);
+      return this.setting(METADATA_SIGN_CREDENTIAL, metadataSignCredential);
     }
 
     /**
@@ -232,15 +231,15 @@ public class CredentialSettings extends AbstractSettings {
     /** {@inheritDoc} */
     @Override
     protected void applyDefaultSettings() {
-      if (!this.getSettings().containsValue(CredentialSettings.SIGN_CREDENTIAL)) {
-        if (!this.getSettings().containsValue(CredentialSettings.DEFAULT_CREDENTIAL)) {
-          log.warn("Using provided credential as default credential - Change this - DO NOT USE IN PRODUCTION");
+      if (this.getSettings().get(SIGN_CREDENTIAL) == null) {
+        if (this.getSettings().get(DEFAULT_CREDENTIAL) == null) {
+          log.warn("Using system provided credential as default credential - Change this - DO NOT USE IN PRODUCTION");
           this.defaultCredential(this.loadDefaultCredential());
         }
       }
-      if (!this.getSettings().containsValue(CredentialSettings.ENCRYPT_CREDENTIAL)) {
-        if (!this.getSettings().containsValue(CredentialSettings.DEFAULT_CREDENTIAL)) {
-          log.warn("Using provided credential as default credential - Change this - DO NOT USE IN PRODUCTION");
+      if (this.getSettings().get(ENCRYPT_CREDENTIAL) == null) {
+        if (this.getSettings().get(DEFAULT_CREDENTIAL) == null) {
+          log.warn("Using system provided credential as default credential - Change this - DO NOT USE IN PRODUCTION");
           this.defaultCredential(this.loadDefaultCredential());
         }
       }

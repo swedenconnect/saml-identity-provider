@@ -41,7 +41,7 @@ import net.shibboleth.utilities.java.support.xml.XMLParserException;
  */
 public class SerializableOpenSamlObject<T extends XMLObject> implements Serializable {
 
-  private static final long serialVersionUID = 3394153349544049274L;
+  private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   private T object;
   private final Class<T> type;

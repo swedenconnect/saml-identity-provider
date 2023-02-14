@@ -108,6 +108,11 @@
       <groupId>se.swedenconnect.opensaml</groupId>
       <artifactId>opensaml-swedish-eid</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>se.litsec.eidas</groupId>
+      <artifactId>eidas-opensaml4</artifactId>
+    </dependency>
 
     <dependency>
       <groupId>org.projectlombok</groupId>

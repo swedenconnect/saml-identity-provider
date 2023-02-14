@@ -36,6 +36,7 @@ saml:
   sp:
     entity-id: https://demo.swedenconnect.se/local-client
     registration-id: demo
+    idp-metadata-location: classpath:demo-idp-metadata.xml
     credential:
       resource: classpath:keys.jks
       type: JKS

@@ -16,6 +16,7 @@
 package se.swedenconnect.spring.saml.idp.demo;
 
 import java.io.File;
+import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -42,6 +43,7 @@ import se.swedenconnect.security.credential.utils.X509Utils;
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configuration.Saml2IdpConfiguration;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
+import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
 
 /**
  * Configuration class for the demo application.
@@ -112,7 +114,10 @@ public class IdpConfiguration {
             .location(new UrlResource("https://eid.svelegtest.se/metadata/mdx/role/sp.xml"))
             .backupLocation(new File("target/metadata-backup.xml"))
             .validationCertificate(X509Utils.decodeCertificate(new ClassPathResource("sandbox-metadata.crt").getInputStream()))
-            .build())                
+            .build())
+        .metadata(MetadataSettings.builder()
+            .entityCategories(List.of("http://id.elegnamnden.se/ec/1.0/loa3-pnr"))
+            .build())
         .build();
   }
 

@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp;
+package se.swedenconnect.spring.saml.idp.authnrequest;
 
-import org.springframework.security.access.AccessDeniedException;
+import java.util.Collection;
 
-public class InternalSaml2IdpException extends AccessDeniedException {
+/**
+ * An {@link AuthnContextProcessor} that handles requested authentication contexts with {@code Comparison} set to {@code exact}.
+ * 
+ * @author Martin Lindström
+ */
+public class ExactComparisonAuthnContextProcessor implements AuthnContextProcessor {
 
-  private static final long serialVersionUID = 4511560688310949802L;
-
-  public InternalSaml2IdpException(String msg) {
-    super(msg);
-  }
-
-  public InternalSaml2IdpException(String msg, Throwable cause) {
-    super(msg, cause);
+  @Override
+  public Collection<String> extractRequestedAuthnContextUris() {
+    return null;
   }
 
 }

@@ -13,20 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.authnrequest;
+package se.swedenconnect.spring.saml.idp.response;
 
-import org.springframework.security.access.AccessDeniedException;
+import org.junit.jupiter.api.Test;
 
-public class InvalidSaml2AuthnRequestException extends AccessDeniedException {
-
-  private static final long serialVersionUID = -8348490146212031957L;
-
-  public InvalidSaml2AuthnRequestException(String msg) {
-    super(msg);
-  }
-
-  public InvalidSaml2AuthnRequestException(String msg, Throwable cause) {
-    super(msg, cause);
+/**
+ * Test cases for DefaultResponsePage.
+ * 
+ * @author Martin Lindström
+ */
+public class DefaultResponsePageTest {
+  
+  @Test
+  public void testGenerateResponsePage() {
+    
+    final String page = DefaultResponsePage.generateResponsePage("https://www.example.com/sso", "RESPONSE", "RELAY-STATE");
+    System.out.println(page);
+    
   }
 
 }

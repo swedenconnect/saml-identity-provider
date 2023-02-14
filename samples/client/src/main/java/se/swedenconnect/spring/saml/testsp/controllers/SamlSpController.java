@@ -16,7 +16,6 @@
 package se.swedenconnect.spring.saml.testsp.controllers;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,11 +40,6 @@ public class SamlSpController extends BaseController {
 
   @GetMapping
   public ModelAndView home() {
-
-    System.out.println(this.src.getMessage("sp.msg.back", null, new Locale("sv")));
-    System.out.println(this.src.getMessage("sp.msg.back", null, new Locale("de")));
-    System.out.println(this.src.getMessage("sp.msg.back", null, new Locale("dk")));
-
     final ModelAndView mav = new ModelAndView("home");
     return mav;
   }

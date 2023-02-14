@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.context;
 
+import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
@@ -30,5 +31,12 @@ public interface Saml2IdpContext {
    * @return the IdP settings
    */
   IdentityProviderSettings getSettings();
+
+  /**
+   * Gets the {@link Saml2ResponseAttributes}.
+   * 
+   * @return the attributes needed to send response messages
+   */
+  Saml2ResponseAttributes getResponseAttributes();
 
 }
