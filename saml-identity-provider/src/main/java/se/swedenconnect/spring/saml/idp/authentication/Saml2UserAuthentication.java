@@ -15,50 +15,125 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
-import java.time.Instant;
 import java.util.Collections;
+import java.util.Objects;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
+import se.swedenconnect.spring.saml.idp.authnrequest.AuthenticationRequirements;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
- * An {@link Authentication} token that represents the authentication of a user. 
+ * An {@link Authentication} token that represents the authentication of a user. This will later be translated into a
+ * SAML Assertion.
  * 
  * @author Martin Lindström
  */
 public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
-  
-  private final Saml2AuthnRequestAuthenticationToken authnRequestToken;
 
-  public Saml2UserAuthentication(
-      final Saml2AuthnRequestAuthenticationToken authnRequest) {
+  /** The user details. */
+  private Saml2UserDetails userDetails;
+
+  /** Information about the AuthnRequest that led to the user being authenticated. */
+  private Saml2AuthnRequestAuthenticationToken authnRequestToken;
+
+  /** The authentication requirements deduced from the authentication request and IdP policy. */
+  private AuthenticationRequirements authnRequirements;
+
+  /**
+   * Constructor.
+   * 
+   * @param userDetails the user details
+   */
+  public Saml2UserAuthentication(final Saml2UserDetails userDetails) {
     super(Collections.emptyList());
-    this.authnRequestToken = authnRequest;
-    this.setAuthenticated(false);
+    this.setDetails(userDetails);
+    this.userDetails = Objects.requireNonNull(userDetails, "userDetails must not be null");
+    this.setAuthenticated(true);
   }
-  
-  public Instant getAuthnInstant() {
-    return null;
+
+  /**
+   * Maps to {@link #getSaml2UserDetails()}.
+   */
+  @Override
+  public Object getPrincipal() {
+    return this.userDetails;
   }
-  
-  
+
+  /**
+   * Gets the {@link Saml2UserDetails}.
+   * 
+   * @return the {@link Saml2UserDetails}
+   */
+  public Saml2UserDetails getSaml2UserDetails() {
+    return this.userDetails;
+  }
+
+  /**
+   * Will always return the empty string.
+   */
   @Override
   public Object getCredentials() {
     return "";
   }
 
-  @Override
-  public Object getPrincipal() {
-    return null;
-  }
-
+  /**
+   * Gets the authentication request token.
+   * 
+   * @return the authentication request token
+   */
   public Saml2AuthnRequestAuthenticationToken getAuthnRequestToken() {
     return this.authnRequestToken;
+  }
+
+  /**
+   * Assigns the authentication request token.
+   * 
+   * @param authnRequestToken the authentication request token
+   */
+  public void setAuthnRequestToken(
+      final Saml2AuthnRequestAuthenticationToken authnRequestToken) {
+    this.authnRequestToken = authnRequestToken;
+  }
+
+  /**
+   * Clears the authentication request token. This is done when the SAML response has been sent. The
+   * {@link Saml2UserAuthentication} object will be persisted, and there is no need to carry around the authentication
+   * request information.
+   */
+  public void clearAuthnRequestToken() {
+    this.authnRequestToken = null;
+  }
+
+  /**
+   * Gets the authentication requirements.
+   * 
+   * @return the authentication requirements
+   */
+  public AuthenticationRequirements getAuthnRequirements() {
+    return this.authnRequirements;
+  }
+
+  /**
+   * Assigns the authentication requirements.
+   * 
+   * @param authnRequirements the authentication requirements
+   */
+  public void setAuthnRequirements(final AuthenticationRequirements authnRequirements) {
+    this.authnRequirements = authnRequirements;
+  }
+
+  /**
+   * Clears the authentication requirements. This is done when the SAML response has been sent. The
+   * {@link Saml2UserAuthentication} object will be persisted, and there is no need to carry around non-needed
+   * information.
+   */
+  public void clearAuthnRequirements() {
+    this.authnRequirements = null;
   }
 
 }

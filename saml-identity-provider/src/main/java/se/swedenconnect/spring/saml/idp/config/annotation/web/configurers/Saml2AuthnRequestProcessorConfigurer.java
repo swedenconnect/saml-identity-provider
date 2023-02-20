@@ -32,7 +32,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -46,6 +45,7 @@ import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestSign
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestValidator;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2AuthnRequestProcessingFilter;
+import se.swedenconnect.spring.saml.idp.web.filters.Saml2ErrorResponseProcessingFilter;
 
 /**
  * A configurer for the processing of SAML2 {@code AuthnRequest} messages.
@@ -206,7 +206,7 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
       filter.setAuthenticationSuccessHandler(this.authenticationSuccessHandler);
     }
 
-    httpSecurity.addFilterBefore(postProcess(filter), AbstractPreAuthenticatedProcessingFilter.class);
+    httpSecurity.addFilterAfter(this.postProcess(filter), Saml2ErrorResponseProcessingFilter.class);
   }
 
   /** {@inheritDoc} */

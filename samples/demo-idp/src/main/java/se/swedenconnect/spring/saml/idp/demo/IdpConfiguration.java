@@ -39,8 +39,12 @@ import se.swedenconnect.opensaml.OpenSAMLInitializer;
 import se.swedenconnect.opensaml.OpenSAMLSecurityDefaultsConfig;
 import se.swedenconnect.opensaml.OpenSAMLSecurityExtensionConfig;
 import se.swedenconnect.opensaml.sweid.xmlsec.config.SwedishEidSecurityConfiguration;
+import se.swedenconnect.security.credential.KeyStoreCredential;
+import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.security.credential.utils.X509Utils;
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configuration.Saml2IdpConfiguration;
+import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurer;
+import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
@@ -62,6 +66,10 @@ public class IdpConfiguration {
     // Apply the default configuration for the IdP.
     //
     Saml2IdpConfiguration.applyDefaultSecurity(http);
+
+    http.getConfigurer(Saml2IdpConfigurer.class)
+        // Override the HTML page that is used to post back the SAML response with our own ...
+        .responseProcessor(rp -> rp.responsePage("/custom-post"));
 
 //    http
 //        .anonymous().disable()
@@ -106,17 +114,33 @@ public class IdpConfiguration {
     return new InMemoryUserDetailsManager(userDetails);
   }
 
+  private PkiCredential getCredential(final String alias) throws Exception {
+    KeyStoreCredential cred = new KeyStoreCredential(new ClassPathResource("idp-credentials.jks"),
+        "secret".toCharArray(), alias, "secret".toCharArray());
+    cred.afterPropertiesSet();
+    return cred;
+  }
+
   @Bean
   IdentityProviderSettings identityProviderSettings() throws Exception {
     return IdentityProviderSettings.builder()
         .entityId("https://demo.swedenconnect.se/idp")
+        .credentials(CredentialSettings.builder()
+            .signCredential(this.getCredential("sign"))
+            .encryptCredential(this.getCredential("encrypt"))
+            .metadataSignCredential(this.getCredential("metadata"))
+            .build())
         .metadataProviderConfiguration(MetadataProviderSettings.builder()
             .location(new UrlResource("https://eid.svelegtest.se/metadata/mdx/role/sp.xml"))
             .backupLocation(new File("target/metadata-backup.xml"))
-            .validationCertificate(X509Utils.decodeCertificate(new ClassPathResource("sandbox-metadata.crt").getInputStream()))
+            .validationCertificate(
+                X509Utils.decodeCertificate(new ClassPathResource("sandbox-metadata.crt").getInputStream()))
             .build())
         .metadata(MetadataSettings.builder()
-            .entityCategories(List.of("http://id.elegnamnden.se/ec/1.0/loa3-pnr"))
+            .entityCategories(List.of(
+                "http://id.elegnamnden.se/ec/1.0/loa3-pnr",
+                "http://id.swedenconnect.se/ec/1.0/loa3-name", 
+                "http://id.elegnamnden.se/sprop/1.0/mobile-auth"))
             .build())
         .build();
   }

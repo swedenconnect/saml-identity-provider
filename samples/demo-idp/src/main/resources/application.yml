@@ -18,4 +18,23 @@ logging:
         spring:
           saml: TRACE
         
+demo-idp:
+  entity-id: https://demo.swedenconnect.se/idp
+  base-url: https://local.dev.swedenconnect.se:8443/idp
+  credentials:
+    sign:
+      resource: classpath:idp-credentials.jks
+      alias: sign
+      password: secret
+      type: JKS
+    encrypt:
+      resource: classpath:idp-credentials.jks
+      alias: encrypt
+      password: secret
+      type: JKS
+    metadata-sign:
+      resource: classpath:idp-credentials.jks
+      alias: metadata
+      password: secret
+      type: JKS
 

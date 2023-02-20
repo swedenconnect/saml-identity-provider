@@ -77,14 +77,14 @@ public class DefaultResponsePage {
     builder.append("</head>").append(NEWLINE);
     builder.append("<body onload=\"document.forms[0].submit()\">").append(NEWLINE);
     builder.append("  <form action=\"" + destination + "\" method=\"POST\">").append(NEWLINE);
-    builder.append("    <div>").append(NEWLINE);
-    builder.append("      <input type=\"hidden\" name=\"SAMLResponse\" value=\"" + samlResponse + "\" />").append(NEWLINE);
+    builder.append("    <input type=\"hidden\" name=\"SAMLResponse\" value=\"" + samlResponse + "\" />").append(NEWLINE);
     if (StringUtils.hasText(relayState)) {
-      builder.append("      <input type=\"hidden\" name=\"RelayState\" value=\"" + relayState + "\" />").append(NEWLINE);
+      builder.append("    <input type=\"hidden\" name=\"RelayState\" value=\"" + relayState + "\" />").append(NEWLINE);
     }
-    builder.append("    </div>").append(NEWLINE);
-
-    // TODO: Handle no javascript case ...
+    builder.append("    <noscript>").append(NEWLINE);
+    builder.append("      <p>Your web browser does not have JavaScript enabled. Click the \"Continue\" button below to proceed.</p>").append(NEWLINE);
+    builder.append("      <p><input type=\"submit\" value=\"Continue\" /></p>").append(NEWLINE);
+    builder.append("    </noscript>").append(NEWLINE);
 
     builder.append("  </form>").append(NEWLINE);
     builder.append("</body>").append(NEWLINE);

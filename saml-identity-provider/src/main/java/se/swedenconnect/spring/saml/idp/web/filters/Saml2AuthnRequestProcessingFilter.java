@@ -19,9 +19,8 @@ import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import lombok.extern.slf4j.Slf4j;
-import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
+import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
-import se.swedenconnect.spring.saml.idp.authnrequest.Saml2UserAuthenticationInputToken;
 
 /**
  * A {@code Filter} that processes SAML {@code AuthnRequest} messages.
@@ -73,31 +72,23 @@ public class Saml2AuthnRequestProcessingFilter extends OncePerRequestFilter {
     // Convert the incoming AuthnRequest ...
     //
     final Authentication authnRequest = this.authenticationConverter.convert(request);
-    
+
     if (authnRequest != null && Saml2AuthnRequestAuthenticationToken.class.isInstance(authnRequest)) {
-      
-      // Check for possible authentication token that may be used for SSO.
-      //
-      final Authentication userAuthentication = SecurityContextHolder.getContext().getAuthentication();
-      if (userAuthentication != null && userAuthentication.isAuthenticated()) {
-        Saml2AuthnRequestAuthenticationToken.class.cast(authnRequest).setAuthenticatedUser(userAuthentication);
-      }
-      
+
       // Verify the authentication request and produce an input token for user authentication ...
       // Also check for possible SSO ...
       //
       final Authentication token = this.authenticationManager.authenticate(authnRequest);
       if (Saml2UserAuthenticationInputToken.class.isInstance(token)) {
-        // The authentication request was verified, but we haven't authenticated the user yet.
-        // Save this input token and continue the filter chain ...
+
+        // Check for possible authentication token that may be used for SSO.
         //
-        this.authenticationSuccessHandler.onAuthenticationSuccess(request, response, token);        
+        final Authentication userAuthentication = SecurityContextHolder.getContext().getAuthentication();
+        if (userAuthentication != null && userAuthentication.isAuthenticated()) {
+          Saml2UserAuthenticationInputToken.class.cast(token).setUserAuthentication(userAuthentication);
+        }
       }
-      else if (Saml2UserAuthentication.class.isInstance(token)) {
-        // OK, it seems like we got an authenticated user ...
-        //
-        this.authenticationSuccessHandler.onAuthenticationSuccess(request, response, token);
-      }
+      this.authenticationSuccessHandler.onAuthenticationSuccess(request, response, token);
     }
     filterChain.doFilter(request, response);
   }

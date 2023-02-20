@@ -140,6 +140,20 @@ public class IdentityProviderSettings extends AbstractSettings {
   }
 
   /**
+   * The Identity Provider Assertion settings.
+   */
+  public static final String IDP_ASSERTION_SETTINGS = SETTINGS_PREFIX.concat("assertion");
+
+  /**
+   * Gets the Identity Provider Assertion settings.
+   * 
+   * @return the Identity Provider Assertion settings
+   */
+  public AssertionSettings getAssertionSettings() {
+    return this.getSetting(IDP_ASSERTION_SETTINGS);
+  }
+
+  /**
    * The Identity Provider metadata.
    */
   public static final String IDP_METADATA = SETTINGS_PREFIX.concat("metadata");
@@ -288,6 +302,16 @@ public class IdentityProviderSettings extends AbstractSettings {
     }
 
     /**
+     * Assigns the Identity Provider Assertion settings.
+     * 
+     * @param assertionSettings the Identity Provider Assertion settings
+     * @return the builder
+     */
+    public Builder assertionSettings(final AssertionSettings assertionSettings) {
+      return this.setting(IDP_ASSERTION_SETTINGS, assertionSettings);
+    }
+
+    /**
      * Assigns the IdP metadata settings.
      *
      * @param metadata the IdP metadata settings
@@ -354,6 +378,9 @@ public class IdentityProviderSettings extends AbstractSettings {
       }
       if (!this.getSettings().containsKey(IDP_ENDPOINTS)) {
         this.endpoints(EndpointSettings.builder().build());
+      }
+      if (!this.getSettings().containsKey(IDP_ASSERTION_SETTINGS)) {
+        this.assertionSettings(AssertionSettings.builder().build());
       }
       if (!this.getSettings().containsKey(IDP_METADATA)) {
         this.metadata(MetadataSettings.builder().build());

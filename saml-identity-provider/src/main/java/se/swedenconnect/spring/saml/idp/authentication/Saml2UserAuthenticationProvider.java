@@ -15,11 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
-import java.util.List;
-
 import org.springframework.security.authentication.AuthenticationProvider;
-
-import se.swedenconnect.spring.saml.idp.authnrequest.Saml2UserAuthenticationInputToken;
 
 /**
  * Interface for an {@link AuthenticationProvider} that implements SAML2 Identity Provider user authentication. The
@@ -29,20 +25,6 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2UserAuthenticationInpu
  * @author Martin Lindström
  */
 public interface Saml2UserAuthenticationProvider extends AuthenticationProvider {
-
-  /**
-   * Gets a list of URI:s representing the authentication context URI:s that supported by this IdP.
-   * 
-   * @return a list of authentication context URI:s
-   */
-  List<String> getAssuranceCertificationUris();
-
-  /**
-   * Gets a list of entity category URI:s that this IdP declares.
-   * 
-   * @return a list of entity category URI:s
-   */
-  List<String> getEntityCategories();
 
   /**
    * Supports {@link Saml2UserAuthenticationInputToken}.

@@ -18,13 +18,13 @@ package se.swedenconnect.spring.saml.idp.config.annotation.web.configurers;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseHandler;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
-import se.swedenconnect.spring.saml.idp.web.filters.Saml2AuthnRequestProcessingFilter;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2ErrorResponseProcessingFilter;
 
 /**
@@ -63,10 +63,12 @@ public class Saml2ResponseConfigurer extends AbstractSaml2Configurer {
    * &lt;/head&gt;
    * &lt;body onload="document.forms[0].submit()"&gt;
    *   &lt;form action="https://www.example.com/sso" method="POST"&gt;
-   *     &lt;div&gt;
-   *       &lt;input type="hidden" name="SAMLResponse" value="..." /&gt;
-   *       &lt;input type="hidden" name="RelayState" value="..." /&gt;
-   *     &lt;/div&gt;
+   *     &lt;input type="hidden" name="SAMLResponse" value="..." /&gt;
+   *     &lt;input type="hidden" name="RelayState" value="..." /&gt;
+   *     &lt;noscript&gt;
+   *       &lt;p/&gt;Your web browser does not have JavaScript enabled. Click the "Continue" button below to proceed.&lt;/p/&gt;
+   *       &lt;p/&gt;&lt;input type="submit" value="Continue" /&gt;&lt;/p/&gt;
+   *     &lt;/noscript/&gt;
    *   &lt;/form&gt;
    * &lt;/body&gt;
    * &lt;/html&gt;
@@ -107,11 +109,11 @@ public class Saml2ResponseConfigurer extends AbstractSaml2Configurer {
     if (this.responsePage != null) {
       responseHandler.setResponsePage(this.responsePage);
     }
-    
-    final Saml2ErrorResponseProcessingFilter filter = 
+
+    final Saml2ErrorResponseProcessingFilter filter =
         new Saml2ErrorResponseProcessingFilter(this.getRequestMatcher(), responseHandler);
-    
-    httpSecurity.addFilterBefore(postProcess(filter), Saml2AuthnRequestProcessingFilter.class);
+
+    httpSecurity.addFilterAfter(this.postProcess(filter), ExceptionTranslationFilter.class);
   }
 
   /** {@inheritDoc} */

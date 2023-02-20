@@ -54,7 +54,7 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
    * @param requestMatcher the request matcher
    * @param responseHandler the response handler
    */
-  public Saml2ErrorResponseProcessingFilter(final RequestMatcher requestMatcher,
+  public Saml2ErrorResponseProcessingFilter(final RequestMatcher requestMatcher,      
       final Saml2ResponseHandler responseHandler) {
     this.requestMatcher = Objects.requireNonNull(requestMatcher, "requestMatcher must not be null");
     this.responseHandler = Objects.requireNonNull(responseHandler, "responseHandler must not be null");

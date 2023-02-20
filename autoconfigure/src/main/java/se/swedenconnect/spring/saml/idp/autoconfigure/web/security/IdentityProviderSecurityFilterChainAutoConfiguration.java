@@ -52,7 +52,10 @@ public class IdentityProviderSecurityFilterChainAutoConfiguration {
         .authenticationEntryPoint(
             new LoginUrlAuthenticationEntryPoint("/login")));
 
-    return http.build();
+    SecurityFilterChain chain = http.build();
+    
+    return chain;
+//    return http.build();
   }
 
 }

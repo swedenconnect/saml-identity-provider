@@ -35,7 +35,7 @@ public class EndpointSettings extends AbstractSettings {
    *
    * @param settings the settings
    */
-  private EndpointSettings(Map<String, Object> settings) {
+  private EndpointSettings(final Map<String, Object> settings) {
     super(settings);
   }
 

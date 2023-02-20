@@ -223,11 +223,11 @@ public class Saml2IdpConfigurer
    */
   private Map<Class<? extends AbstractSaml2Configurer>, AbstractSaml2Configurer> createConfigurers() {
     final Map<Class<? extends AbstractSaml2Configurer>, AbstractSaml2Configurer> configurers = new LinkedHashMap<>();
-    configurers.put(Saml2IdpMetadataEndpointConfigurer.class,
-        new Saml2IdpMetadataEndpointConfigurer(this::postProcess));
-    configurers.put(Saml2AuthnRequestProcessorConfigurer.class,
-        new Saml2AuthnRequestProcessorConfigurer(this::postProcess));
+    configurers.put(Saml2IdpMetadataEndpointConfigurer.class, new Saml2IdpMetadataEndpointConfigurer(this::postProcess));
     configurers.put(Saml2ResponseConfigurer.class, new Saml2ResponseConfigurer(this::postProcess));
+    configurers.put(Saml2AuthnRequestProcessorConfigurer.class, new Saml2AuthnRequestProcessorConfigurer(this::postProcess));
+    configurers.put(Saml2UserAuthenticationConfigurer.class, new Saml2UserAuthenticationConfigurer(this::postProcess));    
+    
 //    configurers.put(OAuth2ClientAuthenticationConfigurer.class, new OAuth2ClientAuthenticationConfigurer(this::postProcess));
 //    configurers.put(OAuth2AuthorizationServerMetadataEndpointConfigurer.class, new OAuth2AuthorizationServerMetadataEndpointConfigurer(this::postProcess));
 //    configurers.put(OAuth2AuthorizationEndpointConfigurer.class, new OAuth2AuthorizationEndpointConfigurer(this::postProcess));

@@ -28,7 +28,7 @@ public class DefaultResponsePageTest {
   public void testGenerateResponsePage() {
     
     final String page = DefaultResponsePage.generateResponsePage("https://www.example.com/sso", "RESPONSE", "RELAY-STATE");
-    System.out.println(page);
+    // System.out.println(page);
     
   }
 

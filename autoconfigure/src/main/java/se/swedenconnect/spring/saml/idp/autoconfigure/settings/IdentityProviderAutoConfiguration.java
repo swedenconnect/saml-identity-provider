@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Import;
 import lombok.Setter;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurer;
+import se.swedenconnect.spring.saml.idp.settings.AssertionSettings;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.EndpointSettings;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
@@ -115,6 +116,14 @@ public class IdentityProviderAutoConfiguration {
               .hokPostAuthnEndpoint(this.properties.getEndpoints().getHokPostAuthn())
               .metadataEndpoint(this.properties.getEndpoints().getMetadata())
               .build());
+    }
+    if (this.properties.getAssertions() != null) {
+      builder.assertionSettings(
+          AssertionSettings.builder()
+            .encryptAssertions(this.properties.getAssertions().getEncrypt())
+            .notBeforeDuration(this.properties.getAssertions().getNotBefore())
+            .notOnOrAfterDuration(this.properties.getAssertions().getNotAfter())
+            .build());            
     }
     if (this.properties.getMetadata() != null) {
       builder.metadata(

@@ -68,6 +68,11 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
    * The SAML IdP endpoints.
    */
   private EndpointsConfigurationProperties endpoints;
+  
+  /**
+   * Assertion settings.
+   */
+  private AssertionSettingsConfigurationProperties assertions;
 
   /**
    * The IdP metadata.
@@ -91,6 +96,9 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
     }
     if (this.metadata == null) {
       log.debug("saml.idp.metadata.* is not assigned, will apply default values");
+    }
+    if (this.assertions == null) {
+      log.debug("saml.idp.assertions.* is not assigned, will apply default values");
     }
   }
 

@@ -44,6 +44,10 @@ import se.swedenconnect.spring.saml.idp.attributes.PrincipalSelectionProcessor;
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttribute;
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttributeProcessor;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
+import se.swedenconnect.spring.saml.idp.attributes.nameid.DefaultNameIDGeneratorFactory;
+import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGenerator;
+import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
+import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AssertionConsumerServiceValidator;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestReplayValidator;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestValidator;
@@ -92,6 +96,9 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
    */
   private PrincipalSelectionProcessor principalSelectionProcessor;
 
+  /** The {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator} instance. */
+  private NameIDGeneratorFactory nameIDGeneratorFactory;
+
   /**
    * Constructor.
    * 
@@ -115,6 +122,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
         new EidasRequestedAttributeProcessor(), new EntityCategoryRequestedAttributeProcessor(settings)));
     this.signatureMessageExtensionExtractor = new DefaultSignatureMessageExtensionExtractor(settings);
     this.principalSelectionProcessor = new DefaultPrincipalSelectionProcessor();
+    this.nameIDGeneratorFactory = new DefaultNameIDGeneratorFactory(settings);
   }
 
   /**
@@ -191,6 +199,16 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
         Objects.requireNonNull(principalSelectionProcessor, "principalSelectionProcessor must not be null");
   }
 
+  /**
+   * Assigns a custom {@link NameIDGeneratorFactory}. The default is {@link DefaultNameIDGeneratorFactory}.
+   * 
+   * @param nameIDGeneratorFactory the custom NameID generator factory
+   */
+  public void setNameIDGeneratorFactory(final NameIDGeneratorFactory nameIDGeneratorFactory) {
+    this.nameIDGeneratorFactory =
+        Objects.requireNonNull(nameIDGeneratorFactory, "nameIDGeneratorFactory must not be null");
+  }
+
   /** {@inheritDoc} */
   @Override
   public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
@@ -208,48 +226,47 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
     Assert.notNull(token.getAssertionConsumerServiceUrl(),
         "ACS validator did not assign assertionConsumerServiceUrl on token");
 
-    try {
+    final Saml2ResponseAttributes responseAttributes = Saml2IdpContextHolder.getContext().getResponseAttributes();
+    responseAttributes.setRelayState(token.getRelayState());
+    responseAttributes.setInResponseTo(token.getAuthnRequest().getID());
+    responseAttributes.setDestination(token.getAssertionConsumerServiceUrl());
+    responseAttributes.setPeerMetadata(token.getPeerMetadata());
 
-      // Handle the signature on the AuthnRequest ...
-      //
-      this.signatureValidator.validate(token);
+    // Handle the signature on the AuthnRequest ...
+    //
+    this.signatureValidator.validate(token);
 
-      // OK, proceed checking the message
-      // TODO
+    // OK, proceed checking the message
+    // TODO
 
-      // Get attribute consumer service
-      //
+    // Get attribute consumer service
+    //
 //    SAMLAddAttributeConsumingServiceHandler
-      // TODO: handle eIDAS requested attributes extension ...
+    // TODO: handle eIDAS requested attributes extension ...
 
-      // SSO check?
-      // SecurityContextHolder.getContext().
+    // SSO check?
+    // SecurityContextHolder.getContext().
 
-      // Put together authentication requirements for the user authentication to handle ...
-      //
+    // If encrypted assertions are required. Make sure the peer has such a cert ...
 
-      // We are done using the OpenSAML context, erase it ...
-      token.setMessageContext(null);
+    // Put together authentication requirements for the user authentication to handle ...
+    //
 
-      token.setAuthenticated(true);
+    // Check the requested NameIDPolicy, and if correct, set up a NameIDGenerator ...
+    //
+    final NameIDGenerator nameIDGenerator =
+        this.nameIDGeneratorFactory.getNameIDGenerator(token.getAuthnRequest(), token.getPeerMetadata());
+    token.setNameIDGenerator(nameIDGenerator);
 
-      final AuthenticationRequirements requirements = this.createAuthenticationRequirements(token);
-            
-      final Saml2UserAuthenticationInputToken inputToken = new Saml2UserAuthenticationInputToken(token, requirements);
-      
-      return inputToken;
-    }
-    catch (final Saml2ErrorStatusException e) {
-      // Make sure the error handler knows where to send the error response ...
-      //
-      final Saml2ResponseAttributes responseAttributes = Saml2IdpContextHolder.getContext().getResponseAttributes();
-      responseAttributes.setRelayState(token.getRelayState());
-      responseAttributes.setInResponseTo(token.getAuthnRequest().getID());
-      responseAttributes.setDestination(token.getAssertionConsumerServiceUrl());
-      responseAttributes.setPeerMetadata(token.getPeerMetadata());
-      
-      throw e;
-    }
+    final AuthenticationRequirements requirements = this.createAuthenticationRequirements(token);
+    token.setAuthenticationRequirements(requirements);
+
+    // We are done using the OpenSAML context, erase it ...
+    token.setMessageContext(null);
+
+    token.setAuthenticated(true);
+
+    return new Saml2UserAuthenticationInputToken(token, requirements);
   }
 
   protected AuthenticationRequirements createAuthenticationRequirements(

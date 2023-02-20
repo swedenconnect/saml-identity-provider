@@ -52,8 +52,13 @@ public enum Saml2ErrorStatus {
   /**
    * Invalid AuthnRequest. 
    */
-  INVALID_AUTHNREQUEST(StatusCode.REQUESTER, StatusCode.REQUEST_UNSUPPORTED, "idp.error.status.invalid-request", "Invalid authentication request");
-      
+  INVALID_AUTHNREQUEST(StatusCode.REQUESTER, StatusCode.REQUEST_UNSUPPORTED, "idp.error.status.invalid-request", "Invalid authentication request"),
+
+  /**
+   * Invalid NameID policy given in AuthnRequest.
+   */
+  INVALID_NAMEID(StatusCode.REQUESTER, StatusCode.INVALID_NAMEID_POLICY, "idp.error.status.invalid-nameid", "Invalid NameIDPolicy in authentication request");
+        
   /**
    * Gets the main status code.
    * 

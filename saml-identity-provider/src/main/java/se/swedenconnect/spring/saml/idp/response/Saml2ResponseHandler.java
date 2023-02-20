@@ -16,6 +16,7 @@
 package se.swedenconnect.spring.saml.idp.response;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 import java.util.Optional;
@@ -28,24 +29,31 @@ import javax.servlet.http.HttpSession;
 
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
+import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.EncryptedAssertion;
 import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.core.Status;
+import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.SecurityConfigurationSupport;
+import org.opensaml.xmlsec.encryption.EncryptedData;
+import org.opensaml.xmlsec.encryption.support.EncryptionException;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.util.StringUtils;
-import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.codec.Base64Support;
 import net.shibboleth.utilities.java.support.codec.EncodingException;
+import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 import se.swedenconnect.opensaml.common.utils.SamlLog;
+import se.swedenconnect.opensaml.xmlsec.encryption.support.SAMLObjectEncrypter;
 import se.swedenconnect.opensaml.xmlsec.signature.support.SAMLObjectSigner;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
@@ -76,6 +84,9 @@ public class Saml2ResponseHandler {
   /** The IdP signature credential. */
   private Credential signatureCredential;
 
+  /** For encrypting assertions. */
+  private final SAMLObjectEncrypter samlEncrypter;
+
   /**
    * Constructor.
    * 
@@ -93,6 +104,49 @@ public class Saml2ResponseHandler {
     this.signatureCredential = OpenSamlCredential.class.isInstance(cred)
         ? OpenSamlCredential.class.cast(cred)
         : new OpenSamlCredential(cred);
+
+    try {
+      this.samlEncrypter = new SAMLObjectEncrypter();
+    }
+    catch (final ComponentInitializationException e) {
+      throw new SecurityException("Failed to initialize encrypter", e);
+    }
+  }
+
+  /**
+   * Sends a SAML response including the supplied {@link Assertion}.
+   * <p>
+   * If the IdP is configured to encrypt assertions, the supplied assertion will be encrypted for the recipient.
+   * </p>
+   * 
+   * @param request the HTTP servlet request
+   * @param response the HTTP servlet response
+   * @param assertion the {@link Assertion} to include in the response
+   * @throws UnrecoverableSaml2IdpException for send errors
+   */
+  public void sendSamlResponse(
+      final HttpServletRequest request, final HttpServletResponse response, final Assertion assertion)
+      throws UnrecoverableSaml2IdpException {
+
+    final Response samlResponse = (Response) XMLObjectSupport.buildXMLObject(Response.DEFAULT_ELEMENT_NAME);
+
+    final Status status = (Status) XMLObjectSupport.buildXMLObject(Status.DEFAULT_ELEMENT_NAME);
+    final StatusCode sc = (StatusCode) XMLObjectSupport.buildXMLObject(StatusCode.DEFAULT_ELEMENT_NAME);
+    sc.setValue(StatusCode.SUCCESS);
+    status.setStatusCode(sc);
+    samlResponse.setStatus(status);
+
+    if (this.settings.getAssertionSettings().getEncryptAssertions()) {
+      log.debug("IdP is configured to encrypt assertions, encrypting '{}' ...", assertion.getID());
+
+      final EncryptedAssertion encryptedAssertion = this.encryptAssertion(assertion);
+      samlResponse.getEncryptedAssertions().add(encryptedAssertion);
+    }
+    else {
+      samlResponse.getAssertions().add(assertion);
+    }
+
+    this.sendSamlResponse(samlResponse, request, response);
   }
 
   /**
@@ -107,6 +161,25 @@ public class Saml2ResponseHandler {
       final HttpServletRequest request, final HttpServletResponse response, final Saml2ErrorStatusException error)
       throws UnrecoverableSaml2IdpException {
 
+    final Response samlResponse = (Response) XMLObjectSupport.buildXMLObject(Response.DEFAULT_ELEMENT_NAME);
+    samlResponse.setStatus(error.getStatus());
+
+    this.sendSamlResponse(samlResponse, request, response);
+  }
+
+  /**
+   * Sends a SAML {@link Response} message.
+   * 
+   * @param samlResponse the {@link Response} message to fill in, and send
+   * @param request the HTTP servlet request
+   * @param response the HTTP servlet response
+   * @param error the SAML error
+   * @throws UnrecoverableSaml2IdpException for send errors
+   */
+  private void sendSamlResponse(
+      final Response samlResponse, final HttpServletRequest request, final HttpServletResponse response)
+      throws UnrecoverableSaml2IdpException {
+
     // Make sure that we know where to send the Response message ...
     //
     final Saml2ResponseAttributes responseAttributes = Saml2IdpContextHolder.getContext().getResponseAttributes();
@@ -116,14 +189,12 @@ public class Saml2ResponseHandler {
 
     // Build Response message
     //
-    final Response samlResponse = (Response) XMLObjectSupport.buildXMLObject(Response.DEFAULT_ELEMENT_NAME);
-    samlResponse.setID(UUID.randomUUID().toString());
+    samlResponse.setID(UUID.randomUUID().toString()); // TODO
     samlResponse.setDestination(responseAttributes.getDestination());
     samlResponse.setInResponseTo(responseAttributes.getInResponseTo());
     final Issuer issuer = (Issuer) XMLObjectSupport.buildXMLObject(Issuer.DEFAULT_ELEMENT_NAME);
     issuer.setValue(this.settings.getEntityId());
     samlResponse.setIssuer(issuer);
-    samlResponse.setStatus(error.getStatus());
 
     // Sign the Response
     //
@@ -132,7 +203,7 @@ public class Saml2ResponseHandler {
     // Marshall and encode ...
     //
     final String encodedSamlResponse = this.encodeResponse(samlResponse);
-    
+
     log.trace("Sending SAML Response: {}", SamlLog.toStringSafe(samlResponse));
 
     // Post the response ...
@@ -163,6 +234,35 @@ public class Saml2ResponseHandler {
 
       throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
           "Failed to sign Response message", e);
+    }
+  }
+
+  /**
+   * Encrypts the supplied {@link Assertion}.
+   * 
+   * @param assertion the assertion to encrypt
+   * @return an {@link EncryptedAssertion}
+   * @throws UnrecoverableSaml2IdpException for unrecoverable errors
+   */
+  private EncryptedAssertion encryptAssertion(final Assertion assertion) throws UnrecoverableSaml2IdpException {
+    try {
+      final EncryptedAssertion encryptedAssertion =
+          (EncryptedAssertion) XMLObjectSupport.buildXMLObject(EncryptedAssertion.DEFAULT_ELEMENT_NAME);
+
+      final Saml2ResponseAttributes responseAttributes = Saml2IdpContextHolder.getContext().getResponseAttributes();
+      if (responseAttributes.getPeerMetadata() == null) {
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "No response data available");
+      }
+
+      final EncryptedData encryptedData =
+          this.samlEncrypter.encrypt(assertion, new SAMLObjectEncrypter.Peer(responseAttributes.getPeerMetadata()));
+      encryptedAssertion.setEncryptedData(encryptedData);
+
+      return encryptedAssertion;
+
+    }
+    catch (final EncryptionException e) {
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to encrypt assertion", e);
     }
   }
 
@@ -231,7 +331,7 @@ public class Saml2ResponseHandler {
     if (responsePage == null) {
       this.responsePageEntryPoint = null;
       return;
-    }     
+    }
     this.responsePageEntryPoint = new SamlResponseEntryPoint(responsePage);
     this.responsePageEntryPoint.setForceHttps(true);
     this.responsePageEntryPoint.setUseForward(true);
@@ -285,14 +385,22 @@ public class Saml2ResponseHandler {
       // Clear the session, we don't need the parameters anymore.
       session.removeAttribute(RESPONSE_PARAMETERS_SESSION_NAME);
 
-      final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url)
-          .queryParam("destination", responseParameters.getDestination())
-          .queryParam("SAMLResponse", responseParameters.getSamlResponse());
+      StringBuilder sb = new StringBuilder(url);
+      sb.append(url.contains("?") ? '&' : '?').append("destination=")
+          .append(URLEncoder.encode(responseParameters.getDestination(), StandardCharsets.UTF_8))
+          .append("&SAMLResponse=")
+          .append(URLEncoder.encode(responseParameters.getSamlResponse(), StandardCharsets.UTF_8));
       if (StringUtils.hasText(responseParameters.getRelayState())) {
-        builder.queryParam("RelayState", responseParameters.getRelayState());
+        sb.append("&RelayState=" + URLEncoder.encode(responseParameters.getRelayState(), StandardCharsets.UTF_8));
       }
 
-      return builder.toUriString();
+      return sb.toString();
+//      final UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(url)
+//          .queryParam("destination", responseParameters.getDestination())
+//          .queryParam("SAMLResponse", responseParameters.getSamlResponse())
+//          .queryParamIfPresent("RelayState", Optional.ofNullable(responseParameters.getRelayState()));
+//          
+//      return builder.toUriString();
     }
 
   }

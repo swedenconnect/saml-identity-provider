@@ -29,14 +29,15 @@ import org.springframework.security.core.Authentication;
 
 import lombok.Getter;
 import lombok.Setter;
+import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGenerator;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
-import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.utils.SerializableOpenSamlObject;
 
 /**
- * An {@link Authentication} object for a SAML authentication request.
+ * An {@link Authentication} object for a SAML authentication request. This token will act as the input for the user
+ * authentication process.
  *
  * @author Martin Lindström
  */
@@ -60,16 +61,23 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
   @Getter
   private String assertionConsumerServiceUrl;
 
+  /**
+   * The {@link NameIDGenerator} to use when generating a {@code NameID} in the assertion that is created based on this
+   * request.
+   */
+  private NameIDGenerator nameIDGenerator;
+
   /** For OpenSAML operations. */
   @Setter
   @Getter
   private transient MessageContext messageContext;
 
-  /** The user authentication object - used in SSO cases. */
-  @Getter
-  @Setter
-  private Authentication authenticatedUser;
-
+  /**
+   * Constructor assigning the received {@link AuthnRequest} and optionally also the {@code RelayState} variable.
+   * 
+   * @param authnRequest the SAML authentication request
+   * @param relayState the {@code RelayState} variable
+   */
   public Saml2AuthnRequestAuthenticationToken(final AuthnRequest authnRequest, final String relayState) {
     super(Collections.emptyList());
     this.authnRequest = new SerializableOpenSamlObject<AuthnRequest>(authnRequest, AuthnRequest.class);
@@ -77,6 +85,9 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
     this.setAuthenticated(false);
   }
 
+  /**
+   * Will always return an empty string.
+   */
   @Override
   public Object getCredentials() {
     return "";
@@ -147,6 +158,26 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
   public void setAssertionConsumerServiceUrl(final String assertionConsumerServiceUrl) {
     this.assertionConsumerServiceUrl =
         Objects.requireNonNull(assertionConsumerServiceUrl, "assertionConsumerServiceUrl must be set");
+  }
+
+  /**
+   * Gets the {@link NameIDGenerator} to use when generating a {@code NameID} in the assertion that is created based on
+   * this request.
+   * 
+   * @return a {@link NameIDGenerator}
+   */
+  public NameIDGenerator getNameIDGenerator() {
+    return this.nameIDGenerator;
+  }
+
+  /**
+   * Assigns the {@link NameIDGenerator} to use when generating a {@code NameID} in the assertion that is created based
+   * on this request.
+   * 
+   * @param nameIDGenerator a {@link NameIDGenerator}
+   */
+  public void setNameIDGenerator(final NameIDGenerator nameIDGenerator) {
+    this.nameIDGenerator = Objects.requireNonNull(nameIDGenerator, "nameIDGenerator must not be null");
   }
 
   /**
