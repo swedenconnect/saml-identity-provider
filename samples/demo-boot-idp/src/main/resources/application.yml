@@ -36,11 +36,6 @@ saml:
     - location: https://eid.svelegtest.se/metadata/mdx/role/sp.xml
       backup-location: target/metadata-backup.xml
       validation-certificate: classpath:sandbox-metadata.crt
-    metadata:
-      entity-categories:
-      - http://id.elegnamnden.se/ec/1.0/loa3-pnr
-      - http://id.swedenconnect.se/ec/1.0/loa3-name
-      - http://id.elegnamnden.se/sprop/1.0/mobile-auth
         
 logging:
   level:

@@ -70,7 +70,7 @@ public class AssertionSettings extends AbstractSettings {
   }
 
   /**
-   * A settings that tells the time restrictions the IdP puts on an Assertion concerning "not on or after". A
+   * A setting that tells the time restrictions the IdP puts on an Assertion concerning "not on or after". A
    * {@link Duration}.
    */
   public static final String NOT_ON_OR_AFTER_DURATION = "not-after";
@@ -86,7 +86,7 @@ public class AssertionSettings extends AbstractSettings {
   }
   
   /**
-   * A settings that tells the time restrictions the IdP puts on an Assertion concerning "not before". A
+   * A setting that tells the time restrictions the IdP puts on an Assertion concerning "not before". A
    * {@link Duration}.
    */
   public static final String NOT_BEFORE_DURATION = "not-before";

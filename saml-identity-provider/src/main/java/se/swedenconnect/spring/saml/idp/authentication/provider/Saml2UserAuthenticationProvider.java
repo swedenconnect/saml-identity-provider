@@ -13,9 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.authentication;
+package se.swedenconnect.spring.saml.idp.authentication.provider;
+
+import java.util.List;
 
 import org.springframework.security.authentication.AuthenticationProvider;
+
+import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
+import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 
 /**
  * Interface for an {@link AuthenticationProvider} that implements SAML2 Identity Provider user authentication. The
@@ -33,5 +38,19 @@ public interface Saml2UserAuthenticationProvider extends AuthenticationProvider 
   default boolean supports(final Class<?> authentication) {
     return Saml2UserAuthenticationInputToken.class.isAssignableFrom(authentication);
   }
+
+  /**
+   * Gets the supported authentication context URI:s for the provider.
+   * 
+   * @return a list of the authenticator's supported authentication context URI:s
+   */
+  List<String> getSupportedAuthnContextUris();
+
+  /**
+   * Gets a list of all SAML entity categories that this {@link AuthenticationProvider} declares.
+   * 
+   * @return a list of entity category URI:s
+   */
+  List<String> getEntityCategories();
 
 }

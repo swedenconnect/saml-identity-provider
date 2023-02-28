@@ -15,10 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.common.xml.SAMLConstants;
@@ -40,6 +40,8 @@ import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.SecurityConfigurationSupport;
 import org.opensaml.xmlsec.signature.support.SignatureException;
+import org.springframework.security.config.Customizer;
+import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
@@ -47,51 +49,78 @@ import se.swedenconnect.opensaml.common.utils.SamlLog;
 import se.swedenconnect.opensaml.xmlsec.signature.support.SAMLObjectSigner;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
-import se.swedenconnect.spring.saml.idp.attributes.AttributeProducer;
+import se.swedenconnect.spring.saml.idp.attributes.release.AttributeProducer;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
-import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+import se.swedenconnect.spring.saml.idp.settings.AssertionSettings;
+import se.swedenconnect.spring.saml.idp.utils.DefaultSaml2MessageIDGenerator;
+import se.swedenconnect.spring.saml.idp.utils.Saml2MessageIDGenerator;
 
 /**
- * Default implementation of the {@link Saml2AssertionHandler} interface.
+ * The {@code Saml2AssertionBuilder} is responsible of building SAML {@link Assertion}s given
+ * {@link Saml2UserAuthentication} objects.
  *
  * @author Martin Lindström
  */
 @Slf4j
-public class DefaultSaml2AssertionHandler implements Saml2AssertionHandler {
+public class Saml2AssertionBuilder {
 
-  /** The IdP settings. */
-  private final IdentityProviderSettings settings;
+  /** The issuer entityID. */
+  private final String issuer;
+
+  /** Component that decides which attributes from the user token that should be released in the assertion. */
+  private AttributeProducer attributeProducer;
 
   /** The IdP signature credential. */
   private final Credential signatureCredential;
 
+  /** For customizing the assertions being created. */
+  private Customizer<Assertion> assertionCustomizer = Customizer.withDefaults();
+
+  /**
+   * Setting that tells the time restrictions the IdP puts on an Assertion concerning "not on or after". Defaults to
+   * {@link AssertionSettings#NOT_ON_OR_AFTER_DURATION_DEFAULT}.
+   */
+  private Duration notOnOrAfterDuration = AssertionSettings.NOT_ON_OR_AFTER_DURATION_DEFAULT;
+
+  /**
+   * Setting that tells the time restrictions the IdP puts on an Assertion concerning "not before". Defaults to
+   * {@link AssertionSettings#NOT_BEFORE_DURATION_DEFAULT}.
+   */
+  private Duration notBeforeDuration = AssertionSettings.NOT_BEFORE_DURATION_DEFAULT;
+
+  /** The ID generator - defaults to {@link DefaultSaml2MessageIDGenerator}. */
+  private Saml2MessageIDGenerator idGenerator = new DefaultSaml2MessageIDGenerator();
+
   /**
    * Constructor.
-   *
-   * @param settings the IdP settings
+   * 
+   * @param idpEntityId the IdP entity ID
+   * @param signatureCredential the signature credential (for signing the assertion)
+   * @param attributeProducer decides which attributes from the user token that should be released in the assertion
    */
-  public DefaultSaml2AssertionHandler(final IdentityProviderSettings settings) {
-    this.settings = Objects.requireNonNull(settings, "settings must not be null");
-
-    final PkiCredential cred = Optional.ofNullable(this.settings.getCredentials().getSignCredential())
-        .orElseGet(() -> this.settings.getCredentials().getDefaultCredential());
-    if (cred == null) {
-      throw new IllegalArgumentException("No signature credential available");
-    }
-
-    this.signatureCredential = OpenSamlCredential.class.isInstance(cred)
-        ? OpenSamlCredential.class.cast(cred)
-        : new OpenSamlCredential(cred);
-
+  public Saml2AssertionBuilder(final String idpEntityId, final PkiCredential signatureCredential,
+      final AttributeProducer attributeProducer) {
+    this.issuer = Optional.ofNullable(idpEntityId).filter(StringUtils::hasText)
+        .orElseThrow(() -> new IllegalArgumentException("idpEntityId must be set"));
+    Assert.notNull(signatureCredential, "signatureCredential must not be null");
+    this.signatureCredential = OpenSamlCredential.class.isInstance(signatureCredential)
+        ? OpenSamlCredential.class.cast(signatureCredential)
+        : new OpenSamlCredential(signatureCredential);
+    this.attributeProducer = Objects.requireNonNull(attributeProducer, "attributeProducer must not be null");
   }
 
-  /** {@inheritDoc} */
-  @Override
-  public Assertion buildAssertion(
-      final Saml2UserAuthentication userAuthentication, final AttributeProducer attributeProducer)
+  /**
+   * Given a {@link Saml2UserAuthentication} object a SAML {@link Assertion} is built.
+   * 
+   * @param userAuthentication the information about the user authentication
+   * @return an {@link Assertion}
+   * @throws Saml2ErrorStatusException for errors that should be reported back to the Service Provider
+   * @throws UnrecoverableSaml2IdpException for unrecoverable errors
+   */
+  public Assertion buildAssertion(final Saml2UserAuthentication userAuthentication)
       throws Saml2ErrorStatusException, UnrecoverableSaml2IdpException {
 
     final Saml2AuthnRequestAuthenticationToken authnRequestToken =
@@ -103,13 +132,13 @@ public class DefaultSaml2AssertionHandler implements Saml2AssertionHandler {
 
     final Assertion assertion = (Assertion) XMLObjectSupport.buildXMLObject(Assertion.DEFAULT_ELEMENT_NAME);
 
-    assertion.setID(UUID.randomUUID().toString()); // TODO: Use something else
+    assertion.setID(this.idGenerator.generateIdentifier());
     assertion.setIssueInstant(now);
 
     // Issuer
     {
       final Issuer issuer = (Issuer) XMLObjectSupport.buildXMLObject(Issuer.DEFAULT_ELEMENT_NAME);
-      issuer.setValue(this.settings.getEntityId());
+      issuer.setValue(this.issuer);
       assertion.setIssuer(issuer);
     }
 
@@ -128,7 +157,7 @@ public class DefaultSaml2AssertionHandler implements Saml2AssertionHandler {
       subjectConfirmationData.setAddress(userAuthentication.getSaml2UserDetails().getSubjectIpAddress());
       subjectConfirmationData.setInResponseTo(authnRequestToken.getAuthnRequest().getID());
       subjectConfirmationData.setRecipient(authnRequestToken.getAssertionConsumerServiceUrl());
-      subjectConfirmationData.setNotOnOrAfter(now.plus(this.settings.getAssertionSettings().getNotOnOrAfterDuration()));
+      subjectConfirmationData.setNotOnOrAfter(now.plus(this.notOnOrAfterDuration));
       subjectConfirmation.setSubjectConfirmationData(subjectConfirmationData);
 
       subject.getSubjectConfirmations().add(subjectConfirmation);
@@ -138,8 +167,8 @@ public class DefaultSaml2AssertionHandler implements Saml2AssertionHandler {
     // Conditions
     {
       final Conditions conditions = (Conditions) XMLObjectSupport.buildXMLObject(Conditions.DEFAULT_ELEMENT_NAME);
-      conditions.setNotBefore(now.minus(this.settings.getAssertionSettings().getNotBeforeDuration()));
-      conditions.setNotOnOrAfter(now.plus(this.settings.getAssertionSettings().getNotOnOrAfterDuration()));
+      conditions.setNotBefore(now.minus(this.notBeforeDuration));
+      conditions.setNotOnOrAfter(now.plus(this.notOnOrAfterDuration));
 
       final AudienceRestriction audienceRestriction =
           (AudienceRestriction) XMLObjectSupport.buildXMLObject(AudienceRestriction.DEFAULT_ELEMENT_NAME);
@@ -185,9 +214,13 @@ public class DefaultSaml2AssertionHandler implements Saml2AssertionHandler {
     {
       final AttributeStatement attributeStatement =
           (AttributeStatement) XMLObjectSupport.buildXMLObject(AttributeStatement.DEFAULT_ELEMENT_NAME);
-      attributeStatement.getAttributes().addAll(attributeProducer.releaseAttributes(userAuthentication));
+      attributeStatement.getAttributes().addAll(this.attributeProducer.releaseAttributes(userAuthentication));
       assertion.getAttributeStatements().add(attributeStatement);
     }
+
+    // Customize ...
+    //
+    this.assertionCustomizer.customize(assertion);
 
     log.trace("Issuing Assertion: {}", SamlLog.toStringSafe(assertion));
 
@@ -211,6 +244,45 @@ public class DefaultSaml2AssertionHandler implements Saml2AssertionHandler {
     }
 
     return assertion;
+  }
+
+  /**
+   * By assigning a {@link Customizer} the {@link Assertion} object that is built can be modified. The customizer is
+   * invoked when the {@link Assertion} object has been completely built, but before it is signed.
+   * 
+   * @param assertionCustomizer a {@link Customizer}
+   */
+  public void setAssertionCustomizer(final Customizer<Assertion> assertionCustomizer) {
+    this.assertionCustomizer = Objects.requireNonNull(assertionCustomizer, "assertionCustomizer must not be null");
+  }
+
+  /**
+   * Assigns the setting that tells the time restrictions the IdP puts on an Assertion concerning "not on or after".
+   * Defaults to {@link AssertionSettings#NOT_ON_OR_AFTER_DURATION_DEFAULT}.
+   * 
+   * @param notOnOrAfterDuration duration
+   */
+  public void setNotOnOrAfterDuration(final Duration notOnOrAfterDuration) {
+    this.notOnOrAfterDuration = notOnOrAfterDuration;
+  }
+
+  /**
+   * Assigns the setting that tells the time restrictions the IdP puts on an Assertion concerning "not before". Defaults
+   * to {@link AssertionSettings#NOT_BEFORE_DURATION_DEFAULT}.
+   * 
+   * @param notBeforeDuration duration
+   */
+  public void setNotBeforeDuration(final Duration notBeforeDuration) {
+    this.notBeforeDuration = notBeforeDuration;
+  }
+
+  /**
+   * Assigns a custom ID generator. The default is {@link DefaultSaml2MessageIDGenerator}.
+   * 
+   * @param idGenerator the ID generator
+   */
+  public void setIdGenerator(final Saml2MessageIDGenerator idGenerator) {
+    this.idGenerator = idGenerator;
   }
 
 }

@@ -44,6 +44,7 @@ import org.springframework.security.authentication.InternalAuthenticationService
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.web.access.ExceptionTranslationFilter;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -65,9 +66,12 @@ import se.swedenconnect.opensaml.saml2.metadata.provider.MDQMetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.MetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.StaticMetadataProvider;
 import se.swedenconnect.opensaml.xmlsec.config.SecurityConfiguration;
+import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
+import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
+import se.swedenconnect.spring.saml.idp.web.filters.Saml2ErrorResponseProcessingFilter;
 
 /**
  * An {@link AbstractHttpConfigurer} for SAML2 Identity Provider support.
@@ -75,8 +79,7 @@ import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
  * @author Martin Lindström
  */
 @Slf4j
-public class Saml2IdpConfigurer
-    extends AbstractHttpConfigurer<Saml2IdpConfigurer, HttpSecurity> {
+public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigurer, HttpSecurity> {
 
   /** The configurers for the SAML2 Identity Provider. */
   private final Map<Class<? extends AbstractSaml2Configurer>, AbstractSaml2Configurer> configurers =
@@ -85,14 +88,16 @@ public class Saml2IdpConfigurer
   /** The endpoints matcher. */
   private RequestMatcher endpointsMatcher;
 
+  /** Request matcher for authn endpoints. */
+  private RequestMatcher authnEndpointsMatcher;
+
   /**
    * Customizes the IdP metadata endpoint.
    *
    * @param customizer the {@link Customizer} providing access to the {@link Saml2IdpMetadataEndpointConfigurer}
    * @return the {@link Saml2IdpConfigurer} for further configuration
    */
-  public Saml2IdpConfigurer idpMetadataEndpoint(
-      final Customizer<Saml2IdpMetadataEndpointConfigurer> customizer) {
+  public Saml2IdpConfigurer idpMetadataEndpoint(final Customizer<Saml2IdpMetadataEndpointConfigurer> customizer) {
     customizer.customize(this.getConfigurer(Saml2IdpMetadataEndpointConfigurer.class));
     return this;
   }
@@ -103,20 +108,30 @@ public class Saml2IdpConfigurer
    * @param customizer the {@link Customizer} providing access to the {@link Saml2AuthnRequestProcessorConfigurer}
    * @return the {@link Saml2IdpConfigurer} for further configuration
    */
-  public Saml2IdpConfigurer authnRequestProcessor(
-      final Customizer<Saml2AuthnRequestProcessorConfigurer> customizer) {
+  public Saml2IdpConfigurer authnRequestProcessor(final Customizer<Saml2AuthnRequestProcessorConfigurer> customizer) {
     customizer.customize(this.getConfigurer(Saml2AuthnRequestProcessorConfigurer.class));
     return this;
   }
 
   /**
-   * Customizes the SAML response processor.
+   * Customizes the {@link Saml2ResponseBuilder}.
    * 
-   * @param customizer the {@link Customizer} providing access to the {@link Saml2ResponseConfigurer}
+   * @param customizer the {@link Customizer} providing access to the {@link Saml2ResponseBuilder}
    * @return the {@link Saml2IdpConfigurer} for further configuration
    */
-  public Saml2IdpConfigurer responseProcessor(final Customizer<Saml2ResponseConfigurer> customizer) {
-    customizer.customize(this.getConfigurer(Saml2ResponseConfigurer.class));
+  public Saml2IdpConfigurer responseBuilder(final Customizer<Saml2ResponseBuilder> customizer) {
+    customizer.customize(Saml2IdpConfigurerUtils.getResponseBuilder(this.getBuilder()));
+    return this;
+  }
+
+  /**
+   * Customizes the {@link Saml2ResponseSender}.
+   * 
+   * @param customizer the {@link Customizer} providing access to the {@link Saml2ResponseSender}
+   * @return the {@link Saml2IdpConfigurer} for further configuration
+   */
+  public Saml2IdpConfigurer responseSender(final Customizer<Saml2ResponseSender> customizer) {
+    customizer.customize(Saml2IdpConfigurerUtils.getResponseSender(this.getBuilder()));
     return this;
   }
 
@@ -133,11 +148,11 @@ public class Saml2IdpConfigurer
   @Override
   public void init(final HttpSecurity httpSecurity) {
     final IdentityProviderSettings identityProviderSettings =
-        Saml2ConfigurerUtils.getIdentityProviderSettings(httpSecurity);
+        Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     validateIdentityProviderSettings(identityProviderSettings);
 
     // TODO: ??
-    final SecurityConfiguration securityConfiguration = Saml2ConfigurerUtils.getSecurityConfiguration(httpSecurity);
+    final SecurityConfiguration securityConfiguration = Saml2IdpConfigurerUtils.getSecurityConfiguration(httpSecurity);
     SignatureValidationConfiguration svc = securityConfiguration.getSignatureValidationConfiguration();
 
     // Metadata resolver ...
@@ -180,13 +195,19 @@ public class Saml2IdpConfigurer
 
     // Configurers ...
     //
+    this.authnEndpointsMatcher = Saml2IdpConfigurerUtils.getAuthnEndpointsRequestMatcher(httpSecurity);
+
     final List<RequestMatcher> requestMatchers = new ArrayList<>();
+    requestMatchers.add(this.authnEndpointsMatcher);
+
     this.configurers.values().forEach(configurer -> {
       configurer.init(httpSecurity);
-      requestMatchers.add(configurer.getRequestMatcher());
+      if (configurer instanceof AbstractSaml2EndpointConfigurer) {
+        requestMatchers.add(((AbstractSaml2EndpointConfigurer) configurer).getRequestMatcher());
+      }
     });
     this.endpointsMatcher = new OrRequestMatcher(requestMatchers);
-
+    
     // TODO: Change
 //    ExceptionHandlingConfigurer<HttpSecurity> exceptionHandling =
 //        httpSecurity.getConfigurer(ExceptionHandlingConfigurer.class);
@@ -203,17 +224,28 @@ public class Saml2IdpConfigurer
   /** {@inheritDoc} */
   @Override
   public void configure(final HttpSecurity httpSecurity) {
-    this.configurers.values().forEach(configurer -> configurer.configure(httpSecurity));
 
     final IdentityProviderSettings identityProviderSettings =
-        Saml2ConfigurerUtils.getIdentityProviderSettings(httpSecurity);
+        Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
 
     // Add context filter ...
     //
     final Saml2IdpContextFilter contextFilter = new Saml2IdpContextFilter(identityProviderSettings);
     httpSecurity.addFilterAfter(this.postProcess(contextFilter), SecurityContextHolderFilter.class);
 
-    // TODO
+    // Add error response handling filter ...
+    //
+    final Saml2ResponseBuilder responseBuilder = Saml2IdpConfigurerUtils.getResponseBuilder(httpSecurity);
+    final Saml2ResponseSender responseSender = Saml2IdpConfigurerUtils.getResponseSender(httpSecurity);
+
+    final Saml2ErrorResponseProcessingFilter errorResponsefilter =
+        new Saml2ErrorResponseProcessingFilter(this.authnEndpointsMatcher, responseBuilder, responseSender);
+
+    httpSecurity.addFilterAfter(this.postProcess(errorResponsefilter), ExceptionTranslationFilter.class);
+
+    // Invoke all the configurers ...
+    //
+    this.configurers.values().forEach(configurer -> configurer.configure(httpSecurity));
   }
 
   /**
@@ -223,17 +255,11 @@ public class Saml2IdpConfigurer
    */
   private Map<Class<? extends AbstractSaml2Configurer>, AbstractSaml2Configurer> createConfigurers() {
     final Map<Class<? extends AbstractSaml2Configurer>, AbstractSaml2Configurer> configurers = new LinkedHashMap<>();
-    configurers.put(Saml2IdpMetadataEndpointConfigurer.class, new Saml2IdpMetadataEndpointConfigurer(this::postProcess));
-    configurers.put(Saml2ResponseConfigurer.class, new Saml2ResponseConfigurer(this::postProcess));
-    configurers.put(Saml2AuthnRequestProcessorConfigurer.class, new Saml2AuthnRequestProcessorConfigurer(this::postProcess));
-    configurers.put(Saml2UserAuthenticationConfigurer.class, new Saml2UserAuthenticationConfigurer(this::postProcess));    
-    
-//    configurers.put(OAuth2ClientAuthenticationConfigurer.class, new OAuth2ClientAuthenticationConfigurer(this::postProcess));
-//    configurers.put(OAuth2AuthorizationServerMetadataEndpointConfigurer.class, new OAuth2AuthorizationServerMetadataEndpointConfigurer(this::postProcess));
-//    configurers.put(OAuth2AuthorizationEndpointConfigurer.class, new OAuth2AuthorizationEndpointConfigurer(this::postProcess));
-//    configurers.put(OAuth2TokenEndpointConfigurer.class, new OAuth2TokenEndpointConfigurer(this::postProcess));
-//    configurers.put(OAuth2TokenIntrospectionEndpointConfigurer.class, new OAuth2TokenIntrospectionEndpointConfigurer(this::postProcess));
-//    configurers.put(OAuth2TokenRevocationEndpointConfigurer.class, new OAuth2TokenRevocationEndpointConfigurer(this::postProcess));
+    configurers.put(Saml2IdpMetadataEndpointConfigurer.class,
+        new Saml2IdpMetadataEndpointConfigurer(this::postProcess));
+    configurers.put(Saml2AuthnRequestProcessorConfigurer.class,
+        new Saml2AuthnRequestProcessorConfigurer(this::postProcess));
+    configurers.put(Saml2UserAuthenticationConfigurer.class, new Saml2UserAuthenticationConfigurer(this::postProcess));
     return configurers;
   }
 
@@ -244,11 +270,6 @@ public class Saml2IdpConfigurer
 
   private <T extends AbstractSaml2Configurer> void addConfigurer(final Class<T> configurerType, final T configurer) {
     this.configurers.put(configurerType, configurer);
-  }
-
-  private <T extends AbstractSaml2Configurer> RequestMatcher getRequestMatcher(final Class<T> configurerType) {
-    final T configurer = this.getConfigurer(configurerType);
-    return configurer != null ? configurer.getRequestMatcher() : null;
   }
 
   /**

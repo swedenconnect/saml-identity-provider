@@ -36,7 +36,18 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The user details. */
-  private Saml2UserDetails userDetails;
+  private final Saml2UserDetails userDetails;
+
+  /**
+   * Flag telling whether this {@link Authentication} object may be "re-used", i.e., whether it may be used in
+   * SSO-scenarios. Defaults to {@code true}.
+   * <p>
+   * Note that even if this flag is {@code true} the IdP-engine may choose not to save the {@link Authentication} object
+   * for future use. This may be dependent on other parameters. However, if the flag is {@code false} the authentication
+   * will not be saved.
+   * </p>
+   */
+  private boolean reuseAuthentication = true;
 
   /** Information about the AuthnRequest that led to the user being authenticated. */
   private Saml2AuthnRequestAuthenticationToken authnRequestToken;
@@ -71,6 +82,31 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
    */
   public Saml2UserDetails getSaml2UserDetails() {
     return this.userDetails;
+  }
+
+  /**
+   * Gets the flag telling whether this {@link Authentication} object may be "re-used", i.e., whether it may be used in
+   * SSO-scenarios. Defaults to {@code true}.
+   * <p>
+   * Note that even if this flag is {@code true} the IdP-engine may choose not to save the {@link Authentication} object
+   * for future use. This may be dependent on other parameters. However, if the flag is {@code false} the authentication
+   * will not be saved.
+   * </p>
+   * 
+   * @return whether the authentication object should be saved for future SSO
+   */
+  public boolean isReuseAuthentication() {
+    return this.reuseAuthentication;
+  }
+
+  /**
+   * Assigns the flag telling whether this {@link Authentication} object may be "re-used", i.e., whether it may be used
+   * in SSO-scenarios.
+   * 
+   * @param reuseAuthentication whether the authentication object should be saved for future SSO
+   */
+  public void setReuseAuthentication(final boolean reuseAuthentication) {
+    this.reuseAuthentication = reuseAuthentication;
   }
 
   /**

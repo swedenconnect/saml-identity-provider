@@ -15,7 +15,6 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.nameid;
 
-import java.util.Objects;
 import java.util.Optional;
 
 import org.opensaml.saml.common.xml.SAMLConstants;
@@ -26,11 +25,11 @@ import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.NameIDFormat;
 import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
-import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
  * A {@link NameIDGeneratorFactory} that implements the requirements regarding {@code NameID}'s put by the
@@ -41,8 +40,8 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
  */
 public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
 
-  /** The IdP settings. */
-  private final IdentityProviderSettings settings;
+  /** The IdP entityID. */
+  private final String idpEntityId;
 
   /**
    * The default NameID format to use. If not assigned, {@code urn:oasis:names:tc:SAML:2.0:nameid-format:persistent}
@@ -53,10 +52,11 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
   /**
    * Constructor.
    * 
-   * @param settings the IdP settings
+   * @param idpEntityId the IdP entityID
    */
-  public DefaultNameIDGeneratorFactory(final IdentityProviderSettings settings) {
-    this.settings = Objects.requireNonNull(settings, "settings must not be null");
+  public DefaultNameIDGeneratorFactory(final String idpEntityId) {
+    this.idpEntityId = Optional.ofNullable(idpEntityId).filter(StringUtils::hasText)
+        .orElseThrow(() -> new IllegalArgumentException("idpEntityId must be set"));
     this.defaultFormat = NameID.PERSISTENT;
   }
 
@@ -73,7 +73,7 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
     if (nameFormat != null) {
       // Note that we ignore the AllowCreate flag. This is because we define all user ID:s to be known to the IdP.
       //
-      return this.createNameIDGenerator(nameFormat, this.settings.getEntityId(),
+      return this.createNameIDGenerator(nameFormat, this.idpEntityId,
           Optional.ofNullable(authnRequest.getNameIDPolicy()).map(NameIDPolicy::getSPNameQualifier)
               .orElseGet(() -> peerMetadata.getEntityID()));
     }
@@ -88,7 +88,7 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
       }
     }
 
-    return this.createNameIDGenerator(nameFormat, this.settings.getEntityId(), peerMetadata.getEntityID());
+    return this.createNameIDGenerator(nameFormat, this.idpEntityId, peerMetadata.getEntityID());
   }
 
   /**

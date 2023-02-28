@@ -98,6 +98,7 @@ public class IdentityProviderAutoConfiguration {
         .baseUrl(this.properties.getBaseUrl())
         .hokBaseUrl(this.properties.getHokBaseUrl())
         .requiresSignedRequests(this.properties.getRequiresSignedRequests())
+        .ssoDurationLimit(this.properties.getSsoDurationLimit())
         .credentials(CredentialSettings.builder()
             .defaultCredential(this.defaultCredential)
             .signCredential(this.signCredential)
@@ -131,7 +132,6 @@ public class IdentityProviderAutoConfiguration {
               .template(this.properties.getMetadata().getTemplate())
               .cacheDuration(this.properties.getMetadata().getCacheDuration())
               .validityPeriod(this.properties.getMetadata().getValidityPeriod())
-              .entityCategories(this.properties.getMetadata().getEntityCategories())
               .build());
     }
     if (this.metadataProvider != null) {

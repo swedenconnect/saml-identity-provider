@@ -16,7 +16,6 @@
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
 import java.time.Duration;
-import java.util.List;
 
 import org.springframework.core.io.Resource;
 
@@ -44,12 +43,5 @@ public class MetadataConfigurationProperties {
    * Tells for how long a published metadata entry should be valid.
    */
   private Duration validityPeriod;
-
-  /**
-   * The declared entity categories, see <a href=
-   * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
-   * Categories for the Swedish eID Framework</a>.
-   */
-  private List<String> entityCategories;
 
 }

@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
+import java.time.Duration;
 import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
@@ -58,6 +59,11 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
    * Whether the IdP requires signed authentication requests.
    */
   private Boolean requiresSignedRequests;
+  
+  /**
+   * Based on a previous authentication, for how long may this authentication be re-used?
+   */
+  private Duration ssoDurationLimit;
 
   /**
    * The Identity Provider credentials.

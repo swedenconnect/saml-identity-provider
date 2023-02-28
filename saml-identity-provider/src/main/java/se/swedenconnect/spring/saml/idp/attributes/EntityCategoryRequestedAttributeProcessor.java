@@ -26,8 +26,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.util.Assert;
-
 import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeTemplate;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
@@ -35,8 +33,6 @@ import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCateg
 import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.ServiceEntityCategory;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.metadata.EntityCategoryHelper;
-import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
-import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
 
 /**
  * A {@link RequestedAttributeProcessor} that extracts the requested attributes from declared entity categories. See
@@ -62,16 +58,11 @@ public class EntityCategoryRequestedAttributeProcessor implements RequestedAttri
   /**
    * Constructor.
    * 
-   * @param settings the Identity Provider settings
+   * @param idpDeclaredEntityCategories the entity categories declared by this IdP
    */
-  public EntityCategoryRequestedAttributeProcessor(final IdentityProviderSettings settings) {
-    Assert.notNull(settings, "settings must not be null");
-
-    this.idpDeclaredEntityCategories = Optional.ofNullable(settings)
-        .map(IdentityProviderSettings::getMetadata)
-        .map(MetadataSettings::getEntityCategories)
-        .orElseGet(() -> Collections.emptyList());
-
+  public EntityCategoryRequestedAttributeProcessor(final Collection<String> idpDeclaredEntityCategories) {
+    this.idpDeclaredEntityCategories =
+        Objects.requireNonNull(idpDeclaredEntityCategories, "idpDeclaredEntityCategories must not be null");
     this.entityCategoryRegistry = EntityCategoryHelper.getDefaultEntityCategoryRegistry();
   }
 

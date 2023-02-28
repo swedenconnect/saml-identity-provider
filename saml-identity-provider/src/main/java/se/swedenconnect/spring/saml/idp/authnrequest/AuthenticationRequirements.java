@@ -65,7 +65,7 @@ public interface AuthenticationRequirements extends Serializable {
    * 
    * @return a collection of requested attributes
    */
-  Collection<RequestedAttribute> getRequestedAttribute();
+  Collection<RequestedAttribute> getRequestedAttributes();
 
   /**
    * Gets a collection of the requested authentication contexts ({@code AuthnContextClassRef}).

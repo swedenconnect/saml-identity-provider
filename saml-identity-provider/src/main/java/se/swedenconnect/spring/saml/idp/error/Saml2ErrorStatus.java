@@ -57,7 +57,17 @@ public enum Saml2ErrorStatus {
   /**
    * Invalid NameID policy given in AuthnRequest.
    */
-  INVALID_NAMEID(StatusCode.REQUESTER, StatusCode.INVALID_NAMEID_POLICY, "idp.error.status.invalid-nameid", "Invalid NameIDPolicy in authentication request");
+  INVALID_NAMEID(StatusCode.REQUESTER, StatusCode.INVALID_NAMEID_POLICY, "idp.error.status.invalid-nameid", "Invalid NameIDPolicy in authentication request"),
+  
+  /**
+   * PassiveAuthn could not be applied.
+   */
+  PASSIVE_AUTHN(StatusCode.REQUESTER, StatusCode.NO_PASSIVE, "idp.error.status.no-passive", "Passive authentication could not be performed"),
+  
+  /**
+   * Requested authentication context is not supported.
+   */
+  NO_AUTHN_CONTEXT(StatusCode.REQUESTER, StatusCode.NO_AUTHN_CONTEXT, "idp.error.status.no-authn-context", "Requested authentication contexts not supported");
         
   /**
    * Gets the main status code.

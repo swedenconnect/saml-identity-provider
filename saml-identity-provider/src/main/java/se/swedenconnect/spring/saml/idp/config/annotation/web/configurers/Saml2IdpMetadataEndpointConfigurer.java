@@ -17,15 +17,21 @@ package se.swedenconnect.spring.saml.idp.config.annotation.web.configurers;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.opensaml.core.xml.io.UnmarshallingException;
+import org.opensaml.core.xml.util.XMLObjectSupport;
+import org.opensaml.saml.ext.saml2mdattr.EntityAttributes;
+import org.opensaml.saml.saml2.metadata.Extensions;
 import org.opensaml.saml.saml2.metadata.KeyDescriptor;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
 import org.opensaml.security.credential.UsageType;
 import org.opensaml.security.x509.X509Credential;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
@@ -35,10 +41,13 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.xml.XMLParserException;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorContainer;
+import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
+import se.swedenconnect.opensaml.saml2.metadata.build.EntityAttributesBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.IDPSSODescriptorBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.KeyDescriptorBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.SingleSignOnServiceBuilder;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
+import se.swedenconnect.spring.saml.idp.authentication.provider.Saml2UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.metadata.Saml2MetadataBuilder;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2IdpMetadataEndpointFilter;
@@ -49,10 +58,15 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2IdpMetadataEndpointFilt
  * @author Martin Lindström
  */
 @Slf4j
-public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer {
+public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2EndpointConfigurer {
 
+  /** The request matcher. */
   private RequestMatcher requestMatcher;
-  private Consumer<Saml2MetadataBuilder> entityDescriptorCustomizer;
+
+  /** For customizing metadata. */
+  private Customizer<Saml2MetadataBuilder> entityDescriptorCustomizer = Customizer.withDefaults();
+
+  /** The metadata builder. */
   private Saml2MetadataBuilder entityDescriptorBuilder;
 
   /**
@@ -65,24 +79,34 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
   }
 
   /**
-   * Sets the {@code Consumer} providing access to the {@link Saml2MetadataBuilder} allowing the ability to customize
+   * Sets the {@code Customizer} providing access to the {@link Saml2MetadataBuilder} allowing the ability to customize
    * how the published IdP metadata is constructed.
    *
-   * @param metadataCustomizer the {@code Consumer} providing access to the {@link Saml2MetadataBuilder}
+   * @param metadataCustomizer the {@code Customizer} providing access to the {@link Saml2MetadataBuilder}
    * @return the {@link Saml2IdpMetadataEndpointConfigurer} for further configuration
    */
   public Saml2IdpMetadataEndpointConfigurer entityDescriptorCustomizer(
-      final Consumer<Saml2MetadataBuilder> metadataCustomizer) {
-    this.entityDescriptorCustomizer = metadataCustomizer;
+      final Customizer<Saml2MetadataBuilder> metadataCustomizer) {
+    this.entityDescriptorCustomizer = Objects.requireNonNull(metadataCustomizer, "metadataCustomizer must not be null");
     return this;
   }
 
   /** {@inheritDoc} */
   @Override
   void init(final HttpSecurity httpSecurity) {
-    final IdentityProviderSettings settings = Saml2ConfigurerUtils.getIdentityProviderSettings(httpSecurity);
+    final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     this.requestMatcher = new AntPathRequestMatcher(
         settings.getEndpoints().getMetadataEndpoint(), HttpMethod.GET.name());
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  void configure(final HttpSecurity httpSecurity) {
+
+    final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
+    
+    final Collection<Saml2UserAuthenticationProvider> providers = 
+        Saml2IdpConfigurerUtils.getSaml2UserAuthenticationProviders(httpSecurity);
 
     // Build metadata ...
     //
@@ -96,6 +120,40 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
       this.entityDescriptorBuilder.entityID(settings.getEntityId());
       this.entityDescriptorBuilder.cacheDuration(settings.getMetadata().getCacheDuration());
 
+      // EntityAttributes
+      //
+      final EntityAttributesBuilder entityAttributesBuilder = EntityAttributesBuilder.builder();
+      Extensions extensions = this.entityDescriptorBuilder.object().getExtensions();
+      if (extensions != null) {
+        final EntityAttributes entityAttributes = EntityDescriptorUtils.getMetadataExtension(extensions, EntityAttributes.class);             
+        if (entityAttributes != null) {
+          entityAttributesBuilder.attributes(entityAttributes.getAttributes());          
+          extensions.getUnknownXMLObjects().removeIf(o -> EntityAttributes.class.isAssignableFrom(o.getClass()));
+        }        
+      }
+      else {
+        extensions = (Extensions) XMLObjectSupport.buildXMLObject(Extensions.DEFAULT_ELEMENT_NAME);
+      }
+      final List<String> authnContextUris = providers.stream()
+          .map(Saml2UserAuthenticationProvider::getSupportedAuthnContextUris)
+          .flatMap(Collection::stream)
+          .distinct()
+          .collect(Collectors.toList());
+      if (!authnContextUris.isEmpty()) {
+        entityAttributesBuilder.assuranceCertificationAttribute(authnContextUris);
+      }
+      final List<String> entityCategories = providers.stream()
+          .map(Saml2UserAuthenticationProvider::getEntityCategories)
+          .flatMap(Collection::stream)
+          .distinct()
+          .collect(Collectors.toList());
+      if (!entityCategories.isEmpty()) {
+        entityAttributesBuilder.entityCategoriesAttribute(entityCategories);
+      }
+      
+      extensions.getUnknownXMLObjects().add(entityAttributesBuilder.build());
+      this.entityDescriptorBuilder.extensions(extensions);
+      
       final IDPSSODescriptorBuilder descBuilder = IDPSSODescriptorBuilder.builder();
       descBuilder.wantAuthnRequestsSigned(settings.getRequiresSignedRequests());
 
@@ -174,17 +232,8 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
     catch (final IOException | XMLParserException | UnmarshallingException e) {
       throw new IllegalArgumentException("Failed to construct IdP metadata - " + e.getMessage(), e);
     }
-  }
 
-  /** {@inheritDoc} */
-  @Override
-  void configure(final HttpSecurity httpSecurity) {
-
-    final IdentityProviderSettings settings = Saml2ConfigurerUtils.getIdentityProviderSettings(httpSecurity);
-
-    if (this.entityDescriptorCustomizer != null) {
-      this.entityDescriptorCustomizer.accept(this.entityDescriptorBuilder);
-    }
+    this.entityDescriptorCustomizer.customize(this.entityDescriptorBuilder);
 
     final X509Credential metadataSigning;
     if (settings.getCredentials().getMetadataSignCredential() != null) {

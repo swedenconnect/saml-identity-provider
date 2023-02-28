@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.attributes;
+package se.swedenconnect.spring.saml.idp.attributes.release;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.opensaml.saml.saml2.core.Attribute;
 
+import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 

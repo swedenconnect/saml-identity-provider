@@ -58,6 +58,9 @@ public class Saml2UserDetails implements UserDetails {
    */
   private String authenticatingAuthority;
 
+  /** Whether the IdP displayed a SignMessage for the user. */
+  private boolean signMessageDisplayed = false;
+
   /**
    * Constructor.
    *
@@ -158,6 +161,24 @@ public class Saml2UserDetails implements UserDetails {
    */
   public void setAuthenticatingAuthority(final String authenticatingAuthority) {
     this.authenticatingAuthority = authenticatingAuthority;
+  }
+
+  /**
+   * Predicate telling whether the IdP displayed a SignMessage for the user.
+   * 
+   * @return {@code true} if a SignMessage was displayed and {@code false} otherwise
+   */
+  public boolean isSignMessageDisplayed() {
+    return this.signMessageDisplayed;
+  }
+
+  /**
+   * Tells whether the IdP displayed a SignMessage for the user.
+   * 
+   * @param signMessageDisplayed {@code true} if a SignMessage was displayed and {@code false} otherwise
+   */
+  public void setSignMessageDisplayed(final boolean signMessageDisplayed) {
+    this.signMessageDisplayed = signMessageDisplayed;
   }
 
   /**

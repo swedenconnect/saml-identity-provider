@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,7 +24,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.RequestedAuthnContext;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -32,34 +32,22 @@ import org.springframework.util.Assert;
 
 import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
-import se.swedenconnect.opensaml.saml2.response.replay.InMemoryReplayChecker;
-import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayChecker;
-import se.swedenconnect.spring.saml.idp.attributes.DefaultPrincipalSelectionProcessor;
-import se.swedenconnect.spring.saml.idp.attributes.DelegatingRequestedAttributeProcessor;
-import se.swedenconnect.spring.saml.idp.attributes.EidasRequestedAttributeProcessor;
-import se.swedenconnect.spring.saml.idp.attributes.EntityCategoryRequestedAttributeProcessor;
-import se.swedenconnect.spring.saml.idp.attributes.MetadataRequestedAttributeProcessor;
-import se.swedenconnect.spring.saml.idp.attributes.OasisExtensionRequestedAttributeProcessor;
 import se.swedenconnect.spring.saml.idp.attributes.PrincipalSelectionProcessor;
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttribute;
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttributeProcessor;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
-import se.swedenconnect.spring.saml.idp.attributes.nameid.DefaultNameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGenerator;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
-import se.swedenconnect.spring.saml.idp.authnrequest.validation.AssertionConsumerServiceValidator;
-import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestReplayValidator;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestValidator;
+import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2AuthnRequestAuthenticationProviderConfigurer;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
-import se.swedenconnect.spring.saml.idp.extensions.DefaultSignatureMessageExtensionExtractor;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtensionExtractor;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
-import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
@@ -76,137 +64,79 @@ import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationProvider {
 
   /** The signature validator to use. */
-  private AuthnRequestValidator signatureValidator;
+  private final AuthnRequestValidator signatureValidator;
 
   /** The validator checking the AssertionConsumerService. */
-  private AuthnRequestValidator assertionConsumerServiceValidator;
+  private final AuthnRequestValidator assertionConsumerServiceValidator;
 
   /** Validator for protecting against replay attacks. */
-  private AuthnRequestValidator replayValidator;
-  private Supplier<AuthnRequestValidator> replayValidatorSupplier;
+  private final AuthnRequestValidator replayValidator;
 
   /** Extracts the requested attributes. */
-  private RequestedAttributeProcessor requestedAttributesProcessor;
+  private final List<RequestedAttributeProcessor> requestedAttributesProcessors;
 
   /** Extracts the {@code SignMessage} extension. */
-  private SignatureMessageExtensionExtractor signatureMessageExtensionExtractor;
+  private final SignatureMessageExtensionExtractor signatureMessageExtensionExtractor;
 
   /**
    * Extracts the {@code PrincipalSelection} attribute values.
    */
-  private PrincipalSelectionProcessor principalSelectionProcessor;
+  private final PrincipalSelectionProcessor principalSelectionProcessor;
 
   /** The {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator} instance. */
-  private NameIDGeneratorFactory nameIDGeneratorFactory;
+  private final NameIDGeneratorFactory nameIDGeneratorFactory;
 
   /**
-   * Constructor.
+   * Constructor. See {@link Saml2AuthnRequestAuthenticationProviderConfigurer} for how to configuration and setup.
    * 
-   * @param settings the IdP settings
    * @param signatureValidator the signature validator to use
+   * @param assertionConsumerServiceValidator validator checking the AssertionConsumerService
+   * @param replayValidator for protecting against replay attacks
+   * @param requestedAttributesProcessors extracts the requested attributes
+   * @param nameIDGeneratorFactory the {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator}
+   *          instance
+   */  
+  public Saml2AuthnRequestAuthenticationProvider(
+      final AuthnRequestValidator signatureValidator,
+      final AuthnRequestValidator assertionConsumerServiceValidator,
+      final AuthnRequestValidator replayValidator,
+      final List<RequestedAttributeProcessor> requestedAttributesProcessors,
+      final NameIDGeneratorFactory nameIDGeneratorFactory) {
+    this(signatureValidator, assertionConsumerServiceValidator, replayValidator, requestedAttributesProcessors,
+        nameIDGeneratorFactory, null, null);
+  }
+
+  /**
+   * Constructor. See {@link Saml2AuthnRequestAuthenticationProviderConfigurer} for how to configuration and setup.
+   * 
+   * @param signatureValidator the signature validator to use
+   * @param assertionConsumerServiceValidator validator checking the AssertionConsumerService
+   * @param replayValidator for protecting against replay attacks
+   * @param requestedAttributesProcessors extracts the requested attributes
+   * @param nameIDGeneratorFactory the {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator}
+   *          instance
+   * @param signatureMessageExtensionExtractor extracts the {@code SignMessage} extension (may be {@code null})
+   * @param principalSelectionProcessor extracts the {@code PrincipalSelection} attribute values (may be {@code null})
    */
   public Saml2AuthnRequestAuthenticationProvider(
-      final IdentityProviderSettings settings,
-      final AuthnRequestValidator signatureValidator) {
-    Assert.notNull(settings, "settings must not be null");
+      final AuthnRequestValidator signatureValidator,
+      final AuthnRequestValidator assertionConsumerServiceValidator,
+      final AuthnRequestValidator replayValidator,
+      final List<RequestedAttributeProcessor> requestedAttributesProcessors,
+      final NameIDGeneratorFactory nameIDGeneratorFactory,
+      final SignatureMessageExtensionExtractor signatureMessageExtensionExtractor,
+      final PrincipalSelectionProcessor principalSelectionProcessor) {
+
     this.signatureValidator = Objects.requireNonNull(signatureValidator, "signatureValidator must not be null");
-    this.assertionConsumerServiceValidator = new AssertionConsumerServiceValidator();
-    this.replayValidatorSupplier = () -> {
-      if (this.replayValidator == null) {
-        this.replayValidator = new AuthnRequestReplayValidator();
-      }
-      return this.replayValidator;
-    };
-    this.requestedAttributesProcessor = new DelegatingRequestedAttributeProcessor(List.of(
-        new MetadataRequestedAttributeProcessor(), new OasisExtensionRequestedAttributeProcessor(),
-        new EidasRequestedAttributeProcessor(), new EntityCategoryRequestedAttributeProcessor(settings)));
-    this.signatureMessageExtensionExtractor = new DefaultSignatureMessageExtensionExtractor(settings);
-    this.principalSelectionProcessor = new DefaultPrincipalSelectionProcessor();
-    this.nameIDGeneratorFactory = new DefaultNameIDGeneratorFactory(settings);
-  }
-
-  /**
-   * Assigns a custom {@link AuthnRequestValidator} overriding the default for signature validation.
-   * 
-   * @param signatureValidator the signature validator to use
-   */
-  public void setSignatureValidator(final AuthnRequestValidator signatureValidator) {
-    this.signatureValidator = Objects.requireNonNull(signatureValidator, "signatureValidator must not be null");
-  }
-
-  /**
-   * Assigns a custom {@link AuthnRequestValidator} overriding the default validator for checking assertion consumer
-   * service.
-   * 
-   * @param assertionConsumerServiceValidator validator for assertion consumer service
-   */
-  public void setAssertionConsumerServiceValidator(final AuthnRequestValidator assertionConsumerServiceValidator) {
-    Assert.notNull(assertionConsumerServiceValidator, "assertionConsumerServiceValidator must not be null");
-    this.assertionConsumerServiceValidator = assertionConsumerServiceValidator;
-  }
-
-  /**
-   * Assigns a {@link MessageReplayChecker} for handling message replay detection. If none is provided a
-   * {@link InMemoryReplayChecker} will be used.
-   * 
-   * @param messageReplayChecker the message replay checker
-   */
-  public void setMessageReplayChecker(final MessageReplayChecker messageReplayChecker) {
-    this.replayValidator = new AuthnRequestReplayValidator(
-        Objects.requireNonNull(messageReplayChecker, "messageReplayChecker must not be null"));
-  }
-
-  /**
-   * Assigns a custom {@link RequestedAttributeProcessor}. The default is an
-   * {@link DelegatingRequestedAttributeProcessor} instance using the following processors:
-   * <ul>
-   * <li>{@link MetadataRequestedAttributeProcessor} - for finding requested attributes from an
-   * {@code AttributeConsumingService} element in the Service Provider metadata.</li>
-   * <li>{@link OasisExtensionRequestedAttributeProcessor} - for finding requested attributes appearing in the
-   * {@link org.opensaml.saml.ext.reqattr.RequestedAttributes} extension of the {@link AuthnRequest}.</li>
-   * <li>{@link EidasRequestedAttributeProcessor} - for finding requested attributes appearing in the eIDAS
-   * {@link se.litsec.eidas.opensaml.ext.RequestedAttributes} extension of the {@link AuthnRequest}.</li>
-   * <li>{@link EntityCategoryRequestedAttributeProcessor} - for finding requested attributes based on declared entity
-   * categories.</li>
-   * </ul>
-   * 
-   * @param requestedAttributesProcessor the processor
-   */
-  public void setRequestedAttributeProcessor(final RequestedAttributeProcessor requestedAttributesProcessor) {
-    this.requestedAttributesProcessor =
-        Objects.requireNonNull(requestedAttributesProcessor, "requestedAttributesProcessor must not be null");
-  }
-
-  /**
-   * Assigns a custom {@link SignatureMessageExtensionExtractor}. The default is
-   * {@link DefaultSignatureMessageExtensionExtractor}.
-   * 
-   * @param signatureMessageExtensionExtractor the custom extractor
-   */
-  public void setSignatureMessageExtensionExtractor(
-      final SignatureMessageExtensionExtractor signatureMessageExtensionExtractor) {
-    this.signatureMessageExtensionExtractor = Objects.requireNonNull(signatureMessageExtensionExtractor,
-        "signatureMessageExtensionExtractor must not be null");
-  }
-
-  /**
-   * Assigns a custom {@link PrincipalSelectionProcessor}. The default is {@link DefaultPrincipalSelectionProcessor}.
-   * 
-   * @param principalSelectionProcessor the custom principal selection extractor
-   */
-  public void setPrincipalSelectionProcessor(final PrincipalSelectionProcessor principalSelectionProcessor) {
-    this.principalSelectionProcessor =
-        Objects.requireNonNull(principalSelectionProcessor, "principalSelectionProcessor must not be null");
-  }
-
-  /**
-   * Assigns a custom {@link NameIDGeneratorFactory}. The default is {@link DefaultNameIDGeneratorFactory}.
-   * 
-   * @param nameIDGeneratorFactory the custom NameID generator factory
-   */
-  public void setNameIDGeneratorFactory(final NameIDGeneratorFactory nameIDGeneratorFactory) {
+    this.assertionConsumerServiceValidator =
+        Objects.requireNonNull(assertionConsumerServiceValidator, "assertionConsumerServiceValidator must not be null");
+    this.replayValidator = Objects.requireNonNull(replayValidator, "replayValidator must not be null");
+    this.requestedAttributesProcessors = Optional.ofNullable(requestedAttributesProcessors).filter(r -> !r.isEmpty())
+        .orElseThrow(() -> new IllegalArgumentException("At least one RequestedAttributeProcessor must be given"));
     this.nameIDGeneratorFactory =
         Objects.requireNonNull(nameIDGeneratorFactory, "nameIDGeneratorFactory must not be null");
+    this.signatureMessageExtensionExtractor = signatureMessageExtensionExtractor;
+    this.principalSelectionProcessor = principalSelectionProcessor;
   }
 
   /** {@inheritDoc} */
@@ -218,7 +148,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
 
     // Check message replay ...
     //
-    this.replayValidatorSupplier.get().validate(token);
+    this.replayValidator.validate(token);
 
     // Assert that the AssertionConsumerService information is valid ...
     //
@@ -283,8 +213,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
     }
 
     final Collection<String> entityCategories = EntityDescriptorUtils.getEntityCategories(token.getPeerMetadata());
-    final Collection<RequestedAttribute> requestedAttributes =
-        this.requestedAttributesProcessor.extractRequestedAttributes(token);
+    final Collection<RequestedAttribute> requestedAttributes = this.extractRequestedAttributes(token);
 
     // TODO: will be changed
     final Collection<String> authnContextUris = Optional.ofNullable(token.getAuthnRequest().getRequestedAuthnContext())
@@ -294,10 +223,13 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
             .collect(Collectors.toList()))
         .orElseGet(() -> Collections.emptyList());
 
-    final Collection<UserAttribute> principalSelectionAttributes =
-        this.principalSelectionProcessor.extractPrincipalSelection(token);
+    final Collection<UserAttribute> principalSelectionAttributes = Optional.ofNullable(this.principalSelectionProcessor)
+        .map(p -> p.extractPrincipalSelection(token))
+        .orElseGet(() -> Collections.emptyList());
 
-    final SignatureMessageExtension signMessageExtension = this.signatureMessageExtensionExtractor.extract(token);
+    final SignatureMessageExtension signMessageExtension = Optional.ofNullable(this.signatureMessageExtensionExtractor)
+        .map(e -> e.extract(token))
+        .orElse(null);
 
     return new AuthenticationRequirements() {
 
@@ -319,7 +251,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
       }
 
       @Override
-      public Collection<RequestedAttribute> getRequestedAttribute() {
+      public Collection<RequestedAttribute> getRequestedAttributes() {
         return requestedAttributes;
       }
 
@@ -355,6 +287,28 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
   @Override
   public boolean supports(final Class<?> authentication) {
     return Saml2AuthnRequestAuthenticationToken.class.isAssignableFrom(authentication);
+  }
+
+  private Collection<RequestedAttribute> extractRequestedAttributes(
+      final Saml2AuthnRequestAuthenticationToken authnRequestToken) {
+
+    final List<RequestedAttribute> attributes = new ArrayList<>();
+
+    for (final RequestedAttributeProcessor p : this.requestedAttributesProcessors) {
+      final Collection<RequestedAttribute> pattrs = p.extractRequestedAttributes(authnRequestToken);
+      for (final RequestedAttribute r : pattrs) {
+        final RequestedAttribute attr =
+            attributes.stream().filter(a -> Objects.equals(a.getId(), r.getId())).findAny().orElse(null);
+        if (attr != null) {
+          attr.setRequired(attr.isRequired() && r.isRequired());
+        }
+        else {
+          attributes.add(r);
+        }
+      }
+    }
+
+    return attributes;
   }
 
 }

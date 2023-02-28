@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.settings;
 
+import java.time.Duration;
 import java.util.Map;
 
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
@@ -109,6 +110,25 @@ public class IdentityProviderSettings extends AbstractSettings {
    */
   public Boolean getRequiresSignedRequests() {
     return this.getSetting(REQUIRES_SIGNED_REQUESTS);
+  }
+
+  /**
+   * The default value for the {@link #SSO_DURATION_LIMIT} setting.
+   */
+  public static final Duration SSO_DURATION_LIMIT_DEFAULT = Duration.ofHours(1);
+  
+  /**
+   * Based on a previous authentication, for how long may this authentication be re-used? A {@link Duration}.
+   */
+  public static final String SSO_DURATION_LIMIT = SETTINGS_PREFIX.concat("sso-duration-limit");
+
+  /**
+   * Based on a previous authentication, for how long may this authentication be re-used?
+   * 
+   * @return a {@link Duration}
+   */
+  public Duration getSsoDurationLimit() {
+    return this.getSetting(SSO_DURATION_LIMIT);
   }
 
   /**
@@ -280,6 +300,16 @@ public class IdentityProviderSettings extends AbstractSettings {
     public Builder requiresSignedRequests(final Boolean requiresSignedRequests) {
       return this.setting(REQUIRES_SIGNED_REQUESTS, requiresSignedRequests);
     }
+    
+    /**
+     * Assigns for how long may this authentication be re-used.
+     * 
+     * @param ssoDurationLimit a {@link Duration} 
+     * @return the builder
+     */
+    public Builder ssoDurationLimit(final Duration ssoDurationLimit) {
+      return this.setting(SSO_DURATION_LIMIT, ssoDurationLimit);
+    }
 
     /**
      * Assigns the Identity Provider credentials.
@@ -372,6 +402,9 @@ public class IdentityProviderSettings extends AbstractSettings {
       }
       if (this.getSettings().get(REQUIRES_SIGNED_REQUESTS) == null) {
         this.requiresSignedRequests(Boolean.TRUE);
+      }
+      if (this.getSettings().get(SSO_DURATION_LIMIT) == null) {
+        this.ssoDurationLimit(SSO_DURATION_LIMIT_DEFAULT);
       }
       if (!this.getSettings().containsKey(IDP_CREDENTIALS)) {
         this.credentials(CredentialSettings.builder().build());

@@ -23,11 +23,12 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
+import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryConstants;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
-import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserDetails;
+import se.swedenconnect.spring.saml.idp.authentication.provider.Saml2UserAuthenticationProvider;
 
 @Component
 public class DummyAuthnProvider implements Saml2UserAuthenticationProvider {
@@ -50,8 +51,22 @@ public class DummyAuthnProvider implements Saml2UserAuthenticationProvider {
     final Saml2UserDetails details = new Saml2UserDetails(attributes, AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER,
         "http://id.elegnamnden.se/loa/1.0/loa3", Instant.now(), "127.0.0.1");
         
+    final Saml2UserAuthentication userAuthn = new Saml2UserAuthentication(details);
+    userAuthn.setReuseAuthentication(true);
+    
+    return userAuthn;
+  }
 
-    return new Saml2UserAuthentication(details);
+  @Override
+  public List<String> getSupportedAuthnContextUris() {
+    return List.of("http://id.elegnamnden.se/loa/1.0/loa3");
+  }
+
+  @Override
+  public List<String> getEntityCategories() {
+    return List.of(EntityCategoryConstants.SERVICE_ENTITY_CATEGORY_LOA3_NAME.getUri(),
+        EntityCategoryConstants.SERVICE_ENTITY_CATEGORY_LOA3_PNR.getUri(),
+        EntityCategoryConstants.SERVICE_PROPERTY_CATEGORY_MOBILE_AUTH.getUri());
   }
 
 }

@@ -16,8 +16,8 @@
 package se.swedenconnect.spring.saml.idp.demo;
 
 import java.io.File;
-import java.util.List;
 
+import org.opensaml.saml.saml2.core.NameID;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
@@ -42,12 +42,13 @@ import se.swedenconnect.opensaml.sweid.xmlsec.config.SwedishEidSecurityConfigura
 import se.swedenconnect.security.credential.KeyStoreCredential;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.security.credential.utils.X509Utils;
+import se.swedenconnect.spring.saml.idp.attributes.nameid.DefaultNameIDGeneratorFactory;
+import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configuration.Saml2IdpConfiguration;
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurer;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
-import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
 
 /**
  * Configuration class for the demo application.
@@ -60,7 +61,7 @@ public class IdpConfiguration {
   @Bean
   @DependsOn("openSAML")
   @Order(Ordered.HIGHEST_PRECEDENCE)
-  SecurityFilterChain samlIdpSecurityFilterChain(final HttpSecurity http)
+  SecurityFilterChain samlIdpSecurityFilterChain(final HttpSecurity http, final IdentityProviderSettings settings)
       throws Exception {
 
     // Apply the default configuration for the IdP.
@@ -69,7 +70,13 @@ public class IdpConfiguration {
 
     http.getConfigurer(Saml2IdpConfigurer.class)
         // Override the HTML page that is used to post back the SAML response with our own ...
-        .responseProcessor(rp -> rp.responsePage("/custom-post"));
+        .responseSender((s) -> s.setResponsePage("/custom-post"))
+        .authnRequestProcessor(p -> p.authenticationProvider(
+            a -> {
+              DefaultNameIDGeneratorFactory f = new DefaultNameIDGeneratorFactory(settings.getEntityId());
+              f.setDefaultFormat(NameID.TRANSIENT);
+              a.nameIDGeneratorFactory(f);
+            }));
 
 //    http
 //        .anonymous().disable()
@@ -135,12 +142,6 @@ public class IdpConfiguration {
             .backupLocation(new File("target/metadata-backup.xml"))
             .validationCertificate(
                 X509Utils.decodeCertificate(new ClassPathResource("sandbox-metadata.crt").getInputStream()))
-            .build())
-        .metadata(MetadataSettings.builder()
-            .entityCategories(List.of(
-                "http://id.elegnamnden.se/ec/1.0/loa3-pnr",
-                "http://id.swedenconnect.se/ec/1.0/loa3-name", 
-                "http://id.elegnamnden.se/sprop/1.0/mobile-auth"))
             .build())
         .build();
   }

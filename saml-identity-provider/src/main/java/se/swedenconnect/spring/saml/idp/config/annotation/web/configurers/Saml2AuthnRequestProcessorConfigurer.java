@@ -22,51 +22,44 @@ import java.util.function.Consumer;
 import javax.servlet.http.HttpServletRequest;
 
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
-import org.opensaml.xmlsec.signature.support.SignatureTrustEngine;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 
-import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayChecker;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationConverter;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
-import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestSignatureValidator;
-import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestValidator;
-import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2AuthnRequestProcessingFilter;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2ErrorResponseProcessingFilter;
 
 /**
  * A configurer for the processing of SAML2 {@code AuthnRequest} messages.
  */
-public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configurer {
+public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2AuthnEndpointConfigurer {
 
   /** The request matcher. */
   private RequestMatcher requestMatcher;
+
+  /** The configurer for creating a {@link Saml2AuthnRequestAuthenticationProvider}. */
+  private Saml2AuthnRequestAuthenticationProviderConfigurer authenticationProviderConfigurer =
+      new Saml2AuthnRequestAuthenticationProviderConfigurer();
+
+  /** May be used to override the use of {@link Saml2AuthnRequestAuthenticationProvider}. */
+  private AuthenticationProvider customAuthenticationProvider;
 
   /** The converter(s) handling {@code AuthnRequest} messages. */
   private final List<AuthenticationConverter> authnRequestConverters = new ArrayList<>();
 
   /** A consumer for modifying the {@code authnRequestConverters}. */
   private Consumer<List<AuthenticationConverter>> authnRequestConvertersConsumer = (converters) -> {
-  };
-
-  /** The authentication provider(s) handling {@code AuthnRequest} messages. */
-  private final List<AuthenticationProvider> authenticationProviders = new ArrayList<>();
-
-  /** A consumer for modifying the {@code authenticationProviders}. */
-  private Consumer<List<AuthenticationProvider>> authenticationProvidersConsumer = (authenticationProviders) -> {
   };
 
   /**
@@ -116,32 +109,32 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
   }
 
   /**
-   * Adds an {@link AuthenticationProvider} used for authenticating an {@link Saml2AuthnRequestAuthenticationToken}.
-   *
-   * @param authenticationProvider an {@link AuthenticationProvider} used for authenticating an
-   *          {@link Saml2AuthnRequestAuthenticationToken}
+   * Customizes the {@link Saml2AuthnRequestAuthenticationProviderConfigurer} that is used to create the default
+   * authentication provider - {@link Saml2AuthnRequestAuthenticationProvider}.
+   * 
+   * @param customizer the customizer that is given access to the
+   *          {@link Saml2AuthnRequestAuthenticationProviderConfigurer}
    * @return the {@link Saml2AuthnRequestProcessorConfigurer} for further configuration
    */
   public Saml2AuthnRequestProcessorConfigurer authenticationProvider(
-      final AuthenticationProvider authenticationProvider) {
-    Assert.notNull(authenticationProvider, "authenticationProvider cannot be null");
-    this.authenticationProviders.add(authenticationProvider);
+      final Customizer<Saml2AuthnRequestAuthenticationProviderConfigurer> customizer) {
+    customizer.customize(this.authenticationProviderConfigurer);
     return this;
   }
 
   /**
-   * Sets the {@code Consumer} providing access to the {@code List} of default and (optionally) added
-   * {@link #authenticationProvider(AuthenticationProvider) AuthenticationProvider}'s allowing the ability to add,
-   * remove, or customize a specific {@link AuthenticationProvider}.
+   * Installs a custom {@link AuthenticationProvider} to be used instead of
+   * {@link Saml2AuthnRequestAuthenticationProvider}.
+   * <p>
+   * </p>
    *
-   * @param authenticationProvidersConsumer the {@code Consumer} providing access to the {@code List} of default and
-   *          (optionally) added {@link AuthenticationProvider}'s
+   * @param customAuthenticationProvider an {@link AuthenticationProvider} used for authenticating an
+   *          {@link Saml2AuthnRequestAuthenticationToken}
    * @return the {@link Saml2AuthnRequestProcessorConfigurer} for further configuration
    */
-  public Saml2AuthnRequestProcessorConfigurer authenticationProviders(
-      final Consumer<List<AuthenticationProvider>> authenticationProvidersConsumer) {
-    Assert.notNull(authenticationProvidersConsumer, "authenticationProvidersConsumer cannot be null");
-    this.authenticationProvidersConsumer = authenticationProvidersConsumer;
+  public Saml2AuthnRequestProcessorConfigurer customAuthenticationProvider(
+      final AuthenticationProvider customAuthenticationProvider) {
+    this.customAuthenticationProvider = customAuthenticationProvider;
     return this;
   }
 
@@ -161,25 +154,21 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
 
   /** {@inheritDoc} */
   @Override
-  void init(final HttpSecurity httpSecurity) {
-    final IdentityProviderSettings settings = Saml2ConfigurerUtils.getIdentityProviderSettings(httpSecurity);
-    this.requestMatcher = new OrRequestMatcher(
-        new AntPathRequestMatcher(settings.getEndpoints().getRedirectAuthnEndpoint(), HttpMethod.GET.name()),
-        new AntPathRequestMatcher(settings.getEndpoints().getPostAuthnEndpoint(), HttpMethod.POST.name()));
-    // TODO: HoK endpoints
-
-    final List<AuthenticationProvider> authenticationProviders = createDefaultAuthenticationProviders(httpSecurity);
-    if (!this.authenticationProviders.isEmpty()) {
-      authenticationProviders.addAll(0, this.authenticationProviders);
-    }
-    this.authenticationProvidersConsumer.accept(authenticationProviders);
-    authenticationProviders
-        .forEach(authenticationProvider -> httpSecurity.authenticationProvider(postProcess(authenticationProvider)));
+  protected void init(final HttpSecurity httpSecurity, final RequestMatcher requestMatcher) {
+    this.requestMatcher = requestMatcher;
+ 
+    this.authenticationProviderConfigurer.init(httpSecurity);
   }
 
   /** {@inheritDoc} */
   @Override
   void configure(final HttpSecurity httpSecurity) {
+    
+    final AuthenticationProvider authenticationProvider = this.customAuthenticationProvider != null
+        ? this.customAuthenticationProvider
+        : this.authenticationProviderConfigurer.getObject(httpSecurity);
+    
+    httpSecurity.authenticationProvider(this.postProcess(authenticationProvider));
 
     final List<AuthenticationConverter> authnConverters = createDefaultAuthenticationConverters(httpSecurity);
     if (!this.authnRequestConverters.isEmpty()) {
@@ -201,18 +190,12 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
     final AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
 
     final Saml2AuthnRequestProcessingFilter filter =
-        new Saml2AuthnRequestProcessingFilter(authenticationManager, this.getRequestMatcher(), authnRequestConverter);
+        new Saml2AuthnRequestProcessingFilter(authenticationManager, this.requestMatcher, authnRequestConverter);
     if (this.authenticationSuccessHandler != null) {
       filter.setAuthenticationSuccessHandler(this.authenticationSuccessHandler);
     }
 
     httpSecurity.addFilterAfter(this.postProcess(filter), Saml2ErrorResponseProcessingFilter.class);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  RequestMatcher getRequestMatcher() {
-    return this.requestMatcher;
   }
 
   /**
@@ -229,35 +212,6 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
     authenticationConverters.add(new Saml2AuthnRequestAuthenticationConverter(resolver));
 
     return authenticationConverters;
-  }
-
-  /**
-   * Creates the default {@link AuthenticationProvider}s.
-   * 
-   * @param httpSecurity the HTTP security object
-   * @return a list of {@link AuthenticationProvider} objects
-   */
-  protected static List<AuthenticationProvider> createDefaultAuthenticationProviders(final HttpSecurity httpSecurity) {
-    final List<AuthenticationProvider> authenticationProviders = new ArrayList<>();
-    
-    final IdentityProviderSettings settings = Saml2ConfigurerUtils.getIdentityProviderSettings(httpSecurity);
-
-    final SignatureTrustEngine signatureTrustEngine = httpSecurity.getSharedObject(SignatureTrustEngine.class);
-
-    final AuthnRequestValidator signatureValidator =
-        new AuthnRequestSignatureValidator(signatureTrustEngine);
-    
-    final Saml2AuthnRequestAuthenticationProvider provider =
-        new Saml2AuthnRequestAuthenticationProvider(settings, signatureValidator);
-    
-    final MessageReplayChecker messageReplayChecker = httpSecurity.getSharedObject(MessageReplayChecker.class);
-    if (messageReplayChecker != null) {
-      provider.setMessageReplayChecker(messageReplayChecker);
-    }
-    
-    authenticationProviders.add(provider);
-
-    return authenticationProviders;
   }
 
 }

@@ -55,6 +55,37 @@ public class DefaultSignatureMessageExtensionExtractor implements SignatureMessa
   /**
    * Constructor setting up the object for decrypting {@link SignMessage} objects.
    * 
+   * @param entityId the IdP entityID
+   * @param credentials a list of decryption credentials (if {@code null} decryption will not be supported)
+   */
+  public DefaultSignatureMessageExtensionExtractor(final String entityId, final List<PkiCredential> credentials) {
+    this.entityId = Optional.ofNullable(entityId).filter(StringUtils::hasText)
+        .orElseThrow(() -> new IllegalArgumentException("entityId must be assigned"));
+    if (credentials != null && !credentials.isEmpty()) {
+      final List<Credential> creds = new ArrayList<>();
+      for (final PkiCredential c : credentials) {
+        if (c instanceof OpenSamlCredential) {
+          creds.add((OpenSamlCredential) c);
+        }
+        else {
+          creds.add(new OpenSamlCredential(c));
+        }
+      }
+      boolean p11Flag = credentials.get(0) instanceof Pkcs11Credential; // TODO: replace with predicate
+
+      this.decrypter = new SAMLObjectDecrypter(creds);
+      if (p11Flag) {
+        this.decrypter.setPkcs11Workaround(p11Flag);
+      }
+    }
+    else {
+      log.warn("No encrypt/decrypt credentials available - Encrypted SignMessage elements will not be supported");
+    }
+  }
+
+  /**
+   * Constructor setting up the object for decrypting {@link SignMessage} objects.
+   * 
    * @param settings IdP settings
    */
   public DefaultSignatureMessageExtensionExtractor(final IdentityProviderSettings settings) {
@@ -115,7 +146,8 @@ public class DefaultSignatureMessageExtensionExtractor implements SignatureMessa
         .findAny()
         .isPresent();
     if (!isSignService) {
-      log.info("AuthnRequest contains SignMessage extension, but SP is not a signature service - ignoring {}", token.getLogString());
+      log.info("AuthnRequest contains SignMessage extension, but SP is not a signature service - ignoring {}",
+          token.getLogString());
       return null;
     }
 

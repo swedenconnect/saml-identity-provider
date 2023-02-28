@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Response;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -32,12 +33,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import lombok.extern.slf4j.Slf4j;
-import se.swedenconnect.spring.saml.idp.attributes.ReleaseAllAttributeProducer;
-import se.swedenconnect.spring.saml.idp.authentication.Saml2AssertionHandler;
+import se.swedenconnect.spring.saml.idp.authentication.Saml2AssertionBuilder;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
-import se.swedenconnect.spring.saml.idp.response.Saml2ResponseHandler;
+import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
+import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
+import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
+import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 
 /**
  * A {@link Filter} that intercept an SAML authentication request that has been verified and translated into a
@@ -45,7 +47,6 @@ import se.swedenconnect.spring.saml.idp.response.Saml2ResponseHandler;
  * 
  * @author Martin Lindström
  */
-@Slf4j
 public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilter {
 
   /** The authentication manager. */
@@ -54,11 +55,14 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
   /** The request matcher for the SSO endpoints. */
   private final RequestMatcher requestMatcher;
 
-  /** The {@link Saml2ResponseHandler} to use when creating and sending the responses. */
-  private final Saml2ResponseHandler responseHandler;
+  /** The response builder. */
+  private final Saml2ResponseBuilder responseBuilder;
+
+  /** The response sender. */
+  private final Saml2ResponseSender responseSender;
 
   /** The assertion handler responsible of creating {@link Assertion}s. */
-  private final Saml2AssertionHandler assertionHandler;
+  private final Saml2AssertionBuilder assertionHandler;
 
   /**
    * Constructor.
@@ -66,17 +70,20 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
    * @param authenticationManager the authentication manager
    * @param requestMatcher the request matcher
    * @param assertionHandler the assertion handler responsible of creating {@link Assertion}s
-   * @param responseHandler the response handler
+   * @param responseBuilder the {@link Saml2ResponseBuilder}
+   * @param responseSender the {@link Saml2ResponseSender}
    */
   public Saml2UserAuthenticationProcessingFilter(final AuthenticationManager authenticationManager,
       final RequestMatcher requestMatcher,
-      final Saml2AssertionHandler assertionHandler,
-      final Saml2ResponseHandler responseHandler) {
+      final Saml2AssertionBuilder assertionHandler,
+      final Saml2ResponseBuilder responseBuilder,
+      final Saml2ResponseSender responseSender) {
     this.authenticationManager =
         Objects.requireNonNull(authenticationManager, "authenticationManager must not be null");
     this.requestMatcher = Objects.requireNonNull(requestMatcher, "requestMatcher must not be null");
     this.assertionHandler = Objects.requireNonNull(assertionHandler, "assertionHandler must not be null");
-    this.responseHandler = Objects.requireNonNull(responseHandler, "responseHandler must not be null");
+    this.responseBuilder = Objects.requireNonNull(responseBuilder, "responseBuilder must not be null");
+    this.responseSender = Objects.requireNonNull(responseSender, "responseSender must not be null");
   }
 
   /** {@inheritDoc} */
@@ -90,33 +97,51 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
       return;
     }
 
-    final Authentication authnInputToken = SecurityContextHolder.getContext().getAuthentication();
+    final Authentication authnInputToken = SecurityContextHolder.getContext().getAuthentication();    
     if (authnInputToken != null && Saml2UserAuthenticationInputToken.class.isInstance(authnInputToken)) {
       final Authentication auth = this.authenticationManager.authenticate(authnInputToken);
       if (auth != null && Saml2UserAuthentication.class.isInstance(auth)) {
         final Saml2UserAuthentication authenticatedUser = Saml2UserAuthentication.class.cast(auth);
-        
-        authenticatedUser.setAuthnRequestToken(((Saml2UserAuthenticationInputToken) authnInputToken).getAuthnRequestToken());
-        authenticatedUser.setAuthnRequirements(((Saml2UserAuthenticationInputToken) authnInputToken).getAuthnRequirements());
-        
-        final Assertion assertion = this.assertionHandler.buildAssertion(authenticatedUser, 
-            new ReleaseAllAttributeProducer());
-        
-        this.responseHandler.sendSamlResponse(request, response, assertion);
-        
+
+        // The assertion and response builders need information about the request ...
+        //
+        authenticatedUser
+            .setAuthnRequestToken(((Saml2UserAuthenticationInputToken) authnInputToken).getAuthnRequestToken());
+        authenticatedUser
+            .setAuthnRequirements(((Saml2UserAuthenticationInputToken) authnInputToken).getAuthnRequirements());
+
+        // Build assertion and response ...
+        //
+        final Assertion assertion = this.assertionHandler.buildAssertion(authenticatedUser);
+        final Saml2ResponseAttributes responseAttributes = Saml2IdpContextHolder.getContext().getResponseAttributes();
+        final Response samlResponse = this.responseBuilder.buildResponse(responseAttributes, assertion);
+
+        // Send response ...
+        //
+        this.responseSender.send(
+            request, response, responseAttributes.getDestination(), samlResponse, responseAttributes.getRelayState());
+
         authenticatedUser.clearAuthnRequestToken();
         authenticatedUser.clearAuthnRequirements();
-        
+
+        // Should we save the authentication for future use?
+        //
         final SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        securityContext.setAuthentication(authenticatedUser);
+        if (authenticatedUser.isReuseAuthentication()) {
+          securityContext.setAuthentication(authenticatedUser);
+        }
         SecurityContextHolder.setContext(securityContext);
-        log.debug("Setting SecurityContextHolder authentication to {}", authenticatedUser.getClass().getSimpleName());
-        
-        return;        
+
+        return;
+      }
+      else {
+        // TODO: Report error ...
       }
     }
-    filterChain.doFilter(request, response);
     
+    // TODO: error
+    filterChain.doFilter(request, response);
+
   }
 
 }

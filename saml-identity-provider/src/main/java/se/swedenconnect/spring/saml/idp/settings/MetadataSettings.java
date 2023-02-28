@@ -16,8 +16,6 @@
 package se.swedenconnect.spring.saml.idp.settings;
 
 import java.time.Duration;
-import java.util.Collections;
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.core.io.Resource;
@@ -86,24 +84,6 @@ public class MetadataSettings extends AbstractSettings {
   }
 
   /**
-   * The declared entity categories, see <a href=
-   * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
-   * Categories for the Swedish eID Framework</a>. A {@link List} of {@link String}s.
-   */
-  public static final String SAML_METADATA_ENTITY_CATEGORIES = "entity-categories";
-
-  /**
-   * Gets the declared entity categories, see <a href=
-   * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
-   * Categories for the Swedish eID Framework</a>.
-   * 
-   * @return the entity category URI:s (may be an empty list)
-   */
-  public List<String> getEntityCategories() {
-    return this.getSetting(SAML_METADATA_ENTITY_CATEGORIES);
-  }
-
-  /**
    * Constructs a new {@link Builder} with no settings.
    *
    * @return the {@link Builder}
@@ -161,18 +141,6 @@ public class MetadataSettings extends AbstractSettings {
       return this.setting(SAML_METADATA_VALIDITY, validityPeriod);
     }
     
-    /**
-     * Assigns the declared entity categories, see <a href=
-     * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
-     * Categories for the Swedish eID Framework</a>.
-     * 
-     * @param entityCategories the entity category URI:s
-     * @return the builder
-     */
-    public Builder entityCategories(final List<String> entityCategories) {
-      return this.setting(SAML_METADATA_ENTITY_CATEGORIES, entityCategories);
-    }    
-
     /** {@inheritDoc} */
     @Override
     protected void applyDefaultSettings() {
@@ -181,9 +149,6 @@ public class MetadataSettings extends AbstractSettings {
       }
       if (this.getSettings().get(SAML_METADATA_VALIDITY) == null) {
         this.validityPeriod(Duration.ofDays(7));
-      }
-      if (this.getSettings().get(SAML_METADATA_ENTITY_CATEGORIES) == null) {
-        this.entityCategories(Collections.emptyList());
       }
     }
 

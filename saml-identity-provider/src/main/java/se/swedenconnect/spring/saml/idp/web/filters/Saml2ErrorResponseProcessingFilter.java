@@ -24,13 +24,18 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.opensaml.saml.saml2.core.Response;
 import org.springframework.security.web.util.ThrowableAnalyzer;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
-import se.swedenconnect.spring.saml.idp.response.Saml2ResponseHandler;
+import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
+import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
+import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 
 /**
  * A {@link Filter} responsible of sending SAML error response messages.
@@ -42,8 +47,11 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
   /** The request matcher for the SSO endpoints. */
   private final RequestMatcher requestMatcher;
 
-  /** The {@link Saml2ResponseHandler} to use when creating and sending the responses. */
-  private final Saml2ResponseHandler responseHandler;
+  /** The response builder. */
+  private final Saml2ResponseBuilder responseBuilder;
+
+  /** The response sender. */
+  private final Saml2ResponseSender responseSender;
 
   /** An analyzer for handling exceptions. */
   private ThrowableAnalyzer throwableAnalyzer = new DefaultThrowableAnalyzer();
@@ -52,12 +60,14 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
    * Constructor.
    * 
    * @param requestMatcher the request matcher
-   * @param responseHandler the response handler
+   * @param responseBuilder the {@link Saml2ResponseBuilder}
+   * @param responseSender the {@link Saml2ResponseSender}
    */
-  public Saml2ErrorResponseProcessingFilter(final RequestMatcher requestMatcher,      
-      final Saml2ResponseHandler responseHandler) {
+  public Saml2ErrorResponseProcessingFilter(final RequestMatcher requestMatcher,
+      final Saml2ResponseBuilder responseBuilder, final Saml2ResponseSender responseSender) {
     this.requestMatcher = Objects.requireNonNull(requestMatcher, "requestMatcher must not be null");
-    this.responseHandler = Objects.requireNonNull(responseHandler, "responseHandler must not be null");
+    this.responseBuilder = Objects.requireNonNull(responseBuilder, "responseBuilder must not be null");
+    this.responseSender = Objects.requireNonNull(responseSender, "responseSender must not be null");
   }
 
   /** {@inheritDoc} */
@@ -94,8 +104,26 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
         throw new ServletException(
             "Unable to handle the Spring Security Exception because the response is already committed", e);
       }
-      this.responseHandler.sendErrorResponse(request, response, samlException);
+      this.sendErrorResponse(request, response, samlException);
     }
+  }
+
+  /**
+   * Sends a SAML error {@link Response} message.
+   * 
+   * @param request the HTTP servlet request
+   * @param response the HTTP servlet response
+   * @param error the SAML error
+   * @throws UnrecoverableSaml2IdpException for send errors
+   */
+  private void sendErrorResponse(
+      final HttpServletRequest request, final HttpServletResponse response, final Saml2ErrorStatusException error)
+      throws UnrecoverableSaml2IdpException {
+
+    final Saml2ResponseAttributes responseAttributes = Saml2IdpContextHolder.getContext().getResponseAttributes();
+    final Response samlResponse = this.responseBuilder.buildErrorResponse(responseAttributes, error);
+    this.responseSender.send(
+        request, response, responseAttributes.getDestination(), samlResponse, responseAttributes.getRelayState());
   }
 
   /**
