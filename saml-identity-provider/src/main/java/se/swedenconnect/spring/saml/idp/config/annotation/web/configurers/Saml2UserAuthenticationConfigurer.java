@@ -122,7 +122,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2AuthnEndpoin
     assertionBuilder.setNotBeforeDuration(settings.getAssertionSettings().getNotBeforeDuration());
     assertionBuilder.setNotOnOrAfterDuration(settings.getAssertionSettings().getNotOnOrAfterDuration());
     if (this.idGenerator != null) {
-      assertionBuilder.setIdGenerator(idGenerator);
+      assertionBuilder.setIdGenerator(this.idGenerator);
     }
     if (this.assertionCustomizer != null) {
       assertionBuilder.setAssertionCustomizer(this.assertionCustomizer);

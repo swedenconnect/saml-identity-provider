@@ -208,7 +208,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
 
     if (forceAuthn && isPassive) {
       final String msg = "Invalid AuthnRequest - ForceAuthn and IsPassive cannot both be set";
-      log.info("{} {}", msg, token.getLogString());
+      log.info("{} [{}]", msg, token.getLogString());
       throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_AUTHNREQUEST, msg);
     }
 

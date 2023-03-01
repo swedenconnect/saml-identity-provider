@@ -55,7 +55,7 @@ public class OasisExtensionRequestedAttributeProcessor implements RequestedAttri
         .map(r -> new RequestedAttribute(r))
         .collect(Collectors.toList());
 
-    log.debug("Extracted requested attributes from RequestedAttributes extension - {} {}",
+    log.debug("Extracted requested attributes from RequestedAttributes extension - {} [{}]",
         attributes, authnRequestToken.getLogString());
     
     return attributes;

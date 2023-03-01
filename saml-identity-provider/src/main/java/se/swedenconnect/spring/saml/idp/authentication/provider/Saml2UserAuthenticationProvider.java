@@ -19,6 +19,7 @@ import java.util.List;
 
 import org.springframework.security.authentication.AuthenticationProvider;
 
+import se.swedenconnect.spring.saml.idp.attributes.release.AttributeProducer;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 
@@ -26,6 +27,18 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationIn
  * Interface for an {@link AuthenticationProvider} that implements SAML2 Identity Provider user authentication. The
  * {@link #authenticate(org.springframework.security.core.Authentication)} method returns a
  * {@link Saml2UserAuthentication}.
+ * 
+ * <p>
+ * Note: The authentication provider should release all possible attributes about an authentication (user). These will
+ * be filtered by an {@link AttributeProducer} before adding attributes to an assertion. The reason for this is that in
+ * SSO-cases another set of attributes may be requested, and if attributes are filtered by the provider we may not be
+ * able to re-use and authentication.
+ * </p>
+ * <p>
+ * Note that the {@link #authenticate(org.springframework.security.core.Authentication)} must only return {@code null}
+ * under one condition and that is when the requested authentication context(s) can not be met by the authentication
+ * provider.
+ * </p>
  * 
  * @author Martin Lindström
  */

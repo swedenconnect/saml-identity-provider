@@ -94,7 +94,7 @@ public class EntityCategoryRequestedAttributeProcessor implements RequestedAttri
             .collect(Collectors.toList());
 
     if (serviceCategories.isEmpty()) {
-      log.debug("No matching service entity categories found that could be used to determine attribute release {}",
+      log.debug("No matching service entity categories found that could be used to determine attribute release [{}]",
           authnRequestToken.getLogString());
       return Collections.emptyList();
     }

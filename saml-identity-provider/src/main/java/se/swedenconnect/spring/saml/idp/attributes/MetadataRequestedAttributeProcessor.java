@@ -65,7 +65,7 @@ public class MetadataRequestedAttributeProcessor implements RequestedAttributePr
     }
 
     if (acs == null) {
-      log.debug("No matching AttributeConsumingService found to extract requested attributes from {}",
+      log.debug("No matching AttributeConsumingService found to extract requested attributes from [{}]",
           authnRequestToken.getLogString());
 
       return Collections.emptyList();
@@ -75,7 +75,7 @@ public class MetadataRequestedAttributeProcessor implements RequestedAttributePr
         .map(r -> new RequestedAttribute(r))
         .collect(Collectors.toList());
 
-    log.debug("Extracted requested attributes from AttributeConsumingService with index {} - {} {}",
+    log.debug("Extracted requested attributes from AttributeConsumingService with index {} - {} [{}]",
         acs.getIndex(), attributes, authnRequestToken.getLogString());
 
     return attributes;

@@ -146,13 +146,13 @@ public class DefaultSignatureMessageExtensionExtractor implements SignatureMessa
         .findAny()
         .isPresent();
     if (!isSignService) {
-      log.info("AuthnRequest contains SignMessage extension, but SP is not a signature service - ignoring {}",
+      log.info("AuthnRequest contains SignMessage extension, but SP is not a signature service - ignoring [{}]",
           token.getLogString());
       return null;
     }
 
     if (signMessage.getDisplayEntity() != null && !signMessage.getDisplayEntity().equalsIgnoreCase(this.entityId)) {
-      log.info("DisplayEntity of SignMessage ('{}') does not correspond with IdP's entityID - will ignore. {}",
+      log.info("DisplayEntity of SignMessage ('{}') does not correspond with IdP's entityID - will ignore. [{}]",
           signMessage.getDisplayEntity(), token.getLogString());
       return null;
     }
@@ -164,7 +164,7 @@ public class DefaultSignatureMessageExtensionExtractor implements SignatureMessa
       }
       catch (final DecryptionException e) {
         final String msg = "Failed to decrypt SignMessage";
-        log.info("{} - {} {}", msg, e.getMessage(), token.getLogString());
+        log.info("{} - {} [{}]", msg, e.getMessage(), token.getLogString());
         log.debug("", e);
         throw new Saml2ErrorStatusException(Saml2ErrorStatus.SIGN_MESSAGE_DECRYPT, e);
       }
@@ -175,7 +175,7 @@ public class DefaultSignatureMessageExtensionExtractor implements SignatureMessa
 
     if (clearTextMessage == null || !StringUtils.hasText(clearTextMessage.getValue())) {
       final String msg = "Invalid SignMessage - missing data to display";
-      log.info("{} {}", msg, token.getLogString());
+      log.info("{} [{}]", msg, token.getLogString());
       throw new Saml2ErrorStatusException(Saml2ErrorStatus.SIGN_MESSAGE_DECRYPT, msg);
     }
 

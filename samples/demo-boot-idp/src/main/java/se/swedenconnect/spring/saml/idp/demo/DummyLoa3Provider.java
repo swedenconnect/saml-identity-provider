@@ -18,25 +18,26 @@ package se.swedenconnect.spring.saml.idp.demo;
 import java.time.Instant;
 import java.util.List;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Component;
 
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
+import se.swedenconnect.opensaml.sweid.saml2.authn.LevelOfAssuranceUris;
 import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryConstants;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserDetails;
-import se.swedenconnect.spring.saml.idp.authentication.provider.Saml2UserAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.authentication.provider.AbstractSaml2UserAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 @Component
-public class DummyAuthnProvider implements Saml2UserAuthenticationProvider {
+public class DummyLoa3Provider extends AbstractSaml2UserAuthenticationProvider {
+  
+  private static final String SUPPORTED_LOA = LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3;
 
   @Override
-  public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
-
-    final Saml2UserAuthenticationInputToken token = Saml2UserAuthenticationInputToken.class.cast(authentication);
+  protected Saml2UserAuthentication authenticate(final Saml2UserAuthenticationInputToken token, final List<String> authnContextUris)
+      throws Saml2ErrorStatusException {
 
     final List<UserAttribute> attributes = List.of(
         new UserAttribute(AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER,
@@ -49,7 +50,7 @@ public class DummyAuthnProvider implements Saml2UserAuthenticationProvider {
             AttributeConstants.ATTRIBUTE_FRIENDLY_NAME_DISPLAY_NAME, "Sven Svensson"));
     
     final Saml2UserDetails details = new Saml2UserDetails(attributes, AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER,
-        "http://id.elegnamnden.se/loa/1.0/loa3", Instant.now(), "127.0.0.1");
+        SUPPORTED_LOA, Instant.now(), "127.0.0.1");
         
     final Saml2UserAuthentication userAuthn = new Saml2UserAuthentication(details);
     userAuthn.setReuseAuthentication(true);
@@ -58,8 +59,8 @@ public class DummyAuthnProvider implements Saml2UserAuthenticationProvider {
   }
 
   @Override
-  public List<String> getSupportedAuthnContextUris() {
-    return List.of("http://id.elegnamnden.se/loa/1.0/loa3");
+  public List<String> getSupportedAuthnContextUris() {    
+    return List.of(SUPPORTED_LOA);
   }
 
   @Override

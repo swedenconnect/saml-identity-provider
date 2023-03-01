@@ -234,10 +234,10 @@ public class Saml2AssertionBuilder {
               SecurityConfigurationSupport.getGlobalSignatureSigningConfiguration(),
               authnRequestToken.getPeerMetadata());
 
-          log.debug("Assertion successfully signed {}", authnRequestToken.getLogString());
+          log.debug("Assertion successfully signed [{}]", authnRequestToken.getLogString());
         }
         catch (final SignatureException e) {
-          log.error("Failed to sign Assertion - {} {}", e.getMessage(), authnRequestToken.getLogString(), e);
+          log.error("Failed to sign Assertion - {} [{}]", e.getMessage(), authnRequestToken.getLogString(), e);
           throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to sign Assertion", e);
         }
       }

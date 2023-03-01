@@ -54,7 +54,7 @@ public class DefaultPrincipalSelectionProcessor implements PrincipalSelectionPro
         })
         .collect(Collectors.toList());
 
-    log.debug("Extracted PrincipalSelection attributes: {} {}",
+    log.debug("Extracted PrincipalSelection attributes: {} [{}]",
         attributes, authnRequestToken.getLogString());
 
     return attributes;

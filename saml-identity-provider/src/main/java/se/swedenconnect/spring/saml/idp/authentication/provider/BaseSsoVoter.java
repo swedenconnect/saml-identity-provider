@@ -17,33 +17,69 @@ package se.swedenconnect.spring.saml.idp.authentication.provider;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Collection;
+import java.util.Objects;
 
+import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
+/**
+ * A {@link SsoVoter} that checks basic conditions. It denies SSO for the following cases:
+ * <ul>
+ * <li>The time that has passed since the original authentication exceeds the configured limit.</li>
+ * <li>The authentication context used in the original authentication does not match the current request or the ones
+ * supported by the IdP.</li>
+ * </ul>
+ * 
+ * @author Martin Lindström
+ */
+@Slf4j
 public class BaseSsoVoter implements SsoVoter {
 
-  private Duration ssoLimit = IdentityProviderSettings.SSO_DURATION_LIMIT_DEFAULT;
+  /**
+   * The the limit for accepting an older authentication for SSO (compared from its original authentication instant).
+   */
+  private Duration ssoDurationLimit = IdentityProviderSettings.SSO_DURATION_LIMIT_DEFAULT;
 
+  /** {@inheritDoc} */
   @Override
-  public Vote mayReuse(final Saml2UserAuthentication userAuthn, final Saml2UserAuthenticationInputToken token) {
-    if (userAuthn == null || userAuthn.getSaml2UserDetails().getAuthnInstant() == null) {
+  public Vote mayReuse(final Saml2UserAuthentication userAuthn, final Saml2UserAuthenticationInputToken token,
+      final Collection<String> allowedAuthnContexts) {
+
+    if (userAuthn.getSaml2UserDetails().getAuthnInstant() == null) {
       return Vote.DENY;
     }
-    if (!userAuthn.isReuseAuthentication()) {
-      // Should never happen ...
-      return Vote.DENY;
-    }
-    
+
     // Too old?
-    if (userAuthn.getSaml2UserDetails().getAuthnInstant().plus(this.ssoLimit).isBefore(Instant.now())) {      
+    if (userAuthn.getSaml2UserDetails().getAuthnInstant().plus(this.ssoDurationLimit).isBefore(Instant.now())) {
+      log.info("Will not re-use authentication for '{}' - authn-instant exceeds limit [{}]",
+          userAuthn.getName(), token.getLogString());
+
       return Vote.DENY;
     }
-    
+
     // Compare the requested authentication context
+    //
+    if (!allowedAuthnContexts.contains(userAuthn.getSaml2UserDetails().getAuthnContextUri())) {
+      log.info("Will not re-use authentication for '{}' - "
+          + "previous authentication was made according to '{}' - not matched by IdP or AuthnRequest [{}]",
+          userAuthn.getName(), token.getLogString());
+      return Vote.DENY;
+    }
 
     return Vote.OK;
+  }
+
+  /**
+   * Assigns the limit for accepting an older authentication for SSO (compared from its original authentication
+   * instant). The default is {@link IdentityProviderSettings#SSO_DURATION_LIMIT_DEFAULT}.
+   * 
+   * @param ssoDurationLimit the duration
+   */
+  public void setSsoDurationLimit(final Duration ssoDurationLimit) {
+    this.ssoDurationLimit = Objects.requireNonNull(ssoDurationLimit, "ssoDurationLimit must not be null");
   }
 
 }

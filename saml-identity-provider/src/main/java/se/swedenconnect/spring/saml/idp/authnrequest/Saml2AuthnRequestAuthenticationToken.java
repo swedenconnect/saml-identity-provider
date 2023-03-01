@@ -184,13 +184,13 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
    * Gets a simple log string looking like:
    * 
    * <pre>
-   * [entity-id: 'https://sp.example.com', authn-request: '9873hHYYT']
+   * entity-id: 'https://sp.example.com', authn-request: '9873hHYYT'
    * </pre>
    * 
-   * @return
+   * @return a formatted log string
    */
   public String getLogString() {
-    return String.format("[entity-id: '%s', authn-request: '%s']",
+    return String.format("entity-id: '%s', authn-request: '%s'",
         Optional.ofNullable(this.getPeerMetadata()).map(EntityDescriptor::getEntityID).orElseGet(() -> "unknown"),
         Optional.ofNullable(this.getAuthnRequest()).map(AuthnRequest::getID).orElseGet(() -> "unknown"));
   }

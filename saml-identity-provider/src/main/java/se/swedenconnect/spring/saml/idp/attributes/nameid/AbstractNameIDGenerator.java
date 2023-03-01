@@ -59,7 +59,7 @@ public abstract class AbstractNameIDGenerator implements NameIDGenerator {
     final String identifier = this.getIdentifier(authentication);
     final String format = this.getFormat();
 
-    log.debug("Generating NameID '{}' with Format '{}' {}", identifier, format,
+    log.debug("Generating NameID '{}' with Format '{}' [{}]", identifier, format,
         Optional.ofNullable(authentication.getAuthnRequestToken())
             .map(Saml2AuthnRequestAuthenticationToken::getLogString).orElseGet(() -> ""));
 

@@ -65,13 +65,13 @@ public class AssertionConsumerServiceValidator implements AuthnRequestValidator 
 
     if (assertionConsumerServiceUrl == null && assertionConsumerServiceIndex == null) {
       log.info("No AssertionConsumerService information provided in AuthnRequest "
-          + " - will use default from metadata {}", authnRequestToken.getLogString());
+          + " - will use default from metadata [{}]", authnRequestToken.getLogString());
 
       final AssertionConsumerService acs = ssoDesc.getDefaultAssertionConsumerService();
       if (acs == null) {
         final String msg = "No AssertionConsumerService given in AuthnRequest"
             + " and no valid AssertionConsumerService found in metadata";
-        log.info("{} {}", msg, authnRequestToken.getLogString());
+        log.info("{} [{}]", msg, authnRequestToken.getLogString());
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_ASSERTION_CONSUMER_SERVICE, msg);
       }
 
@@ -99,11 +99,11 @@ public class AssertionConsumerServiceValidator implements AuthnRequestValidator 
     }
     if (authnRequestToken.getAssertionConsumerServiceUrl() == null) {
       final String msg = "AssertionConsumerService given in AuthnRequest does not appear in metadata";
-      log.info("{} {}", msg, authnRequestToken.getLogString());
+      log.info("{} [{}]", msg, authnRequestToken.getLogString());
       throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_ASSERTION_CONSUMER_SERVICE, msg);
     }
 
-    log.debug("Using AssertionConsumerServiceURL: {} {}",
+    log.debug("Using AssertionConsumerServiceURL: {} [{}]",
         authnRequestToken.getAssertionConsumerServiceUrl(), authnRequestToken.getLogString());
   }
 

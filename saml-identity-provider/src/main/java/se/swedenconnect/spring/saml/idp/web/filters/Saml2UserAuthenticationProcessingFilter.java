@@ -37,6 +37,10 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2AssertionBuilder;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
+import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
+import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
+import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
+import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
@@ -97,48 +101,53 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
       return;
     }
 
-    final Authentication authnInputToken = SecurityContextHolder.getContext().getAuthentication();    
+    final Authentication authnInputToken = SecurityContextHolder.getContext().getAuthentication();
     if (authnInputToken != null && Saml2UserAuthenticationInputToken.class.isInstance(authnInputToken)) {
       final Authentication auth = this.authenticationManager.authenticate(authnInputToken);
-      if (auth != null && Saml2UserAuthentication.class.isInstance(auth)) {
-        final Saml2UserAuthentication authenticatedUser = Saml2UserAuthentication.class.cast(auth);
-
-        // The assertion and response builders need information about the request ...
-        //
-        authenticatedUser
-            .setAuthnRequestToken(((Saml2UserAuthenticationInputToken) authnInputToken).getAuthnRequestToken());
-        authenticatedUser
-            .setAuthnRequirements(((Saml2UserAuthenticationInputToken) authnInputToken).getAuthnRequirements());
-
-        // Build assertion and response ...
-        //
-        final Assertion assertion = this.assertionHandler.buildAssertion(authenticatedUser);
-        final Saml2ResponseAttributes responseAttributes = Saml2IdpContextHolder.getContext().getResponseAttributes();
-        final Response samlResponse = this.responseBuilder.buildResponse(responseAttributes, assertion);
-
-        // Send response ...
-        //
-        this.responseSender.send(
-            request, response, responseAttributes.getDestination(), samlResponse, responseAttributes.getRelayState());
-
-        authenticatedUser.clearAuthnRequestToken();
-        authenticatedUser.clearAuthnRequirements();
-
-        // Should we save the authentication for future use?
-        //
-        final SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
-        if (authenticatedUser.isReuseAuthentication()) {
-          securityContext.setAuthentication(authenticatedUser);
-        }
-        SecurityContextHolder.setContext(securityContext);
-
-        return;
+      if (auth == null) {
+        // TODO: direct to error handler instead ...
+        throw new Saml2ErrorStatusException(Saml2ErrorStatus.NO_AUTHN_CONTEXT);
       }
-      else {
-        // TODO: Report error ...
+      if (!Saml2UserAuthentication.class.isInstance(auth)) {
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
+            String.format("Expected {} from authentication manager but got {}",
+                Saml2UserAuthentication.class.getSimpleName(), auth.getClass().getSimpleName()));
       }
+
+      final Saml2UserAuthentication authenticatedUser = Saml2UserAuthentication.class.cast(auth);
+
+      // The assertion and response builders need information about the request ...
+      //
+      authenticatedUser
+          .setAuthnRequestToken(((Saml2UserAuthenticationInputToken) authnInputToken).getAuthnRequestToken());
+      authenticatedUser
+          .setAuthnRequirements(((Saml2UserAuthenticationInputToken) authnInputToken).getAuthnRequirements());
+
+      // Build assertion and response ...
+      //
+      final Assertion assertion = this.assertionHandler.buildAssertion(authenticatedUser);
+      final Saml2ResponseAttributes responseAttributes = Saml2IdpContextHolder.getContext().getResponseAttributes();
+      final Response samlResponse = this.responseBuilder.buildResponse(responseAttributes, assertion);
+
+      // Send response ...
+      //
+      this.responseSender.send(
+          request, response, responseAttributes.getDestination(), samlResponse, responseAttributes.getRelayState());
+
+      authenticatedUser.clearAuthnRequestToken();
+      authenticatedUser.clearAuthnRequirements();
+
+      // Should we save the authentication for future use?
+      //
+      final SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
+      if (authenticatedUser.isReuseAuthentication()) {
+        securityContext.setAuthentication(authenticatedUser);
+      }
+      SecurityContextHolder.setContext(securityContext);
+
+      return;
     }
-    
+
     // TODO: error
     filterChain.doFilter(request, response);
 

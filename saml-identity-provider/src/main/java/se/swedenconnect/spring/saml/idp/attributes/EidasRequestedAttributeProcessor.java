@@ -51,7 +51,7 @@ public class EidasRequestedAttributeProcessor implements RequestedAttributeProce
         .map(r -> new RequestedAttribute(r))
         .collect(Collectors.toList());
 
-    log.debug("Extracted requested attributes from eIDAS RequestedAttributes extension - {} {}",
+    log.debug("Extracted requested attributes from eIDAS RequestedAttributes extension - {} [{}]",
         attributes, authnRequestToken.getLogString());
 
     return attributes;

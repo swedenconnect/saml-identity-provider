@@ -42,7 +42,7 @@ public class Saml2IdpConfiguration {
    * @return a SecurityFilterChain
    * @throws Exception for configuration errors
    */
-  @Bean("identityProviderSecurityFilterChain")
+  @Bean("samlIdpSecurityFilterChain")
   @Order(Ordered.HIGHEST_PRECEDENCE)
   public SecurityFilterChain identityProviderSecurityFilterChain(final HttpSecurity http) throws Exception {
     applyDefaultSecurity(http);

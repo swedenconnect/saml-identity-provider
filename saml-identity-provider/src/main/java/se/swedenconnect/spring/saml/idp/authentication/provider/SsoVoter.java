@@ -15,6 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider;
 
+import java.util.Collection;
+
 import org.springframework.security.core.Authentication;
 
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
@@ -38,9 +40,11 @@ public interface SsoVoter {
    * 
    * @param userAuthn the user authentication object
    * @param token the authentication input token (for the current authentication)
+   * @param allowedAuthnContexts a collection of the allowed authentication contexts
    * @return {@link Vote#OK} if the voter is OK with re-using the authentication, {@link Vote#DENY} if the voter states
-   *           that the authentication may noy be re-used, and {@link Vote#DONT_KNOW} if the voter don't know
+   *           that the authentication may noy be re-used, and {@link Vote#DONT_KNOW} if the voter doesn't know
    */
-  Vote mayReuse(final Saml2UserAuthentication userAuthn, final Saml2UserAuthenticationInputToken token);
+  Vote mayReuse(final Saml2UserAuthentication userAuthn, final Saml2UserAuthenticationInputToken token,
+      final Collection<String> allowedAuthnContexts);
 
 }

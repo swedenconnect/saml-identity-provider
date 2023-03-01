@@ -17,7 +17,10 @@ package se.swedenconnect.spring.saml.idp.authentication;
 
 import java.util.Collections;
 import java.util.Objects;
+import java.util.Optional;
 
+import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -112,6 +115,15 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
   @Override
   public Object getPrincipal() {
     return this.authnRequestToken.getPrincipal();
+  }
+  
+  /**
+   * Maps to {@link Saml2AuthnRequestAuthenticationToken#getLogString()}.
+   * 
+   * @return a formatted log string
+   */
+  public String getLogString() {
+    return this.authnRequestToken.getLogString();
   }
 
 }
