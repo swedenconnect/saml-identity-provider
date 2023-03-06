@@ -15,6 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.config.annotation.web.configuration;
 
+import java.util.Map;
+
+import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -24,6 +28,9 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import lombok.extern.slf4j.Slf4j;
+import se.swedenconnect.spring.saml.idp.authentication.provider.AbstractRedirectUserAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.authentication.provider.Saml2UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurer;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
@@ -33,6 +40,7 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
  * @author Martin Lindström
  */
 @Configuration(proxyBeanMethods = false)
+@Slf4j
 public class Saml2IdpConfiguration {
 
   /**
@@ -58,6 +66,18 @@ public class Saml2IdpConfiguration {
   public static void applyDefaultSecurity(final HttpSecurity http) throws Exception {
 
     final Saml2IdpConfigurer idpConfigurer = new Saml2IdpConfigurer();
+
+    final Map<String, Saml2UserAuthenticationProvider> providers = getUserAuthenticationProviders(http);
+    for (final Map.Entry<String, Saml2UserAuthenticationProvider> provider : providers.entrySet()) {
+      log.debug("Adding '{}' bean as authentication provider", provider.getKey());
+      http.authenticationProvider(provider.getValue());
+
+      if (provider.getValue() instanceof AbstractRedirectUserAuthenticationProvider) {
+        idpConfigurer.userAuthentication((c) -> c.resumeAuthnPath(
+            ((AbstractRedirectUserAuthenticationProvider) provider.getValue()).getResumeAuthnPath()));
+      }
+    }
+
     final RequestMatcher endpointsMatcher = idpConfigurer.getEndpointsMatcher();
 
     http
@@ -71,7 +91,7 @@ public class Saml2IdpConfiguration {
         .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
         .apply(idpConfigurer);
   }
-  
+
   // TODO: SecurityContextRepository
 
   @Bean
@@ -79,6 +99,11 @@ public class Saml2IdpConfiguration {
     RegisterMissingBeanPostProcessor postProcessor = new RegisterMissingBeanPostProcessor();
     postProcessor.addBeanDefinition(IdentityProviderSettings.class, () -> IdentityProviderSettings.builder().build());
     return postProcessor;
+  }
+
+  private static Map<String, Saml2UserAuthenticationProvider> getUserAuthenticationProviders(final HttpSecurity http) {
+    return BeanFactoryUtils.beansOfTypeIncludingAncestors(
+        http.getSharedObject(ApplicationContext.class), Saml2UserAuthenticationProvider.class);
   }
 
 }

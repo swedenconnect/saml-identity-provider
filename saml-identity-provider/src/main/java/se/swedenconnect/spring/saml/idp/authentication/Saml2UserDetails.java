@@ -100,7 +100,7 @@ public class Saml2UserDetails implements UserDetails {
 
   /**
    * Gets an unmodifiable collection of all user attributes.
-   * 
+   *
    * @return the user attributes
    */
   public Collection<UserAttribute> getAttributes() {
@@ -109,7 +109,7 @@ public class Saml2UserDetails implements UserDetails {
 
   /**
    * Gets the ID of the primary attribute (that must appear among the attributes).
-   * 
+   *
    * @return the primary attribute ID
    */
   public String getPrimaryAttribute() {
@@ -118,7 +118,7 @@ public class Saml2UserDetails implements UserDetails {
 
   /**
    * Gets the authentication context URI under which the authentication was made.
-   * 
+   *
    * @return the authn context URI
    */
   public String getAuthnContextUri() {
@@ -127,7 +127,7 @@ public class Saml2UserDetails implements UserDetails {
 
   /**
    * Gets the authentication instant.
-   * 
+   *
    * @return the authentication instant
    */
   public Instant getAuthnInstant() {
@@ -136,7 +136,7 @@ public class Saml2UserDetails implements UserDetails {
 
   /**
    * Gets the subject locality, an IP-address.
-   * 
+   *
    * @return the subject locality
    */
   public String getSubjectIpAddress() {
@@ -146,7 +146,7 @@ public class Saml2UserDetails implements UserDetails {
   /**
    * If the authentication was performed by another provider and the current IdP acts as a proxy, this field holds the
    * ID of the authenticating authority.
-   * 
+   *
    * @return the authenticating authority, or {@code null} if not set
    */
   public String getAuthenticatingAuthority() {
@@ -156,7 +156,7 @@ public class Saml2UserDetails implements UserDetails {
   /**
    * Assigns the authenticating authority. If the authentication was performed by another provider and the current IdP
    * acts as a proxy, this field holds the ID of the authenticating authority.
-   * 
+   *
    * @param authenticatingAuthority the authenticating authority
    */
   public void setAuthenticatingAuthority(final String authenticatingAuthority) {
@@ -165,7 +165,7 @@ public class Saml2UserDetails implements UserDetails {
 
   /**
    * Predicate telling whether the IdP displayed a SignMessage for the user.
-   * 
+   *
    * @return {@code true} if a SignMessage was displayed and {@code false} otherwise
    */
   public boolean isSignMessageDisplayed() {
@@ -174,7 +174,7 @@ public class Saml2UserDetails implements UserDetails {
 
   /**
    * Tells whether the IdP displayed a SignMessage for the user.
-   * 
+   *
    * @param signMessageDisplayed {@code true} if a SignMessage was displayed and {@code false} otherwise
    */
   public void setSignMessageDisplayed(final boolean signMessageDisplayed) {
@@ -227,6 +227,23 @@ public class Saml2UserDetails implements UserDetails {
   @Override
   public boolean isEnabled() {
     return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(this.getUsername());
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if ((obj == null) || (this.getClass() != obj.getClass())) {
+      return false;
+    }
+    final Saml2UserDetails other = (Saml2UserDetails) obj;
+    return Objects.equals(this.getUsername(), other.getUsername());
   }
 
 }

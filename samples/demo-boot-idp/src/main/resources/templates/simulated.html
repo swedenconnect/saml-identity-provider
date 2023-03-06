@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> 
+<head th:include="fragments/base :: headerFragment">
+  <title id="pageTitle" th:inline="text">[[#{idp.msg.title}]]</title>
+</head>
+<body>
+  
+  <div th:replace="fragments/header :: logotype"></div>
+  
+  <div class="container main">    
+    <div class="row" id="mainDiv">
+      <div class="col-sm-12 content-container">
+        <div class="row">
+          <div class="col-sm-12 content-heading">
+            <h2 th:text="#{idp.msg.heading}">Heading</h2>
+          </div>
+          <div class="col-sm-12">
+            <p class="info" th:text="#{idp.msg.simulate-auth}">Select</p>
+          </div>
+        </div>
+            
+        <hr class="full-width">
+            
+        <div class="col-sm-12 section">
+          <form method="POST" action="#" th:action="@{/authn/complete}">
+            
+            <select class="form-control" name="username">
+              <option value="NONE">--- Select user to authenticate as ---</option>
+              <option th:each="u : ${users}" th:value="${u}" th:text="${u}">-</option>
+            </select>
+            
+            <button id="submitButton" type="submit" class="btn btn-primary">
+              <span th:text="#{idp.msg.authenticate-button}">Simulate Authentication</span>
+            </button>
+            
+          </form>
+              
+        </div>            
+            
+      </div>
+          
+      <div th:replace="fragments/footer :: copyright"></div>
+          
+    </div>
+  </div>  
+
+</body>
+</html>

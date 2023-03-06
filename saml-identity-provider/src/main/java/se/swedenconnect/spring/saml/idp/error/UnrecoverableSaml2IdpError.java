@@ -76,7 +76,12 @@ public enum UnrecoverableSaml2IdpError {
    */
   ENDPOINT_CHECK_FAILURE("idp.error.unrecoverable.endpoint",
       "The endpoint information supplied in the authentication request do not correspond"
-          + " with the endpoint on which the message was delivered");
+          + " with the endpoint on which the message was delivered"),
+
+  /**
+   * For session related errors.
+   */
+  INVALID_SESSION("idp.error.unrecoverable.session", "Required session data could not be found");
 
   /**
    * Gets the message code representing the error. This code may be used when mapping to a {@link MessageSource}.

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"> 
+<head th:include="fragments/base :: headerFragment">
+  <title id="pageTitle" th:inline="text">[[#{idp.msg.title}]]</title>
+</head>
+<body onload="document.forms[0].submit()">
+  <form method="POST" action="#" th:action="${action}">
+    <input type="hidden" name="SAMLResponse" th:value="${SAMLResponse}"/>
+    <input th:if="${RelayState != null}" type="hidden" name="RelayState" th:value="${RelayState}"/>
+    
+    <noscript>
+    
+      <div th:replace="fragments/header :: logotype"></div>
+  
+      <div class="container main">
+    
+        <div class="row" id="mainDiv">
+          <div class="col-sm-12 content-container">
+
+            <div class="row">
+              <div class="col-sm-12 content-heading">
+                <h2 th:text="#{idp.msg.heading}">Heading</h2>
+              </div>
+              <div class="col-sm-12">
+                <p class="info" th:text="#{idp.msg.nojs}">No Javascript</p>
+              </div>
+            </div>
+            
+            <hr class="full-width">
+            
+            <div class="col-sm-12 section">
+              <button id="submitButton" type="submit" class="btn btn-primary">
+                <span th:text="#{idp.msg.continue-button}">Continue</span>
+              </button>
+            </div>            
+            
+          </div>
+          
+          <div th:replace="fragments/footer :: copyright"></div>
+          
+        </div>
+      </div>
+    
+    </noscript>
+    
+  </form>
+</body>
+</html>

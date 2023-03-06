@@ -27,11 +27,11 @@ import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserDetails;
-import se.swedenconnect.spring.saml.idp.authentication.provider.AbstractSaml2UserAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.authentication.provider.AbstractUserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
-@Component
-public class DummyLoa2Provider extends AbstractSaml2UserAuthenticationProvider {
+//@Component
+public class DummyLoa2Provider extends AbstractUserAuthenticationProvider {
   
   private static final String SUPPORTED_LOA = LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA2;
 

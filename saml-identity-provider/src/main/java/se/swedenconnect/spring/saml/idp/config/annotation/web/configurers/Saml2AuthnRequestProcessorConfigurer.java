@@ -43,7 +43,7 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2ErrorResponseProcessing
 /**
  * A configurer for the processing of SAML2 {@code AuthnRequest} messages.
  */
-public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2AuthnEndpointConfigurer {
+public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configurer {
 
   /** The request matcher. */
   private RequestMatcher requestMatcher;
@@ -154,8 +154,8 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2AuthnEndp
 
   /** {@inheritDoc} */
   @Override
-  protected void init(final HttpSecurity httpSecurity, final RequestMatcher requestMatcher) {
-    this.requestMatcher = requestMatcher;
+  protected void init(final HttpSecurity httpSecurity) {
+    this.requestMatcher = Saml2IdpConfigurerUtils.getAuthnEndpointsRequestMatcher(httpSecurity);
  
     this.authenticationProviderConfigurer.init(httpSecurity);
   }
@@ -197,6 +197,12 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2AuthnEndp
 
     httpSecurity.addFilterAfter(this.postProcess(filter), Saml2ErrorResponseProcessingFilter.class);
   }
+  
+  /** {@inheritDoc} */
+  @Override
+  RequestMatcher getRequestMatcher() {
+    return null;
+  }  
 
   /**
    * Creates the default {@link AuthenticationConverter}s.

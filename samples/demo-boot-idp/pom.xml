@@ -92,6 +92,34 @@
       <artifactId>spring-boot-devtools</artifactId>
     </dependency>
     -->
+    
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap</artifactId>
+      <version>4.6.2</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.webjars</groupId>
+          <artifactId>jquery</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.webjars</groupId>
+          <artifactId>popper.js</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>popper.js</artifactId>
+      <version>1.16.1-lts</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery</artifactId>
+      <version>3.6.1</version>
+    </dependency>        
 
   </dependencies>
 

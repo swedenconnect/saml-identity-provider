@@ -17,6 +17,7 @@ package se.swedenconnect.spring.saml.idp.config.annotation.web.configurers;
 
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
 /**
  * Base configurer for a SAML 2 component.
@@ -50,6 +51,15 @@ abstract class AbstractSaml2Configurer {
    * @param httpSecurity the HttpSecurity object to configure
    */
   abstract void configure(final HttpSecurity httpSecurity);
+
+  /**
+   * Gets the request matcher for this configurer. Note that if the configurer accepts requests from the endpoints for
+   * receiving authentication requests ({@link Saml2IdpConfigurerUtils#getAuthnEndpointsRequestMatcher(HttpSecurity)})
+   * this should not be returned.
+   *
+   * @return the request matcher, or {@code null} if no other endpoint than the authentication request is handled
+   */
+  abstract RequestMatcher getRequestMatcher();
 
   /**
    * Post processes the supplied object.

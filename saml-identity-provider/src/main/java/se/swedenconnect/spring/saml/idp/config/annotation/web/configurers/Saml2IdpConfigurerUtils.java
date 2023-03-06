@@ -65,7 +65,7 @@ class Saml2IdpConfigurerUtils {
    * @param httpSecurity the HTTP security object
    * @return a {@link RequestMatcher}
    */
-  static RequestMatcher getAuthnEndpointsRequestMatcher(final HttpSecurity httpSecurity) {
+  static RequestMatcher getAuthnEndpointsRequestMatcher(final HttpSecurity httpSecurity) {    
     final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     final RequestMatcher requestMatcher = new OrRequestMatcher(
         new AntPathRequestMatcher(settings.getEndpoints().getRedirectAuthnEndpoint(), HttpMethod.GET.name()),

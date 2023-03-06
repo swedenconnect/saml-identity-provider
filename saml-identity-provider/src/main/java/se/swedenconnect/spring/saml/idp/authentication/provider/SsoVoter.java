@@ -23,7 +23,7 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 
 /**
- * An interface used by {@link AbstractSaml2UserAuthenticationProvider} to check if an {@link Authentication} object
+ * An interface used by {@link AbstractUserAuthenticationProvider} to check if an {@link Authentication} object
  * from a previous authentication may be used for SSO.
  * 
  * @author Martin Lindström

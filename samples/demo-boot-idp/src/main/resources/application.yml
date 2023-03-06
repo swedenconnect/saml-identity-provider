@@ -10,6 +10,24 @@ server:
     key-store-password: secret
     key-password: secret
 
+demo:
+  users:
+  - personal-number: 188803099368
+    date-of-birth: 1888-03-09
+    given-name: Agda
+    surname: Andersson
+    display-name: Agda Andersson
+  - personal-number: 197609265819
+    date-of-birth: 1976-09-26
+    given-name: Alrik
+    surname: Lidén
+    display-name: Alrik Lidén
+  - personal-number: 197705232382
+    date-of-birth: 1977-05-23
+    given-name: Frida
+    surname: Kranstege
+    display-name: Frida Kranstege
+        
 saml:
   idp:
     entity-id: https://demo.swedenconnect.se/idp

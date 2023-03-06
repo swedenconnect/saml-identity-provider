@@ -58,7 +58,7 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2IdpMetadataEndpointFilt
  * @author Martin Lindström
  */
 @Slf4j
-public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2EndpointConfigurer {
+public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer {
 
   /** The request matcher. */
   private RequestMatcher requestMatcher;

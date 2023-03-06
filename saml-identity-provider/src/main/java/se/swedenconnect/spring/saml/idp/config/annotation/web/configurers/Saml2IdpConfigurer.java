@@ -114,6 +114,17 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
   }
 
   /**
+   * Customizes the user authentication processor.
+   * 
+   * @param customizer the {@link Customizer} providing access to the {@link Saml2UserAuthenticationConfigurer}
+   * @return the {@link Saml2IdpConfigurer} for further configuration
+   */
+  public Saml2IdpConfigurer userAuthentication(final Customizer<Saml2UserAuthenticationConfigurer> customizer) {
+    customizer.customize(this.getConfigurer(Saml2UserAuthenticationConfigurer.class));
+    return this;
+  }
+
+  /**
    * Customizes the {@link Saml2ResponseBuilder}.
    * 
    * @param customizer the {@link Customizer} providing access to the {@link Saml2ResponseBuilder}
@@ -202,12 +213,13 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
 
     this.configurers.values().forEach(configurer -> {
       configurer.init(httpSecurity);
-      if (configurer instanceof AbstractSaml2EndpointConfigurer) {
-        requestMatchers.add(((AbstractSaml2EndpointConfigurer) configurer).getRequestMatcher());
+      final RequestMatcher rm = configurer.getRequestMatcher();
+      if (rm != null) {
+        requestMatchers.add(rm);
       }
     });
     this.endpointsMatcher = new OrRequestMatcher(requestMatchers);
-    
+
     // TODO: Change
 //    ExceptionHandlingConfigurer<HttpSecurity> exceptionHandling =
 //        httpSecurity.getConfigurer(ExceptionHandlingConfigurer.class);

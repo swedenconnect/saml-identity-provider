@@ -34,7 +34,7 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
  * @author Martin Lindström
  */
 @Slf4j
-public abstract class AbstractSaml2UserAuthenticationProvider implements Saml2UserAuthenticationProvider {
+public abstract class AbstractUserAuthenticationProvider implements Saml2UserAuthenticationProvider {
 
   /** An ordered list of {@link SsoVoter}s that is used to decide whether SSO should be allowed. */
   private final List<SsoVoter> ssoVoters;
@@ -42,7 +42,7 @@ public abstract class AbstractSaml2UserAuthenticationProvider implements Saml2Us
   /**
    * Constructor.
    */
-  public AbstractSaml2UserAuthenticationProvider() {
+  public AbstractUserAuthenticationProvider() {
     this.ssoVoters = new ArrayList<>();
     this.ssoVoters.add(new BaseSsoVoter());
   }
@@ -79,10 +79,11 @@ public abstract class AbstractSaml2UserAuthenticationProvider implements Saml2Us
       throw new Saml2ErrorStatusException(Saml2ErrorStatus.PASSIVE_AUTHN);
     }
 
-    return null;
+    return this.authenticate(token, filteredAuthnContextUris);
   }
 
-  protected abstract Saml2UserAuthentication authenticate(final Saml2UserAuthenticationInputToken token,
+  // returns a Saml2UserAuthentication or a XXX
+  protected abstract Authentication authenticate(final Saml2UserAuthenticationInputToken token,
       final List<String> authnContextUris) throws Saml2ErrorStatusException;
 
   /**

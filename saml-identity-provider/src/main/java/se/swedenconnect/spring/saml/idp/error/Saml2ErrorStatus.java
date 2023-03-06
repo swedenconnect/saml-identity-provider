@@ -42,33 +42,43 @@ public enum Saml2ErrorStatus {
    */
   SIGN_MESSAGE(StatusCode.REQUESTER, StatusCode.REQUEST_UNSUPPORTED, "idp.error.status.sign-message-error",
       "Invalid SignMessage extension"),
-  
+
   /**
    * SignMessage error. If the {@code SignMessage} is incorrectly constructed.
    */
   SIGN_MESSAGE_DECRYPT(StatusCode.REQUESTER, StatusCode.REQUEST_UNSUPPORTED, "idp.error.status.sign-message-decrypt",
       "SignMessage decryption error"),
-  
+
   /**
-   * Invalid AuthnRequest. 
+   * Invalid AuthnRequest.
    */
-  INVALID_AUTHNREQUEST(StatusCode.REQUESTER, StatusCode.REQUEST_UNSUPPORTED, "idp.error.status.invalid-request", "Invalid authentication request"),
+  INVALID_AUTHNREQUEST(StatusCode.REQUESTER, StatusCode.REQUEST_UNSUPPORTED, "idp.error.status.invalid-request",
+      "Invalid authentication request"),
 
   /**
    * Invalid NameID policy given in AuthnRequest.
    */
-  INVALID_NAMEID(StatusCode.REQUESTER, StatusCode.INVALID_NAMEID_POLICY, "idp.error.status.invalid-nameid", "Invalid NameIDPolicy in authentication request"),
-  
+  INVALID_NAMEID(StatusCode.REQUESTER, StatusCode.INVALID_NAMEID_POLICY, "idp.error.status.invalid-nameid",
+      "Invalid NameIDPolicy in authentication request"),
+
   /**
    * PassiveAuthn could not be applied.
    */
-  PASSIVE_AUTHN(StatusCode.REQUESTER, StatusCode.NO_PASSIVE, "idp.error.status.no-passive", "Passive authentication could not be performed"),
-  
+  PASSIVE_AUTHN(StatusCode.REQUESTER, StatusCode.NO_PASSIVE, "idp.error.status.no-passive",
+      "Passive authentication could not be performed"),
+
   /**
    * Requested authentication context is not supported.
    */
-  NO_AUTHN_CONTEXT(StatusCode.REQUESTER, StatusCode.NO_AUTHN_CONTEXT, "idp.error.status.no-authn-context", "Requested authentication contexts not supported");
-        
+  NO_AUTHN_CONTEXT(StatusCode.REQUESTER, StatusCode.NO_AUTHN_CONTEXT, "idp.error.status.no-authn-context",
+      "Requested authentication contexts not supported"),
+
+  /**
+   * Unknown principal
+   */
+  UNKNOWN_PRINCIPAL(StatusCode.REQUESTER, StatusCode.UNKNOWN_PRINCIPAL, "idp.error.status.unknown-principal",
+      "Unknown principal");
+
   /**
    * Gets the main status code.
    * 

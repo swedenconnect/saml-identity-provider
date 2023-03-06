@@ -19,11 +19,17 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.opensaml.saml.saml2.core.Assertion;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.AnyRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import se.swedenconnect.spring.saml.idp.attributes.release.AttributeProducer;
@@ -42,10 +48,13 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProce
  * 
  * @author Martin Lindström
  */
-public class Saml2UserAuthenticationConfigurer extends AbstractSaml2AuthnEndpointConfigurer {
+public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
 
-  /** The request matcher. */
-  private RequestMatcher requestMatcher;
+  /** The request matcher for processing authentication requests. */
+  private RequestMatcher authnRequestRequestMatcher;
+  
+  /** Request matcher for resuming authentication after redirecting the user agent for authentication. */
+  private DeferredRequestMatcher resumeAuthnRequestMatcher = new DeferredRequestMatcher();
 
   /** For customizing the assertions being created. */
   private Customizer<Assertion> assertionCustomizer;
@@ -55,6 +64,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2AuthnEndpoin
 
   /** The attribute producers used by the SAML assertion builder. */
   private List<AttributeProducer> attributeProducers = this.createDefaultAttributeProducers();
+  
 
   /**
    * Constructor.
@@ -63,6 +73,12 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2AuthnEndpoin
    */
   Saml2UserAuthenticationConfigurer(final ObjectPostProcessor<Object> objectPostProcessor) {
     super(objectPostProcessor);
+  }
+
+  
+  public Saml2UserAuthenticationConfigurer resumeAuthnPath(final String path) {
+    this.resumeAuthnRequestMatcher.addPath(Objects.requireNonNull(path, "path must not be null"));
+    return this;
   }
 
   /**
@@ -101,8 +117,8 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2AuthnEndpoin
 
   /** {@inheritDoc} */
   @Override
-  protected void init(final HttpSecurity httpSecurity, final RequestMatcher requestMatcher) {
-    this.requestMatcher = requestMatcher;
+  protected void init(final HttpSecurity httpSecurity) {
+    this.authnRequestRequestMatcher = Saml2IdpConfigurerUtils.getAuthnEndpointsRequestMatcher(httpSecurity);
   }
 
   /** {@inheritDoc} */
@@ -110,7 +126,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2AuthnEndpoin
   void configure(final HttpSecurity httpSecurity) {
     final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     final AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
-    final Saml2ResponseBuilder responseBuilder = Saml2IdpConfigurerUtils.getResponseBuilder(httpSecurity); 
+    final Saml2ResponseBuilder responseBuilder = Saml2IdpConfigurerUtils.getResponseBuilder(httpSecurity);
     final Saml2ResponseSender responseSender = Saml2IdpConfigurerUtils.getResponseSender(httpSecurity);
 
     final AttributeProducer attributeProducer = this.attributeProducers.size() == 1
@@ -129,15 +145,55 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2AuthnEndpoin
     }
 
     final Saml2UserAuthenticationProcessingFilter filter = new Saml2UserAuthenticationProcessingFilter(
-        authenticationManager, this.requestMatcher, assertionBuilder, responseBuilder, responseSender);
+        authenticationManager, this.authnRequestRequestMatcher, assertionBuilder, responseBuilder, responseSender);
+    
+    if (this.resumeAuthnRequestMatcher.isConfigured()) {
+      filter.setResumeAuthnRequestMatcher(this.resumeAuthnRequestMatcher);
+    }
 
     httpSecurity.addFilterAfter(this.postProcess(filter), Saml2AuthnRequestProcessingFilter.class);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  RequestMatcher getRequestMatcher() {
+    return this.resumeAuthnRequestMatcher;
   }
 
   private List<AttributeProducer> createDefaultAttributeProducers() {
     List<AttributeProducer> producers = new ArrayList<>();
     producers.add(new DefaultAttributeProducer());
     return producers;
+  }
+  
+  private static class DeferredRequestMatcher implements RequestMatcher {
+    
+    private List<String> paths = new ArrayList<>();
+    
+    private RequestMatcher matcher = new NegatedRequestMatcher(AnyRequestMatcher.INSTANCE);
+
+    @Override
+    public boolean matches(final HttpServletRequest request) {
+      return this.matcher.matches(request);
+    }
+    
+    public void addPath(final String path) {
+      this.paths.add(Objects.requireNonNull(path, "path must not be null"));
+      if (this.paths.size() == 1) {
+        this.matcher = new AntPathRequestMatcher(path); 
+      }
+      else {
+        this.matcher = new OrRequestMatcher(this.paths.stream()
+            .map(p -> (RequestMatcher) new AntPathRequestMatcher(p))
+            .toList());
+            
+      }
+    }
+    
+    public boolean isConfigured() {
+      return !this.paths.isEmpty();
+    }
+    
   }
 
 }
