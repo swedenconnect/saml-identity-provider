@@ -15,6 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.context;
 
+import java.io.Serializable;
+
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
@@ -23,7 +25,7 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
  *
  * @author Martin Lindström
  */
-public interface Saml2IdpContext {
+public interface Saml2IdpContext extends Serializable {
 
   /**
    * Gets the IdP settings (configuration)

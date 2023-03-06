@@ -196,6 +196,9 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     final Assertion assertion = this.assertionHandler.buildAssertion(authenticatedUser);
     final Saml2ResponseAttributes responseAttributes = Saml2IdpContextHolder.getContext().getResponseAttributes();
     final Response samlResponse = this.responseBuilder.buildResponse(responseAttributes, assertion);
+    
+    // TODO: Must save the response attributes in the session!
+    
 
     // Send response ...
     //

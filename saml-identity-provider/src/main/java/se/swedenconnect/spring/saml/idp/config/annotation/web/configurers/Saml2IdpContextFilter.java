@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+x * Copyright 2023 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,13 +22,16 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import se.swedenconnect.spring.saml.idp.authentication.provider.SessionBasedExternalAuthenticationRepository;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContext;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
  * A {@code Filter} that associates the {@link Saml2IdpContext} to the {@link Saml2IdpContextHolder}.
@@ -36,6 +39,8 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
  * @author Martin Lindström
  */
 class Saml2IdpContextFilter extends OncePerRequestFilter {
+  
+  private static final String SESSION_KEY = Saml2IdpContextFilter.class.getPackageName() + ".IdpContext"; 
 
   private final IdentityProviderSettings settings;
 
@@ -53,11 +58,25 @@ class Saml2IdpContextFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
       throws ServletException, IOException {
+    
     try {
-      Saml2IdpContextHolder.setContext(new DefaultIdentityProviderContext(this.settings));
+      final HttpSession session = request.getSession();
+      final Saml2IdpContext context = (Saml2IdpContext) session.getAttribute(SESSION_KEY);
+      
+      Saml2IdpContextHolder.setContext(context != null
+          ? context
+          : new DefaultIdentityProviderContext(this.settings));
       filterChain.doFilter(request, response);
     }
     finally {
+      final HttpSession session = request.getSession();       
+      if (session.getAttribute(SessionBasedExternalAuthenticationRepository.INPUT_SESSION_KEY) != null) {
+        session.setAttribute(SESSION_KEY, Saml2IdpContextHolder.getContext());
+      }
+      else {
+        session.removeAttribute(SESSION_KEY);
+      }
+      
       Saml2IdpContextHolder.resetContext();
     }
   }
@@ -66,6 +85,8 @@ class Saml2IdpContextFilter extends OncePerRequestFilter {
    * Implementation of the {@link Saml2IdpContext}.
    */
   private static class DefaultIdentityProviderContext implements Saml2IdpContext {
+    
+    private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     private final IdentityProviderSettings settings;
 
