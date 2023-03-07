@@ -17,14 +17,17 @@ package se.swedenconnect.spring.saml.idp.web.filters;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Response;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderNotFoundException;
@@ -45,6 +48,7 @@ import se.swedenconnect.spring.saml.idp.authentication.provider.ExternalAuthenti
 import se.swedenconnect.spring.saml.idp.authentication.provider.RedirectForAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.authentication.provider.ResumedAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.authentication.provider.SessionBasedExternalAuthenticationRepository;
+import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
@@ -62,6 +66,10 @@ import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
  */
 @Slf4j
 public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilter {
+
+  /** Session key where we store response attributes. */
+  public static final String RESPONSE_ATTRIBUTES_SESSION_KEY =
+      Saml2UserAuthenticationProcessingFilter.class.getPackageName() + ".ResponseAttributes";
 
   /** The authentication manager. */
   private final AuthenticationManager authenticationManager;
@@ -126,11 +134,45 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     Authentication inputToken;
     if (this.resumeAuthnRequestMatcher != null && this.resumeAuthnRequestMatcher.matches(request)) {
 
-      inputToken = this.externalAuthenticationRepository.getCompletedExternalAuthentication(request);
-      if (inputToken == null) {        
+      // OK, the user returns to the flow after an external authentication.
+      // Restore the response attributes ...
+      //
+      final HttpSession session = request.getSession();
+      final Saml2ResponseAttributes responseAttributes =
+          (Saml2ResponseAttributes) session.getAttribute(RESPONSE_ATTRIBUTES_SESSION_KEY);
+      if (response == null) {
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION);
       }
+      session.removeAttribute(RESPONSE_ATTRIBUTES_SESSION_KEY);
+
+      inputToken = this.externalAuthenticationRepository.getCompletedExternalAuthentication(request);
       this.externalAuthenticationRepository.clear(request);
+      if (inputToken == null) {
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION);
+      }
+
+      // Make sure we got the correct response attributes object ...
+      //
+      final String currentAuthnRequestID = Optional.ofNullable(inputToken)
+          .map(ResumedAuthenticationToken.class::cast)
+          .map(ResumedAuthenticationToken::getAuthnInputToken)
+          .map(Saml2UserAuthenticationInputToken::getAuthnRequestToken)
+          .map(Saml2AuthnRequestAuthenticationToken::getAuthnRequest)
+          .map(AuthnRequest::getID)
+          .orElseThrow(() -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION,
+              "Failed to get information about authentication request"));
+
+      if (!Objects.equals(currentAuthnRequestID, responseAttributes.getInResponseTo())) {
+        final String msg = "State error: Saved response attributes does not match information about current request";
+        log.error("{} [{}]", msg, Optional.ofNullable(inputToken)
+            .map(ResumedAuthenticationToken.class::cast)
+            .map(ResumedAuthenticationToken::getAuthnInputToken)
+            .map(Saml2UserAuthenticationInputToken::getLogString)
+            .orElseGet(() -> "-"));
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION, msg);
+      }
+      
+      Saml2IdpContextHolder.getContext().getResponseAttributes().copyInto(responseAttributes);
     }
     else {
       inputToken = SecurityContextHolder.getContext().getAuthentication();
@@ -169,14 +211,21 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
       final RedirectForAuthenticationToken redirectToken = RedirectForAuthenticationToken.class.cast(auth);
       this.externalAuthenticationRepository.startExternalAuthentication(redirectToken, request);
 
-      log.info("Re-directing to {} for external authentication [{}]", redirectToken.getAuthnInputToken().getLogString());
-      
+      log.info("Re-directing to {} for external authentication [{}]",
+          redirectToken.getAuthnInputToken().getLogString());
+
+      // Save the response attributes in the session so that we know how to send back a response
+      // when the user returns to the flow.
+      //
+      request.getSession().setAttribute(RESPONSE_ATTRIBUTES_SESSION_KEY,
+          Saml2IdpContextHolder.getContext().getResponseAttributes());
+
       this.redirectStrategy.sendRedirect(request, response,
           redirectToken.getAuthnPath() + "?resumeUrl=" + redirectToken.getResumeAuthnPath());
 
       return;
     }
-    
+
     // Otherwise we expect a Saml2UserAuthentication token ...
     //
     if (!Saml2UserAuthentication.class.isInstance(auth)) {
@@ -196,9 +245,8 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     final Assertion assertion = this.assertionHandler.buildAssertion(authenticatedUser);
     final Saml2ResponseAttributes responseAttributes = Saml2IdpContextHolder.getContext().getResponseAttributes();
     final Response samlResponse = this.responseBuilder.buildResponse(responseAttributes, assertion);
-    
+
     // TODO: Must save the response attributes in the session!
-    
 
     // Send response ...
     //
@@ -216,7 +264,7 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     }
     SecurityContextHolder.setContext(securityContext);
   }
-  
+
   private static Saml2UserAuthenticationInputToken getSamlInputToken(final Authentication auth) {
     if (auth instanceof Saml2UserAuthenticationInputToken) {
       return (Saml2UserAuthenticationInputToken) auth;

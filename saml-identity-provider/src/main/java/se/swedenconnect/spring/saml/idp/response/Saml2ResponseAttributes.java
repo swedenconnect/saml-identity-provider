@@ -20,6 +20,7 @@ import java.util.Optional;
 
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
+import org.springframework.util.Assert;
 
 import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.utils.SerializableOpenSamlObject;
@@ -32,7 +33,7 @@ import se.swedenconnect.spring.saml.idp.utils.SerializableOpenSamlObject;
 public class Saml2ResponseAttributes implements Serializable {
 
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
-  
+
   /** The RelayState variable. */
   private String relayState;
 
@@ -50,9 +51,10 @@ public class Saml2ResponseAttributes implements Serializable {
    */
   public Saml2ResponseAttributes() {
   }
-  
+
   /**
    * Gets the {@code RelayState} variable.
+   * 
    * @return the {@code RelayState} variable
    */
   public String getRelayState() {
@@ -61,6 +63,7 @@ public class Saml2ResponseAttributes implements Serializable {
 
   /**
    * Assigns the {@code RelayState} variable.
+   * 
    * @param relayState the {@code RelayState} variable
    */
   public void setRelayState(final String relayState) {
@@ -119,6 +122,22 @@ public class Saml2ResponseAttributes implements Serializable {
    */
   public void setPeerMetadata(final EntityDescriptor peerMetadata) {
     this.peerMetadata = new SerializableOpenSamlObject<>(peerMetadata, EntityDescriptor.class);
+  }
+
+  /**
+   * Fills the object with the supplied {@link Saml2ResponseAttributes}.
+   * 
+   * @param responseAttributes the object to copy from
+   */
+  public void copyInto(final Saml2ResponseAttributes responseAttributes) {
+    Assert.notNull(responseAttributes, "responseAttributes must not be null");
+    if (this.inResponseTo != null || this.destination != null) {
+      throw new IllegalArgumentException("Cannot assign response attributes - object already initialized");
+    }
+    this.relayState = responseAttributes.relayState;
+    this.destination = responseAttributes.destination;
+    this.inResponseTo = responseAttributes.inResponseTo;
+    this.peerMetadata = responseAttributes.peerMetadata;
   }
 
 }
