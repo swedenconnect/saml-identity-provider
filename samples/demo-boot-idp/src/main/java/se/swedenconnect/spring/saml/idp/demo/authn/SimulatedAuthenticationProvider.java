@@ -26,26 +26,47 @@ import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCateg
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserDetails;
-import se.swedenconnect.spring.saml.idp.authentication.provider.AbstractRedirectUserAuthenticationProvider;
-import se.swedenconnect.spring.saml.idp.authentication.provider.ResumedAuthenticationToken;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.AbstractUserRedirectAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.ResumedAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.demo.SimulatedUser;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
-public class SimulatedAuthenticationProvider extends AbstractRedirectUserAuthenticationProvider {
+/**
+ * Simulated authentication provider.
+ * 
+ * @author Martin Lindström
+ */
+public class SimulatedAuthenticationProvider extends AbstractUserRedirectAuthenticationProvider {
 
+  /** The supported authentication context URI:s. */
   private static final List<String> SUPPORTED_LOAS = List.of(
       LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3,
       LevelOfAssuranceUris.AUTHN_CONTEXT_URI_UNCERTIFIED_LOA3);
 
+  /**
+   * Constructor.
+   * 
+   * @param authnPath the path to where we redirect the user for authentication
+   * @param resumeAuthnPath the path that the authentication process uses to redirect the user back after a completed
+   *          authentication
+   */
   public SimulatedAuthenticationProvider(final String authnPath, final String resumeAuthnPath) {
     super(authnPath, resumeAuthnPath);
   }
 
+  /** {@inheritDoc} */
+  @Override
+  public String getName() {
+    return "Simulated Authentication Provider - LoA 3";
+  }
+
+  /** {@inheritDoc} */
   @Override
   public List<String> getSupportedAuthnContextUris() {
     return SUPPORTED_LOAS;
   }
 
+  /** {@inheritDoc} */
   @Override
   public List<String> getEntityCategories() {
     return List.of(EntityCategoryConstants.SERVICE_ENTITY_CATEGORY_LOA3_NAME.getUri(),
@@ -53,11 +74,12 @@ public class SimulatedAuthenticationProvider extends AbstractRedirectUserAuthent
         EntityCategoryConstants.SERVICE_PROPERTY_CATEGORY_MOBILE_AUTH.getUri());
   }
 
+  /** {@inheritDoc} */
   @Override
-  protected Saml2UserAuthentication resumeAuthentication(final ResumedAuthenticationToken token)
+  public Saml2UserAuthentication resumeAuthentication(final ResumedAuthenticationToken token)
       throws Saml2ErrorStatusException {
 
-    final SimulatedAuthentication simAuth = SimulatedAuthentication.class.cast(token.getAuthnToken());
+    final SimulatedAuthenticationToken simAuth = SimulatedAuthenticationToken.class.cast(token.getAuthnToken());
     final SimulatedUser user = (SimulatedUser) simAuth.getDetails();
 
     final List<UserAttribute> attributes = List.of(
@@ -82,9 +104,10 @@ public class SimulatedAuthenticationProvider extends AbstractRedirectUserAuthent
     return userAuth;
   }
 
+  /** {@inheritDoc} */
   @Override
-  protected boolean supportsUserAuthenticationToken(final Authentication authentication) {
-    return SimulatedAuthentication.class.isInstance(authentication);
+  public boolean supportsUserAuthenticationToken(final Authentication authentication) {
+    return SimulatedAuthenticationToken.class.isInstance(authentication);
   }
 
 }

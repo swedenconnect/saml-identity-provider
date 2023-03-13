@@ -15,13 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.demo.authn;
 
-import java.util.stream.Collectors;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
@@ -30,20 +27,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import se.swedenconnect.spring.saml.idp.authentication.provider.ExternalAuthenticationRepository;
-import se.swedenconnect.spring.saml.idp.authentication.provider.RedirectForAuthenticationToken;
+import lombok.Setter;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.AbstractAuthenticationController;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.RedirectForAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.demo.SimulatedUser;
 import se.swedenconnect.spring.saml.idp.demo.UsersConfigurationProperties;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 @Controller
-public class SimulatedAuthenticationController {
+public class SimulatedAuthenticationController extends AbstractAuthenticationController<SimulatedAuthenticationProvider> {
   
   public static final String AUTHN_PATH = "/authn";
-
+  
+  /**
+   * The authentication provider that is the "manager" for this authentication.
+   */
+  @Setter
   @Autowired
-  private ExternalAuthenticationRepository externalAuthenticationRepository;
+  private SimulatedAuthenticationProvider provider;
 
   @Autowired
   UsersConfigurationProperties userProps;
@@ -58,29 +60,37 @@ public class SimulatedAuthenticationController {
   @GetMapping(AUTHN_PATH)
   public ModelAndView authenticate(final HttpServletRequest request, final HttpServletResponse response) {
     final ModelAndView mav = new ModelAndView("simulated");
-    mav.addObject("users",
-        this.userProps.getUsers().stream().map(SimulatedUser::getUsername).collect(Collectors.toList()));
+    mav.addObject("users", this.userProps.getUsers());
     return mav;
   }
 
   @PostMapping("/authn/complete")
   public ModelAndView complete(final HttpServletRequest request, final HttpServletResponse response,
-      @RequestParam(name = "username") final String userName) {
-    
-    final RedirectForAuthenticationToken redirectToken =
-        this.externalAuthenticationRepository.getExternalAuthenticationToken(request);
+      @RequestParam(name = "username") final String userName, @RequestParam("action") final String action) {
 
-    try {
-      UserDetails details = this.userDetailsService.loadUserByUsername(userName);
-      final SimulatedUser user = (SimulatedUser) this.userDetailsService.loadUserByUsername(userName);      
-      this.externalAuthenticationRepository.completeExternalAuthentication(new SimulatedAuthentication(user), request);
-    }
-    catch (final UsernameNotFoundException e) {
-      this.externalAuthenticationRepository.completeExternalAuthentication(
-          new Saml2ErrorStatusException(Saml2ErrorStatus.UNKNOWN_PRINCIPAL), request);
-    }
+    final RedirectForAuthenticationToken redirectToken = this.getProvider().getTokenRepository().getExternalAuthenticationToken(request);
 
-    return new ModelAndView("redirect:" + redirectToken.getResumeAuthnPath());
+    if ("cancel".equals(action)) {
+      return this.cancel(request);
+    }
+    else if ("NONE".equals(userName)) {
+      return this.authenticate(request, response);
+    }
+    else {
+      try {
+        final SimulatedUser user = (SimulatedUser) this.userDetailsService.loadUserByUsername(userName);
+        return this.complete(request, new SimulatedAuthenticationToken(user));
+      }
+      catch (final UsernameNotFoundException e) {
+        return this.complete(request,  new Saml2ErrorStatusException(Saml2ErrorStatus.UNKNOWN_PRINCIPAL));
+      }
+    }    
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  protected SimulatedAuthenticationProvider getProvider() {
+    return this.provider;
   }
 
 }

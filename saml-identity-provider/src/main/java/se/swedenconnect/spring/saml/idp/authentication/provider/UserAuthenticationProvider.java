@@ -18,10 +18,13 @@ package se.swedenconnect.spring.saml.idp.authentication.provider;
 import java.util.List;
 
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 
 import se.swedenconnect.spring.saml.idp.attributes.release.AttributeProducer;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
+import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
  * Interface for an {@link AuthenticationProvider} that implements SAML2 Identity Provider user authentication. The
@@ -42,7 +45,36 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationIn
  * 
  * @author Martin Lindström
  */
-public interface Saml2UserAuthenticationProvider extends AuthenticationProvider {
+public interface UserAuthenticationProvider extends AuthenticationProvider {
+  
+  /**
+   * Gets the name of the provider.
+   * @return
+   */
+  String getName();
+
+  /**
+   * Maps to {@link #authenticateUser(Saml2UserAuthenticationInputToken)}.
+   */
+  @Override
+  default Authentication authenticate(final Authentication authentication) throws AuthenticationException {
+    try {
+      return this.authenticateUser(Saml2UserAuthenticationInputToken.class.cast(authentication));
+    }
+    catch (final ClassCastException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Performs the user authentication.
+   * 
+   * @param token the input token
+   * @return the authentication token or {@code null} if the requested authentication context(s) can not be met by the
+   *           authentication provider.
+   * @throws Saml2ErrorStatusException for authentication errors
+   */
+  Authentication authenticateUser(final Saml2UserAuthenticationInputToken token) throws Saml2ErrorStatusException;
 
   /**
    * Supports {@link Saml2UserAuthenticationInputToken}.

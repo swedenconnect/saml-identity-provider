@@ -98,6 +98,10 @@ public class SimulatedUser implements UserDetails {
   public boolean isEnabled() {
     return true;
   }
+  
+  public String toViewString() {
+    return String.format("%s (%s)", this.displayName, this.personalNumber);
+  }
 
   @Override
   public int hashCode() {

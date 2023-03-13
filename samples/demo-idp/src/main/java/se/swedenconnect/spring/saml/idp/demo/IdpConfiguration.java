@@ -66,7 +66,7 @@ public class IdpConfiguration {
 
     // Apply the default configuration for the IdP.
     //
-    Saml2IdpConfiguration.applyDefaultSecurity(http);
+    Saml2IdpConfiguration.applyDefaultSecurity(http, null);
 
     http.getConfigurer(Saml2IdpConfigurer.class)
         // Override the HTML page that is used to post back the SAML response with our own ...

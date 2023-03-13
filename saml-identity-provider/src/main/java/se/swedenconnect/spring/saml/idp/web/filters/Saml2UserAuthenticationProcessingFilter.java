@@ -43,11 +43,12 @@ import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2AssertionBuilder;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
-import se.swedenconnect.spring.saml.idp.authentication.provider.AbstractRedirectUserAuthenticationProvider;
-import se.swedenconnect.spring.saml.idp.authentication.provider.ExternalAuthenticationRepository;
-import se.swedenconnect.spring.saml.idp.authentication.provider.RedirectForAuthenticationToken;
-import se.swedenconnect.spring.saml.idp.authentication.provider.ResumedAuthenticationToken;
-import se.swedenconnect.spring.saml.idp.authentication.provider.SessionBasedExternalAuthenticationRepository;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.AbstractUserRedirectAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.ExternalAuthenticatorTokenRepository;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.FilterAuthenticationTokenRepository;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.RedirectForAuthenticationToken;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.ResumedAuthenticationToken;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.SessionBasedExternalAuthenticationRepository;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
@@ -79,7 +80,7 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
 
   /**
    * Optional request matcher for handling when the user agent is redirected back to the flow after that the user has
-   * been authenticated using a {@link AbstractRedirectUserAuthenticationProvider}.
+   * been authenticated using a {@link AbstractUserRedirectAuthenticationProvider}.
    */
   private RequestMatcher resumeAuthnRequestMatcher;
 
@@ -92,8 +93,8 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
   /** The assertion handler responsible of creating {@link Assertion}s. */
   private final Saml2AssertionBuilder assertionHandler;
 
-  // TODO
-  private ExternalAuthenticationRepository externalAuthenticationRepository =
+  /** Repository storing authentication objects used for external authentication. */
+  private FilterAuthenticationTokenRepository authenticationTokenRepository =
       new SessionBasedExternalAuthenticationRepository();
 
   private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
@@ -145,17 +146,17 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
       }
       session.removeAttribute(RESPONSE_ATTRIBUTES_SESSION_KEY);
 
-      inputToken = this.externalAuthenticationRepository.getCompletedExternalAuthentication(request);
-      this.externalAuthenticationRepository.clear(request);
+      inputToken = this.authenticationTokenRepository.getCompletedExternalAuthentication(request);
+      this.authenticationTokenRepository.clear(request);
       if (inputToken == null) {
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION);
       }
 
+      final ResumedAuthenticationToken resumeToken = ResumedAuthenticationToken.class.cast(inputToken);
+
       // Make sure we got the correct response attributes object ...
       //
-      final String currentAuthnRequestID = Optional.ofNullable(inputToken)
-          .map(ResumedAuthenticationToken.class::cast)
-          .map(ResumedAuthenticationToken::getAuthnInputToken)
+      final String currentAuthnRequestID = Optional.ofNullable(resumeToken.getAuthnInputToken())
           .map(Saml2UserAuthenticationInputToken::getAuthnRequestToken)
           .map(Saml2AuthnRequestAuthenticationToken::getAuthnRequest)
           .map(AuthnRequest::getID)
@@ -164,15 +165,22 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
 
       if (!Objects.equals(currentAuthnRequestID, responseAttributes.getInResponseTo())) {
         final String msg = "State error: Saved response attributes does not match information about current request";
-        log.error("{} [{}]", msg, Optional.ofNullable(inputToken)
-            .map(ResumedAuthenticationToken.class::cast)
-            .map(ResumedAuthenticationToken::getAuthnInputToken)
+        log.error("{} [{}]", msg, Optional.ofNullable(resumeToken.getAuthnInputToken())
             .map(Saml2UserAuthenticationInputToken::getLogString)
             .orElseGet(() -> "-"));
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION, msg);
       }
-      
       Saml2IdpContextHolder.getContext().getResponseAttributes().copyInto(responseAttributes);
+
+      // Handle error and let the error response processing filter send the error response ...
+      //
+      if (resumeToken.getError() != null) {
+        log.info("Error from external authentication: {} [{}]", resumeToken.getError(),
+            Optional.ofNullable(resumeToken.getAuthnInputToken())
+                .map(Saml2UserAuthenticationInputToken::getLogString)
+                .orElseGet(() -> "-"));
+        throw resumeToken.getError();
+      }
     }
     else {
       inputToken = SecurityContextHolder.getContext().getAuthentication();
@@ -209,7 +217,7 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     //
     if (RedirectForAuthenticationToken.class.isInstance(auth)) {
       final RedirectForAuthenticationToken redirectToken = RedirectForAuthenticationToken.class.cast(auth);
-      this.externalAuthenticationRepository.startExternalAuthentication(redirectToken, request);
+      this.authenticationTokenRepository.startExternalAuthentication(redirectToken, request);
 
       log.info("Re-directing to {} for external authentication [{}]",
           redirectToken.getAuthnInputToken().getLogString());
@@ -246,8 +254,6 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     final Saml2ResponseAttributes responseAttributes = Saml2IdpContextHolder.getContext().getResponseAttributes();
     final Response samlResponse = this.responseBuilder.buildResponse(responseAttributes, assertion);
 
-    // TODO: Must save the response attributes in the session!
-
     // Send response ...
     //
     this.responseSender.send(
@@ -277,12 +283,29 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
 
   /**
    * Assigns a request matcher for handling when the user agent is redirected back to the flow after that the user has
-   * been authenticated using a {@link AbstractRedirectUserAuthenticationProvider}.
+   * been authenticated using a {@link AbstractUserRedirectAuthenticationProvider}.
    * 
    * @param resumeAuthnRequestMatcher request matcher
    */
   public void setResumeAuthnRequestMatcher(final RequestMatcher resumeAuthnRequestMatcher) {
     this.resumeAuthnRequestMatcher = resumeAuthnRequestMatcher;
+  }
+
+  /**
+   * Assigns a {@link FilterAuthenticationTokenRepository} instance for storing {@link Authentication} objects when
+   * external authentication is used. The default is {@link SessionBasedExternalAuthenticationRepository}.
+   * <p>
+   * Note: Ensure that the {@link ExternalAuthenticatorTokenRepository} assigned to the
+   * {@link AbstractUserRedirectAuthenticationProvider} is using the same persistence strategy as the assigned
+   * repository bean.
+   * </p>
+   * 
+   * @param authenticationTokenRepository token repository
+   */
+  public void setAuthenticationTokenRepository(
+      final FilterAuthenticationTokenRepository authenticationTokenRepository) {
+    this.authenticationTokenRepository =
+        Objects.requireNonNull(authenticationTokenRepository, "authenticationTokenRepository must not be null");
   }
 
   /**

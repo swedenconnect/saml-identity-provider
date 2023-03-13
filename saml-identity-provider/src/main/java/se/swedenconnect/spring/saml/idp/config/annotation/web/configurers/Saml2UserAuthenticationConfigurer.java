@@ -26,6 +26,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
@@ -36,6 +37,10 @@ import se.swedenconnect.spring.saml.idp.attributes.release.AttributeProducer;
 import se.swedenconnect.spring.saml.idp.attributes.release.DefaultAttributeProducer;
 import se.swedenconnect.spring.saml.idp.attributes.release.DelegatingAttributeProducer;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2AssertionBuilder;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.AbstractUserRedirectAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.ExternalAuthenticatorTokenRepository;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.FilterAuthenticationTokenRepository;
+import se.swedenconnect.spring.saml.idp.authentication.provider.external.SessionBasedExternalAuthenticationRepository;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
@@ -52,7 +57,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
 
   /** The request matcher for processing authentication requests. */
   private RequestMatcher authnRequestRequestMatcher;
-  
+
   /** Request matcher for resuming authentication after redirecting the user agent for authentication. */
   private DeferredRequestMatcher resumeAuthnRequestMatcher = new DeferredRequestMatcher();
 
@@ -64,7 +69,9 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
 
   /** The attribute producers used by the SAML assertion builder. */
   private List<AttributeProducer> attributeProducers = this.createDefaultAttributeProducers();
-  
+
+  /** Repository storing authentication objects used for external authentication. */
+  private FilterAuthenticationTokenRepository authenticationTokenRepository;
 
   /**
    * Constructor.
@@ -75,9 +82,27 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
     super(objectPostProcessor);
   }
 
-  
   public Saml2UserAuthenticationConfigurer resumeAuthnPath(final String path) {
     this.resumeAuthnRequestMatcher.addPath(Objects.requireNonNull(path, "path must not be null"));
+    return this;
+  }
+
+  /**
+   * Assigns a {@link FilterAuthenticationTokenRepository} instance for storing {@link Authentication} objects when
+   * external authentication is used. The default is {@link SessionBasedExternalAuthenticationRepository}.
+   * <p>
+   * Note: Ensure that the {@link ExternalAuthenticatorTokenRepository} assigned to the
+   * {@link AbstractUserRedirectAuthenticationProvider} is using the same persistence strategy as the assigned
+   * repository bean.
+   * </p>
+   * 
+   * @param authenticationTokenRepository the repository to use
+   * @return the {@link Saml2UserAuthenticationConfigurer} for further configuration
+   */
+  public Saml2UserAuthenticationConfigurer authenticationTokenRepository(
+      final FilterAuthenticationTokenRepository authenticationTokenRepository) {
+    this.authenticationTokenRepository =
+        Objects.requireNonNull(authenticationTokenRepository, "authenticationTokenRepository must not be null");
     return this;
   }
 
@@ -146,9 +171,12 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
 
     final Saml2UserAuthenticationProcessingFilter filter = new Saml2UserAuthenticationProcessingFilter(
         authenticationManager, this.authnRequestRequestMatcher, assertionBuilder, responseBuilder, responseSender);
-    
+
     if (this.resumeAuthnRequestMatcher.isConfigured()) {
       filter.setResumeAuthnRequestMatcher(this.resumeAuthnRequestMatcher);
+    }
+    if (this.authenticationTokenRepository != null) {
+      filter.setAuthenticationTokenRepository(this.authenticationTokenRepository);
     }
 
     httpSecurity.addFilterAfter(this.postProcess(filter), Saml2AuthnRequestProcessingFilter.class);
@@ -165,35 +193,35 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
     producers.add(new DefaultAttributeProducer());
     return producers;
   }
-  
+
   private static class DeferredRequestMatcher implements RequestMatcher {
-    
+
     private List<String> paths = new ArrayList<>();
-    
+
     private RequestMatcher matcher = new NegatedRequestMatcher(AnyRequestMatcher.INSTANCE);
 
     @Override
     public boolean matches(final HttpServletRequest request) {
       return this.matcher.matches(request);
     }
-    
+
     public void addPath(final String path) {
       this.paths.add(Objects.requireNonNull(path, "path must not be null"));
       if (this.paths.size() == 1) {
-        this.matcher = new AntPathRequestMatcher(path); 
+        this.matcher = new AntPathRequestMatcher(path);
       }
       else {
         this.matcher = new OrRequestMatcher(this.paths.stream()
             .map(p -> (RequestMatcher) new AntPathRequestMatcher(p))
             .toList());
-            
+
       }
     }
-    
+
     public boolean isConfigured() {
       return !this.paths.isEmpty();
     }
-    
+
   }
 
 }

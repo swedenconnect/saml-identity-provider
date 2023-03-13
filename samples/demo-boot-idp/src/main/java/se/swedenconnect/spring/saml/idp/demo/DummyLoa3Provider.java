@@ -34,6 +34,12 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 public class DummyLoa3Provider extends AbstractUserAuthenticationProvider {
   
   private static final String SUPPORTED_LOA = LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3;
+  
+  /** {@inheritDoc} */
+  @Override
+  public String getName() {
+    return "Simulated Authentication Provider - LoA 3";
+  }
 
   @Override
   protected Saml2UserAuthentication authenticate(final Saml2UserAuthenticationInputToken token, final List<String> authnContextUris)

@@ -26,12 +26,24 @@
             
             <select class="form-control" name="username">
               <option value="NONE">--- Select user to authenticate as ---</option>
-              <option th:each="u : ${users}" th:value="${u}" th:text="${u}">-</option>
+              <option th:each="u : ${users}" th:value='${u.getPersonalNumber()}' th:text='${u.toViewString()}'>-</option>
             </select>
             
-            <button id="submitButton" type="submit" class="btn btn-primary">
-              <span th:text="#{idp.msg.authenticate-button}">Simulate Authentication</span>
-            </button>
+            <div class="row section" id="submitDiv">
+              <div class="col-12">
+                <div class="box">
+                  <button id="submitButton" type="submit" class="btn btn-primary" name="action" value="ok">
+                    <span th:text="#{idp.msg.authenticate-button}">Simulate Authentication</span>
+                  </button>
+                </div>
+              </div>
+            </div> <!-- /#submitDiv -->            
+            
+            <div class="col-sm-12 return">
+              <button class="btn btn-link" type="submit" name="action" value="cancel">
+                <span th:text="#{idp.msg.cancel-link}">Cancel</span>
+              </button>
+            </div>            
             
           </form>
               

@@ -75,7 +75,7 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
       throws ServletException, IOException {
-
+    
     if (!this.requestMatcher.matches(request)) {
       filterChain.doFilter(request, response);
       return;

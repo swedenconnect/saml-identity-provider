@@ -29,12 +29,12 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
- * Abstract base class for {@link Saml2UserAuthenticationProvider}.
+ * Abstract base class for {@link UserAuthenticationProvider}.
  * 
  * @author Martin Lindström
  */
 @Slf4j
-public abstract class AbstractUserAuthenticationProvider implements Saml2UserAuthenticationProvider {
+public abstract class AbstractUserAuthenticationProvider implements UserAuthenticationProvider {
 
   /** An ordered list of {@link SsoVoter}s that is used to decide whether SSO should be allowed. */
   private final List<SsoVoter> ssoVoters;
@@ -49,9 +49,8 @@ public abstract class AbstractUserAuthenticationProvider implements Saml2UserAut
 
   /** {@inheritDoc} */
   @Override
-  public Authentication authenticate(final Authentication authentication) throws Saml2ErrorStatusException {
-
-    final Saml2UserAuthenticationInputToken token = Saml2UserAuthenticationInputToken.class.cast(authentication);
+  public Authentication authenticateUser(final Saml2UserAuthenticationInputToken token)
+      throws Saml2ErrorStatusException {
 
     // Filter authentication context URI:s ...
     //
@@ -82,7 +81,14 @@ public abstract class AbstractUserAuthenticationProvider implements Saml2UserAut
     return this.authenticate(token, filteredAuthnContextUris);
   }
 
-  // returns a Saml2UserAuthentication or a XXX
+  /**
+   * Authenticates the user (after the necessary checks have been made).
+   * 
+   * @param token the input token
+   * @param authnContextUris the possible authentication context URI:s
+   * @return an authentication token
+   * @throws Saml2ErrorStatusException for authentication errors
+   */
   protected abstract Authentication authenticate(final Saml2UserAuthenticationInputToken token,
       final List<String> authnContextUris) throws Saml2ErrorStatusException;
 

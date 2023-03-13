@@ -231,4 +231,11 @@ public class Saml2ErrorStatusException extends AuthenticationException {
     return status;
   }
 
+  /** {@inheritDoc} */
+  @Override
+  public String toString() {
+    return String.format("status-code='%s', sub-status-code='%s', msg='%s'", 
+        this.statusCode, this.subStatusCode, this.getMessage());
+  }
+
 }

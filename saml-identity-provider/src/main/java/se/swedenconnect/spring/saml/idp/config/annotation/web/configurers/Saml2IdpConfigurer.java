@@ -251,7 +251,7 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
     final Saml2ResponseSender responseSender = Saml2IdpConfigurerUtils.getResponseSender(httpSecurity);
 
     final Saml2ErrorResponseProcessingFilter errorResponsefilter =
-        new Saml2ErrorResponseProcessingFilter(this.authnEndpointsMatcher, responseBuilder, responseSender);
+        new Saml2ErrorResponseProcessingFilter(this.getEndpointsMatcher(), responseBuilder, responseSender);
 
     httpSecurity.addFilterAfter(this.postProcess(errorResponsefilter), ExceptionTranslationFilter.class);
 

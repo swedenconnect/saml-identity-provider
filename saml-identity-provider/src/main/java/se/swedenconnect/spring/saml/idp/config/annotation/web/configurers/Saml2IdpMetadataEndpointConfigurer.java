@@ -47,7 +47,7 @@ import se.swedenconnect.opensaml.saml2.metadata.build.IDPSSODescriptorBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.KeyDescriptorBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.SingleSignOnServiceBuilder;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
-import se.swedenconnect.spring.saml.idp.authentication.provider.Saml2UserAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.metadata.Saml2MetadataBuilder;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2IdpMetadataEndpointFilter;
@@ -105,7 +105,7 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
 
     final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     
-    final Collection<Saml2UserAuthenticationProvider> providers = 
+    final Collection<UserAuthenticationProvider> providers = 
         Saml2IdpConfigurerUtils.getSaml2UserAuthenticationProviders(httpSecurity);
 
     // Build metadata ...
@@ -135,7 +135,7 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
         extensions = (Extensions) XMLObjectSupport.buildXMLObject(Extensions.DEFAULT_ELEMENT_NAME);
       }
       final List<String> authnContextUris = providers.stream()
-          .map(Saml2UserAuthenticationProvider::getSupportedAuthnContextUris)
+          .map(UserAuthenticationProvider::getSupportedAuthnContextUris)
           .flatMap(Collection::stream)
           .distinct()
           .collect(Collectors.toList());
@@ -143,7 +143,7 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
         entityAttributesBuilder.assuranceCertificationAttribute(authnContextUris);
       }
       final List<String> entityCategories = providers.stream()
-          .map(Saml2UserAuthenticationProvider::getEntityCategories)
+          .map(UserAuthenticationProvider::getEntityCategories)
           .flatMap(Collection::stream)
           .distinct()
           .collect(Collectors.toList());

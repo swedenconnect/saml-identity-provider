@@ -40,7 +40,7 @@ import se.swedenconnect.spring.saml.idp.attributes.RequestedAttributeProcessor;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.DefaultNameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGenerator;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
-import se.swedenconnect.spring.saml.idp.authentication.provider.Saml2UserAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AssertionConsumerServiceValidator;
@@ -276,11 +276,11 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
     processors.add(new OasisExtensionRequestedAttributeProcessor());
     processors.add(new EidasRequestedAttributeProcessor());
 
-    final Collection<Saml2UserAuthenticationProvider> providers =
+    final Collection<UserAuthenticationProvider> providers =
         Saml2IdpConfigurerUtils.getSaml2UserAuthenticationProviders(httpSecurity);
 
     final List<String> entityCategories = providers.stream()
-        .map(Saml2UserAuthenticationProvider::getEntityCategories)
+        .map(UserAuthenticationProvider::getEntityCategories)
         .flatMap(Collection::stream)
         .distinct()
         .collect(Collectors.toList());

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.authentication.provider;
+package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -37,11 +37,16 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProce
  * </p>
  * 
  * @author Martin Lindström
+ * @see ExternalAuthenticatorTokenRepository
  */
-public interface ExternalAuthenticationRepository {
+public interface FilterAuthenticationTokenRepository {
 
   /**
    * Starts an external authentication processs by storing the supplied {@link RedirectForAuthenticationToken}.
+   * <p>
+   * This happens when the {@link Saml2UserAuthenticationProcessingFilter} receives a
+   * {@link RedirectForAuthenticationToken} from a call to {@link AuthenticationManager#authenticate(Authentication)}.
+   * </p>
    * <p>
    * Any previously stored tokens are cleared.
    * </p>
@@ -52,18 +57,22 @@ public interface ExternalAuthenticationRepository {
   void startExternalAuthentication(final RedirectForAuthenticationToken token, final HttpServletRequest request);
 
   /**
-   * Gets the {@link RedirectForAuthenticationToken} that is the input for an external authentication process.
+   * Is invoked when the {@link Saml2UserAuthenticationProcessingFilter} receives a request on its "resume paths" (see
+   * {@link Saml2UserAuthenticationProcessingFilter#setResumeAuthnRequestMatcher(org.springframework.security.web.util.matcher.RequestMatcher)}).
+   * <p>
+   * The method gets the {@link Authentication} object stored by the authenticator
+   * ({@link ExternalAuthenticatorTokenRepository#completeExternalAuthentication(Authentication, HttpServletRequest)} or
+   * {@link ExternalAuthenticatorTokenRepository#completeExternalAuthentication(Saml2ErrorStatusException, HttpServletRequest)})
+   * and creates a {@link ResumedAuthenticationToken}.
+   * </p>
    * 
-   * @param request the HTTP servlet request
-   * @return the {@link RedirectForAuthenticationToken} or {@code null} if not present
+   * @param request the HTTP request
+   * @return a {@link ResumedAuthenticationToken} or {@code null} if no token exists
+   * @throws IllegalStateException if a {@link ResumedAuthenticationToken} token exists, but no corresponding
+   *           {@link RedirectForAuthenticationToken}
    */
-  RedirectForAuthenticationToken getExternalAuthenticationToken(final HttpServletRequest request);
-
-  void completeExternalAuthentication(final Authentication token, final HttpServletRequest request) throws IllegalStateException;
-
-  void completeExternalAuthentication(final Saml2ErrorStatusException error, final HttpServletRequest request) throws IllegalStateException;
-
-  ResumedAuthenticationToken getCompletedExternalAuthentication(final HttpServletRequest request) throws IllegalStateException;
+  ResumedAuthenticationToken getCompletedExternalAuthentication(final HttpServletRequest request)
+      throws IllegalStateException;
 
   /**
    * Clears the current external authentication.

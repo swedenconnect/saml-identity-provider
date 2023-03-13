@@ -9,6 +9,14 @@ server:
     key-alias: local
     key-store-password: secret
     key-password: secret
+  error:
+    include-message: always
+    include-exception: true
+    include-stacktrace: always
+    
+spring:
+  messages:
+    basename: messages,idp-errors/idp-error-messages
 
 demo:
   users:

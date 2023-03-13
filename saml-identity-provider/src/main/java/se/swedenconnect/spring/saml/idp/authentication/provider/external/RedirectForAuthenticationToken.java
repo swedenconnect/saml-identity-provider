@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.authentication.provider;
+package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,7 +34,7 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProce
  * given path to perform the user authentication.
  * 
  * @author Martin Lindström
- * @see AbstractRedirectUserAuthenticationProvider
+ * @see AbstractUserRedirectAuthenticationProvider
  */
 public class RedirectForAuthenticationToken implements Authentication {
 

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.authentication.provider;
+package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,29 +24,41 @@ import org.springframework.security.core.Authentication;
 
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttribute;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
-import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
+import se.swedenconnect.spring.saml.idp.authentication.provider.AbstractUserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authnrequest.AuthenticationRequirements;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
-public abstract class AbstractRedirectUserAuthenticationProvider extends AbstractUserAuthenticationProvider {
+/**
+ * Abstract base class implementing the {@link UserRedirectAuthenticationProvider} interface.
+ * 
+ * @author Martin Lindström
+ */
+public abstract class AbstractUserRedirectAuthenticationProvider extends AbstractUserAuthenticationProvider
+    implements UserRedirectAuthenticationProvider {
 
   /** The path to where we redirect the user for authentication. */
   private final String authnPath;
 
-  /** The repository where we store the output token. */
-  private ExternalAuthenticationRepository externalAuthenticationRepository =
-      new SessionBasedExternalAuthenticationRepository();
-
   /**
-   * The path that the authenticator uses to redirect the user back after a completed authentication (successful or
-   * not).
+   * The path that the authentication process uses to redirect the user back after a completed authentication
+   * (successful or not).
    */
   private final String resumeAuthnPath;
 
-  public AbstractRedirectUserAuthenticationProvider(final String authnPath, final String resumeAuthnPath) {
+  /** The token repository. */
+  private ExternalAuthenticatorTokenRepository tokenRepository;
+
+  /**
+   * Constructor.
+   * 
+   * @param authnPath the path to where we redirect the user for authentication
+   * @param resumeAuthnPath the path that the authentication process uses to redirect the user back after a completed
+   *          authentication
+   */
+  public AbstractUserRedirectAuthenticationProvider(final String authnPath, final String resumeAuthnPath) {
     this.authnPath = Optional.ofNullable(authnPath)
         .map(String::trim)
         .filter(p -> p.startsWith("/"))
@@ -55,18 +67,9 @@ public abstract class AbstractRedirectUserAuthenticationProvider extends Abstrac
         .map(String::trim)
         .filter(p -> p.startsWith("/"))
         .orElseThrow(() -> new IllegalArgumentException("resumeAuthnPath must be set and begin with a '/'"));
-  }
 
-  @Override
-  public Authentication authenticate(final Authentication authentication) throws Saml2ErrorStatusException {
-    if (ResumedAuthenticationToken.class.isInstance(authentication)) {
-      final ResumedAuthenticationToken resumeToken = ResumedAuthenticationToken.class.cast(authentication); 
-      if (!this.supportsUserAuthenticationToken(resumeToken.getAuthnToken())) {
-        return null;
-      }
-      return this.resumeAuthentication(resumeToken);
-    }
-    return super.authenticate(authentication);
+    // Default to the session based repository ...
+    this.tokenRepository = new SessionBasedExternalAuthenticationRepository();
   }
 
   /**
@@ -124,28 +127,33 @@ public abstract class AbstractRedirectUserAuthenticationProvider extends Abstrac
     return new RedirectForAuthenticationToken(updatedToken, this.authnPath, this.resumeAuthnPath);
   }
 
-  protected abstract Saml2UserAuthentication resumeAuthentication(final ResumedAuthenticationToken token)
-      throws Saml2ErrorStatusException;
-
+  /**
+   * {@inheritDoc}
+   */
   @Override
-  public boolean supports(final Class<?> authentication) {
-    return super.supports(authentication) || ResumedAuthenticationToken.class.isAssignableFrom(authentication);        
+  public ExternalAuthenticatorTokenRepository getTokenRepository() {
+    return this.tokenRepository;
   }
 
-  protected abstract boolean supportsUserAuthenticationToken(final Authentication authentication);
+  /**
+   * Assigns the token repository to use (defaults to {@link SessionBasedExternalAuthenticationRepository}.
+   * 
+   * @param tokenRepository the token repository
+   */
+  public void setTokenRepository(final ExternalAuthenticatorTokenRepository tokenRepository) {
+    this.tokenRepository = Objects.requireNonNull(tokenRepository, "tokenRepository must not be null");
+  }
 
+  /** {@inheritDoc} */
+  @Override
   public String getAuthnPath() {
     return this.authnPath;
   }
 
+  /** {@inheritDoc} */
+  @Override
   public String getResumeAuthnPath() {
     return this.resumeAuthnPath;
-  }
-
-  public void setExternalAuthenticationRepository(
-      final ExternalAuthenticationRepository externalAuthenticationRepository) {
-    this.externalAuthenticationRepository =
-        Objects.requireNonNull(externalAuthenticationRepository, "externalAuthenticationRepository must not be null");
   }
 
 }

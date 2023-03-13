@@ -34,7 +34,7 @@ import org.springframework.util.StringUtils;
 import se.swedenconnect.opensaml.xmlsec.config.DefaultSecurityConfiguration;
 import se.swedenconnect.opensaml.xmlsec.config.SecurityConfiguration;
 import se.swedenconnect.security.credential.PkiCredential;
-import se.swedenconnect.spring.saml.idp.authentication.provider.Saml2UserAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
@@ -159,14 +159,14 @@ class Saml2IdpConfigurerUtils {
   }
 
   /**
-   * Gets all {@link Saml2UserAuthenticationProvider} instances available
+   * Gets all {@link UserAuthenticationProvider} instances available
    * 
    * @param httpSecurity the HTTP security object
-   * @return a (possibly empty) collection of {@link Saml2UserAuthenticationProvider} objects
+   * @return a (possibly empty) collection of {@link UserAuthenticationProvider} objects
    */
-  static Collection<Saml2UserAuthenticationProvider> getSaml2UserAuthenticationProviders(
+  static Collection<UserAuthenticationProvider> getSaml2UserAuthenticationProviders(
       final HttpSecurity httpSecurity) {
-    return getOptionalBeans(httpSecurity, Saml2UserAuthenticationProvider.class);
+    return getOptionalBeans(httpSecurity, UserAuthenticationProvider.class);
   }
 
   static <T> T getBean(final HttpSecurity httpSecurity, final Class<T> type) {

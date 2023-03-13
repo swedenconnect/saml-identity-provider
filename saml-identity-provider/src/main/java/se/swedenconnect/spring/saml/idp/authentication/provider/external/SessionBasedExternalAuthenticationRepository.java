@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.authentication.provider;
+package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -24,11 +24,13 @@ import org.springframework.util.Assert;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
- * An implementation of the {@link ExternalAuthenticationRepository} that is session based.
+ * An implementation of the {@link FilterAuthenticationTokenRepository} and {@link ExternalAuthenticatorTokenRepository}
+ * interfaces that is session based.
  *
  * @author Martin Lindström
  */
-public class SessionBasedExternalAuthenticationRepository implements ExternalAuthenticationRepository {
+public class SessionBasedExternalAuthenticationRepository
+    implements FilterAuthenticationTokenRepository, ExternalAuthenticatorTokenRepository {
 
   /** The name of the session key where we store the {@link RedirectForAuthenticationToken}. */
   public static final String INPUT_SESSION_KEY =
@@ -47,6 +49,26 @@ public class SessionBasedExternalAuthenticationRepository implements ExternalAut
     final HttpSession session = request.getSession();
     session.removeAttribute(RESULT_SESSION_KEY);
     session.setAttribute(INPUT_SESSION_KEY, token);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public ResumedAuthenticationToken getCompletedExternalAuthentication(final HttpServletRequest request)
+      throws IllegalStateException {
+    final HttpSession session = request.getSession();
+    final ResumedAuthenticationToken resultToken =
+        (ResumedAuthenticationToken) session.getAttribute(RESULT_SESSION_KEY);
+    if (resultToken == null) {
+      return null;
+    }
+    final RedirectForAuthenticationToken inputToken =
+        (RedirectForAuthenticationToken) session.getAttribute(INPUT_SESSION_KEY);
+    if (inputToken == null) {
+      throw new IllegalStateException("State error: Can not get authentication result - no authn input token exists");
+    }
+    resultToken.setAuthnInputToken(inputToken.getAuthnInputToken());
+    resultToken.setServletRequest(request);
+    return resultToken;
   }
 
   /** {@inheritDoc} */
@@ -84,24 +106,6 @@ public class SessionBasedExternalAuthenticationRepository implements ExternalAut
     }
     final ResumedAuthenticationToken resultToken = new ResumedAuthenticationToken(error);
     session.setAttribute(RESULT_SESSION_KEY, resultToken);
-  }
-
-  /** {@inheritDoc} */
-  @Override
-  public ResumedAuthenticationToken getCompletedExternalAuthentication(final HttpServletRequest request) throws IllegalStateException {
-    final HttpSession session = request.getSession();
-    final ResumedAuthenticationToken resultToken = (ResumedAuthenticationToken) session.getAttribute(RESULT_SESSION_KEY);
-    if (resultToken == null) {
-      return null;
-    }
-    final RedirectForAuthenticationToken inputToken =
-        (RedirectForAuthenticationToken) session.getAttribute(INPUT_SESSION_KEY);
-    if (inputToken == null) {
-      throw new IllegalStateException("State error: Can not get authentication result - no authn input token exists");
-    }
-    resultToken.setAuthnInputToken(inputToken.getAuthnInputToken());
-    resultToken.setServletRequest(request);
-    return resultToken;
   }
 
   /** {@inheritDoc} */
