@@ -229,6 +229,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
     if (this.nameIDGeneratorFactory == null) {
       this.nameIDGeneratorFactory = new DefaultNameIDGeneratorFactory(settings.getEntityId());
     }
+    httpSecurity.setSharedObject(NameIDGeneratorFactory.class, this.nameIDGeneratorFactory);
 
     final List<PkiCredential> decryptionCredentials = new ArrayList<>();
     Optional.ofNullable(Saml2IdpConfigurerUtils.getEncryptCredential(httpSecurity))

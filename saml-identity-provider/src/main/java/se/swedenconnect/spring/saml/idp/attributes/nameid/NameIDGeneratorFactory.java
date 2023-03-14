@@ -15,6 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.nameid;
 
+import java.util.List;
+
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -44,5 +46,13 @@ public interface NameIDGeneratorFactory {
    */
   NameIDGenerator getNameIDGenerator(final AuthnRequest authnRequest, final EntityDescriptor peerMetadata)
       throws Saml2ErrorStatusException, UnrecoverableSaml2IdpException;
+
+  /**
+   * Gets a list of the {@code NameIDFormat}s that are supported by the factory. The most preferred should be added
+   * first.
+   * 
+   * @return a list of the supported formats
+   */
+  List<String> getSupportedFormats();
 
 }

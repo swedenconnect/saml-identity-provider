@@ -29,17 +29,17 @@ import org.springframework.web.servlet.ModelAndView;
 
 import lombok.Setter;
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.AbstractAuthenticationController;
-import se.swedenconnect.spring.saml.idp.authentication.provider.external.RedirectForAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.demo.SimulatedUser;
 import se.swedenconnect.spring.saml.idp.demo.UsersConfigurationProperties;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 @Controller
-public class SimulatedAuthenticationController extends AbstractAuthenticationController<SimulatedAuthenticationProvider> {
-  
+public class SimulatedAuthenticationController
+    extends AbstractAuthenticationController<SimulatedAuthenticationProvider> {
+
   public static final String AUTHN_PATH = "/authn";
-  
+
   /**
    * The authentication provider that is the "manager" for this authentication.
    */
@@ -53,10 +53,6 @@ public class SimulatedAuthenticationController extends AbstractAuthenticationCon
   @Autowired
   UserDetailsService userDetailsService;
 
-  // TODO: Build a HandlerMethodArgumentResolver that injects input token
-  // Check:
-  // https://www.petrikainulainen.net/programming/spring-framework/spring-from-the-trenches-creating-a-custom-handlermethodargumentresolver/
-
   @GetMapping(AUTHN_PATH)
   public ModelAndView authenticate(final HttpServletRequest request, final HttpServletResponse response) {
     final ModelAndView mav = new ModelAndView("simulated");
@@ -67,8 +63,6 @@ public class SimulatedAuthenticationController extends AbstractAuthenticationCon
   @PostMapping("/authn/complete")
   public ModelAndView complete(final HttpServletRequest request, final HttpServletResponse response,
       @RequestParam(name = "username") final String userName, @RequestParam("action") final String action) {
-
-    final RedirectForAuthenticationToken redirectToken = this.getProvider().getTokenRepository().getExternalAuthenticationToken(request);
 
     if ("cancel".equals(action)) {
       return this.cancel(request);
@@ -82,9 +76,9 @@ public class SimulatedAuthenticationController extends AbstractAuthenticationCon
         return this.complete(request, new SimulatedAuthenticationToken(user));
       }
       catch (final UsernameNotFoundException e) {
-        return this.complete(request,  new Saml2ErrorStatusException(Saml2ErrorStatus.UNKNOWN_PRINCIPAL));
+        return this.complete(request, new Saml2ErrorStatusException(Saml2ErrorStatus.UNKNOWN_PRINCIPAL));
       }
-    }    
+    }
   }
 
   /** {@inheritDoc} */

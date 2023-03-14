@@ -20,12 +20,20 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
+import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.ext.saml2mdattr.EntityAttributes;
+import org.opensaml.saml.ext.saml2mdui.UIInfo;
+import org.opensaml.saml.saml2.core.NameID;
+import org.opensaml.saml.saml2.metadata.ContactPersonTypeEnumeration;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.Extensions;
+import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
 import org.opensaml.saml.saml2.metadata.KeyDescriptor;
 import org.opensaml.saml.saml2.metadata.SingleSignOnService;
 import org.opensaml.security.credential.UsageType;
@@ -40,16 +48,26 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.xml.XMLParserException;
+import se.swedenconnect.opensaml.common.utils.LocalizedString;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorContainer;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
+import se.swedenconnect.opensaml.saml2.metadata.build.ContactPersonBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.EntityAttributesBuilder;
+import se.swedenconnect.opensaml.saml2.metadata.build.EntityDescriptorBuilder;
+import se.swedenconnect.opensaml.saml2.metadata.build.ExtensionsBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.IDPSSODescriptorBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.KeyDescriptorBuilder;
+import se.swedenconnect.opensaml.saml2.metadata.build.LogoBuilder;
+import se.swedenconnect.opensaml.saml2.metadata.build.OrganizationBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.SingleSignOnServiceBuilder;
+import se.swedenconnect.opensaml.saml2.metadata.build.UIInfoBuilder;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
+import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
-import se.swedenconnect.spring.saml.idp.metadata.Saml2MetadataBuilder;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
+import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonType;
+import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.UIInfoSettings;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2IdpMetadataEndpointFilter;
 
 /**
@@ -64,10 +82,10 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
   private RequestMatcher requestMatcher;
 
   /** For customizing metadata. */
-  private Customizer<Saml2MetadataBuilder> entityDescriptorCustomizer = Customizer.withDefaults();
+  private Customizer<EntityDescriptor> entityDescriptorCustomizer = Customizer.withDefaults();
 
   /** The metadata builder. */
-  private Saml2MetadataBuilder entityDescriptorBuilder;
+  private EntityDescriptorBuilder entityDescriptorBuilder;
 
   /**
    * Constructor restricted for internal use.
@@ -79,14 +97,14 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
   }
 
   /**
-   * Sets the {@code Customizer} providing access to the {@link Saml2MetadataBuilder} allowing the ability to customize
-   * how the published IdP metadata is constructed.
+   * Sets the {@code Customizer} providing access to the {@link EntityDescriptor} allowing the ability to customize how
+   * the published IdP metadata is constructed.
    *
-   * @param metadataCustomizer the {@code Customizer} providing access to the {@link Saml2MetadataBuilder}
+   * @param metadataCustomizer the {@code Customizer} providing access to the {@link EntityDescriptor}
    * @return the {@link Saml2IdpMetadataEndpointConfigurer} for further configuration
    */
   public Saml2IdpMetadataEndpointConfigurer entityDescriptorCustomizer(
-      final Customizer<Saml2MetadataBuilder> metadataCustomizer) {
+      final Customizer<EntityDescriptor> metadataCustomizer) {
     this.entityDescriptorCustomizer = Objects.requireNonNull(metadataCustomizer, "metadataCustomizer must not be null");
     return this;
   }
@@ -104,18 +122,20 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
   void configure(final HttpSecurity httpSecurity) {
 
     final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
-    
-    final Collection<UserAuthenticationProvider> providers = 
+
+    final Collection<UserAuthenticationProvider> providers =
         Saml2IdpConfigurerUtils.getSaml2UserAuthenticationProviders(httpSecurity);
 
     // Build metadata ...
     //
     try {
       if (settings.getMetadata().getTemplate() != null) {
-        this.entityDescriptorBuilder = new Saml2MetadataBuilder(settings.getMetadata().getTemplate().getInputStream());
+        final EntityDescriptor template = (EntityDescriptor) XMLObjectSupport.unmarshallFromInputStream(
+            XMLObjectProviderRegistrySupport.getParserPool(), settings.getMetadata().getTemplate().getInputStream());
+        this.entityDescriptorBuilder = new EntityDescriptorBuilder(template);
       }
       else {
-        this.entityDescriptorBuilder = new Saml2MetadataBuilder();
+        this.entityDescriptorBuilder = new EntityDescriptorBuilder();
       }
       this.entityDescriptorBuilder.entityID(settings.getEntityId());
       this.entityDescriptorBuilder.cacheDuration(settings.getMetadata().getCacheDuration());
@@ -125,11 +145,12 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
       final EntityAttributesBuilder entityAttributesBuilder = EntityAttributesBuilder.builder();
       Extensions extensions = this.entityDescriptorBuilder.object().getExtensions();
       if (extensions != null) {
-        final EntityAttributes entityAttributes = EntityDescriptorUtils.getMetadataExtension(extensions, EntityAttributes.class);             
+        final EntityAttributes entityAttributes =
+            EntityDescriptorUtils.getMetadataExtension(extensions, EntityAttributes.class);
         if (entityAttributes != null) {
-          entityAttributesBuilder.attributes(entityAttributes.getAttributes());          
+          entityAttributesBuilder.attributes(entityAttributes.getAttributes());
           extensions.getUnknownXMLObjects().removeIf(o -> EntityAttributes.class.isAssignableFrom(o.getClass()));
-        }        
+        }
       }
       else {
         extensions = (Extensions) XMLObjectSupport.buildXMLObject(Extensions.DEFAULT_ELEMENT_NAME);
@@ -150,12 +171,24 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
       if (!entityCategories.isEmpty()) {
         entityAttributesBuilder.entityCategoriesAttribute(entityCategories);
       }
-      
+
       extensions.getUnknownXMLObjects().add(entityAttributesBuilder.build());
       this.entityDescriptorBuilder.extensions(extensions);
-      
-      final IDPSSODescriptorBuilder descBuilder = IDPSSODescriptorBuilder.builder();
+
+      final IDPSSODescriptor existingSsoDescriptor =
+          this.entityDescriptorBuilder.object().getIDPSSODescriptor(SAMLConstants.SAML20P_NS);
+      final IDPSSODescriptorBuilder descBuilder = existingSsoDescriptor != null
+          ? new IDPSSODescriptorBuilder(existingSsoDescriptor, true)
+          : new IDPSSODescriptorBuilder();
+
       descBuilder.wantAuthnRequestsSigned(settings.getRequiresSignedRequests());
+
+      final UIInfo uiInfo = buildUiInfo(settings);
+      if (uiInfo != null) {
+        final ExtensionsBuilder extensionsBuilder = descBuilder.getExtensionsBuilder();
+        extensionsBuilder.extensions(uiInfo);
+        descBuilder.extensions(extensionsBuilder.build());
+      }
 
       final List<KeyDescriptor> keyDescriptors = new ArrayList<>();
       boolean signAssigned = false;
@@ -198,6 +231,14 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
       }
       descBuilder.keyDescriptors(keyDescriptors);
 
+      // NameID formats
+      //
+      final NameIDGeneratorFactory nameIdGenerator = httpSecurity.getSharedObject(NameIDGeneratorFactory.class);
+      final List<String> nameIdFormats = nameIdGenerator != null
+          ? nameIdGenerator.getSupportedFormats()
+          : List.of(NameID.PERSISTENT, NameID.TRANSIENT);
+      descBuilder.nameIDFormats(nameIdFormats);
+
       final List<SingleSignOnService> ssoServices = new ArrayList<>();
       ssoServices.add(SingleSignOnServiceBuilder.builder()
           .redirectBinding()
@@ -228,12 +269,52 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
       descBuilder.singleSignOnServices(ssoServices);
 
       this.entityDescriptorBuilder.ssoDescriptor(descBuilder.build());
+
+      // Organization
+      //
+      if (settings.getMetadata().getOrganization() != null) {
+        final OrganizationBuilder b = OrganizationBuilder.builder();
+        b.organizationNames(Optional.ofNullable(settings.getMetadata().getOrganization().getNames())
+            .map(n -> n.entrySet().stream()
+                .map(e -> new LocalizedString(e.getValue(), e.getKey()))
+                .collect(Collectors.toList()))
+            .orElse(null));
+        b.organizationDisplayNames(Optional.ofNullable(settings.getMetadata().getOrganization().getDisplayNames())
+            .map(n -> n.entrySet().stream()
+                .map(e -> new LocalizedString(e.getValue(), e.getKey()))
+                .collect(Collectors.toList()))
+            .orElse(null));
+        b.organizationURLs(Optional.ofNullable(settings.getMetadata().getOrganization().getUrls())
+            .map(n -> n.entrySet().stream()
+                .map(e -> new LocalizedString(e.getValue(), e.getKey()))
+                .collect(Collectors.toList()))
+            .orElse(null));
+
+        this.entityDescriptorBuilder.organization(b.build());
+      }
+
+      // ContactPerson:s
+      //
+      if (settings.getMetadata().getContactPersons() != null) {
+        this.entityDescriptorBuilder.contactPersons(
+            settings.getMetadata().getContactPersons().entrySet().stream()
+                .map(e -> ContactPersonBuilder.builder()
+                    .type(toOpenSamlEnum(e.getKey()))
+                    .company(e.getValue().getCompany())
+                    .givenName(e.getValue().getGivenName())
+                    .surname(e.getValue().getSurname())
+                    .emailAddresses(e.getValue().getEmailAddresses())
+                    .telephoneNumbers(e.getValue().getTelephoneNumbers())
+                    .build())
+                .collect(Collectors.toList()));
+      }
+
     }
     catch (final IOException | XMLParserException | UnmarshallingException e) {
       throw new IllegalArgumentException("Failed to construct IdP metadata - " + e.getMessage(), e);
     }
 
-    this.entityDescriptorCustomizer.customize(this.entityDescriptorBuilder);
+    this.entityDescriptorCustomizer.customize(this.entityDescriptorBuilder.object());
 
     final X509Credential metadataSigning;
     if (settings.getCredentials().getMetadataSignCredential() != null) {
@@ -259,6 +340,55 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
   @Override
   RequestMatcher getRequestMatcher() {
     return this.requestMatcher;
+  }
+
+  /**
+   * Builds an {@link UIInfo} element.
+   * 
+   * @param settings the IdP settings
+   * @return an {@link UIInfo} element or {@code null}
+   */
+  private static UIInfo buildUiInfo(final IdentityProviderSettings settings) {
+    final UIInfoSettings uiSettings = Optional.ofNullable(settings.getMetadata())
+        .map(MetadataSettings::getUiInfo)
+        .orElse(null);
+    if (uiSettings == null) {
+      return null;
+    }
+
+    final UIInfoBuilder uiBuilder = UIInfoBuilder.builder();
+    uiBuilder.displayNames(Optional.ofNullable(uiSettings.getDisplayNames())
+        .map(d -> d.entrySet().stream().map(e -> new LocalizedString(e.getValue(), e.getKey()))
+            .collect(Collectors.toList()))
+        .orElse(null));
+    uiBuilder.descriptions(Optional.ofNullable(uiSettings.getDescriptions())
+        .map(d -> d.entrySet().stream().map(e -> new LocalizedString(e.getValue(), e.getKey()))
+            .collect(Collectors.toList()))
+        .orElse(null));
+
+    uiBuilder.logos(Optional.ofNullable(uiSettings.getLogotypes())
+        .map(l -> l.stream()
+            .map(logo -> LogoBuilder.builder()
+                .url(logo.getPath() != null
+                    ? settings.getBaseUrl() + logo.getPath()
+                    : logo.getUrl())
+                .language(logo.getLanguageTag())
+                .height(logo.getHeight())
+                .width(logo.getWidth())
+                .build())
+            .collect(Collectors.toList()))
+        .orElse(null));
+
+    return uiBuilder.build();
+  }
+
+  private static ContactPersonTypeEnumeration toOpenSamlEnum(final ContactPersonType type) {
+    for (final ContactPersonTypeEnumeration e : ContactPersonTypeEnumeration.values()) {
+      if (e.toString().equals(type.name())) {
+        return e;
+      }
+    }
+    throw new IllegalArgumentException("Unknown ContactPerson type: " + type.name());
   }
 
 }

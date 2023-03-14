@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.nameid;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.opensaml.saml.common.xml.SAMLConstants;
@@ -89,6 +90,14 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
     }
 
     return this.createNameIDGenerator(nameFormat, this.idpEntityId, peerMetadata.getEntityID());
+  }
+  
+  /** {@inheritDoc} */
+  @Override
+  public List<String> getSupportedFormats() {
+    return NameID.PERSISTENT.equals(this.defaultFormat)
+        ? List.of(NameID.PERSISTENT, NameID.TRANSIENT)
+        : List.of(NameID.TRANSIENT, NameID.PERSISTENT);
   }
 
   /**

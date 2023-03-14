@@ -321,6 +321,10 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
     if (!identityProviderSettings.getEndpoints().getMetadataEndpoint().startsWith("/")) {
       throw new IllegalArgumentException("Invalid endpoint - metadata path must begin with /");
     }
+    
+    // Metadata
+    
+    // TODO
 
     // Metadata providers
     //

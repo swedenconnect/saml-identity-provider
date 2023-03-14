@@ -15,6 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
+import java.util.Optional;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.security.core.Authentication;
@@ -23,6 +25,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
+import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
+import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
 /**
  * A helper class that {@link Controller}s that implement "external user authentication" may inherit from.
@@ -32,6 +36,20 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
  * @author Martin Lindström
  */
 public abstract class AbstractAuthenticationController<T extends UserRedirectAuthenticationProvider> {
+
+  /**
+   * Gets the {@link RedirectForAuthenticationToken} that is the input for the "external authentication" process.
+   * 
+   * @param request the HTTP servlet request
+   * @return a {@link RedirectForAuthenticationToken}
+   * @throws UnrecoverableSaml2IdpException if no token is available
+   */
+  protected RedirectForAuthenticationToken getInputToken(final HttpServletRequest request)
+      throws UnrecoverableSaml2IdpException {
+    return Optional.ofNullable(this.getProvider().getTokenRepository().getExternalAuthenticationToken(request))
+        .orElseThrow(() -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION,
+            "No input token available"));
+  }
 
   /**
    * Utility method that saves the authentication result in the {@link ExternalAuthenticatorTokenRepository} of the

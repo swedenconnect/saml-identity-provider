@@ -16,6 +16,7 @@
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
 import java.security.cert.X509Certificate;
+import java.util.stream.Collectors;
 
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,18 +122,56 @@ public class IdentityProviderAutoConfiguration {
     if (this.properties.getAssertions() != null) {
       builder.assertionSettings(
           AssertionSettings.builder()
-            .encryptAssertions(this.properties.getAssertions().getEncrypt())
-            .notBeforeDuration(this.properties.getAssertions().getNotBefore())
-            .notOnOrAfterDuration(this.properties.getAssertions().getNotAfter())
-            .build());            
+              .encryptAssertions(this.properties.getAssertions().getEncrypt())
+              .notBeforeDuration(this.properties.getAssertions().getNotBefore())
+              .notOnOrAfterDuration(this.properties.getAssertions().getNotAfter())
+              .build());
     }
     if (this.properties.getMetadata() != null) {
-      builder.metadata(
-          MetadataSettings.builder()
-              .template(this.properties.getMetadata().getTemplate())
-              .cacheDuration(this.properties.getMetadata().getCacheDuration())
-              .validityPeriod(this.properties.getMetadata().getValidityPeriod())
-              .build());
+      final MetadataSettings.Builder mdBuilder = MetadataSettings.builder()
+          .template(this.properties.getMetadata().getTemplate())
+          .cacheDuration(this.properties.getMetadata().getCacheDuration())
+          .validityPeriod(this.properties.getMetadata().getValidityPeriod());
+
+      if (this.properties.getMetadata().getUiInfo() != null) {
+        final MetadataSettings.UIInfoSettings.Builder uiBuilder = MetadataSettings.UIInfoSettings.builder()
+            .displayNames(this.properties.getMetadata().getUiInfo().getDisplayNames())
+            .descriptions(this.properties.getMetadata().getUiInfo().getDescriptions());
+        if (this.properties.getMetadata().getUiInfo().getLogotypes() != null) {
+          uiBuilder.logotypes(this.properties.getMetadata().getUiInfo().getLogotypes().stream()
+              .map(l -> MetadataSettings.UIInfoSettings.LogoSettings.builder()
+                  .url(l.getUrl())
+                  .path(l.getPath())
+                  .width(l.getWidth())
+                  .height(l.getHeight())
+                  .languageTag(l.getLanguageTag())
+                  .build())
+              .collect(Collectors.toList()));
+        }
+        mdBuilder.uiInfo(uiBuilder.build());
+      }
+
+      if (this.properties.getMetadata().getOrganization() != null) {
+        mdBuilder.organization(MetadataSettings.OrganizationSettings.builder()
+            .names(this.properties.getMetadata().getOrganization().getNames())
+            .displayNames(this.properties.getMetadata().getOrganization().getDisplayNames())
+            .urls(this.properties.getMetadata().getOrganization().getUrls())
+            .build());
+      }
+
+      if (this.properties.getMetadata().getContactPersons() != null) {
+        mdBuilder.contactPersons(this.properties.getMetadata().getContactPersons().entrySet().stream()
+            .collect(Collectors.toMap(e -> e.getKey(),
+                e -> MetadataSettings.ContactPersonSettings.builder()
+                    .company(e.getValue().getCompany())
+                    .givenName(e.getValue().getGivenName())
+                    .surname(e.getValue().getSurname())
+                    .emailAddresses(e.getValue().getEmailAddresses())
+                    .telephoneNumbers(e.getValue().getTelephoneNumbers())
+                    .build())));
+      }
+
+      builder.metadata(mdBuilder.build());
     }
     if (this.metadataProvider != null) {
       builder.metadataProvider(this.metadataProvider);

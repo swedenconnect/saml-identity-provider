@@ -16,10 +16,13 @@
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.core.io.Resource;
 
 import lombok.Data;
+import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonType;
 
 /**
  * Configuration properties for IdP metadata.
@@ -43,5 +46,128 @@ public class MetadataConfigurationProperties {
    * Tells for how long a published metadata entry should be valid.
    */
   private Duration validityPeriod;
+
+  /**
+   * The metadata {@code UIInfo} element.
+   */
+  private UIInfo uiInfo;
+
+  /**
+   * The metadata {@code Organization} element.
+   */
+  private Organization organization;
+
+  /**
+   * The metadata {@code ContactPerson} elements.
+   */
+  private Map<ContactPersonType, ContactPerson> contactPersons;
+
+  /**
+   * Settings for the metadata {@code UIInfo} element.
+   */
+  @Data
+  public static class UIInfo {
+
+    /**
+     * UIInfo display names. The map key is the language tag and value is display name for that language.
+     */
+    private Map<String, String> displayNames;
+
+    /**
+     * UIInfo descriptions. The map key is the language tag and value is description for that language.
+     */
+    private Map<String, String> descriptions;
+
+    /**
+     * UIInfo logotypes.
+     */
+    private List<Logo> logotypes;
+
+    /**
+     * Representation of a {@code Logo} element.
+     */
+    @Data
+    public static class Logo {
+
+      /**
+       * Logotype URL. Mutually exclusive with path.
+       */
+      private String url;
+
+      /**
+       * Logotype path. Mutually exclusive with url.
+       */
+      private String path;
+
+      /**
+       * Logotype height in pixels.
+       */
+      private Integer height;
+
+      /**
+       * Logotype width in pixels.
+       */
+      private Integer width;
+
+      /**
+       * Logotype language tag.
+       */
+      private String languageTag;
+    }
+  }
+
+  /**
+   * Settings for the {@code Organization} metadata element.
+   */
+  @Data
+  public static class Organization {
+
+    /**
+     * The {@code OrganizationName}. The map key is the language tag and value is display name for that language.
+     */
+    private Map<String, String> names;
+
+    /**
+     * The {@code OrganizationDisplayName}. The map key is the language tag and value is display name for that language.
+     */
+    private Map<String, String> displayNames;
+
+    /**
+     * The {@code OrganizationURL}. The map key is the language tag and value is display name for that language.
+     */
+    private Map<String, String> urls;
+  }
+
+  /**
+   * Settings for the {@code ContactPerson} metadata element.
+   */
+  @Data
+  public static class ContactPerson {
+
+    /**
+     * The {@code Company} element.
+     */
+    private String company;
+
+    /**
+     * The {@code GivenName} element.
+     */
+    private String givenName;
+
+    /**
+     * The {@code SurName} element.
+     */
+    private String surname;
+
+    /**
+     * The {@code EmailAddress} elements.
+     */
+    private List<String> emailAddresses;
+
+    /**
+     * The {@code TelephoneNumber} elements.
+     */
+    private List<String> telephoneNumbers;
+  }
 
 }
