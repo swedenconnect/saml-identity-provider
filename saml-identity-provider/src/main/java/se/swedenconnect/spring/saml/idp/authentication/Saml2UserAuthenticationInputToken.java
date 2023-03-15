@@ -19,8 +19,6 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.opensaml.saml.saml2.core.AuthnRequest;
-import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -46,6 +44,9 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
 
   /** The user authentication object - used in SSO cases. */
   private Authentication userAuthentication;
+
+  /** The UI info - may be useful for IdP UI. */
+  private transient Saml2ServiceProviderUiInfo uiInfo;
 
   /**
    * Constructor.
@@ -116,7 +117,22 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
   public Object getPrincipal() {
     return this.authnRequestToken.getPrincipal();
   }
-  
+
+  /**
+   * Gets the UI info - may be useful for IdP UI.
+   * 
+   * @return a {@link Saml2ServiceProviderUiInfo}
+   */
+  public Saml2ServiceProviderUiInfo getUiInfo() {
+    if (this.uiInfo == null) {
+      this.uiInfo = Optional.ofNullable(this.authnRequestToken)
+          .map(Saml2AuthnRequestAuthenticationToken::getPeerMetadata)
+          .map(e -> new Saml2ServiceProviderUiInfo(e))
+          .orElse(null);
+    }
+    return this.uiInfo;
+  }
+
   /**
    * Maps to {@link Saml2AuthnRequestAuthenticationToken#getLogString()}.
    * 
