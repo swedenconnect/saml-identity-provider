@@ -62,3 +62,15 @@ logging:
           support:
             ResourceBundleMessageSource: TRACE
             
+---
+
+spring:
+  config:
+    activate:
+      on-profile: ref
+      
+saml:
+  sp:
+    idp-metadata-location: classpath:ref-idp-metadata.xml
+
+            

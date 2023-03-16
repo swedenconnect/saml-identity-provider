@@ -17,6 +17,7 @@ package se.swedenconnect.spring.saml.idp.config.annotation.web.configuration;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -30,6 +31,7 @@ import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticati
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.UserRedirectAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurer;
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurerAdapter;
+import se.swedenconnect.spring.saml.idp.response.ResponsePage;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
@@ -47,15 +49,22 @@ public class Saml2IdpConfiguration {
    * @param http the HttpSecurity object
    * @param authenticationProviders a list of authentication providers
    * @param adapters the configuration adapters
+   * @param responsePage a custom response page (may be {@code null})
    * @return a SecurityFilterChain
    * @throws Exception for configuration errors
    */
   @Bean("samlIdpSecurityFilterChain")
   @Order(Ordered.HIGHEST_PRECEDENCE)
   public SecurityFilterChain identityProviderSecurityFilterChain(final HttpSecurity http,
-      final List<UserAuthenticationProvider> authenticationProviders,
-      final List<Saml2IdpConfigurerAdapter> adapters) throws Exception {
+      @Autowired(required = false) final List<UserAuthenticationProvider> authenticationProviders,
+      @Autowired(required = false) final List<Saml2IdpConfigurerAdapter> adapters,
+      @Autowired(required = false) final ResponsePage responsePage) throws Exception {
     applyDefaultSecurity(http, authenticationProviders);
+    
+    if (responsePage != null) {
+      http.getConfigurer(Saml2IdpConfigurer.class)
+        .responseSender(s -> s.setResponsePage(responsePage));
+    }
 
     if (adapters != null && !adapters.isEmpty()) {
       final Saml2IdpConfigurer idpConfigurer = http.getConfigurer(Saml2IdpConfigurer.class);

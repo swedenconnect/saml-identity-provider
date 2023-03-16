@@ -16,7 +16,6 @@
 package se.swedenconnect.spring.saml.idp.response;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
@@ -26,13 +25,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.Response;
-import org.springframework.security.web.DefaultRedirectStrategy;
-import org.springframework.security.web.RedirectStrategy;
-import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.codec.Base64Support;
 import net.shibboleth.utilities.java.support.codec.EncodingException;
+import net.shibboleth.utilities.java.support.codec.HTMLEncoder;
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
@@ -45,11 +42,8 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 @Slf4j
 public class Saml2ResponseSender {
 
-  /** The response page. */
-  private String responsePage;
-
-  /** The redirect strategy. */
-  private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+  /** The response page POST sender. */
+  private ResponsePage responsePage = new DefaultResponsePage();
 
   /**
    * Directs the user agent to a page that issues a HTML POST containing the SAML response, and optionally, also the
@@ -67,17 +61,12 @@ public class Saml2ResponseSender {
       throws UnrecoverableSaml2IdpException {
 
     final String encodedResponse = this.encodeResponse(response);
+    final String encodedRelayState = HTMLEncoder.encodeForHTMLAttribute(relayState);
 
     try {
-      if (StringUtils.hasText(this.responsePage)) {
-        final String redirectUrl = this.buildRedirectUrl(this.responsePage, destinationUrl, encodedResponse, relayState);
-        this.redirectStrategy.sendRedirect(httpServletRequest, httpServletResponse, redirectUrl);
-      }
-      else {
-        DefaultResponsePage.sendResponse(httpServletResponse, destinationUrl, encodedResponse, relayState);
-      }
+      this.responsePage.sendResponse(httpServletResponse, destinationUrl, encodedResponse, encodedRelayState);
     }
-    catch (final IOException/* | ServletException */ e) {
+    catch (final IOException e) {
       log.error("Failed to send SAML Response to {} - {}", destinationUrl, e.getMessage(), e);
       throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
           "Failed to send Response message", e);
@@ -86,52 +75,12 @@ public class Saml2ResponseSender {
   }
 
   /**
-   * Assigns the path to a custom HTML page that posts the user back to the peer. If no page is assigned, 
-   * the {@link DefaultResponsePage} will be used. The default page looks like:
+   * Assigns the {@link ResponsePage} to use when posting back the user. The default is {@link DefaultResponsePage}.
    * 
-   * <pre>
-   * &lt;!DOCTYPE html&gt;
-   * &lt;html lang="en"&gt;
-   * &lt;head&gt;
-   *   &lt;meta charset="utf-8"&gt;
-   *   &lt;meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"&gt;
-   *   &lt;title&gt;SAML Response&lt;/title&gt;
-   * &lt;/head&gt;
-   * &lt;body onload="document.forms[0].submit()"&gt;
-   *   &lt;form action="https://www.example.com/sso" method="POST"&gt;
-   *     &lt;input type="hidden" name="SAMLResponse" value="..." /&gt;
-   *     &lt;input type="hidden" name="RelayState" value="..." /&gt;
-   *     &lt;noscript&gt;
-   *       &lt;p/&gt;Your web browser does not have JavaScript enabled. Click the "Continue" button below to proceed.&lt;/p/&gt;
-   *       &lt;p/&gt;&lt;input type="submit" value="Continue" /&gt;&lt;/p/&gt;
-   *     &lt;/noscript/&gt;
-   *   &lt;/form&gt;
-   * &lt;/body&gt;
-   * &lt;/html&gt;
-   * </pre>
-   * 
-   * When a response has been configured, the user agent will be redirected to this page and the following query
-   * parameters will be set:
-   * <ul>
-   * <li>{@code destination} - Contains the URL to include as the {@code action} parameter in the POST form.</li>
-   * <li>{@code SAMLResponse} - Contains the encoded SAML response. Should be assigned the {@code SAMLResponse} form
-   * parameter.</li>
-   * <li>{@code RelayState} - Optional - If assigned, should be assigned the {@code RelayState} form parameter.</li>
-   * </ul>
-   * @param responsePage the response page
+   * @param responsePage the {@link ResponsePage}
    */
-  public void setResponsePage(final String responsePage) {
-    this.responsePage = responsePage;
-  }
-
-  /**
-   * Assigns a custom {@link RedirectStrategy} to use when redirecting to the configured response page. If not assigned
-   * a {@link DefaultRedirectStrategy} is used.
-   * 
-   * @param redirectStrategy the strategy
-   */
-  public void setRedirectStrategy(final RedirectStrategy redirectStrategy) {
-    this.redirectStrategy = Objects.requireNonNull(redirectStrategy, "redirectStrategy must not be null");
+  public void setResponsePage(final ResponsePage responsePage) {
+    this.responsePage = Objects.requireNonNull(responsePage, "responsePage must not be null");
   }
 
   /**
@@ -153,29 +102,6 @@ public class Saml2ResponseSender {
       throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
           "Failed to encode Response message", e);
     }
-  }
-
-  /**
-   * Builds a redirect URL for sending the user agent to the configured response page.
-   * 
-   * @param url the response page
-   * @param destination the POST destination URL
-   * @param samlResponse the encoded SAML response
-   * @param relayState the relay state (may be {@code null})
-   * @return a redirect URL
-   */
-  protected String buildRedirectUrl(
-      final String url, final String destination, final String samlResponse, final String relayState) {
-    StringBuilder sb = new StringBuilder(url);
-    sb.append(url.contains("?") ? '&' : '?').append("destination=")
-        .append(URLEncoder.encode(destination, StandardCharsets.UTF_8))
-        .append("&SAMLResponse=")
-        .append(URLEncoder.encode(samlResponse, StandardCharsets.UTF_8));
-    if (StringUtils.hasText(relayState)) {
-      sb.append("&RelayState=" + URLEncoder.encode(relayState, StandardCharsets.UTF_8));
-    }
-
-    return sb.toString();
   }
 
 }

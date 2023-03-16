@@ -28,14 +28,10 @@ import org.springframework.util.StringUtils;
  * 
  * @author Martin Lindström
  */
-public class DefaultResponsePage {
+public class DefaultResponsePage implements ResponsePage {
 
   private static final MediaType TEXT_HTML_UTF8 = new MediaType("text", "html", StandardCharsets.UTF_8);
   private static final String NEWLINE = System.lineSeparator();
-
-  // Hidden
-  private DefaultResponsePage() {
-  }
 
   /**
    * Sends a SAML Response message to the given destination.
@@ -46,12 +42,15 @@ public class DefaultResponsePage {
    * @param relayState the relay state (may be null)
    * @throws IOException for errors writing to the servlet response
    */
-  public static void sendResponse(final HttpServletResponse httpServletResponse, final String destination,
+  @Override
+  public void sendResponse(final HttpServletResponse httpServletResponse, final String destination,
       final String samlResponse, final String relayState) throws IOException {
     final String responsePage = generateResponsePage(destination, samlResponse, relayState);
 
     httpServletResponse.setContentType(TEXT_HTML_UTF8.toString());
     httpServletResponse.setContentLength(responsePage.getBytes(StandardCharsets.UTF_8).length);
+    httpServletResponse.setHeader("Cache-control", "no-cache, no-store");
+    httpServletResponse.setHeader("Pragma", "no-cache");
     httpServletResponse.getWriter().write(responsePage);
   }
 

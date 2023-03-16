@@ -34,6 +34,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import se.swedenconnect.opensaml.OpenSAMLInitializer;
 import se.swedenconnect.opensaml.OpenSAMLSecurityDefaultsConfig;
@@ -43,9 +44,9 @@ import se.swedenconnect.security.credential.KeyStoreCredential;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.security.credential.utils.X509Utils;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.DefaultNameIDGeneratorFactory;
-import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configuration.Saml2IdpConfiguration;
 import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurer;
+import se.swedenconnect.spring.saml.idp.response.ThymeleafResponsePage;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
@@ -61,7 +62,8 @@ public class IdpConfiguration {
   @Bean
   @DependsOn("openSAML")
   @Order(Ordered.HIGHEST_PRECEDENCE)
-  SecurityFilterChain samlIdpSecurityFilterChain(final HttpSecurity http, final IdentityProviderSettings settings)
+  SecurityFilterChain samlIdpSecurityFilterChain(final HttpSecurity http, final IdentityProviderSettings settings,
+      final SpringTemplateEngine templateEngine)
       throws Exception {
 
     // Apply the default configuration for the IdP.
@@ -70,7 +72,7 @@ public class IdpConfiguration {
 
     http.getConfigurer(Saml2IdpConfigurer.class)
         // Override the HTML page that is used to post back the SAML response with our own ...
-        .responseSender((s) -> s.setResponsePage("/custom-post"))
+        .responseSender((s) -> s.setResponsePage(new ThymeleafResponsePage(templateEngine, "post-response.html")))
         .authnRequestProcessor(p -> p.authenticationProvider(
             a -> {
               DefaultNameIDGeneratorFactory f = new DefaultNameIDGeneratorFactory(settings.getEntityId());
