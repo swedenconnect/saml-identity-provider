@@ -121,7 +121,7 @@ public class Saml2ResponseAttributes implements Serializable {
    * @param peerMetadata the peer SAML metadata
    */
   public void setPeerMetadata(final EntityDescriptor peerMetadata) {
-    this.peerMetadata = new SerializableOpenSamlObject<>(peerMetadata, EntityDescriptor.class);
+    this.peerMetadata = new SerializableOpenSamlObject<>(peerMetadata);
   }
 
   /**

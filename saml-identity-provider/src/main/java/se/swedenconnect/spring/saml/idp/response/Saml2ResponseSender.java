@@ -64,7 +64,8 @@ public class Saml2ResponseSender {
     final String encodedRelayState = HTMLEncoder.encodeForHTMLAttribute(relayState);
 
     try {
-      this.responsePage.sendResponse(httpServletResponse, destinationUrl, encodedResponse, encodedRelayState);
+      this.responsePage.sendResponse(httpServletRequest, httpServletResponse,
+          destinationUrl, encodedResponse, encodedRelayState);
     }
     catch (final IOException e) {
       log.error("Failed to send SAML Response to {} - {}", destinationUrl, e.getMessage(), e);

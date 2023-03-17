@@ -80,7 +80,7 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
    */
   public Saml2AuthnRequestAuthenticationToken(final AuthnRequest authnRequest, final String relayState) {
     super(Collections.emptyList());
-    this.authnRequest = new SerializableOpenSamlObject<AuthnRequest>(authnRequest, AuthnRequest.class);
+    this.authnRequest = new SerializableOpenSamlObject<AuthnRequest>(authnRequest);
     this.relayState = relayState;
     this.setAuthenticated(false);
   }
@@ -125,7 +125,7 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
    * @param peerMetadata the peer metadata
    */
   public void setPeerMetadata(final EntityDescriptor peerMetadata) {
-    this.peerMetadata = new SerializableOpenSamlObject<EntityDescriptor>(peerMetadata, EntityDescriptor.class);
+    this.peerMetadata = new SerializableOpenSamlObject<EntityDescriptor>(peerMetadata);
   }
 
   /**

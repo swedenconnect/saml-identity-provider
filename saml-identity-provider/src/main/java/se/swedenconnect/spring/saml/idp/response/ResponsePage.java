@@ -17,6 +17,7 @@ package se.swedenconnect.spring.saml.idp.response;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
@@ -50,13 +51,14 @@ public interface ResponsePage {
   /**
    * Sends a SAML Response message to the given destination.
    * 
+   * @param httpServletRequest the HTTP servlet request (in case the implementation wants to redirect the user)
    * @param httpServletResponse the HTTP servlet response
    * @param destination the destination URL
    * @param samlResponse the Base64-encoded SAML response message
    * @param relayState the relay state (may be null)
    * @throws IOException for errors writing to the servlet response
    */
-  void sendResponse(final HttpServletResponse httpServletResponse,
+  void sendResponse(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse,
       final String destination, final String samlResponse, final String relayState) throws IOException;
 
 }

@@ -18,6 +18,7 @@ package se.swedenconnect.spring.saml.idp.response;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.MediaType;
@@ -33,18 +34,10 @@ public class DefaultResponsePage implements ResponsePage {
   private static final MediaType TEXT_HTML_UTF8 = new MediaType("text", "html", StandardCharsets.UTF_8);
   private static final String NEWLINE = System.lineSeparator();
 
-  /**
-   * Sends a SAML Response message to the given destination.
-   * 
-   * @param httpServletResponse the HTTP servlet response
-   * @param destination the destination URL
-   * @param samlResponse the Base64-encoded SAML response message
-   * @param relayState the relay state (may be null)
-   * @throws IOException for errors writing to the servlet response
-   */
+  /** {@inheritDoc} */
   @Override
-  public void sendResponse(final HttpServletResponse httpServletResponse, final String destination,
-      final String samlResponse, final String relayState) throws IOException {
+  public void sendResponse(final HttpServletRequest httpServletRequest, final HttpServletResponse httpServletResponse,
+      final String destination, final String samlResponse, final String relayState) throws IOException {
     final String responsePage = generateResponsePage(destination, samlResponse, relayState);
 
     httpServletResponse.setContentType(TEXT_HTML_UTF8.toString());
@@ -71,17 +64,21 @@ public class DefaultResponsePage implements ResponsePage {
     builder.append("<html lang=\"en\">").append(NEWLINE);
     builder.append("<head>").append(NEWLINE);
     builder.append("  <meta charset=\"utf-8\">").append(NEWLINE);
-    builder.append("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">").append(NEWLINE);
+    builder.append("  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">")
+        .append(NEWLINE);
     builder.append("  <title>SAML Response</title>").append(NEWLINE);
     builder.append("</head>").append(NEWLINE);
     builder.append("<body onload=\"document.forms[0].submit()\">").append(NEWLINE);
     builder.append("  <form action=\"" + destination + "\" method=\"POST\">").append(NEWLINE);
-    builder.append("    <input type=\"hidden\" name=\"SAMLResponse\" value=\"" + samlResponse + "\" />").append(NEWLINE);
+    builder.append("    <input type=\"hidden\" name=\"SAMLResponse\" value=\"" + samlResponse + "\" />")
+        .append(NEWLINE);
     if (StringUtils.hasText(relayState)) {
       builder.append("    <input type=\"hidden\" name=\"RelayState\" value=\"" + relayState + "\" />").append(NEWLINE);
     }
     builder.append("    <noscript>").append(NEWLINE);
-    builder.append("      <p>Your web browser does not have JavaScript enabled. Click the \"Continue\" button below to proceed.</p>").append(NEWLINE);
+    builder.append(
+        "      <p>Your web browser does not have JavaScript enabled. Click the \"Continue\" button below to proceed.</p>")
+        .append(NEWLINE);
     builder.append("      <p><input type=\"submit\" value=\"Continue\" /></p>").append(NEWLINE);
     builder.append("    </noscript>").append(NEWLINE);
 
