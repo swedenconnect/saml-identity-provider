@@ -40,6 +40,8 @@ public class EidasRequestedAttributeProcessor implements RequestedAttributeProce
     final RequestedAttributes requestedAttributes =
         Optional.ofNullable(authnRequestToken.getAuthnRequest().getExtensions())
             .map(e -> e.getUnknownXMLObjects(RequestedAttributes.DEFAULT_ELEMENT_NAME))
+            .filter(list -> !list.isEmpty())
+            .map(list -> list.get(0))
             .map(RequestedAttributes.class::cast)
             .orElse(null);
 

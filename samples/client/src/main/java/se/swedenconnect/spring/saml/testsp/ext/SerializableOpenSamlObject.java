@@ -41,20 +41,18 @@ import net.shibboleth.utilities.java.support.xml.XMLParserException;
  */
 public class SerializableOpenSamlObject<T extends XMLObject> implements Serializable {
 
-  private static final long serialVersionUID = 3394153349544049274L;
-
+  private static final long serialVersionUID = 2505230422941307872L;
+  
+  /** The object that we wrap. */
   private T object;
-  private final Class<T> type;
 
   /**
    * Constructor.
    *
    * @param object the object
-   * @param type the type of the object
    */
-  public SerializableOpenSamlObject(final T object, final Class<T> type) {
+  public SerializableOpenSamlObject(final T object) {
     this.object = Objects.requireNonNull(object, "OpenSAML object to serialize must not be null");
-    this.type = Objects.requireNonNull(type, "type must not be null");
   }
 
   /**
@@ -76,11 +74,12 @@ public class SerializableOpenSamlObject<T extends XMLObject> implements Serializ
     }
   }
 
+  @SuppressWarnings("unchecked")
   private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
     final byte[] bytes = (byte[]) in.readObject();
     try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
-      this.object = this.type.cast(
-          XMLObjectSupport.unmarshallFromInputStream(XMLObjectProviderRegistrySupport.getParserPool(), bis));
+      this.object =
+          (T) XMLObjectSupport.unmarshallFromInputStream(XMLObjectProviderRegistrySupport.getParserPool(), bis);
     }
     catch (final UnmarshallingException | XMLParserException e) {
       throw new IOException("Could not unmarshall OpenSAML object", e);

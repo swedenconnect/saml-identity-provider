@@ -45,6 +45,7 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
   public AbstractUserAuthenticationProvider() {
     this.ssoVoters = new ArrayList<>();
     this.ssoVoters.add(new BaseSsoVoter());
+    this.ssoVoters.add(new SignServiceSsoVoter());
   }
 
   /** {@inheritDoc} */

@@ -32,7 +32,14 @@
             <div class="col-sm-6">
               <span class="attribute-value" th:text="${attr.value}">Attribute value</span>
             </div>
-          </div>        
+          </div>
+          
+          <div class="row">
+            <div class="col-sm-6" th:text="#{sp.msg.authncontext}">Level of assurance</div>
+            <div class="col-sm-6">
+              <span class="attribute-value" th:text="${loa}">LoA URI</span>
+            </div>
+          </div>          
                        
       </div> <!-- /.col-sm-12 content-container -->
       

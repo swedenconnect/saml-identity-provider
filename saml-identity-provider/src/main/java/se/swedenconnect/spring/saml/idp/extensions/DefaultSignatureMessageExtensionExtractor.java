@@ -131,6 +131,8 @@ public class DefaultSignatureMessageExtensionExtractor implements SignatureMessa
 
     final SignMessage signMessage = Optional.ofNullable(token.getAuthnRequest().getExtensions())
         .map(e -> e.getUnknownXMLObjects(SignMessage.DEFAULT_ELEMENT_NAME))
+        .filter(list -> !list.isEmpty())
+        .map(list -> list.get(0))
         .map(SignMessage.class::cast)
         .orElse(null);
 

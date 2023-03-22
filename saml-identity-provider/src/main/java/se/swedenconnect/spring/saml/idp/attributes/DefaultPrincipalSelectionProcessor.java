@@ -40,6 +40,8 @@ public class DefaultPrincipalSelectionProcessor implements PrincipalSelectionPro
     final PrincipalSelection principalSelection =
         Optional.ofNullable(authnRequestToken.getAuthnRequest().getExtensions())
             .map(e -> e.getUnknownXMLObjects(PrincipalSelection.DEFAULT_ELEMENT_NAME))
+            .filter(list -> !list.isEmpty())
+            .map(list -> list.get(0))
             .map(PrincipalSelection.class::cast)
             .orElse(null);
     if (principalSelection == null) {

@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.response;
 
+import java.time.Instant;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -183,6 +184,7 @@ public class Saml2ResponseBuilder {
     final Issuer issuer = (Issuer) XMLObjectSupport.buildXMLObject(Issuer.DEFAULT_ELEMENT_NAME);
     issuer.setValue(this.responseIssuer);
     samlResponse.setIssuer(issuer);
+    samlResponse.setIssueInstant(Instant.now());
 
     return samlResponse;
   }

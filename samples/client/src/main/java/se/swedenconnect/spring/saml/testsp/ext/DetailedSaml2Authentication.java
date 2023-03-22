@@ -44,7 +44,7 @@ public class DetailedSaml2Authentication extends Saml2Authentication {
       final Assertion assertion,
       final Collection<? extends GrantedAuthority> authorities) {
     super(principal, saml2Response, authorities);
-    this.assertion = new SerializableOpenSamlObject<Assertion>(assertion, Assertion.class);
+    this.assertion = new SerializableOpenSamlObject<Assertion>(assertion);
   }
 
   public Assertion getAssertion() {

@@ -18,6 +18,7 @@ package se.swedenconnect.spring.saml.testsp.controllers;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.opensaml.saml.saml2.core.Assertion;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,6 +28,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+
+import se.swedenconnect.spring.saml.testsp.ext.DetailedSaml2Authentication;
 
 /**
  * Main controller.
@@ -51,11 +54,15 @@ public class SamlSpController extends BaseController {
     final Map<String, String> attributes = new HashMap<>();
     p.getAttributes().entrySet().stream()
       .forEach(e -> attributes.put(e.getKey(), e.getValue().get(0).toString()));
+    
+    final Assertion assertion = DetailedSaml2Authentication.class.cast(authn).getAssertion();
+    final String loa = assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getURI();
 
     System.out.println(authn.getSaml2Response());
 
     final ModelAndView mav = new ModelAndView("mypage");
     mav.addObject("attributes", attributes);
+    mav.addObject("loa", loa);
 
     SecurityContextHolder.clearContext();
 
