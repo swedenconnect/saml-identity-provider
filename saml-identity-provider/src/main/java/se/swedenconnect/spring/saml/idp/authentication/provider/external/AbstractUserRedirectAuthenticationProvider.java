@@ -29,11 +29,10 @@ import se.swedenconnect.spring.saml.idp.authentication.provider.AbstractUserAuth
 import se.swedenconnect.spring.saml.idp.authnrequest.AuthenticationRequirements;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
  * Abstract base class implementing the {@link UserRedirectAuthenticationProvider} interface.
- * 
+ *
  * @author Martin Lindström
  */
 public abstract class AbstractUserRedirectAuthenticationProvider extends AbstractUserAuthenticationProvider
@@ -53,7 +52,7 @@ public abstract class AbstractUserRedirectAuthenticationProvider extends Abstrac
 
   /**
    * Constructor.
-   * 
+   *
    * @param authnPath the path to where we redirect the user for authentication
    * @param resumeAuthnPath the path that the authentication process uses to redirect the user back after a completed
    *          authentication
@@ -85,7 +84,7 @@ public abstract class AbstractUserRedirectAuthenticationProvider extends Abstrac
         new Saml2UserAuthenticationInputToken(token.getAuthnRequestToken(),
             new AuthenticationRequirements() {
 
-              private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
+              private static final long serialVersionUID = 3048668600742067204L;
 
               @Override
               public boolean isForceAuthn() {
@@ -137,7 +136,7 @@ public abstract class AbstractUserRedirectAuthenticationProvider extends Abstrac
 
   /**
    * Assigns the token repository to use (defaults to {@link SessionBasedExternalAuthenticationRepository}.
-   * 
+   *
    * @param tokenRepository the token repository
    */
   public void setTokenRepository(final ExternalAuthenticatorTokenRepository tokenRepository) {

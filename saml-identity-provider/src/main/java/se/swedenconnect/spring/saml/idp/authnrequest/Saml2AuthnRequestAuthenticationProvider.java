@@ -47,7 +47,6 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtensionExtractor;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
  * An {@link AuthenticationProvider} that processes a {@link Saml2AuthnRequestAuthenticationToken} and if the processing
@@ -56,7 +55,7 @@ import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
  * The signature on the authentication request is verified, and the request is checked against the IdP configuration
  * before proceeding with the actual user authentication.
  * </p>
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -87,14 +86,14 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
 
   /**
    * Constructor. See {@link Saml2AuthnRequestAuthenticationProviderConfigurer} for how to configuration and setup.
-   * 
+   *
    * @param signatureValidator the signature validator to use
    * @param assertionConsumerServiceValidator validator checking the AssertionConsumerService
    * @param replayValidator for protecting against replay attacks
    * @param requestedAttributesProcessors extracts the requested attributes
    * @param nameIDGeneratorFactory the {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator}
    *          instance
-   */  
+   */
   public Saml2AuthnRequestAuthenticationProvider(
       final AuthnRequestValidator signatureValidator,
       final AuthnRequestValidator assertionConsumerServiceValidator,
@@ -107,7 +106,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
 
   /**
    * Constructor. See {@link Saml2AuthnRequestAuthenticationProviderConfigurer} for how to configuration and setup.
-   * 
+   *
    * @param signatureValidator the signature validator to use
    * @param assertionConsumerServiceValidator validator checking the AssertionConsumerService
    * @param replayValidator for protecting against replay attacks
@@ -232,7 +231,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
 
     return new AuthenticationRequirements() {
 
-      private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
+      private static final long serialVersionUID = 2932445084737422220L;
 
       @Override
       public boolean isForceAuthn() {
@@ -277,7 +276,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
    * categories declared by the SP. Step 2: Remove those service entity categories not declared by the IdP. Step 3: If
    * only one SEC left. Add the attributes to the normal list ... Otherwise, add all attributes, but set
    * isRequired=false
-   * 
+   *
    */
 
   /**
