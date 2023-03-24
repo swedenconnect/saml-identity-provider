@@ -29,6 +29,7 @@ import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.binding.BindingDescriptor;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.binding.decoding.SAMLMessageDecoder;
+import org.opensaml.saml.common.binding.security.impl.MessageLifetimeSecurityHandler;
 import org.opensaml.saml.common.binding.security.impl.ReceivedEndpointSecurityHandler;
 import org.opensaml.saml.common.messaging.context.SAMLMetadataContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
@@ -53,6 +54,7 @@ import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
 import net.shibboleth.utilities.java.support.resolver.ResolverException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.utils.OpenSamlUtils;
 
 /**
@@ -75,6 +77,11 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
    * indicated in the message.
    */
   private ReceivedEndpointSecurityHandler receivedEndpointSecurityHandler;
+  
+  /**
+   * Message handler for checking that the messages received are not too old.
+   */
+  private MessageLifetimeSecurityHandler messageLifetimeSecurityHandler;
 
   /** Resolves peer metadata entries. */
   private final MetadataResolver metadataResolver;
@@ -83,8 +90,9 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
    * Constructor.
    * 
    * @param metadataResolver the metadata resolver that we use when finding SP metadata
+   * @param settings the IdP settings
    */
-  public Saml2AuthnRequestAuthenticationConverter(final MetadataResolver metadataResolver) {
+  public Saml2AuthnRequestAuthenticationConverter(final MetadataResolver metadataResolver, final IdentityProviderSettings settings) {
     this.metadataResolver = Objects.requireNonNull(metadataResolver, "metadataResolver must not be null");
 
     // Initialize the decoders
@@ -115,7 +123,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       throw new IllegalArgumentException("Failed to initialize OpenSAML message decoders", e);
     }
 
-    // Initialize the endpoint security handler.
+    // Initialize the security handlers.
     //
     this.receivedEndpointSecurityHandler = new ReceivedEndpointSecurityHandler();
     this.receivedEndpointSecurityHandler.setHttpServletRequestSupplier(OpenSamlUtils.getHttpServletRequestSupplier());
@@ -125,7 +133,16 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
     catch (final ComponentInitializationException e) {
       throw new IllegalArgumentException("Failed to initialize endpoint security handler");
     }
-
+    this.messageLifetimeSecurityHandler = new MessageLifetimeSecurityHandler();
+    this.messageLifetimeSecurityHandler.setRequiredRule(true);
+    this.messageLifetimeSecurityHandler.setClockSkew(settings.getClockSkewAdjustment());
+    this.messageLifetimeSecurityHandler.setMessageLifetime(settings.getMaxMessageAge());
+    try {
+      this.messageLifetimeSecurityHandler.initialize();
+    }
+    catch (final ComponentInitializationException e) {
+      throw new IllegalArgumentException("Failed to initialize lifetime security handler");
+    }
   }
 
   /** {@inheritDoc} */
@@ -181,8 +198,26 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       // Check the validity of the SAML protocol message receiver endpoint against requirements
       // indicated in the message.
       //
-      this.receivedEndpointSecurityHandler.invoke(msgContext);
-
+      try {
+        this.receivedEndpointSecurityHandler.invoke(msgContext);
+      }
+      catch (final MessageHandlerException e) {
+        final String msg = String.format("Receiver endpoint check failed: %s", e.getMessage());
+        log.error("{}", msg, e);
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.ENDPOINT_CHECK_FAILURE, msg, e);
+      }
+      
+      // Check the message lifetime, i.e., that the recived message is not too old.
+      //
+      try {
+        this.messageLifetimeSecurityHandler.invoke(msgContext);
+      }
+      catch (final MessageHandlerException e) {
+        final String msg = String.format("Message lifetime check failed: %s", e.getMessage());
+        log.error("{}", msg, e);
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.MESSAGE_TOO_OLD, msg, e);
+      }
+      
       // Locate peer metadata.
       //
       final CriteriaSet criteria = new CriteriaSet(new EntityIdCriterion(peerEntityId),
@@ -223,12 +258,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       final String msg = "Unable to decode incoming authentication request";
       log.error("{}", msg, e);
       throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.FAILED_DECODE, msg, e);
-    }
-    catch (final MessageHandlerException e) {
-      final String msg = String.format("Receiver endpoint check failed: %s", e.getMessage());
-      log.error("{}", msg, e);
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.ENDPOINT_CHECK_FAILURE, msg, e);
-    }
+    }    
   }
 
   /**

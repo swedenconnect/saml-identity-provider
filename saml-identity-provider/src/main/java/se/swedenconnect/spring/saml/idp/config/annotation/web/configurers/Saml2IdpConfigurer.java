@@ -34,7 +34,6 @@ import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.opensaml.saml.metadata.resolver.impl.PredicateRoleDescriptorResolver;
 import org.opensaml.saml.security.impl.MetadataCredentialResolver;
-import org.opensaml.xmlsec.SignatureValidationConfiguration;
 import org.opensaml.xmlsec.config.impl.DefaultSecurityConfigurationBootstrap;
 import org.opensaml.xmlsec.signature.support.SignatureTrustEngine;
 import org.opensaml.xmlsec.signature.support.impl.ExplicitKeySignatureTrustEngine;
@@ -65,7 +64,6 @@ import se.swedenconnect.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.MDQMetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.MetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.StaticMetadataProvider;
-import se.swedenconnect.opensaml.xmlsec.config.SecurityConfiguration;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
@@ -162,10 +160,6 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
         Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     validateIdentityProviderSettings(identityProviderSettings);
 
-    // TODO: ??
-    final SecurityConfiguration securityConfiguration = Saml2IdpConfigurerUtils.getSecurityConfiguration(httpSecurity);
-    SignatureValidationConfiguration svc = securityConfiguration.getSignatureValidationConfiguration();
-
     // Metadata resolver ...
     //
     MetadataResolver metadataResolver = identityProviderSettings.getMetadataProvider();
@@ -182,7 +176,6 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
     SignatureTrustEngine signatureTrustEngine = httpSecurity.getSharedObject(SignatureTrustEngine.class);
     if (signatureTrustEngine == null) {
       try {
-
         final PredicateRoleDescriptorResolver roleDescriptorResolver =
             new PredicateRoleDescriptorResolver(metadataResolver);
         roleDescriptorResolver.setRequireValidMetadata(true);
@@ -219,18 +212,6 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
       }
     });
     this.endpointsMatcher = new OrRequestMatcher(requestMatchers);
-
-    // TODO: Change
-//    ExceptionHandlingConfigurer<HttpSecurity> exceptionHandling =
-//        httpSecurity.getConfigurer(ExceptionHandlingConfigurer.class);
-//    if (exceptionHandling != null) {
-//      exceptionHandling.defaultAuthenticationEntryPointFor(
-//          new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED),
-//          new OrRequestMatcher(
-//              getRequestMatcher(OAuth2TokenEndpointConfigurer.class),
-//              getRequestMatcher(OAuth2TokenIntrospectionEndpointConfigurer.class),
-//              getRequestMatcher(OAuth2TokenRevocationEndpointConfigurer.class)));
-//    }
   }
 
   /** {@inheritDoc} */
@@ -275,13 +256,16 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
     return configurers;
   }
 
+  /**
+   * Gets a configurer of a given type.
+   * 
+   * @param <T> the class
+   * @param type the type
+   * @return the configurer or {@code null}
+   */
   @SuppressWarnings("unchecked")
   private <T> T getConfigurer(final Class<T> type) {
     return (T) this.configurers.get(type);
-  }
-
-  private <T extends AbstractSaml2Configurer> void addConfigurer(final Class<T> configurerType, final T configurer) {
-    this.configurers.put(configurerType, configurer);
   }
 
   /**
@@ -293,6 +277,9 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
       throws IllegalArgumentException {
     if (!StringUtils.hasText(identityProviderSettings.getEntityId())) {
       throw new IllegalArgumentException("Identity Provider entityID must be assigned");
+    }
+    if (!StringUtils.hasText(identityProviderSettings.getBaseUrl())) {
+      throw new IllegalArgumentException("Identity Provider base URL must be assigned");
     }
     if (identityProviderSettings.getBaseUrl().endsWith("/")) {
       throw new IllegalArgumentException("Base URL must not end with /");
@@ -318,17 +305,24 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
 
     // Assert endpoints
     //
+    if (!identityProviderSettings.getEndpoints().getRedirectAuthnEndpoint().startsWith("/")) {
+      throw new IllegalArgumentException("Invalid endpoint - authn redirect path must begin with /");
+    }
+    if (!identityProviderSettings.getEndpoints().getPostAuthnEndpoint().startsWith("/")) {
+      throw new IllegalArgumentException("Invalid endpoint - authn post path must begin with /");
+    }
     if (!identityProviderSettings.getEndpoints().getMetadataEndpoint().startsWith("/")) {
       throw new IllegalArgumentException("Invalid endpoint - metadata path must begin with /");
     }
-    
-    // Metadata
-    
-    // TODO
+
+    // Metadata is optional - If nothing is supplied, the IdP will not expose its metadata.
+    if (identityProviderSettings.getMetadata() == null) {
+      log.warn("No metadata configuration supplied - the Identity Provider will not expose SAML metadata");
+    }
 
     // Metadata providers
     //
-    if (identityProviderSettings.getMetadataProvider() != null) {
+    if (identityProviderSettings.getMetadataProviderConfiguration() != null) {
       final MetadataProviderSettings[] mdConfig = identityProviderSettings.getMetadataProviderConfiguration();
       if (mdConfig == null || mdConfig.length == 0) {
         throw new IllegalArgumentException("No metadata providers have been configured");
@@ -357,8 +351,19 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
         }
       }
     }
+    else if (identityProviderSettings.getMetadataProvider() == null) {
+      throw new IllegalArgumentException("Missing metadata provider configration - "
+          + IdentityProviderSettings.IDP_METADATA_PROVIDER + " or "
+          + IdentityProviderSettings.IDP_METADATA_PROVIDER_CONFIGURATION + " must be present");
+    }
   }
 
+  /**
+   * Based on one or more {@link MetadataProviderSettings} object(s) a {@link MetadataResolver} is created.
+   * 
+   * @param config configuration
+   * @return a {@link MetadataResolver}
+   */
   private static MetadataResolver createMetadataResolver(final MetadataProviderSettings[] config) {
     try {
       final List<MetadataProvider> providers = new ArrayList<>();

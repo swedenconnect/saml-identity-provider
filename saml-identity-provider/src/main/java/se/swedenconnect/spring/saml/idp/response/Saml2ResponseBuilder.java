@@ -250,7 +250,7 @@ public class Saml2ResponseBuilder {
    * @return {@code true} if assertions are encrypted, and {@code false} otherwise
    */
   public boolean isEncryptAssertions() {
-    return encryptAssertions;
+    return this.encryptAssertions;
   }
 
   /**

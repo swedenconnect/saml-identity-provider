@@ -16,6 +16,7 @@
 package se.swedenconnect.spring.saml.idp.attributes.release;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -23,30 +24,35 @@ import java.util.Optional;
 import org.opensaml.saml.saml2.core.Attribute;
 
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
- * A delegating {@link AttributeProducer} that delegates to a list of producers and returns attributes from all
- * underlying producers (no duplicates).
+ * Default implementation of the {@link AttributeReleaseManager} interface.
  * 
  * @author Martin Lindström
  */
-public class DelegatingAttributeProducer implements AttributeProducer {
-
-  private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
+public class DefaultAttributeReleaseManager implements AttributeReleaseManager {
 
   /** The attribute producers. */
   private final List<AttributeProducer> producers;
 
+  /** The attribute release voters. */
+  private List<AttributeReleaseVoter> voters;
+
   /**
    * Constructor.
    * 
-   * @param producers a list of {@link AttributeProducer} instances
+   * @param producers the list of producers
+   * @param voters the list of voters (if none is supplied, an "include-all" voter is used)
    */
-  public DelegatingAttributeProducer(final List<AttributeProducer> producers) {
+  public DefaultAttributeReleaseManager(final List<AttributeProducer> producers,
+      final List<AttributeReleaseVoter> voters) {
     this.producers = Optional.ofNullable(producers)
         .filter(p -> !p.isEmpty())
         .orElseThrow(() -> new IllegalArgumentException("At least on producer must be provided"));
+
+    this.voters = Optional.ofNullable(voters)
+        .filter(v -> !v.isEmpty())
+        .orElseGet(() -> List.of(new IncludeAllAttributeReleaseVoter()));
   }
 
   /** {@inheritDoc} */
@@ -57,11 +63,41 @@ public class DelegatingAttributeProducer implements AttributeProducer {
       final List<Attribute> pattrs = p.releaseAttributes(userAuthentication);
       pattrs.forEach((attr) -> {
         if (attributes.stream().noneMatch(a -> Objects.equals(a.getName(), attr.getName()))) {
-          attributes.add(attr);
+
+          // Ask the voters to see if we should include this attribute ...
+          //
+          AttributeReleaseVote vote = AttributeReleaseVote.DONT_KNOW;
+          for (final AttributeReleaseVoter voter : this.voters) {
+            final AttributeReleaseVote v = voter.vote(userAuthentication, attr);
+            if (v == AttributeReleaseVote.DONT_INCLUDE) {
+              vote = AttributeReleaseVote.DONT_INCLUDE;
+              break;
+            }
+            else if (v == AttributeReleaseVote.INCLUDE) {
+              vote = AttributeReleaseVote.INCLUDE;
+            }
+          }
+
+          if (vote == AttributeReleaseVote.INCLUDE) {
+            attributes.add(attr);
+          }
         }
       });
     }
+
     return attributes;
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public List<AttributeProducer> getAttributeProducers() {
+    return Collections.unmodifiableList(this.producers);
+  }
+
+  /** {@inheritDoc} */
+  @Override
+  public List<AttributeReleaseVoter> getAttributeReleaseVoters() {
+    return Collections.unmodifiableList(this.voters);
   }
 
 }

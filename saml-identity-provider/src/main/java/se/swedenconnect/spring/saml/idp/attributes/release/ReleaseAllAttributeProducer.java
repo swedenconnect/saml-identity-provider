@@ -22,12 +22,18 @@ import org.opensaml.saml.saml2.core.Attribute;
 
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
+/**
+ * An {@link AttributeProducer} that releases all attributes found in the supplied
+ * {@link Saml2UserAuthentication} token.
+ * 
+ * @author Martin Lindström
+ */
 public class ReleaseAllAttributeProducer implements AttributeProducer {
 
-  private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
-
+  /**
+   * Releases all attributes from the {@link Saml2UserAuthentication} token.
+   */
   @Override
   public List<Attribute> releaseAttributes(final Saml2UserAuthentication userAuthentication) {
 

@@ -30,7 +30,6 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authnrequest.AuthenticationRequirements;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
  * The default {@link AttributeProducer} that returns all attributes that are among the "requested list" (see
@@ -40,9 +39,9 @@ import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
  */
 public class DefaultAttributeProducer implements AttributeProducer {
 
-  private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
-
-  /** {@inheritDoc} */
+  /**
+   * Releases all attributes that are explicitly, or implicitly, requested.
+   */
   @Override
   public List<Attribute> releaseAttributes(final Saml2UserAuthentication userAuthentication) {
 

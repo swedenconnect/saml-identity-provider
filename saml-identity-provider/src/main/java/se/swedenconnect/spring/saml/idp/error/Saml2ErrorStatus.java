@@ -44,6 +44,13 @@ public enum Saml2ErrorStatus {
       "Invalid SignMessage extension"),
 
   /**
+   * The SignMessage could not be displayed.
+   */
+  SIGN_MESSAGE_NOT_DISPLAYED(StatusCode.RESPONDER, StatusCode.AUTHN_FAILED,
+      "idp.error.status.sign-message-not-displayed",
+      "SignMessage could not be displayed"),
+
+  /**
    * SignMessage error. If the {@code SignMessage} is incorrectly constructed.
    */
   SIGN_MESSAGE_DECRYPT(StatusCode.REQUESTER, StatusCode.REQUEST_UNSUPPORTED, "idp.error.status.sign-message-decrypt",
@@ -74,10 +81,16 @@ public enum Saml2ErrorStatus {
       "Requested authentication contexts not supported"),
 
   /**
-   * Unknown principal
+   * Unknown principal.
    */
   UNKNOWN_PRINCIPAL(StatusCode.REQUESTER, StatusCode.UNKNOWN_PRINCIPAL, "idp.error.status.unknown-principal",
-      "Unknown principal");
+      "Unknown principal"),
+
+  /**
+   * Missing key descriptor for encryption of assertions. 
+   */
+  ENCRYPT_NOT_POSSIBLE(StatusCode.REQUESTER, StatusCode.REQUEST_DENIED, "idp.error.status.no-encrypt-capabilities",
+      "Missing key descriptor for encryption");
 
   /**
    * Gets the main status code.

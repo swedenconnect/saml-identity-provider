@@ -113,10 +113,48 @@ public class IdentityProviderSettings extends AbstractSettings {
   }
 
   /**
+   * The default setting for the {@link #CLOCK_SKEW_ADJUSTMENT} setting.
+   */
+  public static final Duration CLOCK_SKEW_ADJUSTMENT_DEFAULT = Duration.ofSeconds(30);
+
+  /**
+   * Clock skew adjustment (in both directions) to consider still acceptable messages. A {@link Duration}.
+   */
+  public static final String CLOCK_SKEW_ADJUSTMENT = SETTINGS_PREFIX.concat("clock-skew-adjustment");
+
+  /**
+   * Gets the clock skew adjustment (in both directions) to consider still acceptable messages.
+   * 
+   * @return a {@link Duration}
+   */
+  public Duration getClockSkewAdjustment() {
+    return this.getSetting(CLOCK_SKEW_ADJUSTMENT);
+  }
+
+  /**
+   * The default setting for the {@link #MAX_MESSAGE_AGE} setting.
+   */
+  public static final Duration MAX_MESSAGE_AGE_DEFAULT = Duration.ofMinutes(3);
+
+  /**
+   * Maximum allowed age of received messages. A {@link Duration}.
+   */
+  public static final String MAX_MESSAGE_AGE = SETTINGS_PREFIX.concat("max-message-age");
+
+  /**
+   * Gets the maximum allowed age of received messages.
+   * 
+   * @return a {@link Duration}
+   */
+  public Duration getMaxMessageAge() {
+    return this.getSetting(MAX_MESSAGE_AGE);
+  }
+
+  /**
    * The default value for the {@link #SSO_DURATION_LIMIT} setting.
    */
   public static final Duration SSO_DURATION_LIMIT_DEFAULT = Duration.ofHours(1);
-  
+
   /**
    * Based on a previous authentication, for how long may this authentication be re-used? A {@link Duration}.
    */
@@ -300,11 +338,31 @@ public class IdentityProviderSettings extends AbstractSettings {
     public Builder requiresSignedRequests(final Boolean requiresSignedRequests) {
       return this.setting(REQUIRES_SIGNED_REQUESTS, requiresSignedRequests);
     }
-    
+
+    /**
+     * Assigns the clock skew adjustment (in both directions) to consider still acceptable messages.
+     * 
+     * @param clockSkewAdjustment a {@link Duration}
+     * @return the builder
+     */
+    public Builder clockSkewAdjustment(final Duration clockSkewAdjustment) {
+      return this.setting(CLOCK_SKEW_ADJUSTMENT, clockSkewAdjustment);
+    }
+
+    /**
+     * Assigns the maximum allowed age of received messages.
+     * 
+     * @param maxMessageAge a {@link Duration}
+     * @return the builder
+     */
+    public Builder maxMessageAge(final Duration maxMessageAge) {
+      return this.setting(MAX_MESSAGE_AGE, maxMessageAge);
+    }
+
     /**
      * Assigns for how long may this authentication be re-used.
      * 
-     * @param ssoDurationLimit a {@link Duration} 
+     * @param ssoDurationLimit a {@link Duration}
      * @return the builder
      */
     public Builder ssoDurationLimit(final Duration ssoDurationLimit) {
@@ -393,15 +451,20 @@ public class IdentityProviderSettings extends AbstractSettings {
     @Override
     protected void applyDefaultSettings() {
       if (this.getSettings().get(ENTITY_ID) == null) {
-        log.warn("Applying default setting for {} - Change this to your actual entityID", ENTITY_ID);
-        this.entityId("https://demo.swedenconnect.se/idp");
-      }
-      if (this.getSettings().get(BASE_URL) == null) {
-        log.warn("Applying default setting for {} - Change this to your actual base URL", BASE_URL);
-        this.baseUrl("https://demo.swedenconnect.se/idp");
+        final String baseUrl = (String) this.getSettings().get(BASE_URL);
+        if (baseUrl != null) {
+          log.warn("{} not assigned, defaulting to {}", ENTITY_ID, baseUrl);
+          this.entityId(baseUrl);
+        }
       }
       if (this.getSettings().get(REQUIRES_SIGNED_REQUESTS) == null) {
         this.requiresSignedRequests(Boolean.TRUE);
+      }
+      if (this.getSettings().get(CLOCK_SKEW_ADJUSTMENT) == null) {
+        this.clockSkewAdjustment(CLOCK_SKEW_ADJUSTMENT_DEFAULT);
+      }
+      if (this.getSettings().get(MAX_MESSAGE_AGE) == null) {
+        this.maxMessageAge(MAX_MESSAGE_AGE_DEFAULT);
       }
       if (this.getSettings().get(SSO_DURATION_LIMIT) == null) {
         this.ssoDurationLimit(SSO_DURATION_LIMIT_DEFAULT);
@@ -414,9 +477,6 @@ public class IdentityProviderSettings extends AbstractSettings {
       }
       if (!this.getSettings().containsKey(IDP_ASSERTION_SETTINGS)) {
         this.assertionSettings(AssertionSettings.builder().build());
-      }
-      if (!this.getSettings().containsKey(IDP_METADATA)) {
-        this.metadata(MetadataSettings.builder().build());
       }
     }
 

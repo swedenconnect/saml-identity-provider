@@ -44,11 +44,13 @@ import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticati
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AssertionConsumerServiceValidator;
+import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestEncryptCapabilitiesValidator;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestReplayValidator;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestSignatureValidator;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestValidator;
 import se.swedenconnect.spring.saml.idp.extensions.DefaultSignatureMessageExtensionExtractor;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtensionExtractor;
+import se.swedenconnect.spring.saml.idp.extensions.SignatureMessagePreprocessor;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
@@ -67,6 +69,9 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
 
   /** Validator for protecting against replay attacks. */
   private AuthnRequestValidator replayValidator;
+  
+  /** Validator for checking that we can encrypt assertions. */
+  private AuthnRequestValidator encryptCapabilitiesValidator;
 
   /**
    * A list of the {@link RequestedAttributeProcessor} instances that are used by the
@@ -81,6 +86,9 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
 
   /** Extracts the {@code SignMessage} extension. */
   private Optional<SignatureMessageExtensionExtractor> signatureMessageExtensionExtractor;
+
+  /** Optional processor for preparing a SignMessage for display. */
+  private SignatureMessagePreprocessor signatureMessagePreprocessor;
 
   /** Extracts the {@code PrincipalSelection} attribute values. */
   private Optional<PrincipalSelectionProcessor> principalSelectionProcessor;
@@ -173,6 +181,19 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
   }
 
   /**
+   * Assigns a {@link SignatureMessagePreprocessor} that is used to prepare received sign messages for display. By
+   * default no processor is installed.
+   * 
+   * @param signatureMessagePreprocessor the processor.
+   * @return this configurer
+   */
+  public Saml2AuthnRequestAuthenticationProviderConfigurer signatureMessagePreprocessor(
+      final SignatureMessagePreprocessor signatureMessagePreprocessor) {
+    this.signatureMessagePreprocessor = signatureMessagePreprocessor;
+    return this;
+  }
+
+  /**
    * Assigns a custom {@link PrincipalSelectionProcessor}. The default is {@link DefaultPrincipalSelectionProcessor}. It
    * is possible to disable support for the {@code PrincipalSelection} extension by assigning {@code null}.
    * 
@@ -220,6 +241,9 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
         this.replayValidator = new AuthnRequestReplayValidator();
       }
     }
+    
+    this.encryptCapabilitiesValidator =
+        new AuthnRequestEncryptCapabilitiesValidator(settings.getAssertionSettings().getEncryptAssertions());
 
     this.requestedAttributeProcessors = createDefaultRequestedAttributeProcessors(httpSecurity);
     if (this.requestedAttributeProcessorsCustomizer != null) {
@@ -253,14 +277,21 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
   /** {@inheritDoc} */
   @Override
   Saml2AuthnRequestAuthenticationProvider getObject(final HttpSecurity httpSecurity) {
-    return new Saml2AuthnRequestAuthenticationProvider(
+    final Saml2AuthnRequestAuthenticationProvider object = new Saml2AuthnRequestAuthenticationProvider(
         this.signatureValidator,
         this.assertionConsumerServiceValidator,
         this.replayValidator,
+        this.encryptCapabilitiesValidator,
         this.requestedAttributeProcessors,
-        this.nameIDGeneratorFactory,        
+        this.nameIDGeneratorFactory,
         this.signatureMessageExtensionExtractor.orElse(null),
         this.principalSelectionProcessor.orElse(null));
+    
+    if (this.signatureMessagePreprocessor != null) {
+      object.setSignatureMessagePreprocessor(this.signatureMessagePreprocessor);
+    }
+    
+    return object;
   }
 
   /**

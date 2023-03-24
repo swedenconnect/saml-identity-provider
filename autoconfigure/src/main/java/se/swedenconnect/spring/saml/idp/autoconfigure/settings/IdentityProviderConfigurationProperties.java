@@ -61,6 +61,16 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
   private Boolean requiresSignedRequests;
   
   /**
+   * Clock skew adjustment (in both directions) to consider still acceptable messages.
+   */
+  private Duration clockSkewAdjustment;
+  
+  /**
+   * Maximum allowed age of received messages.
+   */
+  private Duration maxMessageAge;
+  
+  /**
    * Based on a previous authentication, for how long may this authentication be re-used?
    */
   private Duration ssoDurationLimit;

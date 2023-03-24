@@ -55,6 +55,12 @@ public class SignatureMessageExtension implements Serializable {
   private final boolean mustShow;
 
   /**
+   * If a {@link SignatureMessagePreprocessor} is installed, the {@code processedMessage} will contain the result from
+   * this processing, i.e., a string that is prepared for display (on a web page, on a device, ...).
+   */
+  private String processedMessage;
+
+  /**
    * Constructor.
    * 
    * @param message the unencrypted sign message (in base64)
@@ -94,6 +100,28 @@ public class SignatureMessageExtension implements Serializable {
    */
   public boolean isMustShow() {
     return this.mustShow;
+  }
+
+  /**
+   * Gets the processed message. If a {@link SignatureMessagePreprocessor} is installed, the
+   * {@code processedMessage} will contain the result from this processing, i.e., a string that is prepared for display
+   * (on a web page, on a device, ...).
+   * 
+   * @return a message prepared for display
+   */
+  public String getProcessedMessage() {
+    return this.processedMessage;
+  }
+
+  /**
+   * Assigns the processed message. If a {@link SignatureMessagePreprocessor} is installed, the
+   * {@code processedMessage} will contain the result from this processing, i.e., a string that is prepared for display
+   * (on a web page, on a device, ...).
+   * 
+   * @param processedMessage a message prepared for display
+   */
+  public void setProcessedMessage(final String processedMessage) {
+    this.processedMessage = processedMessage;
   }
 
 }

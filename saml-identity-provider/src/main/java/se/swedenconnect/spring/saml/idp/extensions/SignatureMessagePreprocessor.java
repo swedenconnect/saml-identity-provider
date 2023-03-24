@@ -15,6 +15,9 @@
  */
 package se.swedenconnect.spring.saml.idp.extensions;
 
+import se.swedenconnect.opensaml.sweid.saml2.signservice.dss.SignMessageMimeTypeEnum;
+import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
+
 /**
  * An interface that defines pre-processing of signature messages before they are displayed.
  * <p>
@@ -28,15 +31,13 @@ public interface SignatureMessagePreprocessor {
 
   /**
    * Applies processing of the supplied message where filtering, validation and transformation to the service's desired
-   * display format can be done. Will update the XXX
+   * display format can be done.
    * 
-   * @param clearText
-   *          the cleartext sign message
-   * @param messageType
-   *          the mime type
+   * @param encodedMessage the cleartext sign message (in Base64 encoding)
+   * @param messageType the mime type
    * @return the filtered (and transformed) message
-   * @throws SignMessageContentException
-   *           for invalid input
+   * @throws Saml2ErrorStatusException for invalid input
    */
-  // String processSignMessage(String clearText, SignMessageMimeTypeEnum messageType);
+  String processSignMessage(final String encodedMessage, final SignMessageMimeTypeEnum messageType)
+      throws Saml2ErrorStatusException;
 }

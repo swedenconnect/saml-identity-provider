@@ -122,6 +122,11 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
   void configure(final HttpSecurity httpSecurity) {
 
     final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
+    
+    if (settings.getMetadata() == null) {
+      log.warn("No configuration for SAML metadata provided - IdP will not expose SAML metadata");
+      return;
+    }
 
     final Collection<UserAuthenticationProvider> providers =
         Saml2IdpConfigurerUtils.getSaml2UserAuthenticationProviders(httpSecurity);

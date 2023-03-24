@@ -49,7 +49,7 @@ import se.swedenconnect.opensaml.common.utils.SamlLog;
 import se.swedenconnect.opensaml.xmlsec.signature.support.SAMLObjectSigner;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
-import se.swedenconnect.spring.saml.idp.attributes.release.AttributeProducer;
+import se.swedenconnect.spring.saml.idp.attributes.release.AttributeReleaseManager;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
@@ -71,7 +71,7 @@ public class Saml2AssertionBuilder {
   private final String issuer;
 
   /** Component that decides which attributes from the user token that should be released in the assertion. */
-  private AttributeProducer attributeProducer;
+  private AttributeReleaseManager attributeReleaseManager;
 
   /** The IdP signature credential. */
   private final Credential signatureCredential;
@@ -99,17 +99,19 @@ public class Saml2AssertionBuilder {
    * 
    * @param idpEntityId the IdP entity ID
    * @param signatureCredential the signature credential (for signing the assertion)
-   * @param attributeProducer decides which attributes from the user token that should be released in the assertion
+   * @param attributeReleaseManager decides which attributes from the user token that should be released in the
+   *          assertion
    */
   public Saml2AssertionBuilder(final String idpEntityId, final PkiCredential signatureCredential,
-      final AttributeProducer attributeProducer) {
+      final AttributeReleaseManager attributeReleaseManager) {
     this.issuer = Optional.ofNullable(idpEntityId).filter(StringUtils::hasText)
         .orElseThrow(() -> new IllegalArgumentException("idpEntityId must be set"));
     Assert.notNull(signatureCredential, "signatureCredential must not be null");
     this.signatureCredential = OpenSamlCredential.class.isInstance(signatureCredential)
         ? OpenSamlCredential.class.cast(signatureCredential)
         : new OpenSamlCredential(signatureCredential);
-    this.attributeProducer = Objects.requireNonNull(attributeProducer, "attributeProducer must not be null");
+    this.attributeReleaseManager =
+        Objects.requireNonNull(attributeReleaseManager, "attributeReleaseManager must not be null");
   }
 
   /**
@@ -214,7 +216,7 @@ public class Saml2AssertionBuilder {
     {
       final AttributeStatement attributeStatement =
           (AttributeStatement) XMLObjectSupport.buildXMLObject(AttributeStatement.DEFAULT_ELEMENT_NAME);
-      attributeStatement.getAttributes().addAll(this.attributeProducer.releaseAttributes(userAuthentication));
+      attributeStatement.getAttributes().addAll(this.attributeReleaseManager.releaseAttributes(userAuthentication));
       assertion.getAttributeStatements().add(attributeStatement);
     }
 

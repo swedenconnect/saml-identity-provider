@@ -15,20 +15,16 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.springframework.security.core.Authentication;
 
-import se.swedenconnect.spring.saml.idp.attributes.RequestedAttribute;
-import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authentication.provider.AbstractUserAuthenticationProvider;
-import se.swedenconnect.spring.saml.idp.authnrequest.AuthenticationRequirements;
+import se.swedenconnect.spring.saml.idp.authnrequest.AuthenticationRequirementsBuilder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
-import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 
 /**
  * Abstract base class implementing the {@link UserRedirectAuthenticationProvider} interface.
@@ -82,46 +78,9 @@ public abstract class AbstractUserRedirectAuthenticationProvider extends Abstrac
 
     final Saml2UserAuthenticationInputToken updatedToken =
         new Saml2UserAuthenticationInputToken(token.getAuthnRequestToken(),
-            new AuthenticationRequirements() {
-
-              private static final long serialVersionUID = 3048668600742067204L;
-
-              @Override
-              public boolean isForceAuthn() {
-                return token.getAuthnRequirements().isForceAuthn();
-              }
-
-              @Override
-              public boolean isPassiveAuthn() {
-                return token.getAuthnRequirements().isPassiveAuthn();
-              }
-
-              @Override
-              public Collection<String> getEntityCategories() {
-                return token.getAuthnRequirements().getEntityCategories();
-              }
-
-              @Override
-              public Collection<RequestedAttribute> getRequestedAttributes() {
-                return token.getAuthnRequirements().getRequestedAttributes();
-              }
-
-              @Override
-              public Collection<String> getAuthnContextRequirements() {
-                return authnContextUris;
-              }
-
-              @Override
-              public Collection<UserAttribute> getPrincipalSelectionAttributes() {
-                return token.getAuthnRequirements().getPrincipalSelectionAttributes();
-              }
-
-              @Override
-              public SignatureMessageExtension getSignatureMessageExtension() {
-                return token.getAuthnRequirements().getSignatureMessageExtension();
-              }
-
-            });
+            AuthenticationRequirementsBuilder.builder(token.getAuthnRequirements())
+                .authnContextRequirements(authnContextUris)
+                .build());
 
     return new RedirectForAuthenticationToken(updatedToken, this.authnPath, this.resumeAuthnPath);
   }

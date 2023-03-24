@@ -67,12 +67,10 @@ public class AuthnRequestReplayValidator implements AuthnRequestValidator {
 
     try {
       this.replayChecker.checkReplay(authnRequestToken.getAuthnRequest().getID());
-      log.debug("Replay check was successful [entity-id: {}, authn-request: {}]",
-          authnRequestToken.getPeerMetadata().getEntityID(), authnRequestToken.getAuthnRequest().getID());
+      log.debug("Replay check was successful [{}]", authnRequestToken.getLogString());
     }
     catch (final MessageReplayException e) {
-      log.info("Replay of AuthnRequest was detected [entity-id: {}, authn-request: {}]",
-          authnRequestToken.getPeerMetadata().getEntityID(), authnRequestToken.getAuthnRequest().getID());
+      log.info("Replay of AuthnRequest was detected [{}]", authnRequestToken.getLogString());
       throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.REPLAY_DETECTED);
     }
 

@@ -48,7 +48,7 @@ import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
 @Import(CredentialConfiguration.class)
 @DependsOn("openSAML")
 public class IdentityProviderAutoConfiguration {
-
+  
   @Setter
   @Autowired(required = false)
   private IdentityProviderConfigurationProperties properties;
@@ -99,6 +99,8 @@ public class IdentityProviderAutoConfiguration {
         .baseUrl(this.properties.getBaseUrl())
         .hokBaseUrl(this.properties.getHokBaseUrl())
         .requiresSignedRequests(this.properties.getRequiresSignedRequests())
+        .clockSkewAdjustment(this.properties.getClockSkewAdjustment())
+        .maxMessageAge(this.properties.getMaxMessageAge())
         .ssoDurationLimit(this.properties.getSsoDurationLimit())
         .credentials(CredentialSettings.builder()
             .defaultCredential(this.defaultCredential)

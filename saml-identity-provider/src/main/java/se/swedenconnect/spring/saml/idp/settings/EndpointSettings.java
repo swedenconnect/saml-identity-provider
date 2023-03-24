@@ -38,6 +38,11 @@ public class EndpointSettings extends AbstractSettings {
   private EndpointSettings(final Map<String, Object> settings) {
     super(settings);
   }
+  
+  /**
+   * Default for the {@link #SAML_REDIRECT_AUTHN_ENDPOINT}.
+   */
+  public static final String SAML_REDIRECT_AUTHN_ENDPOINT_DEFAULT = "/saml2/redirect/authn";
 
   /**
    * The endpoint where the Identity Provider receives authentication requests via HTTP redirect.
@@ -53,6 +58,11 @@ public class EndpointSettings extends AbstractSettings {
     return this.getSetting(SAML_REDIRECT_AUTHN_ENDPOINT);
   }
 
+  /**
+   * Default for the {@link #SAML_POST_AUTHN_ENDPOINT}.
+   */
+  public static final String SAML_POST_AUTHN_ENDPOINT_DEFAULT = "/saml2/post/authn";
+  
   /**
    * The endpoint where the Identity Provider receives authentication requests via HTTP POST.
    */
@@ -98,6 +108,11 @@ public class EndpointSettings extends AbstractSettings {
   public String getHokPostAuthnEndpoint() {
     return this.getSetting(SAML_HOK_POST_AUTHN_ENDPOINT);
   }
+  
+  /**
+   * Default for the {@link #SAML_METADATA_PUBLISH_ENDPOINT} setting.
+   */
+  public static final String SAML_METADATA_PUBLISH_ENDPOINT_DEFAULT = "/saml2/metadata";
 
   /**
    * The endpoint where the Identity Provider publishes its SAML metadata.
@@ -197,13 +212,13 @@ public class EndpointSettings extends AbstractSettings {
     @Override
     protected void applyDefaultSettings() {
       if (this.getSettings().get(SAML_REDIRECT_AUTHN_ENDPOINT) == null) {
-        this.redirectAuthnEndpoint("/saml2/redirect/authn");
+        this.redirectAuthnEndpoint(SAML_REDIRECT_AUTHN_ENDPOINT_DEFAULT);
       }
       if (this.getSettings().get(SAML_POST_AUTHN_ENDPOINT) == null) {
-        this.postAuthnEndpoint("/saml2/post/authn");
+        this.postAuthnEndpoint(SAML_POST_AUTHN_ENDPOINT_DEFAULT);
       }
       if (this.getSettings().get(SAML_METADATA_PUBLISH_ENDPOINT) == null) {
-        this.metadataEndpoint("/saml2/metadata");
+        this.metadataEndpoint(SAML_METADATA_PUBLISH_ENDPOINT_DEFAULT);
       }
     }
 

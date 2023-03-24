@@ -40,6 +40,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import lombok.extern.slf4j.Slf4j;
+import se.swedenconnect.spring.saml.idp.authentication.PostAuthenticationProcessor;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2AssertionBuilder;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
@@ -90,6 +91,9 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
   /** The response sender. */
   private final Saml2ResponseSender responseSender;
 
+  /** The {@link PostAuthenticationProcessor} for checks and modification after a completed authentication. */
+  private final PostAuthenticationProcessor postAuthenticationProcessor;
+
   /** The assertion handler responsible of creating {@link Assertion}s. */
   private final Saml2AssertionBuilder assertionHandler;
 
@@ -104,18 +108,23 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
    * 
    * @param authenticationManager the authentication manager
    * @param requestMatcher the request matcher
+   * @param postAuthenticationProcessor processor for checking the authentication token after the provider has
+   *          authenticated the user
    * @param assertionHandler the assertion handler responsible of creating {@link Assertion}s
    * @param responseBuilder the {@link Saml2ResponseBuilder}
    * @param responseSender the {@link Saml2ResponseSender}
    */
   public Saml2UserAuthenticationProcessingFilter(final AuthenticationManager authenticationManager,
       final RequestMatcher requestMatcher,
+      final PostAuthenticationProcessor postAuthenticationProcessor,
       final Saml2AssertionBuilder assertionHandler,
       final Saml2ResponseBuilder responseBuilder,
       final Saml2ResponseSender responseSender) {
     this.authenticationManager =
         Objects.requireNonNull(authenticationManager, "authenticationManager must not be null");
     this.requestMatcher = Objects.requireNonNull(requestMatcher, "requestMatcher must not be null");
+    this.postAuthenticationProcessor =
+        Objects.requireNonNull(postAuthenticationProcessor, "postAuthenticationProcessor must not be null");
     this.assertionHandler = Objects.requireNonNull(assertionHandler, "assertionHandler must not be null");
     this.responseBuilder = Objects.requireNonNull(responseBuilder, "responseBuilder must not be null");
     this.responseSender = Objects.requireNonNull(responseSender, "responseSender must not be null");
@@ -220,7 +229,7 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
       this.authenticationTokenRepository.startExternalAuthentication(redirectToken, request);
 
       log.info("Re-directing to {} for external authentication [{}]",
-          redirectToken.getAuthnInputToken().getLogString());
+          redirectToken.getAuthnPath(), redirectToken.getAuthnInputToken().getLogString());
 
       // Save the response attributes in the session so that we know how to send back a response
       // when the user returns to the flow.
@@ -228,9 +237,7 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
       request.getSession().setAttribute(RESPONSE_ATTRIBUTES_SESSION_KEY,
           Saml2IdpContextHolder.getContext().getResponseAttributes());
 
-      this.redirectStrategy.sendRedirect(request, response,
-          redirectToken.getAuthnPath() + "?resumeUrl=" + redirectToken.getResumeAuthnPath());
-
+      this.redirectStrategy.sendRedirect(request, response, redirectToken.getAuthnPath());
       return;
     }
 
@@ -247,6 +254,10 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     //
     authenticatedUser.setAuthnRequestToken(getSamlInputToken(inputToken).getAuthnRequestToken());
     authenticatedUser.setAuthnRequirements(getSamlInputToken(inputToken).getAuthnRequirements());
+
+    // Apply the post processor ...
+    //
+    this.postAuthenticationProcessor.process(authenticatedUser);
 
     // Build assertion and response ...
     //

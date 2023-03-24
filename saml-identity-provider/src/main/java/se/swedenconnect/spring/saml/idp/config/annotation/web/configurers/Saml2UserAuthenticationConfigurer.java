@@ -34,9 +34,16 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import se.swedenconnect.spring.saml.idp.attributes.release.AttributeProducer;
-import se.swedenconnect.spring.saml.idp.attributes.release.DefaultAttributeProducer;
-import se.swedenconnect.spring.saml.idp.attributes.release.DelegatingAttributeProducer;
+import se.swedenconnect.spring.saml.idp.attributes.release.AttributeReleaseManager;
+import se.swedenconnect.spring.saml.idp.attributes.release.AttributeReleaseVoter;
+import se.swedenconnect.spring.saml.idp.attributes.release.DefaultAttributeReleaseManager;
+import se.swedenconnect.spring.saml.idp.attributes.release.IncludeAllAttributeReleaseVoter;
+import se.swedenconnect.spring.saml.idp.attributes.release.SwedenConnectAttributeProducer;
+import se.swedenconnect.spring.saml.idp.attributes.release.SwedenConnectAttributeReleaseVoter;
+import se.swedenconnect.spring.saml.idp.authentication.DelegatingPostAuthenticationProcessor;
+import se.swedenconnect.spring.saml.idp.authentication.PostAuthenticationProcessor;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2AssertionBuilder;
+import se.swedenconnect.spring.saml.idp.authentication.SwedenConnectPostAuthenticationProcessor;
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.AbstractUserRedirectAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.ExternalAuthenticatorTokenRepository;
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.FilterAuthenticationTokenRepository;
@@ -67,8 +74,15 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
   /** The ID generator for the SAML assertion builder. */
   private Saml2MessageIDGenerator idGenerator;
 
-  /** The attribute producers used by the SAML assertion builder. */
+  /** The attribute producers used by the {@link AttributeReleaseManager} (and SAML assertion builder). */
   private List<AttributeProducer> attributeProducers = this.createDefaultAttributeProducers();
+
+  /** The attribute release voters used by the {@link AttributeReleaseManager} (and SAML assertion builder). */
+  private List<AttributeReleaseVoter> attributeReleaseVoters = this.createDefaultAttributeReleaseVoters();
+
+  /** The post authentication processors. */
+  private List<PostAuthenticationProcessor> postAuthenticationProcessors =
+      this.createDefaultPostAuthenticationProcessors();
 
   /** Repository storing authentication objects used for external authentication. */
   private FilterAuthenticationTokenRepository authenticationTokenRepository;
@@ -130,13 +144,39 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
   }
 
   /**
-   * Customizes the list of {@link AttributeProducer}s that will later be installed to the SAML attribute builder.
+   * Customizes the list of {@link AttributeProducer}s that will later be installed to the
+   * {@link AttributeReleaseManager} and SAML attribute builder.
    * 
    * @param customizer a {@link Customizer}
    * @return the {@link Saml2UserAuthenticationConfigurer} for further configuration
    */
   public Saml2UserAuthenticationConfigurer attributeProducers(final Customizer<List<AttributeProducer>> customizer) {
     customizer.customize(this.attributeProducers);
+    return this;
+  }
+
+  /**
+   * Customizes the list of {@link AttributeReleaseVoter}s that will later be installed to the
+   * {@link AttributeReleaseManager} and SAML attribute builder.
+   * 
+   * @param customizer a {@link Customizer}
+   * @return the {@link Saml2UserAuthenticationConfigurer} for further configuration
+   */
+  public Saml2UserAuthenticationConfigurer attributeReleaseVoters(
+      final Customizer<List<AttributeReleaseVoter>> customizer) {
+    customizer.customize(this.attributeReleaseVoters);
+    return this;
+  }
+
+  /**
+   * Customizes the list of {@link PostAuthenticationProcessor}s.
+   * 
+   * @param customizer a {@link Customizer}
+   * @return the {@link Saml2UserAuthenticationConfigurer} for further configuration
+   */
+  public Saml2UserAuthenticationConfigurer postAuthenticationProcessors(
+      final Customizer<List<PostAuthenticationProcessor>> customizer) {
+    customizer.customize(this.postAuthenticationProcessors);
     return this;
   }
 
@@ -154,12 +194,11 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
     final Saml2ResponseBuilder responseBuilder = Saml2IdpConfigurerUtils.getResponseBuilder(httpSecurity);
     final Saml2ResponseSender responseSender = Saml2IdpConfigurerUtils.getResponseSender(httpSecurity);
 
-    final AttributeProducer attributeProducer = this.attributeProducers.size() == 1
-        ? this.attributeProducers.get(0)
-        : new DelegatingAttributeProducer(this.attributeProducers);
+    final AttributeReleaseManager attributeReleaseManager = 
+        new DefaultAttributeReleaseManager(this.attributeProducers, this.attributeReleaseVoters);
 
     final Saml2AssertionBuilder assertionBuilder = new Saml2AssertionBuilder(settings.getEntityId(),
-        Saml2IdpConfigurerUtils.getSignatureCredential(httpSecurity), attributeProducer);
+        Saml2IdpConfigurerUtils.getSignatureCredential(httpSecurity), attributeReleaseManager);
     assertionBuilder.setNotBeforeDuration(settings.getAssertionSettings().getNotBeforeDuration());
     assertionBuilder.setNotOnOrAfterDuration(settings.getAssertionSettings().getNotOnOrAfterDuration());
     if (this.idGenerator != null) {
@@ -169,8 +208,13 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
       assertionBuilder.setAssertionCustomizer(this.assertionCustomizer);
     }
 
+    final PostAuthenticationProcessor postAuthenticationProcessor = this.postAuthenticationProcessors.size() == 1
+        ? this.postAuthenticationProcessors.get(0)
+        : new DelegatingPostAuthenticationProcessor(this.postAuthenticationProcessors);
+
     final Saml2UserAuthenticationProcessingFilter filter = new Saml2UserAuthenticationProcessingFilter(
-        authenticationManager, this.authnRequestRequestMatcher, assertionBuilder, responseBuilder, responseSender);
+        authenticationManager, this.authnRequestRequestMatcher, postAuthenticationProcessor,
+        assertionBuilder, responseBuilder, responseSender);
 
     if (this.resumeAuthnRequestMatcher.isConfigured()) {
       filter.setResumeAuthnRequestMatcher(this.resumeAuthnRequestMatcher);
@@ -190,8 +234,21 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
 
   private List<AttributeProducer> createDefaultAttributeProducers() {
     List<AttributeProducer> producers = new ArrayList<>();
-    producers.add(new DefaultAttributeProducer());
+    producers.add(new SwedenConnectAttributeProducer());
     return producers;
+  }
+
+  private List<AttributeReleaseVoter> createDefaultAttributeReleaseVoters() {
+    List<AttributeReleaseVoter> voters = new ArrayList<>();
+    voters.add(new IncludeAllAttributeReleaseVoter());
+    voters.add(new SwedenConnectAttributeReleaseVoter());
+    return voters;
+  }
+
+  private List<PostAuthenticationProcessor> createDefaultPostAuthenticationProcessors() {
+    List<PostAuthenticationProcessor> processors = new ArrayList<>();
+    processors.add(new SwedenConnectPostAuthenticationProcessor());
+    return processors;
   }
 
   private static class DeferredRequestMatcher implements RequestMatcher {

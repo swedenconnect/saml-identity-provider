@@ -18,12 +18,8 @@ package se.swedenconnect.spring.saml.idp.settings;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
-import lombok.extern.slf4j.Slf4j;
-import se.swedenconnect.security.credential.KeyStoreCredential;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
@@ -153,7 +149,6 @@ public class CredentialSettings extends AbstractSettings {
   /**
    * A builder for {@link CredentialSettings}.
    */
-  @Slf4j
   public final static class Builder extends AbstractBuilder<CredentialSettings, Builder> {
 
     private Builder() {
@@ -231,31 +226,6 @@ public class CredentialSettings extends AbstractSettings {
     /** {@inheritDoc} */
     @Override
     protected void applyDefaultSettings() {
-      if (this.getSettings().get(SIGN_CREDENTIAL) == null) {
-        if (this.getSettings().get(DEFAULT_CREDENTIAL) == null) {
-          log.warn("Using system provided credential as default credential - Change this - DO NOT USE IN PRODUCTION");
-          this.defaultCredential(this.loadDefaultCredential());
-        }
-      }
-      if (this.getSettings().get(ENCRYPT_CREDENTIAL) == null) {
-        if (this.getSettings().get(DEFAULT_CREDENTIAL) == null) {
-          log.warn("Using system provided credential as default credential - Change this - DO NOT USE IN PRODUCTION");
-          this.defaultCredential(this.loadDefaultCredential());
-        }
-      }
-    }
-
-    private PkiCredential loadDefaultCredential() {
-      final Resource jks = new ClassPathResource("idp-default-settings/default-credential.jks");
-      final KeyStoreCredential defaultCredential =
-          new KeyStoreCredential(jks, "secret".toCharArray(), "default", "secret".toCharArray());
-      try {
-        defaultCredential.afterPropertiesSet();
-      }
-      catch (final Exception e) {
-        throw new SecurityException("Failed to to initialize default credentials", e);
-      }
-      return defaultCredential;
     }
 
   }

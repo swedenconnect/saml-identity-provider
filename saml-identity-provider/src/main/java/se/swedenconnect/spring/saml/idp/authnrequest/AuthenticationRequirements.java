@@ -85,7 +85,7 @@ public interface AuthenticationRequirements extends Serializable {
    * in the {@code AuthnRequest} to inform the IdP about the user that is being authenticated. This method returns this
    * information.
    * 
-   * @return a (possibly empty) collection of "principal selection" attributes.
+   * @return a (possibly empty) collection of "principal selection" attributes
    */
   Collection<UserAttribute> getPrincipalSelectionAttributes();
 

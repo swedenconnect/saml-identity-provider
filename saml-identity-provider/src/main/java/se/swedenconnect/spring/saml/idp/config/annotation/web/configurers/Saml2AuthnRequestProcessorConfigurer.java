@@ -37,6 +37,7 @@ import org.springframework.util.Assert;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationConverter;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
+import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2AuthnRequestProcessingFilter;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2ErrorResponseProcessingFilter;
 
@@ -170,7 +171,11 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
     
     httpSecurity.authenticationProvider(this.postProcess(authenticationProvider));
 
-    final List<AuthenticationConverter> authnConverters = createDefaultAuthenticationConverters(httpSecurity);
+    final List<AuthenticationConverter> authnConverters = new ArrayList<>();
+    final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
+    final MetadataResolver resolver = httpSecurity.getSharedObject(MetadataResolver.class);
+    authnConverters.add(new Saml2AuthnRequestAuthenticationConverter(resolver, settings));
+    
     if (!this.authnRequestConverters.isEmpty()) {
       authnConverters.addAll(0, this.authnRequestConverters);
     }
@@ -202,22 +207,6 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
   @Override
   RequestMatcher getRequestMatcher() {
     return null;
-  }  
-
-  /**
-   * Creates the default {@link AuthenticationConverter}s.
-   * 
-   * @param httpSecurity the HTTP security object
-   * @return a list of {@link AuthenticationConverter} objects
-   */
-  protected static List<AuthenticationConverter> createDefaultAuthenticationConverters(
-      final HttpSecurity httpSecurity) {
-    final List<AuthenticationConverter> authenticationConverters = new ArrayList<>();
-
-    final MetadataResolver resolver = httpSecurity.getSharedObject(MetadataResolver.class);
-    authenticationConverters.add(new Saml2AuthnRequestAuthenticationConverter(resolver));
-
-    return authenticationConverters;
   }
 
 }

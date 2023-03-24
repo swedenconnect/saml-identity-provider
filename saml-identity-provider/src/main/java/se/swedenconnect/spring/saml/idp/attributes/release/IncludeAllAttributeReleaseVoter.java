@@ -15,25 +15,23 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.release;
 
-import java.util.List;
-
 import org.opensaml.saml.saml2.core.Attribute;
 
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 
 /**
- * An interface that is used to decide which attributes that should be released in an {@code Assertion}.
+ * A voter that always votes {@link AttributeReleaseVote#INCLUDE}.
  * 
  * @author Martin Lindström
  */
-public interface AttributeProducer {
+public class IncludeAllAttributeReleaseVoter implements AttributeReleaseVoter {
 
   /**
-   * Determines which attributes to release based on the supplied token.
-   * 
-   * @param userAuthentication the user authentication token
-   * @return a (possibly empty) list of attributes
+   * Will always vote {@link AttributeReleaseVote#INCLUDE}.
    */
-  List<Attribute> releaseAttributes(final Saml2UserAuthentication userAuthentication);
-  
+  @Override
+  public AttributeReleaseVote vote(final Saml2UserAuthentication token, final Attribute attribute) {
+    return AttributeReleaseVote.INCLUDE;
+  }
+
 }

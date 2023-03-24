@@ -54,11 +54,10 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
   /** The peer (SP) metadata. */
   private SerializableOpenSamlObject<EntityDescriptor> peerMetadata;
 
-  @Getter
-  @Setter
+  /** The calculated authentication requirements. */
   private AuthenticationRequirements authenticationRequirements;
 
-  @Getter
+  /** The assertion consumer servuce URL to use when posting back an assertion. */
   private String assertionConsumerServiceUrl;
 
   /**
@@ -74,13 +73,13 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
 
   /**
    * Constructor assigning the received {@link AuthnRequest} and optionally also the {@code RelayState} variable.
-   * 
+   *
    * @param authnRequest the SAML authentication request
    * @param relayState the {@code RelayState} variable
    */
   public Saml2AuthnRequestAuthenticationToken(final AuthnRequest authnRequest, final String relayState) {
     super(Collections.emptyList());
-    this.authnRequest = new SerializableOpenSamlObject<AuthnRequest>(authnRequest);
+    this.authnRequest = new SerializableOpenSamlObject<>(authnRequest);
     this.relayState = relayState;
     this.setAuthenticated(false);
   }
@@ -98,12 +97,12 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
    */
   @Override
   public Object getPrincipal() {
-    return authnRequest.get().getIssuer().getValue();
+    return this.authnRequest.get().getIssuer().getValue();
   }
 
   /**
    * Gets the received {@link AuthnRequest}.
-   * 
+   *
    * @return the {@link AuthnRequest}
    */
   public AuthnRequest getAuthnRequest() {
@@ -112,7 +111,7 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
 
   /**
    * Gets the received {@code RelayState} value.
-   * 
+   *
    * @return the RelayState (may be {@code null})
    */
   public String getRelayState() {
@@ -121,16 +120,16 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
 
   /**
    * Assigns the peer (SP) metadata.
-   * 
+   *
    * @param peerMetadata the peer metadata
    */
   public void setPeerMetadata(final EntityDescriptor peerMetadata) {
-    this.peerMetadata = new SerializableOpenSamlObject<EntityDescriptor>(peerMetadata);
+    this.peerMetadata = new SerializableOpenSamlObject<>(peerMetadata);
   }
 
   /**
    * Gets the peer (SP) metadata.
-   * 
+   *
    * @return the peer metadata
    */
   public EntityDescriptor getPeerMetadata() {
@@ -138,21 +137,48 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
   }
 
   /**
+   * Gets the authentication requirements.
+   * 
+   * @return an {@link AuthenticationRequirements}
+   */
+  public AuthenticationRequirements getAuthenticationRequirements() {
+    return this.authenticationRequirements;
+  }
+
+  /**
+   * Assigns the authentication requirements.
+   * 
+   * @param authenticationRequirements an {@link AuthenticationRequirements} object
+   */
+  public void setAuthenticationRequirements(final AuthenticationRequirements authenticationRequirements) {
+    this.authenticationRequirements = authenticationRequirements;
+  }
+
+  /**
    * Gets the binding URI (redirect or POST). Possible values are {@value SAMLConstants#SAML2_REDIRECT_BINDING_URI} and
    * {@value SAMLConstants#SAML2_POST_BINDING_URI}.
-   * 
+   *
    * @return the binding URI used for the {@code AuthnRequest}
    */
   public String getBindingUri() {
-    return Optional.ofNullable(messageContext.getSubcontext(SAMLBindingContext.class))
+    return Optional.ofNullable(this.messageContext.getSubcontext(SAMLBindingContext.class))
         .map(SAMLBindingContext::getBindingUri)
         .orElseThrow(
             () -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Invalid message context"));
   }
 
   /**
-   * Assigns the URL to use when sending back the response.
+   * Gets the assertion consumer servuce URL to use when posting back an assertion.
    * 
+   * @return URL
+   */
+  public String getAssertionConsumerServiceUrl() {
+    return this.assertionConsumerServiceUrl;
+  }
+
+  /**
+   * Assigns the URL to use when sending back the response.
+   *
    * @param assertionConsumerServiceUrl URL
    */
   public void setAssertionConsumerServiceUrl(final String assertionConsumerServiceUrl) {
@@ -163,7 +189,7 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
   /**
    * Gets the {@link NameIDGenerator} to use when generating a {@code NameID} in the assertion that is created based on
    * this request.
-   * 
+   *
    * @return a {@link NameIDGenerator}
    */
   public NameIDGenerator getNameIDGenerator() {
@@ -173,7 +199,7 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
   /**
    * Assigns the {@link NameIDGenerator} to use when generating a {@code NameID} in the assertion that is created based
    * on this request.
-   * 
+   *
    * @param nameIDGenerator a {@link NameIDGenerator}
    */
   public void setNameIDGenerator(final NameIDGenerator nameIDGenerator) {
@@ -182,11 +208,11 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
 
   /**
    * Gets a simple log string looking like:
-   * 
+   *
    * <pre>
    * entity-id: 'https://sp.example.com', authn-request: '9873hHYYT'
    * </pre>
-   * 
+   *
    * @return a formatted log string
    */
   public String getLogString() {

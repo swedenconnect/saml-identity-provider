@@ -55,7 +55,7 @@ public class Saml2AuthnRequestProcessingFilter extends OncePerRequestFilter {
         Objects.requireNonNull(authenticationManager, "authenticationManager must not be null");
     this.requestMatcher = Objects.requireNonNull(requestMatcher, "requestMatcher must not be null");
     this.authenticationConverter =
-        Objects.requireNonNull(authenticationConverter, "authenticationConverter must not be null");
+        Objects.requireNonNull(authenticationConverter, "authenticationConverter must not be null");    
   }
 
   /** {@inheritDoc} */
