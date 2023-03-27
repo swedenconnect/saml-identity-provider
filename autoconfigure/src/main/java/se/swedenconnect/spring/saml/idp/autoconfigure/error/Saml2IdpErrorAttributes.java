@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.demo.error;
+package se.swedenconnect.spring.saml.idp.autoconfigure.error;
 
 import java.util.Map;
 
@@ -41,7 +41,7 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
  * @author Martin Lindström
  */
 public class Saml2IdpErrorAttributes extends DefaultErrorAttributes {
-
+  
   public static final String IDP_ERROR_CODE = "idpErrorCode";
   public static final String IDP_ERROR_MESSAGE_CODE = "idpErrorMessageCode";
   public static final String IDP_ERROR_DESCRIPTION = "idpErrorDescription";

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.demo.error;
+package se.swedenconnect.spring.saml.idp.autoconfigure.error;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -23,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
-import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorViewResolver;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
@@ -34,36 +33,61 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.util.HtmlUtils;
 
-import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
+/**
+ * A SAML error view resolver for handling {@link UnrecoverableSaml2IdpException}.
+ * 
+ * @author Martin Lindström
+ */
 public class Saml2IdpErrorViewResolver implements ErrorViewResolver, Ordered {
 
   private final ApplicationContext applicationContext;
 
-  private final Resources resources;
-
   private final TemplateAvailabilityProviders templateAvailabilityProviders;
 
-  @Setter
   private int order = Ordered.HIGHEST_PRECEDENCE;
 
-  @Setter
   private String idpErrorViewName = "error/idp";
 
-  public Saml2IdpErrorViewResolver(final ApplicationContext applicationContext, final Resources resources) {
+  /**
+   * Constructor.
+   * 
+   * @param applicationContext
+   * @param resources
+   */
+  public Saml2IdpErrorViewResolver(final ApplicationContext applicationContext) {
     Assert.notNull(applicationContext, "ApplicationContext must not be null");
-    Assert.notNull(resources, "Resources must not be null");
     this.applicationContext = applicationContext;
-    this.resources = resources;
     this.templateAvailabilityProviders = new TemplateAvailabilityProviders(applicationContext);
   }
 
+  /** {@inheritDoc} */
   @Override
   public int getOrder() {
     return this.order;
   }
 
+  /**
+   * Assigns the order for this bean.
+   * 
+   * @param order the order
+   */
+  public void setOrder(final int order) {
+    this.order = order;
+  }
+
+  /**
+   * Assigns the view name for IdP errors. The default is {@code error/idp}.
+   * 
+   * @param idpErrorViewName the view name
+   */
+  public void setIdpErrorViewName(final String idpErrorViewName) {
+    this.idpErrorViewName = idpErrorViewName;
+  }
+
+  /** {@inheritDoc} */
   @Override
   public ModelAndView resolveErrorView(final HttpServletRequest request, final HttpStatus status,
       final Map<String, Object> model) {
@@ -113,7 +137,7 @@ public class Saml2IdpErrorViewResolver implements ErrorViewResolver, Ordered {
           builder.append(" - ").append(this.htmlEscape(idpDescription));
         }
         builder.append("</div>");
-      }      
+      }
       if (message != null) {
         builder.append("<div>").append(this.htmlEscape(message)).append("</div>");
       }
