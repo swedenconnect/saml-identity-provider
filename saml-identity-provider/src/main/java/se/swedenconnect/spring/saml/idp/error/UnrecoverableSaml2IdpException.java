@@ -15,7 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.error;
 
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Base class for unrecoverable SAML errors, i.e., such errors that can not be signalled back to the SAML SP.

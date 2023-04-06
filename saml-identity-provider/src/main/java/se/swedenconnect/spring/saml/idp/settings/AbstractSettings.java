@@ -24,7 +24,7 @@ import java.util.function.Consumer;
 
 import org.springframework.util.Assert;
 
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Base implementation for configuration settings.

@@ -29,10 +29,10 @@ import org.springframework.security.core.Authentication;
 
 import lombok.Getter;
 import lombok.Setter;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGenerator;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.utils.SerializableOpenSamlObject;
 
 /**
@@ -97,6 +97,15 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
    */
   @Override
   public Object getPrincipal() {
+    return this.getEntityId();
+  }
+
+  /**
+   * Gets the entityID of the requesting entity.
+   * 
+   * @return the entityID of the requesting entity
+   */
+  public String getEntityId() {
     return this.authnRequest.get().getIssuer().getValue();
   }
 

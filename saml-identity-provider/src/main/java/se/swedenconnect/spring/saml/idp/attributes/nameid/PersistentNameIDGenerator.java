@@ -22,10 +22,10 @@ import java.util.Objects;
 
 import org.opensaml.saml.saml2.core.NameID;
 
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
  * A {@link NameIDGenerator} for generaring persistent {@code NameID}s.

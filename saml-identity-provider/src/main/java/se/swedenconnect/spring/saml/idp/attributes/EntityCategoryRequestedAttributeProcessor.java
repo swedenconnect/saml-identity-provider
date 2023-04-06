@@ -157,7 +157,7 @@ public class EntityCategoryRequestedAttributeProcessor implements RequestedAttri
       }
     }
 
-    log.debug("Extracted requested attributes from EntityCategories - {} {}",
+    log.debug("Extracted requested attributes from EntityCategories - {} [{}]",
         requestedAttributes, authnRequestToken.getLogString());
 
     return requestedAttributes;

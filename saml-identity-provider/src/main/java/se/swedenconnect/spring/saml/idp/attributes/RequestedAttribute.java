@@ -17,7 +17,7 @@ package se.swedenconnect.spring.saml.idp.attributes;
 
 import java.io.Serializable;
 
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * A representation of a "requested attribute".

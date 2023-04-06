@@ -27,7 +27,7 @@ import org.springframework.context.NoSuchMessageException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.StringUtils;
 
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Exception class that when thrown will lead to a SAML error status message being sent.

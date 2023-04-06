@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.utils;
+package se.swedenconnect.spring.saml.idp;
 
 /**
  * Internal class used for serialization across SAML Identity Provider classes.
@@ -38,6 +38,10 @@ public final class Saml2IdentityProviderVersion {
    */
   public static String getVersion() {
     return MAJOR + "." + MINOR + "." + PATCH;
+  }
+  
+  // Hidden
+  private Saml2IdentityProviderVersion() {    
   }
 
 }

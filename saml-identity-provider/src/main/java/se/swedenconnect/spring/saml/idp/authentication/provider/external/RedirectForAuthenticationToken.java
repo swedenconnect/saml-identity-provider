@@ -24,8 +24,8 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProcessingFilter;
 
 /**

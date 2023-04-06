@@ -18,6 +18,8 @@ package se.swedenconnect.spring.saml.idp.attributes;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.Base64;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -26,6 +28,7 @@ import java.util.stream.Collectors;
 
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.schema.XSAny;
+import org.opensaml.core.xml.schema.XSBase64Binary;
 import org.opensaml.core.xml.schema.XSBoolean;
 import org.opensaml.core.xml.schema.XSBooleanValue;
 import org.opensaml.core.xml.schema.XSDateTime;
@@ -36,7 +39,7 @@ import org.springframework.util.Assert;
 
 import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeUtils;
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * A representation of a user (identity) attribute.
@@ -142,6 +145,12 @@ public class UserAttribute implements Serializable {
             .map(XSDateTime::getValue)
             .collect(Collectors.toList());
       }
+      else if (XSBase64Binary.class.isAssignableFrom(valueType)) {
+        this.values = AttributeUtils.getAttributeValues(attribute, XSBase64Binary.class).stream()
+            .map(XSBase64Binary::getValue)
+            .map(e -> Base64.getDecoder().decode(e))
+            .collect(Collectors.toList());
+      }
       else {
         throw new IllegalArgumentException(
             String.format("Unsupported attribute value type %s for %s", valueType.getSimpleName(), this.id));
@@ -200,7 +209,7 @@ public class UserAttribute implements Serializable {
    * @return the attribute value(s)
    */
   public List<? extends Serializable> getValues() {
-    return this.values;
+    return Optional.ofNullable(this.values).orElseGet(() -> Collections.emptyList()); 
   }
 
   /**
@@ -258,9 +267,13 @@ public class UserAttribute implements Serializable {
           o.setValue((Instant) v);
           builder.value(o);
         }
+        else if (v instanceof byte[]) {
+          final XSBase64Binary o = AttributeBuilder.createValueObject(XSBase64Binary.TYPE_NAME, XSBase64Binary.class);
+          o.setValue(Base64.getEncoder().encodeToString((byte[]) v));
+          builder.value(o);
+        }
         else {
-          // TODO: Fix
-          throw new SecurityException("Unsupported attribute value");
+          throw new IllegalArgumentException("Unsupported attribute value - " + v.getClass().getSimpleName());
         }
       }
     }
@@ -276,12 +289,13 @@ public class UserAttribute implements Serializable {
     if (this.friendlyName != null) {
       sb.append(", (").append(this.friendlyName).append(")");
     }
-    if (this.values != null && !this.values.isEmpty()) {
-      if (this.values.size() == 1) {
-        sb.append(", value=").append(this.values.get(0));
+    final List<? extends Serializable> v = this.getValues(); 
+    if (!v.isEmpty()) {
+      if (v.size() == 1) {
+        sb.append(", value=").append(v.get(0));
       }
       else {
-        sb.append(", values=").append(this.values);
+        sb.append(", values=").append(v);
       }
     }
     return sb.toString();

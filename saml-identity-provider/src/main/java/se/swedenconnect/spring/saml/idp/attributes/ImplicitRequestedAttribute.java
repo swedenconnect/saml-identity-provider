@@ -19,7 +19,7 @@ import java.util.Objects;
 
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * An {@code ImplicitRequestedAttribute} is used to represent a requested attribute when the requirement is "implicit",

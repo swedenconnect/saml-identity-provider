@@ -19,7 +19,7 @@ import java.util.Map;
 
 import org.springframework.util.Assert;
 
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Settings for the IdP endpoints.

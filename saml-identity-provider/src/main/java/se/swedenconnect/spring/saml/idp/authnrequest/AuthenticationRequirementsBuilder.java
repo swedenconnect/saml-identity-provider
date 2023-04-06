@@ -20,10 +20,10 @@ import java.util.Collection;
 import java.util.List;
 
 import lombok.Setter;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttribute;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
-import se.swedenconnect.spring.saml.idp.utils.Saml2IdentityProviderVersion;
 
 /**
  * A builder for {@link AuthenticationRequirements}.

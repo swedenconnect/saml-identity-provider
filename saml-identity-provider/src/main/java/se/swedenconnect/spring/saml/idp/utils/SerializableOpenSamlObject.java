@@ -31,6 +31,7 @@ import org.opensaml.core.xml.util.XMLObjectSupport;
 
 import net.shibboleth.utilities.java.support.xml.SerializeSupport;
 import net.shibboleth.utilities.java.support.xml.XMLParserException;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Utility class for storing OpenSAML objects in a serializable manner.
