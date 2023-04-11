@@ -126,14 +126,14 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
   protected NameIDGenerator createNameIDGenerator(final String format, final String nameQualifier,
       final String spNameQualifier) throws Saml2ErrorStatusException {
 
-    final String nameIDFormat = format == null || NameID.UNSPECIFIED.equals(format)
+    final String nameIDFormat = format == null || NameID.UNSPECIFIED == format
         ? this.defaultFormat
         : format;
 
-    if (NameID.PERSISTENT.equals(nameIDFormat)) {
+    if (NameID.PERSISTENT == nameIDFormat) {
       return new PersistentNameIDGenerator(nameQualifier, spNameQualifier);
     }
-    else if (NameID.TRANSIENT.equals(nameIDFormat)) {
+    else if (NameID.TRANSIENT == nameIDFormat) {
       return new TransientNameIDGenerator(nameQualifier, spNameQualifier);
     }
     else {

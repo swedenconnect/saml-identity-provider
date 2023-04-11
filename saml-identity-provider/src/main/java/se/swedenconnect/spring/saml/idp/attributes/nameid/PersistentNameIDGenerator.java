@@ -43,6 +43,15 @@ public class PersistentNameIDGenerator extends AbstractNameIDGenerator {
    * Constructor.
    *
    * @param nameQualifier the name qualifier, usually the IdP entityID
+   */
+  public PersistentNameIDGenerator(final String nameQualifier) {
+    this(nameQualifier, null);
+  }
+  
+  /**
+   * Constructor.
+   *
+   * @param nameQualifier the name qualifier, usually the IdP entityID
    * @param spNameQualifier the SP name qualifier
    */
   public PersistentNameIDGenerator(final String nameQualifier, final String spNameQualifier) {

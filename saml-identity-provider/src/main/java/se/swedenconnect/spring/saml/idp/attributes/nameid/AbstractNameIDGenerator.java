@@ -43,6 +43,16 @@ public abstract class AbstractNameIDGenerator implements NameIDGenerator {
 
   /**
    * Constructor.
+   * 
+   * @param nameQualifier the name qualifier, usually the IdP entityID
+   */
+  public AbstractNameIDGenerator(final String nameQualifier) {
+    this.nameQualifier = nameQualifier;
+    this.spNameQualifier = null;
+  }
+
+  /**
+   * Constructor.
    *
    * @param nameQualifier the name qualifier, usually the IdP entityID
    * @param spNameQualifier the SP name qualifier
@@ -67,7 +77,9 @@ public abstract class AbstractNameIDGenerator implements NameIDGenerator {
     nameID.setValue(identifier);
     nameID.setFormat(format);
     nameID.setNameQualifier(this.getNameQualifier());
-    nameID.setSPNameQualifier(this.getSpNameQualifier());
+    if (this.spNameQualifier != null) {
+      nameID.setSPNameQualifier(this.getSpNameQualifier());
+    }
 
     return nameID;
   }

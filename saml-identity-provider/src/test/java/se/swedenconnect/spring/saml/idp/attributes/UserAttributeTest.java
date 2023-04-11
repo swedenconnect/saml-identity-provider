@@ -33,7 +33,6 @@ import org.opensaml.core.xml.schema.XSInteger;
 import org.opensaml.core.xml.schema.XSString;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.Attribute;
-import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 
 import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;

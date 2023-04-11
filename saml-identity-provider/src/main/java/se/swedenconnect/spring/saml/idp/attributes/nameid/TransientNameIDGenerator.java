@@ -36,6 +36,15 @@ public class TransientNameIDGenerator extends AbstractNameIDGenerator {
    * Constructor.
    *
    * @param nameQualifier the name qualifier, usually the IdP entityID
+   */
+  public TransientNameIDGenerator(final String nameQualifier) {
+    super(nameQualifier);
+  }
+  
+  /**
+   * Constructor.
+   *
+   * @param nameQualifier the name qualifier, usually the IdP entityID
    * @param spNameQualifier the SP name qualifier
    */
   public TransientNameIDGenerator(final String nameQualifier, final String spNameQualifier) {
