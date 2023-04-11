@@ -56,7 +56,8 @@ public class SwedenConnectAttributeReleaseVoter implements AttributeReleaseVoter
       if (isCoordinationNumber(id)) {
         if (token.getAuthnRequirements().getEntityCategories().contains(
             EntityCategoryConstants.GENERAL_CATEGORY_ACCEPTS_COORDINATION_NUMBER.getUri())) {
-          return AttributeReleaseVote.INCLUDE;
+          // We let other voters tell whether to include the personal identity number ...
+          return AttributeReleaseVote.DONT_KNOW;
         }
         else {
           log.info("Attribute '{}' will not be released since it is a coordination number and the SP has"
@@ -66,7 +67,7 @@ public class SwedenConnectAttributeReleaseVoter implements AttributeReleaseVoter
 
           return AttributeReleaseVote.DONT_INCLUDE;
         }
-      }
+      }      
     }
 
     return AttributeReleaseVote.DONT_KNOW;
