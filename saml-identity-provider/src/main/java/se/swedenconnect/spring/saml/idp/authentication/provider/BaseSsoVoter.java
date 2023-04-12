@@ -65,7 +65,7 @@ public class BaseSsoVoter implements SsoVoter {
     if (!allowedAuthnContexts.contains(userAuthn.getSaml2UserDetails().getAuthnContextUri())) {
       log.info("Will not re-use authentication for '{}' - "
           + "previous authentication was made according to '{}' - not matched by IdP or AuthnRequest [{}]",
-          userAuthn.getName(), token.getLogString());
+          userAuthn.getName(), userAuthn.getSaml2UserDetails().getAuthnContextUri(), token.getLogString());
       return Vote.DENY;
     }
 

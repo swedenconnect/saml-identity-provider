@@ -58,7 +58,7 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
     final List<String> filteredAuthnContextUris = this.filterRequestedAuthnContextUris(token);
     if (filteredAuthnContextUris.isEmpty()) {
       final String msg = String.format(
-          "None of the requested authentication contexts (%s) are supported by provider {}",
+          "None of the requested authentication contexts ({}) are supported by provider {}",
           token.getAuthnRequirements().getAuthnContextRequirements(), this.getClass().getSimpleName());
       log.info("{} [{}]", msg, token.getAuthnRequestToken().getLogString());
       return null;
@@ -113,7 +113,7 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
       return null;
     }
     final Saml2UserAuthentication userAuth = Saml2UserAuthentication.class.cast(token.getUserAuthentication());
-    if (userAuth.isReuseAuthentication()) {
+    if (!userAuth.isReuseAuthentication()) {
       return null;
     }
 

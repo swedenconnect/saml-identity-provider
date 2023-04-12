@@ -46,10 +46,11 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
  * @author Martin Lindström
  */
 public interface UserAuthenticationProvider extends AuthenticationProvider {
-  
+
   /**
    * Gets the name of the provider.
-   * @return
+   * 
+   * @return the name of the provider
    */
   String getName();
 

@@ -274,7 +274,7 @@ public class AuthenticationRequirementsBuilder {
 
     // Returns the live list.
     @Override
-    public Collection<String> getEntityCategories() {
+    public List<String> getEntityCategories() {
       return this.entityCategories;
     }
 
@@ -286,7 +286,7 @@ public class AuthenticationRequirementsBuilder {
 
     // Returns the live list.
     @Override
-    public Collection<String> getAuthnContextRequirements() {
+    public List<String> getAuthnContextRequirements() {
       return this.authnContextRequirements;
     }
 

@@ -17,6 +17,7 @@ package se.swedenconnect.spring.saml.idp.authnrequest;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.List;
 
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -49,11 +50,11 @@ public interface AuthenticationRequirements extends Serializable {
   boolean isPassiveAuthn();
 
   /**
-   * Gets the collection of declared SAML entity categories for the relying party.
+   * Gets the list of declared SAML entity categories for the relying party.
    * 
-   * @return a collection of URI:s representing declared entity categories
+   * @return a list of URI:s representing declared entity categories
    */
-  Collection<String> getEntityCategories();
+  List<String> getEntityCategories();
 
   /**
    * Gets the attributes requested directly in the authentication request or indirectly from the relying party metadata
@@ -68,15 +69,15 @@ public interface AuthenticationRequirements extends Serializable {
   Collection<RequestedAttribute> getRequestedAttributes();
 
   /**
-   * Gets a collection of the requested authentication contexts ({@code AuthnContextClassRef}).
+   * Gets a list of the requested authentication contexts ({@code AuthnContextClassRef}).
    * <p>
    * The returned list is exhaustive, meaning that all possible URI:s are sent. For example if {@code minimum}
    * comparison is declared, the list is filled with all possible URI:s.
    * </p>
    * 
-   * @return a collection of URI:s
+   * @return a list of URI:s
    */
-  Collection<String> getAuthnContextRequirements();
+  List<String> getAuthnContextRequirements();
 
   /**
    * The <a href=

@@ -28,6 +28,7 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationIn
  * 
  * @author Martin Lindström
  */
+@FunctionalInterface
 public interface SsoVoter {
 
   public enum Vote {
