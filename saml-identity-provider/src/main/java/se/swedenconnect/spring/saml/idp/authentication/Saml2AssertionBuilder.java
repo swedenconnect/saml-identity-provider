@@ -104,12 +104,10 @@ public class Saml2AssertionBuilder {
    */
   public Saml2AssertionBuilder(final String idpEntityId, final PkiCredential signatureCredential,
       final AttributeReleaseManager attributeReleaseManager) {
-    this.issuer = Optional.ofNullable(idpEntityId).filter(StringUtils::hasText)
-        .orElseThrow(() -> new IllegalArgumentException("idpEntityId must be set"));
+    Assert.hasText(idpEntityId, "idpEntityId must be set");
+    this.issuer = idpEntityId;
     Assert.notNull(signatureCredential, "signatureCredential must not be null");
-    this.signatureCredential = OpenSamlCredential.class.isInstance(signatureCredential)
-        ? OpenSamlCredential.class.cast(signatureCredential)
-        : new OpenSamlCredential(signatureCredential);
+    this.signatureCredential = new OpenSamlCredential(signatureCredential);
     this.attributeReleaseManager =
         Objects.requireNonNull(attributeReleaseManager, "attributeReleaseManager must not be null");
   }

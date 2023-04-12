@@ -27,6 +27,7 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
  * 
  * @author Martin Lindström
  */
+@FunctionalInterface
 public interface PostAuthenticationProcessor {
 
   /**
