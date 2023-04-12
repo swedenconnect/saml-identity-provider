@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.config.annotation.web.configuration;
+package se.swedenconnect.spring.saml.idp.config;
 
 import java.util.List;
 
@@ -29,8 +29,8 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.UserRedirectAuthenticationProvider;
-import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurer;
-import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurerAdapter;
+import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurer;
+import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurerAdapter;
 import se.swedenconnect.spring.saml.idp.response.ResponsePage;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 

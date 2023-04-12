@@ -38,7 +38,7 @@ import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGenerator;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestValidator;
-import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2AuthnRequestAuthenticationProviderConfigurer;
+import se.swedenconnect.spring.saml.idp.config.configurers.Saml2AuthnRequestAuthenticationProviderConfigurer;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;

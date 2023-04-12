@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Import;
 
 import lombok.Setter;
 import se.swedenconnect.security.credential.PkiCredential;
-import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurer;
+import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurer;
 import se.swedenconnect.spring.saml.idp.settings.AssertionSettings;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.EndpointSettings;

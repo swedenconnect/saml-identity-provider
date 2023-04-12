@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import se.swedenconnect.spring.saml.idp.attributes.nameid.DefaultNameIDGeneratorFactory;
-import se.swedenconnect.spring.saml.idp.config.annotation.web.configurers.Saml2IdpConfigurerAdapter;
+import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurerAdapter;
 import se.swedenconnect.spring.saml.idp.demo.authn.SimulatedAuthenticationController;
 import se.swedenconnect.spring.saml.idp.demo.authn.SimulatedAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;

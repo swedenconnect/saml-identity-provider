@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.config.annotation.web.configurers;
+package se.swedenconnect.spring.saml.idp.config.configurers;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 
-import se.swedenconnect.spring.saml.idp.config.annotation.web.configuration.Saml2IdpConfiguration;
+import se.swedenconnect.spring.saml.idp.config.Saml2IdpConfiguration;
 
 /**
  * Since Spring have deprecated the use of {@code WebSecurityConfigurerAdapter} and thinks that the setup of a

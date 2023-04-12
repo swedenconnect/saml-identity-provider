@@ -19,7 +19,7 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.web.SecurityFilterChain;
 
-import se.swedenconnect.spring.saml.idp.config.annotation.web.configuration.Saml2IdpConfiguration;
+import se.swedenconnect.spring.saml.idp.config.Saml2IdpConfiguration;
 
 /**
  * Auto configuration class for setting up the {@link SecurityFilterChain} for the SAML IdP.
