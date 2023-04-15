@@ -67,7 +67,6 @@ public class SessionBasedExternalAuthenticationRepository
       throw new IllegalStateException("State error: Can not get authentication result - no authn input token exists");
     }
     resultToken.setAuthnInputToken(inputToken.getAuthnInputToken());
-    resultToken.setServletRequest(request);
     return resultToken;
   }
 

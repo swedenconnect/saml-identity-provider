@@ -75,7 +75,7 @@ public interface UserRedirectAuthenticationProvider extends UserAuthenticationPr
    * Supports {@link Saml2UserAuthenticationInputToken} and {@link ResumedAuthenticationToken}.
    */
   @Override
-  default boolean supports(Class<?> authentication) {
+  default boolean supports(final Class<?> authentication) {
     return UserAuthenticationProvider.super.supports(authentication)
         || ResumedAuthenticationToken.class.isAssignableFrom(authentication);
   }
