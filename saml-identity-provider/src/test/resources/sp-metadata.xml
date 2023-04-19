@@ -1,0 +1,85 @@
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="_554b741a6f6c16ddbd6322a0ffe3cb8afd9063bc51fd420d73acb4a2940fe44f" entityID="https://qa.test.swedenconnect.se/sp" validUntil="2033-04-24T09:36:23.441Z" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <md:Extensions xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+    <mdattr:EntityAttributes xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute">
+      <saml2:Attribute xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Name="http://macedir.org/entity-category" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/ec/1.0/loa3-pnr</saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.swedenconnect.se/ec/sc/uncertified-loa3-pnr</saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/ec/1.0/loa4-pnr</saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/ec/1.0/eidas-naturalperson</saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.swedenconnect.se/ec/1.0/loa3-orgid</saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.swedenconnect.se/ec/1.0/loa4-orgid</saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/st/1.0/public-sector-sp</saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.swedenconnect.se/contract/sc/sweden-connect</saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.swedenconnect.se/contract/sc/eid-choice-2017</saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.swedenconnect.se/contract/sc/prepaid-auth-2021</saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.swedenconnect.se/general-ec/1.0/secure-authenticator-binding</saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.swedenconnect.se/general-ec/1.0/accepts-coordination-number</saml2:AttributeValue>
+      </saml2:Attribute>
+    </mdattr:EntityAttributes>
+  </md:Extensions>
+  <md:SPSSODescriptor AuthnRequestsSigned="true" WantAssertionsSigned="false" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+    <md:Extensions>
+      <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+        <mdui:DisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Testa ditt eID</mdui:DisplayName>
+        <mdui:DisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Test your eID</mdui:DisplayName>
+        <mdui:Description xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Applikation för att testa ditt eID</mdui:Description>
+        <mdui:Description xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Application for testing your eID</mdui:Description>
+        <mdui:Logo height="56" width="280" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">https://qa.test.swedenconnect.se/images/logo.svg</mdui:Logo>
+        <mdui:Logo height="256" width="256" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">https://qa.test.swedenconnect.se/images/logo-notext.svg</mdui:Logo>
+      </mdui:UIInfo>
+    </md:Extensions>
+    <md:KeyDescriptor use="signing" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:KeyName>Signing</ds:KeyName>
+        <ds:X509Data>
+          <ds:X509Certificate>MIIE7DCCAtSgAwIBAgIEWv0VtjANBgkqhkiG9w0BAQsFADA4MQswCQYDVQQGEwJTRTEXMBUGA1UECgwOU3dlZGVuIENvbm5lY3QxEDAOBgNVBAMMB1Rlc3QgU1AwHhcNMTgwNTE3MDU0MDA2WhcNMTkwNTE3MDU0MDA2WjA4MQswCQYDVQQGEwJTRTEXMBUGA1UECgwOU3dlZGVuIENvbm5lY3QxEDAOBgNVBAMMB1Rlc3QgU1AwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQCvD/zxiB0/aK7snciVwpBC0jXCQXVS9BMw9cc0cqK8LIMJw2cnkQdp+9Q9l1EdD69E5dl67RG+NMfDy3SPc1CgPNgzJ5BlJuhY83+jskau63Us2oENQ47vf8o7oHPq0yONrLcrF+e8ANmLaZ0FGsN2gwPDtQ5LO7S3xY1q4C5EnQqLa0yVHFIjVwBL3Q5LYhEHGtUU9MfdqWfvuHc7YdtDhEsSa4GV83OROTBoynxeLtMqJ9IXbqDTvlvErPDpPJ+zzNzv3XA4pIdaDurQMaWbG9tUKgfZIqrsZ9fYhMJOl1QlZ1/leyEAnxQAOoksJU6FOj5JunKrXWD6ZpFMZOZOUa0bFiUz2DLt9Apcgt3F0Y5MeAdTQNlhVUuBuVwUU1exWhMT2/PbpaFtAdvPwq+3zXYeGneRtimAQlU/7NAlBLDqaj8fsVsUN4/9f21berYbFr+mdtJ0H3mpDMfQoBbIlskSYR+qOxvOcsx3r1IlgWLoMac1yDSAAp0xsr2EqhIiVzfhALs2qnAQ5gIoaosaKWhNab+Xp776N/b+xKdSX8Yu0u4ip8ONYp5//OqtMbiutONM1bIzO4205z7L5S30Hp1e9LdfjaP1AY3vgegmFH0LaxjoYgEquL5uAUoLr5bukyv4e/fWqrslB17SUFVgFreOOmu+zyVE0l/RYKI2jQIDAQABMA0GCSqGSIb3DQEBCwUAA4ICAQCqD80tTH7Ln/hwJ5GNehpqwXkMKo8UVG73gsxdH5Yy87WGDgIW8H6f+CIivDBLLmK4jfAMppdR+c0Wu1qx1ElwIPckI5Nf+2pwIqWnKEPZb9GGVeOHZkS/VDZldvt2QJo8uMY7yGxqnkK/zD0HPaWavPkPUdrmxA26uSFx80zXrG/lsHxEtrGKwmnoFmLEsortSc88k7kcU1Osi+LuSdvNj/LpB7Kmou31lTdA17GgePXsPOtY+kcS/6aF6otEpLCRj8KoL9UMJF0511HmYMC5RmcAX37SBD7tzRoOTqyezzbjx6nXBpSMBvk867fjdIQDHWh1JGwUPfT1+c1n0ICwJgVgdHg/C8iWjWBX/z3Yh3zL6ZJvc9j9iYU7UhhQ4MYZYx3diCTp8Y2GYmtIDXYwhiyqn+D5sPJr5jwiDTqo0FZtA5i64AmqtSpX0NcKVs23AmVsaFNQD8RL/Kl0HB04dO4n8j71VpTZdLiUZ2AaocLnMT77CgLFPqOLiud9bIkRlbBwMR6DaEd42PjSXme1owVwYXknZILBKoFw8lRQMo8usJpBiB1dDf1xIzdgx2qMcgKrvuT3EB4OG0Mwb598fj9URXqOHAwSHLGfa+Qgc58dhOmbvJ4YXTgDetN1KLVwc8reYyfHwy+8Dpsh5n2djkIh9lTeQSraBckoIRazyQ==</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+    </md:KeyDescriptor>
+    <md:KeyDescriptor use="encryption" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+      <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+        <ds:KeyName>Encryption</ds:KeyName>
+        <ds:X509Data>
+          <ds:X509Certificate>MIIE7DCCAtSgAwIBAgIEWv0WHzANBgkqhkiG9w0BAQsFADA4MQswCQYDVQQGEwJTRTEXMBUGA1UECgwOU3dlZGVuIENvbm5lY3QxEDAOBgNVBAMMB1Rlc3QgU1AwHhcNMTgwNTE3MDU0MTUxWhcNMTkwNTE3MDU0MTUxWjA4MQswCQYDVQQGEwJTRTEXMBUGA1UECgwOU3dlZGVuIENvbm5lY3QxEDAOBgNVBAMMB1Rlc3QgU1AwggIiMA0GCSqGSIb3DQEBAQUAA4ICDwAwggIKAoICAQCv5MdVKVRJheekO7z/m2ydBOUR5hIaahi8z3Ldt4zHRCgN2D+OwX9yeapSZTBvD8JqT+0UW3JEUQO/ojGe3iQkHYGuPXp6Jbgo4rQi3ZQxUCl+2zO7E2rbNhmbp6DIzyfHiCjTc/raQ93mAuUeQ+MHazK+xfybVQpEjWy/KZApEwAKYRrOAUsSzlVv37qSYjoSXXdUUFj7zxlWYomBtC12kCNuwh5QVVNXG1TBA9rVtj0th8ILxv0LZto/zdji8N8t389/k3xu2/Uf1pZnfGOS2//5b8Rh/mDcosY7jxg3wZxG+AKvhhYql/BRZY852tWLruhEIBhIjzyqi8ODvhEKmBpYrAJc5qTuhBnNG6YVgasBN3mr9DBWm3Pt7fhsMtcr0yhmKhxtvt0QwxdASe9lkd2jj7UDR1FzmMVTktYoILcSvkUu1y+HipUMHePHRkLbKSPCtkD6r1NuuLrKbao334xfI9CdOGWbnRlrZp1paO6MM/+qyXwf6QmzqmZkPrBZeR0PVxyO9bdQPQ0uFOQt+BgwLwFSQVyKIHAadJgtrg1Lz8oWWsr8wznNxmOq9VwxXjQJ6IezZ8I2tHrlJ0TGSoDem4Aj0ri3PZeN4L5f9XaEkz9n9PV9elr5Kpm9Ab0qP+UvsllsqlfpfK0nvsd2eepxlvh5epHrJfUjOq3oiwIDAQABMA0GCSqGSIb3DQEBCwUAA4ICAQAP44xF7X+LoYn9HipFw9iTxnCzsOrEm/PYzktnkv6PIaT47HG96qxx4cZjCHaI8oS8JIvxG6nJwnBWy7VrGq36Sf0LGzVttl1sWKTWsK900hjBKLv9MclHVzXOdPagELH7+M2bmbZ2bMRMz02z8tsIemBW55a7v6mnrc5oG/mHIkx/w1fPz3s9oEW8cxrmXXAwMEZE9SOIDbPTUwH5r5iE79oR7V86oBuNppkfrRHqNQU7fk3DPQUyioLYxu5ICR9uwvkluGnLW4BwPmWSMP8ztX2D2ftzvM4tycwxSCoZMHVthdJ3Gv4RFFjODcn13dUyd1AgT08rcrXH76uOx+/UZoigVJFMme3E8WkzoSPU7yt7ci1MepRZstpAkD79rYiuDr1di2R3N+xRiWYvJCzWbgGzSvwg7CcIDXaR3WGX72nm9npmHk9uCUBc/D9S027XqgxFVnCQtt415YCNGXsl2SopaPPeqWQoFuwnMatgvdvOxue6KqjtdsyApK+7GJke+3ZxUnM+enNwqTJDnmmfLWmXPky3HWD6cITUE3cOWOXLlerc5PGSd01aLXb2VFwNh+ZKppz1bP1AlBrXLwcqxU6THaZJHMppLS0tlpk8uN78QUUlc/kq/oXygqXjHOyVQ8LsvZFKNK+jY4IVinz3XP7vzi0nMc1aihSyEpbQAw==</ds:X509Certificate>
+        </ds:X509Data>
+      </ds:KeyInfo>
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+        <ds:DigestMethod xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      </md:EncryptionMethod>
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2009/xmlenc11#rsa-oaep" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+        <ds:DigestMethod xmlns:ds="http://www.w3.org/2000/09/xmldsig#" Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+      </md:EncryptionMethod>
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2009/xmlenc11#aes256-gcm" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" />
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2009/xmlenc11#aes192-gcm" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" />
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2009/xmlenc11#aes128-gcm" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" />
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes256-cbc" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" />
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes192-cbc" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" />
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#aes128-cbc" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" />
+    </md:KeyDescriptor>
+    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
+    <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
+    <md:AssertionConsumerService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://qa.test.swedenconnect.se/saml2/post" index="0" isDefault="true" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" />
+    <md:AttributeConsumingService index="0" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+      <md:ServiceName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Testa ditt eID</md:ServiceName>
+      <md:ServiceName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Test your eID</md:ServiceName>
+      <md:RequestedAttribute Name="urn:oid:0.9.2342.19200300.100.1.3" isRequired="false" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" />
+      <md:RequestedAttribute Name="urn:oid:0.9.2342.19200300.100.1.41" isRequired="false" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" />
+    </md:AttributeConsumingService>
+  </md:SPSSODescriptor>
+  <md:Organization xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+    <md:OrganizationName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Sweden Connect</md:OrganizationName>
+    <md:OrganizationName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Sweden Connect</md:OrganizationName>
+    <md:OrganizationDisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Sweden Connect</md:OrganizationDisplayName>
+    <md:OrganizationDisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Sweden Connect</md:OrganizationDisplayName>
+    <md:OrganizationURL xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">https://swedenconnect.se</md:OrganizationURL>
+    <md:OrganizationURL xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">https://swedenconnect.se</md:OrganizationURL>
+  </md:Organization>
+  <md:ContactPerson contactType="technical" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+    <md:Company>Sweden Connect</md:Company>
+    <md:EmailAddress>operations@swedenconnect.se</md:EmailAddress>
+  </md:ContactPerson>
+  <md:ContactPerson contactType="support" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+    <md:Company>Sweden Connect</md:Company>
+    <md:EmailAddress>operations@swedenconnect.se</md:EmailAddress>
+  </md:ContactPerson>
+</md:EntityDescriptor>

@@ -17,6 +17,8 @@ package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
 import java.util.Collections;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -52,6 +54,10 @@ public class ResumedAuthenticationTokenTest {
     
     token.setAuthnInputToken(Mockito.mock(Saml2UserAuthenticationInputToken.class));
     Assertions.assertNotNull(token.getAuthnInputToken());
+    
+    Assertions.assertNull(token.getServletRequest());
+    token.setServletRequest(Mockito.mock(HttpServletRequest.class));
+    Assertions.assertNotNull(token.getServletRequest());
     
     Assertions.assertEquals("NAME", token.getName());
     Assertions.assertTrue(token.getAuthorities().isEmpty());

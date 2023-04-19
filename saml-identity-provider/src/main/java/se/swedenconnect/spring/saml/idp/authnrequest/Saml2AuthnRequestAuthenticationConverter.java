@@ -228,7 +228,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
         if (spMetadata == null) {
           final String msg = String.format("Failed to lookup valid SAML metadata for SP %s", peerEntityId);
           log.info("{}", msg);
-          throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT, msg);
+          throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.UNKNOWN_PEER, msg);
         }
         log.debug("SAML metadata for SP {} successfully found", peerEntityId);
         token.setPeerMetadata(spMetadata);
@@ -249,7 +249,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       catch (final ResolverException e) {
         final String msg = "Error during metadata lookup: " + e.getMessage();
         log.info("{}", msg, e);
-        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT, msg, e);
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.UNKNOWN_PEER, msg, e);
       }
 
       return token;

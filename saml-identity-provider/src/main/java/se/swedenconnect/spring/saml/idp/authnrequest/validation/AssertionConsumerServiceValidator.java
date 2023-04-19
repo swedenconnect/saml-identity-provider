@@ -56,7 +56,7 @@ public class AssertionConsumerServiceValidator implements AuthnRequestValidator 
    * metadata. Updates the {@link Saml2AuthnRequestAuthenticationToken} with this information.
    */
   @Override
-  public void validate(Saml2AuthnRequestAuthenticationToken authnRequestToken) throws UnrecoverableSaml2IdpException {
+  public void validate(final Saml2AuthnRequestAuthenticationToken authnRequestToken) throws UnrecoverableSaml2IdpException {
     final AuthnRequest authnRequest = authnRequestToken.getAuthnRequest();
     final SPSSODescriptor ssoDesc = authnRequestToken.getPeerMetadata().getSPSSODescriptor(SAMLConstants.SAML20P_NS);
 

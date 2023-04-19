@@ -20,6 +20,8 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
@@ -45,6 +47,9 @@ public class ResumedAuthenticationToken implements Authentication {
 
   /** Holds the corresponding authentication input token. */
   private Saml2UserAuthenticationInputToken authnInputToken;
+
+  /** The servlet request for this token. */
+  private transient HttpServletRequest servletRequest;
 
   /**
    * Constructor setting up the token to represent a successful authentication
@@ -100,6 +105,24 @@ public class ResumedAuthenticationToken implements Authentication {
    */
   public void setAuthnInputToken(final Saml2UserAuthenticationInputToken authnInputToken) {
     this.authnInputToken = authnInputToken;
+  }
+
+  /**
+   * Gets the servlet request associated with this token.
+   * 
+   * @return the {@link HttpServletRequest} or {@code null} if not available
+   */
+  public HttpServletRequest getServletRequest() {
+    return this.servletRequest;
+  }
+
+  /**
+   * Assigns the servlet request to associate with this token
+   * 
+   * @param servletRequest a {@link HttpServletRequest}
+   */
+  public void setServletRequest(final HttpServletRequest servletRequest) {
+    this.servletRequest = servletRequest;
   }
 
   /** {@inheritDoc} */

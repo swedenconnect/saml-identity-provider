@@ -45,7 +45,6 @@ public abstract class AbstractSettings implements Serializable {
    * @param settings the settings
    */
   protected AbstractSettings(final Map<String, Object> settings) {
-    Assert.notEmpty(settings, "settings cannot be empty");
     this.settings = Collections.unmodifiableMap(new HashMap<>(settings));
   }
 

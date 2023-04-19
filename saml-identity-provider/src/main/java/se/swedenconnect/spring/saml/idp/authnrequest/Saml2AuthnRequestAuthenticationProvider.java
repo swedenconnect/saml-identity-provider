@@ -192,7 +192,6 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
     // Put together authentication requirements for the user authentication to handle ...
     //
     final AuthenticationRequirements requirements = this.createAuthenticationRequirements(token);
-    token.setAuthenticationRequirements(requirements);
 
     // We are done using the OpenSAML context, erase it ...
     //

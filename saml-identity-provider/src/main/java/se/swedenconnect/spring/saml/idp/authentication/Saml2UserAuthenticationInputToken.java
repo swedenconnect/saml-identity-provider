@@ -79,7 +79,7 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
    * @return the authentication requirements
    */
   public AuthenticationRequirements getAuthnRequirements() {
-    return authnRequirements;
+    return this.authnRequirements;
   }
 
   /**

@@ -20,6 +20,7 @@ import java.io.InputStream;
 import org.junit.jupiter.api.BeforeAll;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.w3c.dom.Element;
@@ -64,6 +65,18 @@ public abstract class OpenSamlTestBase {
       throws XMLParserException, UnmarshallingException {
     final Element elm = XMLObjectProviderRegistrySupport.getParserPool().parse(inputStream).getDocumentElement();
     return targetClass.cast(XMLObjectSupport.getUnmarshaller(elm).unmarshall(elm));
+  }
+
+  /**
+   * Marshalls the supplied XML object into a DOM {@link Element}.
+   * 
+   * @param <T> the type
+   * @param object the object to marahll
+   * @return a DOM {@link Element}
+   * @throws MarshallingException for marshalling errors
+   */
+  public static <T extends XMLObject> Element marshall(final T object) throws MarshallingException {    
+    return XMLObjectSupport.marshall(object);
   }
 
 }

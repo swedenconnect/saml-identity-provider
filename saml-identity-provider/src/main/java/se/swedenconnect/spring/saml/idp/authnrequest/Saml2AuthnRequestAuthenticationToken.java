@@ -54,9 +54,6 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
   /** The peer (SP) metadata. */
   private SerializableOpenSamlObject<EntityDescriptor> peerMetadata;
 
-  /** The calculated authentication requirements. */
-  private AuthenticationRequirements authenticationRequirements;
-
   /** The assertion consumer servuce URL to use when posting back an assertion. */
   private String assertionConsumerServiceUrl;
 
@@ -143,24 +140,6 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
    */
   public EntityDescriptor getPeerMetadata() {
     return Optional.ofNullable(this.peerMetadata).map(SerializableOpenSamlObject::get).orElse(null);
-  }
-
-  /**
-   * Gets the authentication requirements.
-   * 
-   * @return an {@link AuthenticationRequirements}
-   */
-  public AuthenticationRequirements getAuthenticationRequirements() {
-    return this.authenticationRequirements;
-  }
-
-  /**
-   * Assigns the authentication requirements.
-   * 
-   * @param authenticationRequirements an {@link AuthenticationRequirements} object
-   */
-  public void setAuthenticationRequirements(final AuthenticationRequirements authenticationRequirements) {
-    this.authenticationRequirements = authenticationRequirements;
   }
 
   /**
