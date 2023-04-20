@@ -55,6 +55,11 @@ public class MetadataSettings extends AbstractSettings {
   public Resource getTemplate() {
     return this.getSetting(SAML_METADATA_TEMPLATE);
   }
+  
+  /**
+   * Default cache duration.
+   */
+  public static final Duration SAML_METADATA_CACHE_DURATION_DEFAULT = Duration.ofHours(24);
 
   /**
    * Tells how long the published IdP metadata can remain in a cache. A {@link Duration}.
@@ -69,6 +74,11 @@ public class MetadataSettings extends AbstractSettings {
   public Duration getCacheDuration() {
     return this.getSetting(SAML_METADATA_CACHE_DURATION);
   }
+  
+  /**
+   * Default metadata validity.
+   */
+  public static final Duration SAML_METADATA_VALIDITY_DEFAULT = Duration.ofDays(7);
 
   /**
    * Tells for how long a published metadata entry should be valid. A {@link Duration}.
@@ -218,10 +228,10 @@ public class MetadataSettings extends AbstractSettings {
     @Override
     protected void applyDefaultSettings() {
       if (this.getSettings().get(SAML_METADATA_CACHE_DURATION) == null) {
-        this.cacheDuration(Duration.ofHours(24));
+        this.cacheDuration(SAML_METADATA_CACHE_DURATION_DEFAULT);
       }
       if (this.getSettings().get(SAML_METADATA_VALIDITY) == null) {
-        this.validityPeriod(Duration.ofDays(7));
+        this.validityPeriod(SAML_METADATA_VALIDITY_DEFAULT);
       }
     }
 

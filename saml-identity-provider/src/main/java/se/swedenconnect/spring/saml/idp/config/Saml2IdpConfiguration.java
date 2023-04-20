@@ -55,7 +55,7 @@ public class Saml2IdpConfiguration {
    */
   @Bean("samlIdpSecurityFilterChain")
   @Order(Ordered.HIGHEST_PRECEDENCE)
-  public SecurityFilterChain identityProviderSecurityFilterChain(final HttpSecurity http,
+  SecurityFilterChain identityProviderSecurityFilterChain(final HttpSecurity http,
       @Autowired(required = false) final List<UserAuthenticationProvider> authenticationProviders,
       @Autowired(required = false) final List<Saml2IdpConfigurerAdapter> adapters,
       @Autowired(required = false) final ResponsePage responsePage) throws Exception {
