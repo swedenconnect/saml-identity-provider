@@ -17,7 +17,6 @@ package se.swedenconnect.spring.saml.idp.extensions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import org.opensaml.security.credential.Credential;
@@ -25,8 +24,6 @@ import org.opensaml.xmlsec.encryption.support.DecryptionException;
 import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
-import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
-import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryConstants;
 import se.swedenconnect.opensaml.sweid.saml2.signservice.dss.Message;
 import se.swedenconnect.opensaml.sweid.saml2.signservice.dss.SignMessage;
 import se.swedenconnect.opensaml.xmlsec.encryption.support.SAMLObjectDecrypter;
@@ -143,11 +140,7 @@ public class DefaultSignatureMessageExtensionExtractor implements SignatureMessa
     // Only Service Providers registered as signature services are allowed to pass along SignMessage
     // extensions. For all other SP:s we simply ignore the extension.
     //
-    final boolean isSignService = EntityDescriptorUtils.getEntityCategories(token.getPeerMetadata()).stream()
-        .filter(e -> Objects.equals(e, EntityCategoryConstants.SERVICE_TYPE_CATEGORY_SIGSERVICE.getUri()))
-        .findAny()
-        .isPresent();
-    if (!isSignService) {
+    if (!token.isSignatureServicePeer()) {
       log.info("AuthnRequest contains SignMessage extension, but SP is not a signature service - ignoring [{}]",
           token.getLogString());
       return null;

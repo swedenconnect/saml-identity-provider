@@ -193,7 +193,18 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
     final AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
     final Saml2ResponseBuilder responseBuilder = Saml2IdpConfigurerUtils.getResponseBuilder(httpSecurity);
     final Saml2ResponseSender responseSender = Saml2IdpConfigurerUtils.getResponseSender(httpSecurity);
-
+    
+    // Assign SAD factory ...
+    //
+    for (final AttributeProducer p : this.attributeProducers) {
+      if (p instanceof SwedenConnectAttributeProducer) {
+        final SwedenConnectAttributeProducer scap = (SwedenConnectAttributeProducer) p;
+        if (scap.getSadFactory() == null) {
+          scap.setSadFactory(Saml2IdpConfigurerUtils.getSadFactory(httpSecurity));
+        }
+      }
+    }
+    
     final AttributeReleaseManager attributeReleaseManager = 
         new DefaultAttributeReleaseManager(this.attributeProducers, this.attributeReleaseVoters);
 

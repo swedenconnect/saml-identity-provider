@@ -72,13 +72,16 @@ import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonS
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonType;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.OrganizationSettings;
 
+/**
+ * Test case for downloading IdP's metadata.
+ * 
+ * @author Martin Lindström
+ */
 @SpringBootTest
 @ContextConfiguration(classes = { ApplicationConfiguration.class })
 @WebAppConfiguration
 @AutoConfigureMockMvc
 public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
-
-  private static final String ENTITY_ID = "https://demo.swedenconnect.se/idp";
 
   private MockMvc mvc;
 
@@ -105,7 +108,7 @@ public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
         new ByteArrayInputStream(result.getResponse().getContentAsByteArray()), EntityDescriptor.class);
 
     Assertions.assertNotNull(metadata);
-    Assertions.assertEquals(ENTITY_ID, metadata.getEntityID());
+    Assertions.assertEquals(TestSupport.IDP_ENTITY_ID, metadata.getEntityID());
     Assertions.assertNotNull(metadata.getCacheDuration());
     Assertions.assertNotNull(metadata.getID());
     final String id = metadata.getID();
@@ -151,8 +154,8 @@ public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
     IdentityProviderSettings identityProviderSettings() {
 
       final IdentityProviderSettings settings = IdentityProviderSettings.builder()
-          .entityId(ENTITY_ID)
-          .baseUrl("https://demo.swedenconnect.se/idp")
+          .entityId(TestSupport.IDP_ENTITY_ID)
+          .baseUrl(TestSupport.IDP_BASE_URL)
           .credentials(CredentialSettings.builder()
               .signCredential(this.signCredential)
               .encryptCredential(this.encryptCredential)

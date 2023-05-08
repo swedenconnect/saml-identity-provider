@@ -6,7 +6,7 @@
   <groupId>se.swedenconnect.spring.saml.idp</groupId>
   <artifactId>spring-saml-idp-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>1.0.0</version>
 
   <name>Sweden Connect :: Spring SAML Identity Provider :: Parent POM</name>
   <description>Parent POM for Spring SAML Identity Provider libraries</description>
@@ -44,9 +44,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
 
-    <spring.boot.version>2.7.7</spring.boot.version>
-    <spring.version>5.3.25</spring.version>
-    <bc.version>1.72</bc.version>
+    <spring.boot.version>2.7.11</spring.boot.version>
+    <spring.version>5.3.27</spring.version>
+    <bc.version>1.73</bc.version>
   </properties>
 
   <repositories>
@@ -114,35 +114,6 @@
         <scope>import</scope>
       </dependency>
 
-      <!--
-      <dependency>
-        <groupId>jakarta.servlet</groupId>
-        <artifactId>jakarta.servlet-api</artifactId>
-        <version>6.0.0</version>
-        <scope>provided</scope>
-      </dependency>
-
-      <dependency>
-        <groupId>jakarta.annotation</groupId>
-        <artifactId>jakarta.annotation-api</artifactId>
-        <version>2.1.1</version>
-      </dependency>
-      -->
-      <!--
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>javax.servlet-api</artifactId>
-        <version>4.0.1</version>
-        <scope>provided</scope>
-      </dependency>
-      
-      <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>1.3.2</version>
-      </dependency>
-      -->
-
       <dependency>
         <groupId>se.swedenconnect.security</groupId>
         <artifactId>credentials-support</artifactId>
@@ -152,7 +123,7 @@
       <dependency>
         <groupId>org.apache.santuario</groupId>
         <artifactId>xmlsec</artifactId>
-        <version>2.3.2</version>
+        <version>2.3.3</version>
         <exclusions>
           <!-- Version included has reported vulnerabilities -->
           <exclusion>
@@ -165,7 +136,7 @@
       <dependency>
         <groupId>com.fasterxml.woodstox</groupId>
         <artifactId>woodstox-core</artifactId>
-        <version>6.4.0</version>
+        <version>6.5.1</version>
       </dependency>
       
       <!-- Bouncy Castle -->
@@ -202,13 +173,19 @@
       <dependency>
         <groupId>se.swedenconnect.opensaml</groupId>
         <artifactId>opensaml-addons</artifactId>
-        <version>1.2.6</version>
+        <version>1.2.7</version>
       </dependency>
       
       <dependency>
         <groupId>se.swedenconnect.opensaml</groupId>
         <artifactId>opensaml-swedish-eid</artifactId>
-        <version>1.2.4</version>
+        <version>1.2.6</version>
+        <exclusions>
+          <exclusion>
+            <groupId>se.swedenconnect.opensaml</groupId>
+            <artifactId>opensaml-addons</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       
       <dependency>
@@ -230,12 +207,6 @@
 
   <dependencies>
 
-<!--
-    <dependency>
-      <groupId>jakarta.servlet</groupId>
-      <artifactId>jakarta.servlet-api</artifactId>
-    </dependency>
--->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
@@ -262,21 +233,18 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
-      <version>4.7.0</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-junit-jupiter</artifactId>
-      <version>4.7.0</version>
       <scope>test</scope>
     </dependency>
 
     <dependency>
       <groupId>org.assertj</groupId>
       <artifactId>assertj-core</artifactId>
-      <version>3.21.0</version>
       <scope>test</scope>
     </dependency>
 
@@ -492,6 +460,12 @@
 
       <!-- See http://central.sonatype.org/pages/apache-maven.html for setup -->
 
+      <modules>
+        <module>saml-identity-provider</module>
+        <module>autoconfigure</module>
+        <module>starter</module>
+      </modules>
+
       <build>
         <plugins>
 
@@ -554,7 +528,7 @@
           <plugin>
             <groupId>org.sonatype.plugins</groupId>
             <artifactId>nexus-staging-maven-plugin</artifactId>
-            <version>1.6.12</version>
+            <version>1.6.13</version>
             <extensions>true</extensions>
             <configuration>
               <serverId>ossrh</serverId>

@@ -15,6 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.response;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -23,13 +27,38 @@ import org.junit.jupiter.api.Test;
  * @author Martin Lindström
  */
 public class DefaultResponsePageTest {
-  
+
   @Test
-  public void testGenerateResponsePage() {
-    
-    final String page = DefaultResponsePage.generateResponsePage("https://www.example.com/sso", "RESPONSE", "RELAY-STATE");
-    // System.out.println(page);
-    
+  public void testGenerateResponsePage() throws Exception {
+
+    final String page =
+        DefaultResponsePage.generateResponsePage("https://www.example.com/sso", "RESPONSE", "RELAY-STATE");
+
+    final Document html = Jsoup.parse(page);
+    final Element formElement = html.getElementsByTag("form").stream()
+        .findFirst()
+        .orElse(null);
+
+    Assertions.assertNotNull(formElement, "Not a POST form");
+
+    final String destination = formElement.attr("action");
+    Assertions.assertEquals("https://www.example.com/sso", destination);
+
+    final String samlResponse = formElement.getElementsByAttributeValue("name", "SAMLResponse").stream()
+        .map(e -> e.attr("value"))
+        .findFirst()
+        .orElse(null);
+
+    Assertions.assertNotNull(samlResponse, "Missing SAMLResponse");
+    Assertions.assertEquals("RESPONSE", samlResponse);
+
+    final String receivedRelayState = formElement.getElementsByAttributeValue("name", "RelayState").stream()
+        .map(e -> e.attr("value"))
+        .findFirst()
+        .orElse(null);
+
+    Assertions.assertNotNull(receivedRelayState, "Missing RelayState");
+    Assertions.assertEquals("RELAY-STATE", receivedRelayState);
   }
 
 }

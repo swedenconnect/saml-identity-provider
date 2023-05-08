@@ -157,14 +157,6 @@ public class SamlSpConfiguration {
     };
   }
 
-//  @Bean
-//  Saml2MetadataFilter saml2MetadataFilter(final RelyingPartyRegistrationResolver relyingPartyRegistrationResolver) {
-//    // TODO: add customizer to metadata resolver
-//    final Saml2MetadataFilter filter = new Saml2MetadataFilter(relyingPartyRegistrationResolver, new OpenSamlMetadataResolver());
-//    filter.setRequestMatcher(new AntPathRequestMatcher("/saml2/metadata/{registrationId}", "GET"));
-//    return filter;
-//  }
-
   @Bean
   RelyingPartyRegistrationRepository relayingPartyRepository(final SamlSpConfigurationProperties properties)
       throws Exception {

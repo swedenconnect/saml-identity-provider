@@ -21,29 +21,44 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import se.swedenconnect.spring.saml.idp.attributes.nameid.DefaultNameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurerAdapter;
 import se.swedenconnect.spring.saml.idp.demo.authn.SimulatedAuthenticationController;
 import se.swedenconnect.spring.saml.idp.demo.authn.SimulatedAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.demo.user.SimulatedUserDetailsManager;
+import se.swedenconnect.spring.saml.idp.demo.user.UsersConfigurationProperties;
+import se.swedenconnect.spring.saml.idp.response.ThymeleafResponsePage;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
+/**
+ * Configuration for the IdP.
+ * 
+ * @author Martin Lindström
+ */
 @Configuration
 @EnableConfigurationProperties
 public class IdpConfiguration {
 
+  /**
+   * The {@link IdentityProviderSettings}. Created by the Spring Boot autoconfiguration from reading the application
+   * properties file.
+   */
   @Autowired
   IdentityProviderSettings settings;
 
+  /**
+   * The simulated users.
+   */
   @Autowired
   UsersConfigurationProperties userProps;
 
-  // TODO: make sure a default is present
-//  @Bean
-//  ExternalAuthenticatorTokenRepository externalAuthenticationRepository() {
-//    return new SessionBasedExternalAuthenticationRepository();
-//  }
-
+  /**
+   * Our simulated users.
+   * 
+   * @return an {@link UserDetailsService}
+   */
   @Bean
   UserDetailsService userDetailsService() {
     final SimulatedUserDetailsManager mgr = new SimulatedUserDetailsManager();
@@ -51,14 +66,29 @@ public class IdpConfiguration {
     return mgr;
   }
 
+  /**
+   * Creates the authentication provider bean.
+   * 
+   * @return a {@link SimulatedAuthenticationProvider}
+   */
   @Bean
   SimulatedAuthenticationProvider simulatedAuthenticationProvider() {
     return new SimulatedAuthenticationProvider(SimulatedAuthenticationController.AUTHN_PATH, "/simulated1");
   }
 
+  /**
+   * Gets a {@link Saml2IdpConfigurerAdapter} that configures the IdP past configuration using application properties.
+   * 
+   * @param templateEngine the template engine (needed for setting up our own POST page)
+   * @return a {@link Saml2IdpConfigurerAdapter}
+   */
   @Bean
-  Saml2IdpConfigurerAdapter nameIdConfigurer() {
+  Saml2IdpConfigurerAdapter samlIdpConfigurer(final SpringTemplateEngine templateEngine) {
     return (h, c) -> {
+      // Override the HTML page that is used to post back the SAML response with our own ...
+      c.responseSender((s) -> s.setResponsePage(new ThymeleafResponsePage(templateEngine, "post-response.html")));
+
+      // Example of how we change the NameID default from persistent to transient
       c.authnRequestProcessor(p -> p.authenticationProvider(
           a -> {
             DefaultNameIDGeneratorFactory f = new DefaultNameIDGeneratorFactory(this.settings.getEntityId());
@@ -67,26 +97,5 @@ public class IdpConfiguration {
           }));
     };
   }
-
-  // HttpSecurityConfiguration c;
-
-//  @Order(Ordered.HIGHEST_PRECEDENCE)
-//  @Bean
-//  SecurityFilterChain samlIdpSecurityFilterChain2(final HttpSecurity http) throws Exception {
-//
-////    if (this.providers != null) {
-////      this.providers.forEach(p -> http.authenticationProvider(p));
-////    }
-//
-//    Saml2IdpConfiguration.applyDefaultSecurity(http, List.of(this.simulatedAuthenticationProvider()));
-//
-//    // SecurityContextPersistenceFilter f;
-//    // SecurityContextHolderFilter f2;
-//
-//    SecurityFilterChain c = http.build();
-//
-//    return c;
-//    // return http.build();
-//  }
 
 }

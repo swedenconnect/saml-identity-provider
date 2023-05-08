@@ -31,9 +31,11 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 
+import se.swedenconnect.opensaml.sweid.saml2.signservice.SADFactory;
 import se.swedenconnect.opensaml.xmlsec.config.DefaultSecurityConfiguration;
 import se.swedenconnect.opensaml.xmlsec.config.SecurityConfiguration;
 import se.swedenconnect.security.credential.PkiCredential;
+import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
@@ -65,7 +67,7 @@ class Saml2IdpConfigurerUtils {
    * @param httpSecurity the HTTP security object
    * @return a {@link RequestMatcher}
    */
-  static RequestMatcher getAuthnEndpointsRequestMatcher(final HttpSecurity httpSecurity) {    
+  static RequestMatcher getAuthnEndpointsRequestMatcher(final HttpSecurity httpSecurity) {
     final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     final RequestMatcher requestMatcher = new OrRequestMatcher(
         new AntPathRequestMatcher(settings.getEndpoints().getRedirectAuthnEndpoint(), HttpMethod.GET.name()),
@@ -128,7 +130,7 @@ class Saml2IdpConfigurerUtils {
         .orElseGet(() -> Optional.ofNullable(settings.getCredentials().getDefaultCredential())
             .orElseThrow(() -> new SecurityException("No signature credential available")));
   }
-  
+
   /**
    * Gets the IdP encryption/decryption credential (from the {@link IdentityProviderSettings}).
    * 
@@ -140,7 +142,7 @@ class Saml2IdpConfigurerUtils {
     return Optional.ofNullable(settings.getCredentials().getEncryptCredential())
         .orElseGet(() -> Optional.ofNullable(settings.getCredentials().getDefaultCredential())
             .orElse(null));
-  }  
+  }
 
   /**
    * Gets the OpenSAML {@link SecurityConfiguration}. If none is available a default is created.
@@ -171,6 +173,28 @@ class Saml2IdpConfigurerUtils {
 
   static <T> T getBean(final HttpSecurity httpSecurity, final Class<T> type) {
     return httpSecurity.getSharedObject(ApplicationContext.class).getBean(type);
+  }
+
+  /**
+   * Gets the {@link SADFactory} instance to use. If not available as a bean or shared object, the instance is created
+   * with default settings.
+   * 
+   * @param httpSecurity the HTTP security object
+   * @return a {@link SADFactory} instance
+   */
+  static SADFactory getSadFactory(final HttpSecurity httpSecurity) {
+    SADFactory sadFactory = httpSecurity.getSharedObject(SADFactory.class);
+    if (sadFactory != null) {
+      return sadFactory;
+    }
+    sadFactory = getOptionalBean(httpSecurity, SADFactory.class);
+    if (sadFactory == null) {
+      final IdentityProviderSettings settings = getIdentityProviderSettings(httpSecurity);
+      sadFactory = new SADFactory(settings.getEntityId(),
+          new OpenSamlCredential(getSignatureCredential(httpSecurity)));
+    }
+    httpSecurity.setSharedObject(SADFactory.class, sadFactory);
+    return sadFactory;
   }
 
   @SuppressWarnings("unchecked")

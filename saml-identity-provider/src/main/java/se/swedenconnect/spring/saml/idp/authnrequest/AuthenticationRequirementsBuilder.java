@@ -23,6 +23,7 @@ import lombok.Setter;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttribute;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
+import se.swedenconnect.spring.saml.idp.extensions.SadRequestExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 
 /**
@@ -64,7 +65,7 @@ public class AuthenticationRequirementsBuilder {
   /**
    * Creates a {@link AuthenticationRequirementsBuilder} based on an existing {@link AuthenticationRequirements} object.
    * 
-   * @param the template object
+   * @param requirements the template object
    * @return a builder
    */
   public static AuthenticationRequirementsBuilder builder(final AuthenticationRequirements requirements) {
@@ -131,7 +132,7 @@ public class AuthenticationRequirementsBuilder {
    * metadata ({@code AttributeConsumingService} or entity category declarations).
    * <p>
    * Note: Within the Swedish eID Framework the use of declared entity categories is the preferred way of informing the
-   * IdP about which attributes a relying party requests, see {@link #getEntityCategories()}.
+   * IdP about which attributes a relying party requests, see {@link #entityCategories(Collection)}.
    * </p>
    * 
    * @param requestedAttributes a collection of requested attributes
@@ -185,7 +186,7 @@ public class AuthenticationRequirementsBuilder {
    * in the {@code AuthnRequest} to inform the IdP about the user that is being authenticated. This method assigns this
    * information.
    * 
-   * @param a collection of "principal selection" attributes
+   * @param principalSelectionAttributes a collection of "principal selection" attributes
    * @return the builder
    */
   public AuthenticationRequirementsBuilder principalSelectionAttributes(
@@ -213,12 +214,27 @@ public class AuthenticationRequirementsBuilder {
    * "https://docs.swedenconnect.se/technical-framework/latest/09_-_DSS_Extension_for_Federated_Signing_Services.html">DSS
    * Extension for Federated Central Signing Services</a>.
    * 
-   * @param the sign message extension
+   * @param signatureMessageExtension the sign message extension
    * @return the builder
    */
   public AuthenticationRequirementsBuilder signatureMessageExtension(
       final SignatureMessageExtension signatureMessageExtension) {
     this.reqs.setSignatureMessageExtension(signatureMessageExtension);
+    return this;
+  }
+
+  /**
+   * Assigns the {@link SadRequestExtension} which is the representation of the {@code SADRequest} extension as
+   * specified in <a href=
+   * "https://docs.swedenconnect.se/technical-framework/updates/13_-_Signature_Activation_Protocol.html">Signature
+   * Activation Protocol for Federated Signing</a>.
+   * 
+   * @param sadRequestExtension the extension
+   * @return the builder
+   */
+  public AuthenticationRequirementsBuilder sadRequestExtension(
+      final SadRequestExtension sadRequestExtension) {
+    this.reqs.setSadRequestExtension(sadRequestExtension);
     return this;
   }
 
@@ -244,6 +260,9 @@ public class AuthenticationRequirementsBuilder {
     @Setter
     private SignatureMessageExtension signatureMessageExtension;
 
+    @Setter
+    private SadRequestExtension sadRequestExtension;
+
     public AuthenticationRequirementsImpl() {
       this.entityCategories = new ArrayList<>();
       this.requestedAttributes = new ArrayList<>();
@@ -260,6 +279,7 @@ public class AuthenticationRequirementsBuilder {
       this.authnContextRequirements.addAll(reqs.getAuthnContextRequirements());
       this.principalSelectionAttributes.addAll(reqs.getPrincipalSelectionAttributes());
       this.signatureMessageExtension = reqs.getSignatureMessageExtension();
+      this.sadRequestExtension = reqs.getSadRequestExtension();
     }
 
     @Override
@@ -299,6 +319,11 @@ public class AuthenticationRequirementsBuilder {
     @Override
     public SignatureMessageExtension getSignatureMessageExtension() {
       return this.signatureMessageExtension;
+    }
+
+    @Override
+    public SadRequestExtension getSadRequestExtension() {
+      return this.sadRequestExtension;
     }
 
   }

@@ -54,8 +54,7 @@ public class Saml2IdpErrorViewResolver implements ErrorViewResolver, Ordered {
   /**
    * Constructor.
    * 
-   * @param applicationContext
-   * @param resources
+   * @param applicationContext the application context
    */
   public Saml2IdpErrorViewResolver(final ApplicationContext applicationContext) {
     Assert.notNull(applicationContext, "ApplicationContext must not be null");

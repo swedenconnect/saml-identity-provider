@@ -65,7 +65,7 @@ public interface ExternalAuthenticatorTokenRepository {
   /**
    * Is invoken to commit the {@link Saml2ErrorStatusException} that is a description for a failed user authentication.
    * 
-   * @param token the error
+   * @param error the error
    * @param request the current HTTP request
    * @throws IllegalStateException if the corresponding {@link RedirectForAuthenticationToken} is not available in the
    *           repository

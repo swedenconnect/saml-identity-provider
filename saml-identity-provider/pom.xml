@@ -9,7 +9,7 @@
   <parent>
     <groupId>se.swedenconnect.spring.saml.idp</groupId>
     <artifactId>spring-saml-idp-parent</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
   </parent>
 
   <name>Sweden Connect :: Spring SAML Identity Provider :: Core Library</name>
@@ -167,19 +167,18 @@
       <scope>test</scope>
     </dependency>
     
-    <!--
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-test</artifactId>
-      <scope>test</scope>
-    </dependency>
-    -->
     <dependency>
       <groupId>org.springframework.security</groupId>
       <artifactId>spring-security-test</artifactId>
       <scope>test</scope>
     </dependency>
-
+    
+    <dependency>
+      <groupId>org.jsoup</groupId>
+      <artifactId>jsoup</artifactId>
+      <version>1.15.4</version>
+      <scope>test</scope>
+    </dependency>    
 
     <dependency>
     	<groupId>org.springframework.boot</groupId>

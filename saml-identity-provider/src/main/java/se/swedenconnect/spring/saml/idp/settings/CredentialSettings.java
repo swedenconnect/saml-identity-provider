@@ -167,7 +167,7 @@ public class CredentialSettings extends AbstractSettings {
     /**
      * Assigns the signing IdP credential.
      *
-     * @param the signing credential
+     * @param signCredential the signing credential
      * @return the builder
      */
     public Builder signCredential(final PkiCredential signCredential) {
@@ -177,7 +177,7 @@ public class CredentialSettings extends AbstractSettings {
     /**
      * Assigns the future IdP signing certificate. Assigned before a key-rollover is performed.
      *
-     * @param the future signing certificate
+     * @param futureSignCertificate the future signing certificate
      * @return the builder
      */
     public Builder futureSignCertificate(final X509Certificate futureSignCertificate) {

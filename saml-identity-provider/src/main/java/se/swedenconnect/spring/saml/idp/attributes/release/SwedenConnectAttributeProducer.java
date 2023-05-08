@@ -15,6 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.release;
 
+import java.io.IOException;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,11 +24,16 @@ import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.Attribute;
 
 import lombok.extern.slf4j.Slf4j;
+import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
+import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
+import se.swedenconnect.opensaml.sweid.saml2.signservice.SADFactory;
+import se.swedenconnect.opensaml.sweid.saml2.signservice.SADFactory.SADBuilder;
 import se.swedenconnect.opensaml.sweid.saml2.signservice.SignMessageDigestIssuer;
 import se.swedenconnect.opensaml.sweid.saml2.signservice.dss.Message;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
+import se.swedenconnect.spring.saml.idp.extensions.SadRequestExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 
 /**
@@ -53,6 +60,9 @@ public class SwedenConnectAttributeProducer extends DefaultAttributeProducer {
   /** The helper that calculates the signMessage digest. */
   private SignMessageDigestIssuer signMessageDigestIssuer = new SignMessageDigestIssuer();
 
+  /** For creating SAD attributes. */
+  private SADFactory sadFactory;
+
   /** {@inheritDoc} */
   @Override
   public List<Attribute> releaseAttributes(final Saml2UserAuthentication userAuthentication) {
@@ -63,7 +73,12 @@ public class SwedenConnectAttributeProducer extends DefaultAttributeProducer {
     if (signMessageDigest != null) {
       attributes.add(signMessageDigest);
     }
-
+    if (signMessageDigest != null) {
+      final Attribute sad = this.releaseSad(userAuthentication);
+      if (sad != null) {
+        attributes.add(sad);
+      }
+    }
     return attributes;
   }
 
@@ -99,6 +114,63 @@ public class SwedenConnectAttributeProducer extends DefaultAttributeProducer {
         return null;
       }
     }
+  }
+
+  /**
+   * Constructs a SAD attribute.
+   * 
+   * @param userAuthentication the user authentication token
+   * @return an {@link Attribute} or {@code null}
+   */
+  private Attribute releaseSad(final Saml2UserAuthentication userAuthentication) {
+    if (userAuthentication.getAuthnRequirements().getSadRequestExtension() == null) {
+      return null;
+    }
+    if (this.sadFactory == null) {
+      return null;
+    }
+    final SadRequestExtension sadRequest = userAuthentication.getAuthnRequirements().getSadRequestExtension();
+
+    final SADBuilder sadBuilder =
+        this.sadFactory.getBuilder(userAuthentication.getSaml2UserDetails().getPrimaryAttribute());
+
+    try {
+      final String jwt = sadBuilder
+          .subject(userAuthentication.getSaml2UserDetails().getUsername())
+          .audience(sadRequest.getRequesterId())
+          .inResponseTo(sadRequest.getId())
+          .loa(userAuthentication.getSaml2UserDetails().getAuthnContextUri())
+          .requestID(sadRequest.getSignRequestId())
+          .numberOfDocuments(sadRequest.getDocumentCount())
+          .buildJwt();
+
+      return AttributeBuilder.builder(AttributeConstants.ATTRIBUTE_NAME_SAD)
+          .friendlyName(AttributeConstants.ATTRIBUTE_FRIENDLY_NAME_SAD)
+          .value(jwt)
+          .build();
+    }
+    catch (final SignatureException | IOException e) {
+      log.info("Failed to construct sad attribute [{}]", userAuthentication.getAuthnRequestToken().getLogString(), e);
+      return null;
+    }
+  }
+
+  /**
+   * Gets the {@link SADFactory}.
+   * 
+   * @return {@link SADFactory} or {@code null} if none has been assigned
+   */
+  public SADFactory getSadFactory() {
+    return this.sadFactory;
+  }
+
+  /**
+   * Assigns the {@link SADFactory}.
+   * 
+   * @param sadFactory a {@link SADFactory}
+   */
+  public void setSadFactory(final SADFactory sadFactory) {
+    this.sadFactory = sadFactory;
   }
 
 }

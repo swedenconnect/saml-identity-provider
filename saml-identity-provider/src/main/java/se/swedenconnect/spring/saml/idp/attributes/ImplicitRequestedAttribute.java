@@ -37,7 +37,6 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
  * Categories for the Swedish eID Framework</a>.
  * </p>
- * </p>
  * 
  * @author Martin Lindström
  */

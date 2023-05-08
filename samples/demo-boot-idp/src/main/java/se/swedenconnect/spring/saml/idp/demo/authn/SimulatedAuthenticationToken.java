@@ -20,7 +20,7 @@ import java.util.Collections;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
 
-import se.swedenconnect.spring.saml.idp.demo.SimulatedUser;
+import se.swedenconnect.spring.saml.idp.demo.user.SimulatedUser;
 
 /**
  * An {@link Authentication} token for our simulated authentication process.

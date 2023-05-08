@@ -31,6 +31,8 @@ import org.springframework.util.Assert;
 
 import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
+import se.swedenconnect.opensaml.sweid.saml2.signservice.sap.SADRequest;
+import se.swedenconnect.opensaml.sweid.saml2.signservice.sap.SADVersion;
 import se.swedenconnect.spring.saml.idp.attributes.PrincipalSelectionProcessor;
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttribute;
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttributeProcessor;
@@ -43,6 +45,7 @@ import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+import se.swedenconnect.spring.saml.idp.extensions.SadRequestExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtensionExtractor;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessagePreprocessor;
@@ -241,7 +244,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
       log.info("{} [{}]", msg, token.getLogString());
       throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_AUTHNREQUEST, msg);
     }
-
+    
     final SignatureMessageExtension signMessageExtension = Optional.ofNullable(this.signatureMessageExtensionExtractor)
         .map(e -> e.extract(token))
         .orElse(null);
@@ -249,6 +252,22 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
       final String processedMessage = this.signatureMessagePreprocessor.processSignMessage(
           signMessageExtension.getMessage(), signMessageExtension.getMimeType());
       signMessageExtension.setProcessedMessage(processedMessage);
+    }
+    
+    SADRequest sadRequest = Optional.ofNullable(token.getAuthnRequest().getExtensions())
+        .map(e -> e.getUnknownXMLObjects(SADRequest.DEFAULT_ELEMENT_NAME))
+        .filter(list -> !list.isEmpty())
+        .map(list -> list.get(0))
+        .map(SADRequest.class::cast)
+        .orElse(null);
+    if (sadRequest != null) {
+      if (!token.isSignatureServicePeer()) {
+        log.info("Received SADRequest from non SignService SP, ignoring ... [{}]");
+        sadRequest = null;
+      }
+      else {
+        this.validateSadRequest(token, sadRequest);
+      }
     }
 
     return AuthenticationRequirementsBuilder.builder()
@@ -266,7 +285,51 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
             .map(p -> p.extractPrincipalSelection(token))
             .orElseGet(() -> Collections.emptyList()))
         .signatureMessageExtension(signMessageExtension)
+        .sadRequestExtension(sadRequest != null ? new SadRequestExtension(sadRequest) : null)
         .build();
+  }
+  
+  /**
+   * Validates that a received {@link SADRequest} is correct.
+   * 
+   * @param token the authentication request token
+   * @param sadRequest the SAD request to check
+   * @throws Saml2ErrorStatusException for errors
+   */
+  private void validateSadRequest(final Saml2AuthnRequestAuthenticationToken token, final SADRequest sadRequest) 
+      throws Saml2ErrorStatusException {
+    if (sadRequest.getID() == null) {
+      final String msg = "Invalid AuthnRequest - Contains SADRequest extension that lacks ID field";
+      log.info("{} [{}]", msg, token.getLogString());
+      throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_AUTHNREQUEST, msg);
+    }
+    if (sadRequest.getRequestedVersion() != null) {
+      if (!SADVersion.VERSION_10.equals(sadRequest.getRequestedVersion())) {
+        final String msg = "Invalid AuthnRequest - Contains SADRequest extension that has unsupported SAD version";
+        log.info("{} [{}]", msg, token.getLogString());
+        throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_AUTHNREQUEST, msg);
+      }
+    }
+    if (sadRequest.getDocCount() == null) {
+      final String msg = "Invalid AuthnRequest - Contains SADRequest extension that lacks DocCount field";
+      log.info("{} [{}]", msg, token.getLogString());
+      throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_AUTHNREQUEST, msg);
+    }
+    if (sadRequest.getRequesterID() == null) {
+      final String msg = "Invalid AuthnRequest - Contains SADRequest extension that lacks RequesterID field";
+      log.info("{} [{}]", msg, token.getLogString());
+      throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_AUTHNREQUEST, msg);
+    }
+    else if (!token.getEntityId().equals(sadRequest.getRequesterID())) {
+      final String msg = "Invalid AuthnRequest - Contains SADRequest extension that has RequesterID field that does not match SP entityID";
+      log.info("{} [{}]", msg, token.getLogString());
+      throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_AUTHNREQUEST, msg);
+    }
+    if (sadRequest.getSignRequestID() == null) {
+      final String msg = "Invalid AuthnRequest - Contains SADRequest extension that lacks SignRequestID field";
+      log.info("{} [{}]", msg, token.getLogString());
+      throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_AUTHNREQUEST, msg);
+    }
   }
 
   /**

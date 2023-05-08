@@ -24,6 +24,7 @@ import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttribute;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
+import se.swedenconnect.spring.saml.idp.extensions.SadRequestExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 
 /**
@@ -99,5 +100,15 @@ public interface AuthenticationRequirements extends Serializable {
    * @return the sign message extension, or {@code null} if not present
    */
   SignatureMessageExtension getSignatureMessageExtension();
+
+  /**
+   * Gets the {@link SadRequestExtension} which is the representation of the {@code SADRequest} extension as specified
+   * in <a href=
+   * "https://docs.swedenconnect.se/technical-framework/updates/13_-_Signature_Activation_Protocol.html">Signature
+   * Activation Protocol for Federated Signing</a>.
+   * 
+   * @return the SAD request extension, or {@code null} if not present
+   */
+  SadRequestExtension getSadRequestExtension();
 
 }

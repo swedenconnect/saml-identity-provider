@@ -126,8 +126,6 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
   /**
    * Installs a custom {@link AuthenticationProvider} to be used instead of
    * {@link Saml2AuthnRequestAuthenticationProvider}.
-   * <p>
-   * </p>
    *
    * @param customAuthenticationProvider an {@link AuthenticationProvider} used for authenticating an
    *          {@link Saml2AuthnRequestAuthenticationToken}

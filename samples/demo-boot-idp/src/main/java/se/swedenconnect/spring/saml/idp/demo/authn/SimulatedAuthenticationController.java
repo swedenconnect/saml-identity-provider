@@ -29,30 +29,42 @@ import org.springframework.web.servlet.ModelAndView;
 
 import lombok.Setter;
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.AbstractAuthenticationController;
-import se.swedenconnect.spring.saml.idp.demo.SimulatedUser;
-import se.swedenconnect.spring.saml.idp.demo.UsersConfigurationProperties;
+import se.swedenconnect.spring.saml.idp.demo.user.SimulatedUser;
+import se.swedenconnect.spring.saml.idp.demo.user.UsersConfigurationProperties;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
+/**
+ * The controller handling user authentication.
+ * 
+ * @author Martin Lindström
+ */
 @Controller
 public class SimulatedAuthenticationController
     extends AbstractAuthenticationController<SimulatedAuthenticationProvider> {
 
   public static final String AUTHN_PATH = "/authn";
 
-  /**
-   * The authentication provider that is the "manager" for this authentication.
-   */
+  /** The authentication provider that is the "manager" for this authentication. */
   @Setter
   @Autowired
   private SimulatedAuthenticationProvider provider;
 
+  /** The simualted users. */
   @Autowired
   UsersConfigurationProperties userProps;
 
+  /** The user details service. */
   @Autowired
   UserDetailsService userDetailsService;
 
+  /**
+   * The entry point for the user authentication.
+   * 
+   * @param request the HTTP servlet request
+   * @param response the HTTP servlet response
+   * @return a {@link ModelAndView}
+   */
   @GetMapping(AUTHN_PATH)
   public ModelAndView authenticate(final HttpServletRequest request, final HttpServletResponse response) {
     final ModelAndView mav = new ModelAndView("simulated");
@@ -60,6 +72,15 @@ public class SimulatedAuthenticationController
     return mav;
   }
 
+  /**
+   * When the user has "authenticated", the browser is posted back to this entry point to complete the authentication.
+   * 
+   * @param request the HTTP servlet request
+   * @param response the HTTP servlet response
+   * @param userName the user name of the simulated user
+   * @param action the action
+   * @return a {@link ModelAndView} that redirects the browser back to the Spring Security flow
+   */
   @PostMapping("/authn/complete")
   public ModelAndView complete(final HttpServletRequest request, final HttpServletResponse response,
       @RequestParam(name = "username") final String userName, @RequestParam("action") final String action) {

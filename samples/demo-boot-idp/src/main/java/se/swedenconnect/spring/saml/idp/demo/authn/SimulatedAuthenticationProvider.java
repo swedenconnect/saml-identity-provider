@@ -28,7 +28,7 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserDetails;
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.AbstractUserRedirectAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.ResumedAuthenticationToken;
-import se.swedenconnect.spring.saml.idp.demo.SimulatedUser;
+import se.swedenconnect.spring.saml.idp.demo.user.SimulatedUser;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
@@ -99,6 +99,8 @@ public class SimulatedAuthenticationProvider extends AbstractUserRedirectAuthent
         Instant.now(), token.getServletRequest().getRemoteAddr());
 
     final Saml2UserAuthentication userAuth = new Saml2UserAuthentication(userDetails);
+
+    // Allow future SSO
     userAuth.setReuseAuthentication(true);
 
     return userAuth;

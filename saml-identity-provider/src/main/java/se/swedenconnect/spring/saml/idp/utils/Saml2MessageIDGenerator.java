@@ -31,8 +31,7 @@ package se.swedenconnect.spring.saml.idp.utils;
  * other party will accidentally assign the same identifier to a different data object.</li>
  * <li>Where a data object declares that it has a particular identifier, there MUST be exactly one such declaration.
  * </li>
- * </ol>
- * </p>
+ * </ul>
  * <p>
  * The mechanism by which a SAML system entity ensures that the identifier is unique is left to the implementation. In
  * the case that a random or pseudorandom technique is employed, the probability of two randomly chosen identifiers

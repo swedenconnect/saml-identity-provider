@@ -130,10 +130,10 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
         ? this.defaultFormat
         : format;
 
-    if (NameID.PERSISTENT == nameIDFormat) {
+    if (NameID.PERSISTENT.equals(nameIDFormat)) {
       return new PersistentNameIDGenerator(nameQualifier, spNameQualifier);
     }
-    else if (NameID.TRANSIENT == nameIDFormat) {
+    else if (NameID.TRANSIENT.equals(nameIDFormat)) {
       return new TransientNameIDGenerator(nameQualifier, spNameQualifier);
     }
     else {

@@ -8,18 +8,7 @@ server:
     key-store-type: JKS
     key-alias: localhost
     key-store-password: secret
-    key-password: secret
-    
-
-#spring:
-#  security:
-#    saml2:
-#      relyingparty:      
-#        registration:
-#          refidp:
-#            assertingparty:
-#              entity-id:            
-      
+    key-password: secret      
 
 #
 # App settings

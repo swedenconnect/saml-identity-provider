@@ -33,12 +33,12 @@ public class AssertionSettingsConfigurationProperties {
   private Boolean encrypt;
   
   /**
-   * A settings that tells the time restrictions the IdP puts on an Assertion concerning "not on or after".
+   * A setting that tells the time restrictions the IdP puts on an Assertion concerning "not on or after".
    */
   private Duration notAfter;
   
   /**
-   * A settings that tells the time restrictions the IdP puts on an Assertion concerning "not before".
+   * A setting that tells the time restrictions the IdP puts on an Assertion concerning "not before".
    */
   private Duration notBefore;  
   

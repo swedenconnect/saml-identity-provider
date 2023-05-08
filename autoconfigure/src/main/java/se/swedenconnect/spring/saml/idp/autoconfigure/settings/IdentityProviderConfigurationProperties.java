@@ -61,7 +61,7 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
   private Boolean requiresSignedRequests;
   
   /**
-   * Clock skew adjustment (in both directions) to consider still acceptable messages.
+   * Clock skew adjustment (in both directions) to consider for accepting messages based on their age.
    */
   private Duration clockSkewAdjustment;
   

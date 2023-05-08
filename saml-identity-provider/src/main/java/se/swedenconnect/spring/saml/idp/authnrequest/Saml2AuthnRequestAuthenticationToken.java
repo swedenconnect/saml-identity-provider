@@ -29,6 +29,8 @@ import org.springframework.security.core.Authentication;
 
 import lombok.Getter;
 import lombok.Setter;
+import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
+import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryConstants;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGenerator;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
@@ -140,6 +142,18 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
    */
   public EntityDescriptor getPeerMetadata() {
     return Optional.ofNullable(this.peerMetadata).map(SerializableOpenSamlObject::get).orElse(null);
+  }
+
+  /**
+   * Predicate that tells if the peer is a "signature service" peer.
+   * 
+   * @return {@code true} if the peer is a signature service and {@code false}
+   */
+  public boolean isSignatureServicePeer() {
+    return Optional.ofNullable(this.getPeerMetadata())
+        .map(e -> EntityDescriptorUtils.getEntityCategories(e))
+        .filter(c -> c.contains(EntityCategoryConstants.SERVICE_TYPE_CATEGORY_SIGSERVICE.getUri()))
+        .isPresent();
   }
 
   /**

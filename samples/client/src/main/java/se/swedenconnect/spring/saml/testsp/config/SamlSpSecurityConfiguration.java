@@ -28,7 +28,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 import se.swedenconnect.spring.saml.testsp.ext.ExtendedSaml2AuthenticationTokenConverter;
-import se.swedenconnect.spring.saml.testsp.ext.ResponseAuthenticationConverter;
 
 @Configuration
 @EnableWebSecurity
@@ -41,31 +40,21 @@ public class SamlSpSecurityConfiguration {
   @Autowired
   OpenSaml4AuthenticationProvider openSaml4AuthenticationProvider;
 
-//  @Autowired
-//  Saml2MetadataFilter saml2MetadataFilter;
-
   @Bean
   SecurityFilterChain samlLoginFilterChain(final HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(
         (authorize) -> authorize
             .antMatchers(HttpMethod.GET, "/private/**").authenticated()
             .antMatchers(HttpMethod.POST, "/saml/**", "/private/**").authenticated())
-        .rememberMe()
-          .disable()
+        .rememberMe().disable()
         .authenticationProvider(this.openSaml4AuthenticationProvider)
-        .saml2Login()
-          .authenticationConverter(saml2AuthenticationTokenConverter)
-
+        .saml2Login().authenticationConverter(this.saml2AuthenticationTokenConverter)
         .and()
-//        .addFilterBefore(this.saml2MetadataFilter, Saml2WebSsoAuthenticationFilter.class)
         .saml2Logout(Customizer.withDefaults())
-        .csrf()
-        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+        .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
         .and()
         .cors();
-    SecurityFilterChain c = http.build();
-    return c;
-    //return http.build();
+    return http.build();
   }
 
 }
