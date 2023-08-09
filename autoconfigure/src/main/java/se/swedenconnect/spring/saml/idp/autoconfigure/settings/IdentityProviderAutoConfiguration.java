@@ -35,7 +35,6 @@ import se.swedenconnect.spring.saml.idp.settings.AssertionSettings;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.EndpointSettings;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
-import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
 
 /**
@@ -45,7 +44,7 @@ import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
  */
 @AutoConfiguration
 @EnableConfigurationProperties(IdentityProviderConfigurationProperties.class)
-@Import(CredentialConfiguration.class)
+@Import({CredentialConfiguration.class, MetadataResolverConfiguration.class})
 @DependsOn("openSAML")
 public class IdentityProviderAutoConfiguration {
   
@@ -87,7 +86,7 @@ public class IdentityProviderAutoConfiguration {
   @Autowired(required = false)
   @Qualifier("saml.idp.metadata.Provider")
   private MetadataResolver metadataProvider;
-
+  
   @ConditionalOnMissingBean
   @Bean
   IdentityProviderSettings identityProviderSettings() {
@@ -177,28 +176,6 @@ public class IdentityProviderAutoConfiguration {
     }
     if (this.metadataProvider != null) {
       builder.metadataProvider(this.metadataProvider);
-    }
-    else if (this.properties.getMetadataProviders() != null) {
-      final MetadataProviderSettings[] settings =
-          new MetadataProviderSettings[this.properties.getMetadataProviders().size()];
-      int pos = 0;
-      for (final MetadataProviderConfigurationProperties p : this.properties.getMetadataProviders()) {
-        settings[pos] = MetadataProviderSettings.builder()
-            .location(p.getLocation())
-            .backupLocation(p.getBackupLocation())
-            .mdq(p.getMdq())
-            .validationCertificate(p.getValidationCertificate())
-            .httpProxy(p.getHttpProxy() != null
-                ? MetadataProviderSettings.HttpProxySettings.builder()
-                    .host(p.getHttpProxy().getHost())
-                    .port(p.getHttpProxy().getPort())
-                    .userName(p.getHttpProxy().getUserName())
-                    .password(p.getHttpProxy().getPassword())
-                    .build()
-                : null)
-            .build();
-      }
-      builder.metadataProviderConfiguration(settings);
     }
 
     final IdentityProviderSettings settings = builder.build();
