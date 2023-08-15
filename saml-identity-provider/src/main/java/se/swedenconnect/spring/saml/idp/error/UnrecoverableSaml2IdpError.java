@@ -43,7 +43,7 @@ public enum UnrecoverableSaml2IdpError {
   /**
    * If timestamp checks fails.
    */
-  MESSAGE_TOO_OLD("idp.error.unrecoverable.too-old", "Recived message is too old and not accepted"),
+  MESSAGE_TOO_OLD("idp.error.unrecoverable.too-old", "Received message is too old and not accepted"),
 
   /**
    * The AssertionConsumerService indicated in the AuthnRequest is not registered in the Service Provider metadata.
