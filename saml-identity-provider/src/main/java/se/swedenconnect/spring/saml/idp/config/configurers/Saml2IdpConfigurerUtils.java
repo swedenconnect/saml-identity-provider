@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 
+import org.opensaml.storage.ReplayCache;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
@@ -31,6 +32,9 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 
+import se.swedenconnect.opensaml.saml2.response.replay.InMemoryReplayChecker;
+import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayChecker;
+import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayCheckerImpl;
 import se.swedenconnect.opensaml.sweid.saml2.signservice.SADFactory;
 import se.swedenconnect.opensaml.xmlsec.config.DefaultSecurityConfiguration;
 import se.swedenconnect.opensaml.xmlsec.config.SecurityConfiguration;
@@ -63,7 +67,7 @@ class Saml2IdpConfigurerUtils {
 
   /**
    * Gets the {@link RequestMatcher} for the IdP authentication endpoints
-   * 
+   *
    * @param httpSecurity the HTTP security object
    * @return a {@link RequestMatcher}
    */
@@ -79,7 +83,7 @@ class Saml2IdpConfigurerUtils {
   /**
    * Gets the {@link Saml2ResponseBuilder} to use. If none has been set, a {@link Saml2ResponseBuilder} is created
    * according to the current {@link IdentityProviderSettings}.
-   * 
+   *
    * @param httpSecurity the HTTP security object
    * @return a {@link Saml2ResponseBuilder}
    */
@@ -101,7 +105,7 @@ class Saml2IdpConfigurerUtils {
   /**
    * Gets the {@link Saml2ResponseSender} to use. If none has been set, a {@link Saml2ResponseSender} with default
    * settings is created.
-   * 
+   *
    * @param httpSecurity the HTTP security object
    * @return a {@link Saml2ResponseSender}
    */
@@ -120,7 +124,7 @@ class Saml2IdpConfigurerUtils {
 
   /**
    * Gets the IdP signature credential (from the {@link IdentityProviderSettings}).
-   * 
+   *
    * @param httpSecurity the HTTP security object
    * @return a {@link PkiCredential}
    */
@@ -133,7 +137,7 @@ class Saml2IdpConfigurerUtils {
 
   /**
    * Gets the IdP encryption/decryption credential (from the {@link IdentityProviderSettings}).
-   * 
+   *
    * @param httpSecurity the HTTP security object
    * @return a {@link PkiCredential} or {@code null} if none has been configured
    */
@@ -162,13 +166,38 @@ class Saml2IdpConfigurerUtils {
 
   /**
    * Gets all {@link UserAuthenticationProvider} instances available
-   * 
+   *
    * @param httpSecurity the HTTP security object
    * @return a (possibly empty) collection of {@link UserAuthenticationProvider} objects
    */
   static Collection<UserAuthenticationProvider> getSaml2UserAuthenticationProviders(
       final HttpSecurity httpSecurity) {
     return getOptionalBeans(httpSecurity, UserAuthenticationProvider.class);
+  }
+
+  /**
+   * Gets the {@link MessageReplayChecker}.
+   * @param httpSecurity the HTTP security object
+   * @return a {@link MessageReplayChecker}
+   */
+  static MessageReplayChecker getMessageReplayChecker(final HttpSecurity httpSecurity) {
+    MessageReplayChecker checker = httpSecurity.getSharedObject(MessageReplayChecker.class);
+    if (checker != null) {
+      return checker;
+    }
+    checker = getOptionalBean(httpSecurity, MessageReplayChecker.class);
+    if (checker == null) {
+      final ReplayCache replayCache = getOptionalBean(httpSecurity, ReplayCache.class);
+      if (replayCache != null) {
+        checker = new MessageReplayCheckerImpl(replayCache, "idp-replay-checker");
+      }
+    }
+    if (checker == null) {
+      checker = new InMemoryReplayChecker();
+    }
+    httpSecurity.setSharedObject(MessageReplayChecker.class, checker);
+
+    return checker;
   }
 
   static <T> T getBean(final HttpSecurity httpSecurity, final Class<T> type) {
@@ -178,7 +207,7 @@ class Saml2IdpConfigurerUtils {
   /**
    * Gets the {@link SADFactory} instance to use. If not available as a bean or shared object, the instance is created
    * with default settings.
-   * 
+   *
    * @param httpSecurity the HTTP security object
    * @return a {@link SADFactory} instance
    */
