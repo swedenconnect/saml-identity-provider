@@ -19,6 +19,7 @@ import java.security.cert.X509Certificate;
 import java.util.stream.Collectors;
 
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
+import org.opensaml.storage.ReplayCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -29,6 +30,9 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 
 import lombok.Setter;
+import se.swedenconnect.opensaml.saml2.response.replay.InMemoryReplayChecker;
+import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayChecker;
+import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayCheckerImpl;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurer;
 import se.swedenconnect.spring.saml.idp.settings.AssertionSettings;
@@ -44,10 +48,10 @@ import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
  */
 @AutoConfiguration
 @EnableConfigurationProperties(IdentityProviderConfigurationProperties.class)
-@Import({CredentialConfiguration.class, MetadataResolverConfiguration.class})
+@Import({ CredentialConfiguration.class, MetadataResolverConfiguration.class })
 @DependsOn("openSAML")
 public class IdentityProviderAutoConfiguration {
-  
+
   @Setter
   @Autowired(required = false)
   private IdentityProviderConfigurationProperties properties;
@@ -86,7 +90,7 @@ public class IdentityProviderAutoConfiguration {
   @Autowired(required = false)
   @Qualifier("saml.idp.metadata.Provider")
   private MetadataResolver metadataProvider;
-  
+
   @ConditionalOnMissingBean
   @Bean
   IdentityProviderSettings identityProviderSettings() {
@@ -183,6 +187,17 @@ public class IdentityProviderAutoConfiguration {
 
     return settings;
 
+  }
+
+  @ConditionalOnMissingBean
+  @Bean
+  MessageReplayChecker messageReplayChecker(@Autowired(required = false) final ReplayCache replayCache) {
+    if (replayCache == null) {
+      return new InMemoryReplayChecker();
+    }
+    else {
+      return new MessageReplayCheckerImpl(replayCache, "idp-replay-checker");
+    }
   }
 
 }
