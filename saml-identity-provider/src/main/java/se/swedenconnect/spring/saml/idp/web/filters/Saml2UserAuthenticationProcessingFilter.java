@@ -29,6 +29,7 @@ import javax.servlet.http.HttpSession;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Response;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -56,6 +57,7 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
@@ -63,7 +65,7 @@ import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 /**
  * A {@link Filter} that intercept an SAML authentication request that has been verified and translated into a
  * {@link Saml2UserAuthenticationInputToken}.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -97,15 +99,18 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
   /** The assertion handler responsible of creating {@link Assertion}s. */
   private final Saml2AssertionBuilder assertionHandler;
 
+  /** The event publisher. */
+  private final Saml2IdpEventPublisher eventPublisher;
+
   /** Repository storing authentication objects used for external authentication. */
   private FilterAuthenticationTokenRepository authenticationTokenRepository =
       new SessionBasedExternalAuthenticationRepository();
 
-  private RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
+  private final RedirectStrategy redirectStrategy = new DefaultRedirectStrategy();
 
   /**
    * Constructor.
-   * 
+   *
    * @param authenticationManager the authentication manager
    * @param requestMatcher the request matcher
    * @param postAuthenticationProcessor processor for checking the authentication token after the provider has
@@ -113,13 +118,15 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
    * @param assertionHandler the assertion handler responsible of creating {@link Assertion}s
    * @param responseBuilder the {@link Saml2ResponseBuilder}
    * @param responseSender the {@link Saml2ResponseSender}
+   * @param eventPublisher the event publisher
    */
   public Saml2UserAuthenticationProcessingFilter(final AuthenticationManager authenticationManager,
       final RequestMatcher requestMatcher,
       final PostAuthenticationProcessor postAuthenticationProcessor,
       final Saml2AssertionBuilder assertionHandler,
       final Saml2ResponseBuilder responseBuilder,
-      final Saml2ResponseSender responseSender) {
+      final Saml2ResponseSender responseSender,
+      final Saml2IdpEventPublisher eventPublisher) {
     this.authenticationManager =
         Objects.requireNonNull(authenticationManager, "authenticationManager must not be null");
     this.requestMatcher = Objects.requireNonNull(requestMatcher, "requestMatcher must not be null");
@@ -128,6 +135,7 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     this.assertionHandler = Objects.requireNonNull(assertionHandler, "assertionHandler must not be null");
     this.responseBuilder = Objects.requireNonNull(responseBuilder, "responseBuilder must not be null");
     this.responseSender = Objects.requireNonNull(responseSender, "responseSender must not be null");
+    this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher must not be null");
   }
 
   /** {@inheritDoc} */
@@ -150,15 +158,18 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
       final HttpSession session = request.getSession();
       final Saml2ResponseAttributes responseAttributes =
           (Saml2ResponseAttributes) session.getAttribute(RESPONSE_ATTRIBUTES_SESSION_KEY);
-      if (response == null) {
-        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION);
+      if (responseAttributes == null) {
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION, null);
       }
       session.removeAttribute(RESPONSE_ATTRIBUTES_SESSION_KEY);
 
       inputToken = this.authenticationTokenRepository.getCompletedExternalAuthentication(request);
       this.authenticationTokenRepository.clear(request);
       if (inputToken == null) {
-        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION);
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION,
+            new UnrecoverableSaml2IdpException.TraceAuthentication(responseAttributes.getInResponseTo(),
+                Optional.ofNullable(responseAttributes.getPeerMetadata()).map(EntityDescriptor::getEntityID)
+                    .orElse(null)));
       }
 
       final ResumedAuthenticationToken resumeToken = ResumedAuthenticationToken.class.cast(inputToken);
@@ -170,14 +181,14 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
           .map(Saml2AuthnRequestAuthenticationToken::getAuthnRequest)
           .map(AuthnRequest::getID)
           .orElseThrow(() -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION,
-              "Failed to get information about authentication request"));
+              "Failed to get information about authentication request", resumeToken));
 
       if (!Objects.equals(currentAuthnRequestID, responseAttributes.getInResponseTo())) {
         final String msg = "State error: Saved response attributes does not match information about current request";
         log.error("{} [{}]", msg, Optional.ofNullable(resumeToken.getAuthnInputToken())
             .map(Saml2UserAuthenticationInputToken::getLogString)
             .orElseGet(() -> "-"));
-        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION, msg);
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION, msg, resumeToken);
       }
       Saml2IdpContextHolder.getContext().getResponseAttributes().copyInto(responseAttributes);
 
@@ -195,13 +206,15 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
       inputToken = SecurityContextHolder.getContext().getAuthentication();
       if (inputToken == null) {
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
-            "Missing token - " + Saml2UserAuthenticationInputToken.class.getSimpleName());
+            "Missing token - " + Saml2UserAuthenticationInputToken.class.getSimpleName(), null);
       }
       if (!Saml2UserAuthenticationInputToken.class.isInstance(inputToken)) {
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
             "Expected token " + Saml2UserAuthenticationInputToken.class.getSimpleName()
-                + " but was " + inputToken.getClass().getSimpleName());
+                + " but was " + inputToken.getClass().getSimpleName(), null);
       }
+
+      this.eventPublisher.publishBeforeUserAuthenticated((Saml2UserAuthenticationInputToken) inputToken);
     }
 
     final Authentication auth;
@@ -224,12 +237,13 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     // If a RedirectForAuthenticationToken is received, this is an order to initiate an "external authentication",
     // meaning that we should redirect the user agent.
     //
-    if (RedirectForAuthenticationToken.class.isInstance(auth)) {
-      final RedirectForAuthenticationToken redirectToken = RedirectForAuthenticationToken.class.cast(auth);
+    if (auth instanceof final RedirectForAuthenticationToken redirectToken) {
       this.authenticationTokenRepository.startExternalAuthentication(redirectToken, request);
 
       log.info("Re-directing to {} for external authentication [{}]",
           redirectToken.getAuthnPath(), redirectToken.getAuthnInputToken().getLogString());
+
+      this.eventPublisher.publishBeforeUserAuthenticated(redirectToken.getAuthnInputToken());
 
       // Save the response attributes in the session so that we know how to send back a response
       // when the user returns to the flow.
@@ -246,7 +260,7 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     if (!Saml2UserAuthentication.class.isInstance(auth)) {
       throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
           String.format("Expected {} from authentication manager but got {}",
-              Saml2UserAuthentication.class.getSimpleName(), auth.getClass().getSimpleName()));
+              Saml2UserAuthentication.class.getSimpleName(), auth.getClass().getSimpleName()), null);
     }
     final Saml2UserAuthentication authenticatedUser = Saml2UserAuthentication.class.cast(auth);
 
@@ -254,6 +268,10 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     //
     authenticatedUser.setAuthnRequestToken(getSamlInputToken(inputToken).getAuthnRequestToken());
     authenticatedUser.setAuthnRequirements(getSamlInputToken(inputToken).getAuthnRequirements());
+
+    // Publish the event that indicates that the user has been authenticated ...
+    //
+    this.eventPublisher.publishUserAuthenticated(authenticatedUser);
 
     // Apply the post processor ...
     //
@@ -289,13 +307,13 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
     if (auth instanceof ResumedAuthenticationToken) {
       return ((ResumedAuthenticationToken) auth).getAuthnInputToken();
     }
-    throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL);
+    throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, null);
   }
 
   /**
    * Assigns a request matcher for handling when the user agent is redirected back to the flow after that the user has
    * been authenticated using a {@link AbstractUserRedirectAuthenticationProvider}.
-   * 
+   *
    * @param resumeAuthnRequestMatcher request matcher
    */
   public void setResumeAuthnRequestMatcher(final RequestMatcher resumeAuthnRequestMatcher) {
@@ -310,7 +328,7 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
    * {@link AbstractUserRedirectAuthenticationProvider} is using the same persistence strategy as the assigned
    * repository bean.
    * </p>
-   * 
+   *
    * @param authenticationTokenRepository token repository
    */
   public void setAuthenticationTokenRepository(
@@ -321,15 +339,13 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
 
   /**
    * Predicate telling whether any of this {@link Filter}s {@link RequestMatcher}s match the incoming request.
-   * 
+   *
    * @param request the request to test
    * @return {@code true} for a match and {@code false} otherwise
    */
   private boolean matches(final HttpServletRequest request) {
-    if (this.requestMatcher.matches(request)) {
-      return true;
-    }
-    if (this.resumeAuthnRequestMatcher != null && this.resumeAuthnRequestMatcher.matches(request)) {
+    if (this.requestMatcher.matches(request)
+        || (this.resumeAuthnRequestMatcher != null && this.resumeAuthnRequestMatcher.matches(request))) {
       return true;
     }
     return false;

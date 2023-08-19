@@ -15,7 +15,11 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 
 import org.springframework.security.authentication.AbstractAuthenticationToken;
@@ -54,6 +58,9 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
   /** The authentication requirements deduced from the authentication request and IdP policy. */
   private AuthenticationRequirements authnRequirements;
+
+  /** Tracking of all the times this user authentication object has been used. */
+  private AuthenticationInfoTrack usage;
 
   /**
    * Constructor.
@@ -134,6 +141,17 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
   public void setAuthnRequestToken(
       final Saml2AuthnRequestAuthenticationToken authnRequestToken) {
     this.authnRequestToken = authnRequestToken;
+
+    if (this.authnRequestToken != null) {
+      if (this.usage == null) {
+        this.usage = new AuthenticationInfoTrack(this.userDetails.getAuthnInstant(), 
+            this.authnRequestToken.getEntityId(), this.authnRequestToken.getAuthnRequest().getID());
+      }
+      else {
+        this.usage.registerUse(Instant.now(), this.authnRequestToken.getEntityId(),
+            this.authnRequestToken.getAuthnRequest().getID());
+      }
+    }
   }
 
   /**
@@ -170,6 +188,89 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
    */
   public void clearAuthnRequirements() {
     this.authnRequirements = null;
+  }
+
+  /**
+   * Gets the tracking of all the times this user authentication object has been used.
+   * 
+   * @return an {@link AuthenticationInfoTrack}
+   */
+  public AuthenticationInfoTrack getAuthenticationInfoTrack() {
+    return this.usage;
+  }
+
+  /**
+   * Predicate that tells whether the authentication object was issued based on a previous authentication.
+   * 
+   * @return {@code true} if the authentication object is based on a previous authentication and {@code false} otherwise
+   */
+  public boolean isSsoApplied() {
+    return this.usage != null && this.usage.getAllAuthnUsages().size() > 1;
+  }
+
+  /**
+   * Remembers all (SAML) occurences where the user authentication has been used.
+   */
+  public static class AuthenticationInfoTrack implements Serializable {
+
+    private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
+
+    /** Listing of all times the user authentication object has been used. */
+    private final List<AuthnUse> usages;
+
+    /**
+     * Constructor.
+     * 
+     * @param authnInstant the instant for the original authentication
+     * @param sp the entityID of the SP that requested the original authentication
+     * @param authnRequestId the ID of the {@code AuthnRequest} that resulted in this authentication object
+     */
+    public AuthenticationInfoTrack(final Instant authnInstant, final String sp, final String authnRequestId) {
+      this.usages = new ArrayList<>();
+      this.usages.add(new AuthnUse(
+          Objects.requireNonNull(authnInstant, "authnInstant must not be null"),
+          Objects.requireNonNull(sp, "sp must not be null"),
+          Objects.requireNonNull(authnRequestId, "authnRequestId must not be null")));
+    }
+
+    /**
+     * Registers the use of the user authentication object.
+     * 
+     * @param instant the instant when the authentication was used
+     * @param sp the entityID of the SP that ordered the authentication
+     * @param authnRequestId the ID of the {@code AuthnRequest} that resulted in this authentication object
+     */
+    public void registerUse(final Instant instant, final String sp, final String authnRequestId) {
+      this.usages.add(new AuthnUse(
+          Objects.requireNonNull(instant, "instant must not be null"),
+          Objects.requireNonNull(sp, "sp must not be null"),
+          Objects.requireNonNull(authnRequestId, "authnRequestId must not be null")));
+    }
+
+    /**
+     * Gets information about the first time the user authentication object was used.
+     * 
+     * @return the authentication instant and the SP that requested the original authentication
+     */
+    public AuthnUse getOriginalAuthn() {
+      return this.usages.get(0);
+    }
+
+    /**
+     * Gets a list of all usages of the user authentication object.
+     * 
+     * @return a list of usage records
+     */
+    public List<AuthnUse> getAllAuthnUsages() {
+      return Collections.unmodifiableList(this.usages);
+    }
+
+    /**
+     * Record recording the usage time and requesting SP for an authentication.
+     */
+    public static record AuthnUse(Instant use, String sp, String authnRequestId) {
+    }
+
   }
 
 }

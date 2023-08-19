@@ -16,6 +16,7 @@
 package se.swedenconnect.spring.saml.idp.response;
 
 import java.time.Instant;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -31,6 +32,7 @@ import org.opensaml.xmlsec.SecurityConfigurationSupport;
 import org.opensaml.xmlsec.encryption.EncryptedData;
 import org.opensaml.xmlsec.encryption.support.EncryptionException;
 import org.opensaml.xmlsec.signature.support.SignatureException;
+import org.springframework.context.MessageSource;
 import org.springframework.security.config.Customizer;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -44,6 +46,7 @@ import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.utils.DefaultSaml2MessageIDGenerator;
 import se.swedenconnect.spring.saml.idp.utils.Saml2MessageIDGenerator;
 
@@ -54,6 +57,9 @@ import se.swedenconnect.spring.saml.idp.utils.Saml2MessageIDGenerator;
  */
 @Slf4j
 public class Saml2ResponseBuilder {
+
+  /** Event publisher. */
+  private final Saml2IdpEventPublisher eventPublisher;
 
   /** The issuer entityID for the {@link Response} objects being created. */
   private final String responseIssuer;
@@ -73,18 +79,25 @@ public class Saml2ResponseBuilder {
   /** The ID generator - defaults to {@link DefaultSaml2MessageIDGenerator}. */
   private Saml2MessageIDGenerator idGenerator = new DefaultSaml2MessageIDGenerator();
 
+  /** Optional message source for resolving error messages. */
+  private MessageSource messageSource;
+
   /**
    * Constructor.
    * 
+   * @param idpEntityId the entityID for the IdP
    * @param signingCredential the IdP signing credential (for signing of {@link Response} objects)
+   * @param eventPublisher the event publisher
    */
-  public Saml2ResponseBuilder(final String idpEntityId, final PkiCredential signingCredential) {
+  public Saml2ResponseBuilder(final String idpEntityId, final PkiCredential signingCredential,
+      final Saml2IdpEventPublisher eventPublisher) {
     this.responseIssuer = Optional.ofNullable(idpEntityId).filter(StringUtils::hasText)
         .orElseThrow(() -> new IllegalArgumentException("idpEntityId must be set"));
     Assert.notNull(signingCredential, "signingCredential must not be null");
     this.signingCredential = OpenSamlCredential.class.isInstance(signingCredential)
         ? OpenSamlCredential.class.cast(signingCredential)
         : new OpenSamlCredential(signingCredential);
+    this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher must not be null");
   }
 
   /**
@@ -99,15 +112,17 @@ public class Saml2ResponseBuilder {
   public Response buildErrorResponse(final Saml2ResponseAttributes responseAttributes, final Status errorStatus) {
     Assert.notNull(errorStatus, "errorStatus must not be null");
     final String code = Optional.ofNullable(errorStatus.getStatusCode())
-      .map(StatusCode::getValue)
-      .orElseThrow(() -> new IllegalArgumentException("Supplied status object does not have status code set"));
+        .map(StatusCode::getValue)
+        .orElseThrow(() -> new IllegalArgumentException("Supplied status object does not have status code set"));
     if (StatusCode.SUCCESS.equals(code)) {
       throw new IllegalArgumentException("Can not send error response with status set to success");
     }
-    
+
     final Response response = this.createResponse(responseAttributes, errorStatus);
     this.responseCustomizer.customize(response);
     this.signResponse(response, responseAttributes.getPeerMetadata());
+
+    this.eventPublisher.publishSamlErrorResponse(response, responseAttributes.getPeerMetadata().getEntityID());
 
     return response;
   }
@@ -121,9 +136,13 @@ public class Saml2ResponseBuilder {
    * @return a {@link Response} object
    * @throws UnrecoverableSaml2IdpException for errors
    */
-  public Response buildErrorResponse(final Saml2ResponseAttributes responseAttributes, final Saml2ErrorStatusException error)
-      throws UnrecoverableSaml2IdpException {    
-    return this.buildErrorResponse(responseAttributes, error.getStatus());
+  public Response buildErrorResponse(final Saml2ResponseAttributes responseAttributes,
+      final Saml2ErrorStatusException error) throws UnrecoverableSaml2IdpException {
+
+    final Status status = this.messageSource != null
+        ? error.getStatus(this.messageSource, Locale.ENGLISH)
+        : error.getStatus();
+    return this.buildErrorResponse(responseAttributes, status);
   }
 
   /**
@@ -156,6 +175,9 @@ public class Saml2ResponseBuilder {
     this.responseCustomizer.customize(response);
     this.signResponse(response, responseAttributes.getPeerMetadata());
 
+    this.eventPublisher.publishSamlSuccessResponse(
+        response, assertion, responseAttributes.getPeerMetadata().getEntityID());
+
     return response;
   }
 
@@ -172,7 +194,7 @@ public class Saml2ResponseBuilder {
       throws UnrecoverableSaml2IdpException {
 
     if (responseAttributes.getDestination() == null || responseAttributes.getInResponseTo() == null || status == null) {
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "No response data available");
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "No response data available", null);
     }
 
     final Response samlResponse = (Response) XMLObjectSupport.buildXMLObject(Response.DEFAULT_ELEMENT_NAME);
@@ -210,7 +232,9 @@ public class Saml2ResponseBuilder {
           e.getMessage(), samlResponse.getDestination(), samlResponse.getID(), samlResponse.getInResponseTo(), e);
 
       throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
-          "Failed to sign Response message", e);
+          "Failed to sign Response message", e,
+          new UnrecoverableSaml2IdpException.TraceAuthentication(
+              samlResponse.getInResponseTo(), peerMetadata.getEntityID()));
     }
   }
 
@@ -226,7 +250,7 @@ public class Saml2ResponseBuilder {
       throws UnrecoverableSaml2IdpException {
 
     if (peerMetadata == null) {
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "No response data available");
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "No response data available", null);
     }
 
     try {
@@ -240,7 +264,8 @@ public class Saml2ResponseBuilder {
       return encryptedAssertion;
     }
     catch (final EncryptionException e) {
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to encrypt assertion", e);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to encrypt assertion", e,
+          new UnrecoverableSaml2IdpException.TraceAuthentication(null, peerMetadata.getEntityID()));
     }
   }
 
@@ -291,6 +316,15 @@ public class Saml2ResponseBuilder {
    */
   public void setResponseCustomizer(final Customizer<Response> responseCustomizer) {
     this.responseCustomizer = Objects.requireNonNull(responseCustomizer, "responseCustomizer must not be null");
+  }
+
+  /**
+   * Assigns a message source for resolving error messages.
+   * 
+   * @param messageSource the {@link MessageSource}
+   */
+  public void setMessageSource(final MessageSource messageSource) {
+    this.messageSource = messageSource;
   }
 
 }

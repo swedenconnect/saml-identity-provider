@@ -23,6 +23,8 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -37,6 +39,7 @@ import se.swedenconnect.opensaml.xmlsec.config.SecurityConfiguration;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
+import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
@@ -77,6 +80,27 @@ class Saml2IdpConfigurerUtils {
   }
 
   /**
+   * Gets the {@link Saml2IdpEventPublisher} to use.
+   * 
+   * @param httpSecurity the HTTP security object
+   * @return a {@link Saml2IdpEventPublisher}
+   */
+  static Saml2IdpEventPublisher getEventPublisher(final HttpSecurity httpSecurity) {
+    Saml2IdpEventPublisher publisher = httpSecurity.getSharedObject(Saml2IdpEventPublisher.class);
+    if (publisher != null) {
+      return publisher;
+    }
+    publisher = getOptionalBean(httpSecurity, Saml2IdpEventPublisher.class);
+    if (publisher == null) {
+      final ApplicationEventPublisher applicationEventPublisher =
+          (ApplicationEventPublisher) httpSecurity.getSharedObject(ApplicationContext.class);
+      publisher = new Saml2IdpEventPublisher(applicationEventPublisher);
+    }
+    httpSecurity.setSharedObject(Saml2IdpEventPublisher.class, publisher);
+    return publisher;
+  }
+
+  /**
    * Gets the {@link Saml2ResponseBuilder} to use. If none has been set, a {@link Saml2ResponseBuilder} is created
    * according to the current {@link IdentityProviderSettings}.
    * 
@@ -91,8 +115,13 @@ class Saml2IdpConfigurerUtils {
     responseBuilder = getOptionalBean(httpSecurity, Saml2ResponseBuilder.class);
     if (responseBuilder == null) {
       final IdentityProviderSettings settings = getIdentityProviderSettings(httpSecurity);
-      responseBuilder = new Saml2ResponseBuilder(settings.getEntityId(), getSignatureCredential(httpSecurity));
+      responseBuilder = new Saml2ResponseBuilder(
+          settings.getEntityId(), getSignatureCredential(httpSecurity), getEventPublisher(httpSecurity));
       responseBuilder.setEncryptAssertions(settings.getAssertionSettings().getEncryptAssertions());
+      final MessageSource messageSource = getOptionalBean(httpSecurity, MessageSource.class);
+      if (messageSource != null) {
+        responseBuilder.setMessageSource(messageSource);
+      }
     }
     httpSecurity.setSharedObject(Saml2ResponseBuilder.class, responseBuilder);
     return responseBuilder;

@@ -45,6 +45,7 @@ import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.extensions.SadRequestExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtensionExtractor;
@@ -63,6 +64,9 @@ import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
  */
 @Slf4j
 public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationProvider {
+  
+  /** The event publisher. */
+  private final Saml2IdpEventPublisher eventPublisher;
 
   /** The signature validator to use. */
   private final AuthnRequestValidator signatureValidator;
@@ -96,6 +100,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
   /**
    * Constructor. See {@link Saml2AuthnRequestAuthenticationProviderConfigurer} for how to configuration and setup.
    *
+   * @param eventPublisher the event publisher
    * @param signatureValidator the signature validator to use
    * @param assertionConsumerServiceValidator validator checking the AssertionConsumerService
    * @param replayValidator for protecting against replay attacks
@@ -105,20 +110,21 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
    *          instance
    */
   public Saml2AuthnRequestAuthenticationProvider(
+      final Saml2IdpEventPublisher eventPublisher,
       final AuthnRequestValidator signatureValidator,
       final AuthnRequestValidator assertionConsumerServiceValidator,
       final AuthnRequestValidator replayValidator,
       final AuthnRequestValidator encryptCapabilitiesValidator,
       final List<RequestedAttributeProcessor> requestedAttributesProcessors,
       final NameIDGeneratorFactory nameIDGeneratorFactory) {
-    this(signatureValidator, assertionConsumerServiceValidator, replayValidator, encryptCapabilitiesValidator,
-        requestedAttributesProcessors,
-        nameIDGeneratorFactory, null, null);
+    this(eventPublisher, signatureValidator, assertionConsumerServiceValidator, replayValidator, 
+        encryptCapabilitiesValidator, requestedAttributesProcessors, nameIDGeneratorFactory, null, null);
   }
 
   /**
    * Constructor. See {@link Saml2AuthnRequestAuthenticationProviderConfigurer} for how to configuration and setup.
    *
+   * @param eventPublisher the event publisher
    * @param signatureValidator the signature validator to use
    * @param assertionConsumerServiceValidator validator checking the AssertionConsumerService
    * @param replayValidator for protecting against replay attacks
@@ -130,6 +136,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
    * @param principalSelectionProcessor extracts the {@code PrincipalSelection} attribute values (may be {@code null})
    */
   public Saml2AuthnRequestAuthenticationProvider(
+      final Saml2IdpEventPublisher eventPublisher,
       final AuthnRequestValidator signatureValidator,
       final AuthnRequestValidator assertionConsumerServiceValidator,
       final AuthnRequestValidator replayValidator,
@@ -139,6 +146,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
       final SignatureMessageExtensionExtractor signatureMessageExtensionExtractor,
       final PrincipalSelectionProcessor principalSelectionProcessor) {
 
+    this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher must not be null");
     this.signatureValidator = Objects.requireNonNull(signatureValidator, "signatureValidator must not be null");
     this.assertionConsumerServiceValidator =
         Objects.requireNonNull(assertionConsumerServiceValidator, "assertionConsumerServiceValidator must not be null");
@@ -159,6 +167,8 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
 
     final Saml2AuthnRequestAuthenticationToken token =
         Saml2AuthnRequestAuthenticationToken.class.cast(authentication);
+    
+    this.eventPublisher.publishAuthnRequestReceived(token);
 
     // Check message replay ...
     //

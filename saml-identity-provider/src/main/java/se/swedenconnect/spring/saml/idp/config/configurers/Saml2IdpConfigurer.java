@@ -135,7 +135,7 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
     final IdentityProviderSettings identityProviderSettings =
         Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     validateIdentityProviderSettings(identityProviderSettings);
-
+    
     // Metadata resolver ...
     //
     MetadataResolver metadataResolver = identityProviderSettings.getMetadataProvider();
@@ -196,7 +196,7 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
 
     final IdentityProviderSettings identityProviderSettings =
         Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
-
+    
     // Add context filter ...
     //
     final Saml2IdpContextFilter contextFilter = new Saml2IdpContextFilter(identityProviderSettings);
@@ -208,7 +208,8 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
     final Saml2ResponseSender responseSender = Saml2IdpConfigurerUtils.getResponseSender(httpSecurity);
 
     final Saml2ErrorResponseProcessingFilter errorResponsefilter =
-        new Saml2ErrorResponseProcessingFilter(this.getEndpointsMatcher(), responseBuilder, responseSender);
+        new Saml2ErrorResponseProcessingFilter(this.getEndpointsMatcher(), responseBuilder, responseSender,
+            Saml2IdpConfigurerUtils.getEventPublisher(httpSecurity));
 
     httpSecurity.addFilterAfter(this.postProcess(errorResponsefilter), ExceptionTranslationFilter.class);
 

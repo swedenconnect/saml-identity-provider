@@ -166,7 +166,7 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
     return Optional.ofNullable(this.messageContext.getSubcontext(SAMLBindingContext.class))
         .map(SAMLBindingContext::getBindingUri)
         .orElseThrow(
-            () -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Invalid message context"));
+            () -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Invalid message context", this));
   }
 
   /**

@@ -84,7 +84,7 @@ public class OpenSamlUtils {
           .map(ServletRequestAttributes.class::cast)
           .map(ServletRequestAttributes::getResponse)
           .orElseThrow(() -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
-              "Could not get HttpServletResponse"));
+              "Could not get HttpServletResponse", null));
     };
   }
 

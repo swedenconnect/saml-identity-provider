@@ -17,10 +17,16 @@ package se.swedenconnect.spring.saml.idp.demo;
 
 import org.opensaml.saml.saml2.core.NameID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 
 import se.swedenconnect.spring.saml.idp.attributes.nameid.DefaultNameIDGeneratorFactory;
@@ -96,6 +102,28 @@ public class IdpConfiguration {
             a.nameIDGeneratorFactory(f);
           }));
     };
+  }
+
+  @Bean
+  @Order(2)
+  SecurityFilterChain defaultSecurityFilterChain(final HttpSecurity http) throws Exception {
+    http
+        .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+        .cors(Customizer.withDefaults())
+        .authorizeHttpRequests((authorize) -> authorize
+            .antMatchers("/images/**", "/error", "/assets/**", "/scripts/**", "/webjars/**", "/view/**", "/api/**",
+                "/css/**", "/**/resume", SimulatedAuthenticationController.AUTHN_PATH + "/**")
+            .permitAll()
+            .antMatchers("/actuator/**")
+            .permitAll()
+            .anyRequest().denyAll());
+
+    return http.build();
+  }
+
+  @Bean
+  public InMemoryAuditEventRepository repository() {
+    return new InMemoryAuditEventRepository();
   }
 
 }

@@ -65,7 +65,8 @@ public class PersistentNameIDGenerator extends AbstractNameIDGenerator {
 
     final String userId = authentication.getName();
     if (userId == null) {
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to compute NameID - missing user ID");
+      throw new UnrecoverableSaml2IdpException(
+          UnrecoverableSaml2IdpError.INTERNAL, "Failed to compute NameID - missing user ID", authentication);
     }
 
     try {
@@ -82,7 +83,8 @@ public class PersistentNameIDGenerator extends AbstractNameIDGenerator {
       return Base64.getEncoder().encodeToString(md.digest());
     }
     catch (final NoSuchAlgorithmException e) {
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to compute NameID", e);
+      throw new UnrecoverableSaml2IdpException(
+          UnrecoverableSaml2IdpError.INTERNAL, "Failed to compute NameID", e, authentication);
     }
   }
 

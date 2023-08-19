@@ -69,8 +69,8 @@ public class Saml2ResponseSender {
     }
     catch (final IOException e) {
       log.error("Failed to send SAML Response to {} - {}", destinationUrl, e.getMessage(), e);
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
-          "Failed to send Response message", e);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to send Response message",
+          e, new UnrecoverableSaml2IdpException.TraceAuthentication(response.getInResponseTo(), null));
     }
 
   }
@@ -100,8 +100,8 @@ public class Saml2ResponseSender {
       log.error("Failed to encode Response message - {} [destination: '{}', id: '{}', in-response-to: {}]",
           e.getMessage(), samlResponse.getDestination(), samlResponse.getID(), samlResponse.getInResponseTo(), e);
 
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
-          "Failed to encode Response message", e);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to encode Response message", e,
+          new UnrecoverableSaml2IdpException.TraceAuthentication(samlResponse.getInResponseTo(), null));
     }
   }
 

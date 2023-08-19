@@ -20,6 +20,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.ByteArrayInputStream;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,9 +37,11 @@ import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.xmlsec.encryption.support.EncryptionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -56,6 +59,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
+import lombok.Getter;
 import se.swedenconnect.opensaml.saml2.request.AuthnRequestGenerator;
 import se.swedenconnect.opensaml.saml2.request.AuthnRequestGeneratorContext;
 import se.swedenconnect.opensaml.saml2.response.ResponseProcessingResult;
@@ -70,12 +74,19 @@ import se.swedenconnect.opensaml.sweid.saml2.signservice.sap.SADRequest;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.spring.saml.idp.OpenSamlTestBase;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
+import se.swedenconnect.spring.saml.idp.audit.Saml2AuditEvent;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserDetails;
 import se.swedenconnect.spring.saml.idp.authentication.provider.AbstractUserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.config.Saml2IdpConfiguration;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
+import se.swedenconnect.spring.saml.idp.events.AbstractSaml2IdpEvent;
+import se.swedenconnect.spring.saml.idp.events.AbstractSaml2IdpEventListener;
+import se.swedenconnect.spring.saml.idp.events.Saml2AuthnRequestReceivedEvent;
+import se.swedenconnect.spring.saml.idp.events.Saml2PostUserAuthenticationEvent;
+import se.swedenconnect.spring.saml.idp.events.Saml2PreUserAuthenticationEvent;
+import se.swedenconnect.spring.saml.idp.events.Saml2SuccessResponseEvent;
 import se.swedenconnect.spring.saml.idp.it.AuthenticationIntegrationTest.ApplicationConfiguration;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.EndpointSettings;
@@ -85,7 +96,7 @@ import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonS
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonType;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.OrganizationSettings;
 
-@SpringBootTest
+@SpringBootTest(properties = { "management.auditevents.enabled=true" })
 @ContextConfiguration(classes = { ApplicationConfiguration.class })
 @WebAppConfiguration
 @AutoConfigureMockMvc
@@ -96,9 +107,15 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
   @Autowired
   private WebApplicationContext webApplicationContext;
 
+  @Autowired
+  private Saml2EventListener eventListener;
+  
+  @Autowired
+  private AuditEventListener auditListener;
+
   @MockBean
   MetadataResolver metadataResolver;
-  
+
   MetadataResolver simulatedResolver;
 
   @BeforeEach
@@ -106,14 +123,16 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
     this.mvc = MockMvcBuilders.webAppContextSetup(this.webApplicationContext)
         .apply(springSecurity())
         .build();
-    
+
     Mockito.when(metadataResolver.resolveSingle(Mockito.any())).thenAnswer(a -> {
       return this.simulatedResolver.resolveSingle(a.getArgument(0));
     });
     Mockito.when(metadataResolver.resolve(Mockito.any())).thenAnswer(a -> {
       return this.simulatedResolver.resolve(a.getArgument(0));
     });
-        
+
+    this.eventListener.clear();
+    this.auditListener.clear();
   }
 
   @Test
@@ -125,9 +144,9 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
     final EntityDescriptor spMetadata = testSp.getSpMetadata();
     final EntityDescriptor idpMetadata = this.getIdpMetadata();
     this.simulatedResolver = TestSupport.createMetadataResolver(spMetadata, idpMetadata);
-    
+
     testSp.setupResponseProcessor(this.simulatedResolver);
-    
+
     final AuthnRequestGenerator generator = testSp.createAuthnRequestGenerator(idpMetadata);
 
     final AuthnRequestGeneratorContext context = new AuthnRequestGeneratorContext() {
@@ -141,16 +160,25 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
 
     final RequestBuilder requestBuilder =
         testSp.generateRequest(TestSupport.IDP_ENTITY_ID, generator, context, "relay-state", null);
-    
+
     final MvcResult result = mvc.perform(requestBuilder)
         .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andReturn();
-    
+
     final ResponseProcessingResult processingResult = testSp.processSamlResponse(result);
     Assertions.assertNotNull(processingResult);
+
+    Assertions.assertTrue(this.eventListener.getEvents().size() == 4);
+    Assertions.assertTrue(this.eventListener.getEvents().get(0) instanceof Saml2AuthnRequestReceivedEvent);
+    Assertions.assertTrue(this.eventListener.getEvents().get(1) instanceof Saml2PreUserAuthenticationEvent);
+    Assertions.assertTrue(this.eventListener.getEvents().get(2) instanceof Saml2PostUserAuthenticationEvent);
+    Assertions.assertTrue(this.eventListener.getEvents().get(3) instanceof Saml2SuccessResponseEvent);
+
+    // Auditing
+    Assertions.assertEquals(4, this.auditListener.getEvents().size()); 
   }
-  
+
   @Test
   public void authenticateSignService() throws Exception {
     final TestSp testSp = new TestSp();
@@ -161,9 +189,9 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
     final EntityDescriptor spMetadata = testSp.getSpMetadata();
     final EntityDescriptor idpMetadata = this.getIdpMetadata();
     this.simulatedResolver = TestSupport.createMetadataResolver(spMetadata, idpMetadata);
-    
+
     testSp.setupResponseProcessor(this.simulatedResolver);
-    
+
     final AuthnRequestGenerator generator = testSp.createAuthnRequestGenerator(idpMetadata);
 
     final AuthnRequestGeneratorContext context = new SwedishEidAuthnRequestGeneratorContext() {
@@ -176,7 +204,8 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
       @Override
       public SignMessageBuilderFunction getSignMessageBuilderFunction() {
         return (metadata, signMessageEncrypter) -> {
-          final SignMessage signMessage = (SignMessage) XMLObjectSupport.buildXMLObject(SignMessage.DEFAULT_ELEMENT_NAME);
+          final SignMessage signMessage =
+              (SignMessage) XMLObjectSupport.buildXMLObject(SignMessage.DEFAULT_ELEMENT_NAME);
           signMessage.setDisplayEntity(TestSupport.IDP_ENTITY_ID);
           signMessage.setMimeType(SignMessageMimeTypeEnum.TEXT);
           signMessage.setMustShow(true);
@@ -195,7 +224,7 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
       }
 
       @Override
-      public AuthnRequestCustomizer getAuthnRequestCustomizer() {       
+      public AuthnRequestCustomizer getAuthnRequestCustomizer() {
         return (authnRequest) -> {
           final SADRequest sadRequest = (SADRequest) XMLObjectSupport.buildXMLObject(SADRequest.DEFAULT_ELEMENT_NAME);
           sadRequest.setID("ABCDEF");
@@ -214,15 +243,15 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
 
     final RequestBuilder requestBuilder =
         testSp.generateRequest(TestSupport.IDP_ENTITY_ID, generator, context, "relay-state", null);
-    
+
     final MvcResult result = mvc.perform(requestBuilder)
         .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andReturn();
-    
+
     final ResponseProcessingResult processingResult = testSp.processSamlResponse(result);
     Assertions.assertNotNull(processingResult);
-    
+
     Assertions.assertTrue(processingResult.getAttributes().stream()
         .filter(a -> AttributeConstants.ATTRIBUTE_NAME_SIGNMESSAGE_DIGEST.equals(a.getName()))
         .findFirst()
@@ -231,8 +260,17 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
         .filter(a -> AttributeConstants.ATTRIBUTE_NAME_SAD.equals(a.getName()))
         .findFirst()
         .isPresent());
-  }  
-  
+
+    Assertions.assertTrue(this.eventListener.getEvents().size() == 4);
+    Assertions.assertTrue(this.eventListener.getEvents().get(0) instanceof Saml2AuthnRequestReceivedEvent);
+    Assertions.assertTrue(this.eventListener.getEvents().get(1) instanceof Saml2PreUserAuthenticationEvent);
+    Assertions.assertTrue(this.eventListener.getEvents().get(2) instanceof Saml2PostUserAuthenticationEvent);
+    Assertions.assertTrue(this.eventListener.getEvents().get(3) instanceof Saml2SuccessResponseEvent);
+    
+    // Auditing
+    Assertions.assertEquals(4, this.auditListener.getEvents().size());     
+  }
+
   @Test
   public void authenticateSso() throws Exception {
     final TestSp testSp = new TestSp();
@@ -242,13 +280,13 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
     final EntityDescriptor spMetadata = testSp.getSpMetadata();
     final EntityDescriptor idpMetadata = this.getIdpMetadata();
     this.simulatedResolver = TestSupport.createMetadataResolver(spMetadata, idpMetadata);
-    
+
     testSp.setupResponseProcessor(this.simulatedResolver);
-    
+
     final AuthnRequestGenerator generator = testSp.createAuthnRequestGenerator(idpMetadata);
 
     AuthnRequestGeneratorContext context = new AuthnRequestGeneratorContext() {
-      
+
       @Override
       public String getPreferredBinding() {
         return SAMLConstants.SAML2_POST_BINDING_URI;
@@ -257,18 +295,26 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
 
     final RequestBuilder requestBuilder =
         testSp.generateRequest(TestSupport.IDP_ENTITY_ID, generator, context, "relay-state", null);
-    
+
     final MvcResult result = mvc.perform(requestBuilder)
         .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andReturn();
-    
+
     final MockHttpSession session = (MockHttpSession) result.getRequest().getSession();
-    
+
     final ResponseProcessingResult processingResult = testSp.processSamlResponse(result);
     Assertions.assertNotNull(processingResult);
     final Instant authnInstant = processingResult.getAuthnInstant();
-    
+
+    Assertions.assertTrue(this.eventListener.getEvents().size() == 4);
+    Assertions.assertTrue(this.eventListener.getEvents().get(0) instanceof Saml2AuthnRequestReceivedEvent);
+    Assertions.assertTrue(this.eventListener.getEvents().get(1) instanceof Saml2PreUserAuthenticationEvent);
+    Assertions.assertTrue(this.eventListener.getEvents().get(2) instanceof Saml2PostUserAuthenticationEvent);
+    Assertions.assertFalse(Saml2PostUserAuthenticationEvent.class.cast(this.eventListener.getEvents().get(2))
+        .getUserAuthentication().isSsoApplied());
+    Assertions.assertTrue(this.eventListener.getEvents().get(3) instanceof Saml2SuccessResponseEvent);
+
     // Authenticate again
     //
     context = new AuthnRequestGeneratorContext() {
@@ -288,19 +334,29 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
         return SAMLConstants.SAML2_POST_BINDING_URI;
       }
     };
-    
+
     final RequestBuilder requestBuilder2 =
         testSp.generateRequest(TestSupport.IDP_ENTITY_ID, generator, context, "relay-state", session);
-    
+
     final MvcResult result2 = mvc.perform(requestBuilder2)
         .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andReturn();
-    
+
     final ResponseProcessingResult processingResult2 = testSp.processSamlResponse(result2);
     Assertions.assertNotNull(processingResult2);
     Assertions.assertEquals(authnInstant, processingResult2.getAuthnInstant());
+
+    Assertions.assertTrue(this.eventListener.getEvents().size() == 8);
+    Assertions.assertTrue(this.eventListener.getEvents().get(4) instanceof Saml2AuthnRequestReceivedEvent);
+    Assertions.assertTrue(this.eventListener.getEvents().get(5) instanceof Saml2PreUserAuthenticationEvent);
+    Assertions.assertTrue(this.eventListener.getEvents().get(6) instanceof Saml2PostUserAuthenticationEvent);
+    Assertions.assertTrue(Saml2PostUserAuthenticationEvent.class.cast(this.eventListener.getEvents().get(6))
+        .getUserAuthentication().isSsoApplied());
+    Assertions.assertTrue(this.eventListener.getEvents().get(7) instanceof Saml2SuccessResponseEvent);
     
+    // Auditing
+    Assertions.assertEquals(8, this.auditListener.getEvents().size()); 
   }
 
   private EntityDescriptor getIdpMetadata() throws Exception {
@@ -357,12 +413,12 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
           LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3,
           Instant.now(),
           "127.0.0.1");
-      
+
       if (token.getAuthnRequestToken().isSignatureServicePeer()) {
         if (Optional.ofNullable(token.getAuthnRequestToken().getAuthnRequest().getExtensions())
-          .map(e -> e.getUnknownXMLObjects(SignMessage.DEFAULT_ELEMENT_NAME))
-          .filter(l -> !l.isEmpty())
-          .isPresent()) {
+            .map(e -> e.getUnknownXMLObjects(SignMessage.DEFAULT_ELEMENT_NAME))
+            .filter(l -> !l.isEmpty())
+            .isPresent()) {
           details.setSignMessageDisplayed(true);
         }
       }
@@ -391,6 +447,16 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
 
     @Autowired
     MetadataResolver metadataResolver;
+
+    @Bean
+    Saml2EventListener saml2EventListener() {
+      return new Saml2EventListener();
+    }
+    
+    @Bean
+    AuditEventListener auditListener() {
+      return new AuditEventListener();
+    }
 
     @Bean
     IdentityProviderSettings identityProviderSettings() {
@@ -427,6 +493,41 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
           .metadataProvider(this.metadataResolver)
           .build();
       return settings;
+    }
+
+  }
+
+  public static class Saml2EventListener extends AbstractSaml2IdpEventListener {
+
+    @Getter
+    private List<AbstractSaml2IdpEvent> events = new ArrayList<>();
+
+    @Override
+    public void onApplicationEvent(final AbstractSaml2IdpEvent event) {
+      super.onApplicationEvent(event);
+      this.events.add(event);
+    }
+
+    public void clear() {
+      this.events.clear();
+    }
+
+  }
+
+  public static class AuditEventListener implements ApplicationListener<AuditApplicationEvent> {
+
+    @Getter
+    private List<Saml2AuditEvent> events = new ArrayList<>();
+
+    @Override
+    public void onApplicationEvent(final AuditApplicationEvent event) {
+      if (event.getAuditEvent() instanceof Saml2AuditEvent e) { 
+        events.add(e);
+      }
+    }
+    
+    public void clear() {
+      this.events.clear();
     }
 
   }

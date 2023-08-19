@@ -295,7 +295,22 @@ public class UserAttribute implements Serializable {
         sb.append(", value=").append(v.get(0));
       }
       else {
-        sb.append(", values=").append(v);
+        sb.append(", values=").append(this.valuesToString());
+      }
+    }
+    return sb.toString();
+  }
+  
+  public String valuesToString() {
+    final StringBuffer sb = new StringBuffer();
+    final List<? extends Serializable> values = this.getValues();
+    if (values.isEmpty()) {
+      return null;
+    }
+    sb.append(values.get(0));
+    if (values.size() > 1) {
+      for (int i = 1; i < values.size(); i++) {
+        sb.append(",").append(values.get(i));
       }
     }
     return sb.toString();

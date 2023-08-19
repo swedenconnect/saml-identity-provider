@@ -13,35 +13,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp;
+package se.swedenconnect.spring.saml.idp.events;
+
+import org.springframework.context.ApplicationEvent;
+
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
- * Internal class used for serialization across SAML Identity Provider classes.
+ * Abstract base class for all events published by the SAML IdP.
  * 
  * @author Martin Lindström
  */
-public final class Saml2IdentityProviderVersion {
+public abstract class AbstractSaml2IdpEvent extends ApplicationEvent {
 
-  private static final int MAJOR = 1;
-  private static final int MINOR = 1;
-  private static final int PATCH = 0;
+  private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /**
-   * Global serialization value for SAML Identity Provider classes.
-   */
-  public static final long SERIAL_VERSION_UID = getVersion().hashCode();
-
-  /**
-   * Gets the version string.
+   * Constructor.
    * 
-   * @return the version string
+   * @param source the object with which the event is associated (never {@code null})
    */
-  public static String getVersion() {
-    return MAJOR + "." + MINOR + "." + PATCH;
-  }
-  
-  // Hidden
-  private Saml2IdentityProviderVersion() {    
+  public AbstractSaml2IdpEvent(final Object source) {
+    super(source);
   }
 
 }

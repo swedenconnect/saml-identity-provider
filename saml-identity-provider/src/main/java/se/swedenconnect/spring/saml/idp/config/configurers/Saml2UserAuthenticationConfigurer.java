@@ -225,7 +225,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
 
     final Saml2UserAuthenticationProcessingFilter filter = new Saml2UserAuthenticationProcessingFilter(
         authenticationManager, this.authnRequestRequestMatcher, postAuthenticationProcessor,
-        assertionBuilder, responseBuilder, responseSender);
+        assertionBuilder, responseBuilder, responseSender, Saml2IdpConfigurerUtils.getEventPublisher(httpSecurity));
 
     if (this.resumeAuthnRequestMatcher.isConfigured()) {
       filter.setResumeAuthnRequestMatcher(this.resumeAuthnRequestMatcher);

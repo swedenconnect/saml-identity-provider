@@ -157,7 +157,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
 
       if (!AuthnRequest.class.isInstance(msgContext.getMessage())) {
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT,
-            "Incoming request is not an SAML V2 AuthnRequest message");
+            "Incoming request is not an SAML V2 AuthnRequest message", null);
       }
       log.debug("AuthnRequest successfully decoded");
       final AuthnRequest authnRequest = AuthnRequest.class.cast(msgContext.getMessage());
@@ -178,14 +178,14 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       final SAMLVersion version = authnRequest.getVersion();
       if (version.getMajorVersion() != 2) {
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT,
-            "Unsupported version on AuthnRequest message");
+            "Unsupported version on AuthnRequest message", token);
       }
 
       // An ID is mandatory ...
       //
       if (!StringUtils.hasText(authnRequest.getID())) {
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT,
-            "Missing ID on received AuthnRequest message");
+            "Missing ID on received AuthnRequest message", token);
       }
 
       // Assert that we have the issuer ...
@@ -193,7 +193,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       final String peerEntityId = Optional.ofNullable(authnRequest.getIssuer())
           .map(Issuer::getValue)
           .orElseThrow(() -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT,
-              "Missing issuer of received AuthnRequest message"));
+              "Missing issuer of received AuthnRequest message", token));
 
       // Check the validity of the SAML protocol message receiver endpoint against requirements
       // indicated in the message.
@@ -204,7 +204,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       catch (final MessageHandlerException e) {
         final String msg = String.format("Receiver endpoint check failed: %s", e.getMessage());
         log.error("{}", msg, e);
-        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.ENDPOINT_CHECK_FAILURE, msg, e);
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.ENDPOINT_CHECK_FAILURE, msg, e, token);
       }
       
       // Check the message lifetime, i.e., that the recived message is not too old.
@@ -215,7 +215,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       catch (final MessageHandlerException e) {
         final String msg = String.format("Message lifetime check failed: %s", e.getMessage());
         log.error("{}", msg, e);
-        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.MESSAGE_TOO_OLD, msg, e);
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.MESSAGE_TOO_OLD, msg, e, token);
       }
       
       // Locate peer metadata.
@@ -228,7 +228,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
         if (spMetadata == null) {
           final String msg = String.format("Failed to lookup valid SAML metadata for SP %s", peerEntityId);
           log.info("{}", msg);
-          throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.UNKNOWN_PEER, msg);
+          throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.UNKNOWN_PEER, msg, token);
         }
         log.debug("SAML metadata for SP {} successfully found", peerEntityId);
         token.setPeerMetadata(spMetadata);
@@ -249,7 +249,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       catch (final ResolverException e) {
         final String msg = "Error during metadata lookup: " + e.getMessage();
         log.info("{}", msg, e);
-        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.UNKNOWN_PEER, msg, e);
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.UNKNOWN_PEER, msg, e, token);
       }
 
       return token;
@@ -257,7 +257,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
     catch (final MessageDecodingException e) {
       final String msg = "Unable to decode incoming authentication request";
       log.error("{}", msg, e);
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.FAILED_DECODE, msg, e);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.FAILED_DECODE, msg, e, null);
     }    
   }
 
@@ -275,7 +275,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       return this.httpPostDecoder;
     }
     else {
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Illegal HTTP verb - " + method);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Illegal HTTP verb - " + method, null);
     }
   }
 

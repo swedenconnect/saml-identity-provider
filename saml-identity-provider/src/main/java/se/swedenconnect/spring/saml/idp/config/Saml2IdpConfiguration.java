@@ -18,6 +18,7 @@ package se.swedenconnect.spring.saml.idp.config;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -27,6 +28,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import lombok.extern.slf4j.Slf4j;
+import se.swedenconnect.spring.saml.idp.audit.Saml2IdpAuditListener;
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.UserRedirectAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurer;
@@ -60,10 +62,10 @@ public class Saml2IdpConfiguration {
       @Autowired(required = false) final List<Saml2IdpConfigurerAdapter> adapters,
       @Autowired(required = false) final ResponsePage responsePage) throws Exception {
     applyDefaultSecurity(http, authenticationProviders);
-    
+
     if (responsePage != null) {
       http.getConfigurer(Saml2IdpConfigurer.class)
-        .responseSender(s -> s.setResponsePage(responsePage));
+          .responseSender(s -> s.setResponsePage(responsePage));
     }
 
     if (adapters != null && !adapters.isEmpty()) {
@@ -111,9 +113,20 @@ public class Saml2IdpConfiguration {
         .apply(idpConfigurer);
   }
 
+  /**
+   * Creates the {@link Saml2IdpAuditListener}.
+   * 
+   * @param publisher the event publisher
+   * @return a {@link Saml2IdpAuditListener}
+   */
+  @Bean
+  Saml2IdpAuditListener saml2IdpAuditListener(final ApplicationEventPublisher publisher) {
+    return new Saml2IdpAuditListener(publisher);
+  }
+
   @Bean
   RegisterMissingBeanPostProcessor registerMissingBeanPostProcessor() {
-    RegisterMissingBeanPostProcessor postProcessor = new RegisterMissingBeanPostProcessor();
+    final RegisterMissingBeanPostProcessor postProcessor = new RegisterMissingBeanPostProcessor();
     postProcessor.addBeanDefinition(IdentityProviderSettings.class, () -> IdentityProviderSettings.builder().build());
     return postProcessor;
   }

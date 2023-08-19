@@ -72,7 +72,8 @@ public class AssertionConsumerServiceValidator implements AuthnRequestValidator 
         final String msg = "No AssertionConsumerService given in AuthnRequest"
             + " and no valid AssertionConsumerService found in metadata";
         log.info("{} [{}]", msg, authnRequestToken.getLogString());
-        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_ASSERTION_CONSUMER_SERVICE, msg);
+        throw new UnrecoverableSaml2IdpException(
+            UnrecoverableSaml2IdpError.INVALID_ASSERTION_CONSUMER_SERVICE, msg, authnRequestToken);
       }
 
       authnRequestToken.setAssertionConsumerServiceUrl(acs.getLocation());
@@ -100,7 +101,8 @@ public class AssertionConsumerServiceValidator implements AuthnRequestValidator 
     if (authnRequestToken.getAssertionConsumerServiceUrl() == null) {
       final String msg = "AssertionConsumerService given in AuthnRequest does not appear in metadata";
       log.info("{} [{}]", msg, authnRequestToken.getLogString());
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_ASSERTION_CONSUMER_SERVICE, msg);
+      throw new UnrecoverableSaml2IdpException(
+          UnrecoverableSaml2IdpError.INVALID_ASSERTION_CONSUMER_SERVICE, msg, authnRequestToken);
     }
 
     log.debug("Using AssertionConsumerServiceURL: {} [{}]",
