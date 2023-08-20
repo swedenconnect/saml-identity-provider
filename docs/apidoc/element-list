@@ -2,6 +2,8 @@ se.swedenconnect.spring.saml.idp
 se.swedenconnect.spring.saml.idp.attributes
 se.swedenconnect.spring.saml.idp.attributes.nameid
 se.swedenconnect.spring.saml.idp.attributes.release
+se.swedenconnect.spring.saml.idp.audit
+se.swedenconnect.spring.saml.idp.audit.data
 se.swedenconnect.spring.saml.idp.authentication
 se.swedenconnect.spring.saml.idp.authentication.provider
 se.swedenconnect.spring.saml.idp.authentication.provider.external
@@ -11,6 +13,7 @@ se.swedenconnect.spring.saml.idp.config
 se.swedenconnect.spring.saml.idp.config.configurers
 se.swedenconnect.spring.saml.idp.context
 se.swedenconnect.spring.saml.idp.error
+se.swedenconnect.spring.saml.idp.events
 se.swedenconnect.spring.saml.idp.extensions
 se.swedenconnect.spring.saml.idp.metadata
 se.swedenconnect.spring.saml.idp.response
