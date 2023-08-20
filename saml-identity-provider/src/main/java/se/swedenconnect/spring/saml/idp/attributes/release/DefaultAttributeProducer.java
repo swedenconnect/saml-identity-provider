@@ -53,7 +53,7 @@ public class DefaultAttributeProducer implements AttributeProducer {
         Optional.ofNullable(userAuthentication.getAuthnRequirements())
             .map(AuthenticationRequirements::getRequestedAttributes)
             .orElseThrow(() -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
-                "No authentication requirements available"));
+                "No authentication requirements available", userAuthentication));
 
     final List<Attribute> attributes = new ArrayList<>();
     for (final UserAttribute ua : userAuthentication.getSaml2UserDetails().getAttributes()) {

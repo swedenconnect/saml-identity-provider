@@ -14,6 +14,16 @@ server:
     include-exception: true
     include-stacktrace: always
     
+management:
+  server:
+    port: 8444
+  endpoints:
+    web:
+      exposure:
+        include: health, auditevents
+  auditevents:
+    enabled: true    
+    
 spring:
   messages:
     basename: messages,idp-errors/idp-error-messages

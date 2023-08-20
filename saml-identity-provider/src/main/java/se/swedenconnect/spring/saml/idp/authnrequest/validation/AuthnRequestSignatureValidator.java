@@ -92,7 +92,7 @@ public class AuthnRequestSignatureValidator implements AuthnRequestValidator {
         final String msg = "Authentication request is required to be signed, but is not";
         log.info("{} [entity-id: {}, authn-request: {}]",
             msg, token.getPeerMetadata().getEntityID(), token.getAuthnRequest().getID());
-        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.MISSING_AUTHNREQUEST_SIGNATURE);
+        throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.MISSING_AUTHNREQUEST_SIGNATURE, token);
       }
     }
 
@@ -113,7 +113,7 @@ public class AuthnRequestSignatureValidator implements AuthnRequestValidator {
       log.info("{} [entity-id: {}, authn-request: {}]",
           msg, token.getPeerMetadata().getEntityID(), token.getAuthnRequest().getID());
       log.debug("", e);
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_SIGNATURE, msg, e);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_SIGNATURE, msg, e, token);
     }
 
     log.debug("Authentication request signature validation was successful [entity-id: {}, authn-request: {}]",

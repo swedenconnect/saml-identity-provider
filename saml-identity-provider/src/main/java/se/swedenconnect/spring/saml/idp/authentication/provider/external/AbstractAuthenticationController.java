@@ -48,7 +48,7 @@ public abstract class AbstractAuthenticationController<T extends UserRedirectAut
       throws UnrecoverableSaml2IdpException {
     return Optional.ofNullable(this.getProvider().getTokenRepository().getExternalAuthenticationToken(request))
         .orElseThrow(() -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_SESSION,
-            "No input token available"));
+            "No input token available", null));
   }
 
   /**

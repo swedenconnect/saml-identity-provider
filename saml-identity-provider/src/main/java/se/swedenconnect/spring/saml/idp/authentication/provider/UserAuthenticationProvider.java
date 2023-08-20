@@ -72,7 +72,7 @@ public interface UserAuthenticationProvider extends AuthenticationProvider {
    * 
    * @param token the input token
    * @return the authentication token or {@code null} if the requested authentication context(s) can not be met by the
-   *           authentication provider.
+   *           authentication provider. 
    * @throws Saml2ErrorStatusException for authentication errors
    */
   Authentication authenticateUser(final Saml2UserAuthenticationInputToken token) throws Saml2ErrorStatusException;

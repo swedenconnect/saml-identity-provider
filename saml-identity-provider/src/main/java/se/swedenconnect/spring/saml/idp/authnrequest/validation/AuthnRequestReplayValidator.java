@@ -71,7 +71,7 @@ public class AuthnRequestReplayValidator implements AuthnRequestValidator {
     }
     catch (final MessageReplayException e) {
       log.info("Replay of AuthnRequest was detected [{}]", authnRequestToken.getLogString());
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.REPLAY_DETECTED);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.REPLAY_DETECTED, authnRequestToken);
     }
 
   }

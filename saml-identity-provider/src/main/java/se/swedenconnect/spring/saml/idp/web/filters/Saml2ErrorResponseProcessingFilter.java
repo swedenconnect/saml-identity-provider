@@ -33,6 +33,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
@@ -52,6 +53,9 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
 
   /** The response sender. */
   private final Saml2ResponseSender responseSender;
+  
+  /** The event publisher. */
+  private final Saml2IdpEventPublisher eventPublisher;
 
   /** An analyzer for handling exceptions. */
   private ThrowableAnalyzer throwableAnalyzer = new DefaultThrowableAnalyzer();
@@ -62,12 +66,15 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
    * @param requestMatcher the request matcher
    * @param responseBuilder the {@link Saml2ResponseBuilder}
    * @param responseSender the {@link Saml2ResponseSender}
+   * @param eventPublisher the system event publisher
    */
   public Saml2ErrorResponseProcessingFilter(final RequestMatcher requestMatcher,
-      final Saml2ResponseBuilder responseBuilder, final Saml2ResponseSender responseSender) {
+      final Saml2ResponseBuilder responseBuilder, final Saml2ResponseSender responseSender,
+      final Saml2IdpEventPublisher eventPublisher) {
     this.requestMatcher = Objects.requireNonNull(requestMatcher, "requestMatcher must not be null");
     this.responseBuilder = Objects.requireNonNull(responseBuilder, "responseBuilder must not be null");
     this.responseSender = Objects.requireNonNull(responseSender, "responseSender must not be null");
+    this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher must not be null"); 
   }
 
   /** {@inheritDoc} */
@@ -92,6 +99,10 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
           .getFirstThrowableOfType(Saml2ErrorStatusException.class, causeChain);
 
       if (samlException == null) {
+        if (e instanceof UnrecoverableSaml2IdpException unrecoverable) {
+          this.eventPublisher.publishUnrecoverableSamlError(unrecoverable);
+        }
+        
         if (e instanceof ServletException) {
           throw (ServletException) e;
         }

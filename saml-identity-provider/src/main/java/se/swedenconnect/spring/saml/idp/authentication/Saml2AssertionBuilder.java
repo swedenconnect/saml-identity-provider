@@ -126,7 +126,7 @@ public class Saml2AssertionBuilder {
     final Saml2AuthnRequestAuthenticationToken authnRequestToken =
         Optional.ofNullable(userAuthentication.getAuthnRequestToken())
             .orElseThrow(() -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
-                "No authn request token available in Saml2UserAuthentication"));
+                "No authn request token available in Saml2UserAuthentication", null));
 
     final Instant now = Instant.now();
 
@@ -238,7 +238,8 @@ public class Saml2AssertionBuilder {
         }
         catch (final SignatureException e) {
           log.error("Failed to sign Assertion - {} [{}]", e.getMessage(), authnRequestToken.getLogString(), e);
-          throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to sign Assertion", e);
+          throw new UnrecoverableSaml2IdpException(
+              UnrecoverableSaml2IdpError.INTERNAL, "Failed to sign Assertion", e, userAuthentication);
         }
       }
     }

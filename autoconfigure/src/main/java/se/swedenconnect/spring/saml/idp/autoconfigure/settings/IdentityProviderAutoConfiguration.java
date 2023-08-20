@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
@@ -35,6 +36,7 @@ import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayChecker;
 import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayCheckerImpl;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurer;
+import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.settings.AssertionSettings;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.EndpointSettings;
@@ -187,6 +189,12 @@ public class IdentityProviderAutoConfiguration {
 
     return settings;
 
+  }
+
+  @ConditionalOnMissingBean
+  @Bean
+  Saml2IdpEventPublisher saml2IdpEventPublisher(final ApplicationEventPublisher applicationEventPublisher) {
+    return new Saml2IdpEventPublisher(applicationEventPublisher);
   }
 
   @ConditionalOnMissingBean

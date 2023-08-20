@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
 
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
@@ -36,6 +37,7 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationIn
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestValidator;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContext;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
+import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtensionExtractor;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
@@ -114,8 +116,10 @@ public class Saml2AuthnRequestAuthenticationProviderTest {
         Mockito.mock(SignatureMessageExtensionExtractor.class);
     final PrincipalSelectionProcessor principalSelectionProcessor = Mockito.mock(PrincipalSelectionProcessor.class);
 
+    final Saml2IdpEventPublisher publisher = new Saml2IdpEventPublisher(Mockito.mock(ApplicationEventPublisher.class));
+
     final Saml2AuthnRequestAuthenticationProvider provider = new Saml2AuthnRequestAuthenticationProvider(
-        signatureValidator, assertionConsumerServiceValidator, replayValidator,
+        publisher, signatureValidator, assertionConsumerServiceValidator, replayValidator,
         encryptCapabilitiesValidator, List.of(requestedAttributeProcessor), nameIDGeneratorFactory,
         signatureMessageExtensionExtractor, principalSelectionProcessor);
 

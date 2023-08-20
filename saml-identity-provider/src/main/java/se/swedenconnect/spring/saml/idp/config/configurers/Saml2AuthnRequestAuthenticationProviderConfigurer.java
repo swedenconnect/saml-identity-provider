@@ -273,6 +273,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
   @Override
   Saml2AuthnRequestAuthenticationProvider getObject(final HttpSecurity httpSecurity) {
     final Saml2AuthnRequestAuthenticationProvider object = new Saml2AuthnRequestAuthenticationProvider(
+        Saml2IdpConfigurerUtils.getEventPublisher(httpSecurity),
         this.signatureValidator,
         this.assertionConsumerServiceValidator,
         this.replayValidator,

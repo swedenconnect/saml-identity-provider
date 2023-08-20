@@ -87,6 +87,7 @@ public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
         Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
     Mockito.when(authnRequestToken.getLogString()).thenReturn("logstring");
     Mockito.when(authnRequestToken.getNameIDGenerator()).thenReturn(new PersistentNameIDGenerator(IDP, SP));
+    Mockito.when(authnRequestToken.getEntityId()).thenReturn(SP);
 
     final AuthnRequest authnRequest = (AuthnRequest) XMLObjectSupport.buildXMLObject(AuthnRequest.DEFAULT_ELEMENT_NAME);
     authnRequest.setID(AUTHNREQUEST_ID);
@@ -157,6 +158,7 @@ public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
         Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
     Mockito.when(authnRequestToken.getLogString()).thenReturn("logstring");
     Mockito.when(authnRequestToken.getNameIDGenerator()).thenReturn(new PersistentNameIDGenerator(IDP, SP));
+    Mockito.when(authnRequestToken.getEntityId()).thenReturn(SP);
 
     final AuthnRequest authnRequest = (AuthnRequest) XMLObjectSupport.buildXMLObject(AuthnRequest.DEFAULT_ELEMENT_NAME);
     authnRequest.setID(AUTHNREQUEST_ID);

@@ -21,6 +21,7 @@ import java.util.List;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
+import org.opensaml.saml.saml2.core.AuthnRequest;
 
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
 import se.swedenconnect.opensaml.sweid.saml2.authn.LevelOfAssuranceUris;
@@ -58,10 +59,25 @@ public class Saml2UserAuthenticationTest {
     Assertions.assertFalse(a.isReuseAuthentication());
     
     Assertions.assertNull(a.getAuthnRequestToken());
-    a.setAuthnRequestToken(Mockito.mock(Saml2AuthnRequestAuthenticationToken.class));
+    Assertions.assertNull(a.getAuthenticationInfoTrack());
+    
+    final Saml2AuthnRequestAuthenticationToken aToken = Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
+    Mockito.when(aToken.getEntityId()).thenReturn("SP");
+    final AuthnRequest authnRequest = Mockito.mock(AuthnRequest.class);
+    Mockito.when(authnRequest.getID()).thenReturn("ID");
+    Mockito.when(aToken.getAuthnRequest()).thenReturn(authnRequest);
+    a.setAuthnRequestToken(aToken);
+    
     Assertions.assertNotNull(a.getAuthnRequestToken());
+    Assertions.assertNotNull(a.getAuthenticationInfoTrack());
+    Assertions.assertFalse(a.isSsoApplied());
     a.clearAuthnRequestToken();
     Assertions.assertNull(a.getAuthnRequestToken());
+    Assertions.assertNotNull(a.getAuthenticationInfoTrack());
+    
+    a.setAuthnRequestToken(aToken);
+    Assertions.assertTrue(a.isSsoApplied());
+    a.clearAuthnRequestToken();
     
     Assertions.assertNull(a.getAuthnRequirements());
     a.setAuthnRequirements(Mockito.mock(AuthenticationRequirements.class));
