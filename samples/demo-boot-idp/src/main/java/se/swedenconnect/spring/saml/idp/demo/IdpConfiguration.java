@@ -122,7 +122,7 @@ public class IdpConfiguration {
   }
 
   @Bean
-  public InMemoryAuditEventRepository repository() {
+  InMemoryAuditEventRepository repository() {
     return new InMemoryAuditEventRepository();
   }
 
