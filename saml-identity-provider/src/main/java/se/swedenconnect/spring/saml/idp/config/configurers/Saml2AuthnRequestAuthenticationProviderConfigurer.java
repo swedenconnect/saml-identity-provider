@@ -55,7 +55,7 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
  * A configurer for configuring the {@link Saml2AuthnRequestAuthenticationProvider}.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2AuthnRequestAuthenticationProviderConfigurer
@@ -69,7 +69,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
 
   /** Validator for protecting against replay attacks. */
   private AuthnRequestValidator replayValidator;
-  
+
   /** Validator for checking that we can encrypt assertions. */
   private AuthnRequestValidator encryptCapabilitiesValidator;
 
@@ -98,7 +98,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
 
   /**
    * Assigns a custom {@link AuthnRequestValidator} for validating the signatures of {@link AuthnRequest} messages.
-   * 
+   *
    * @param signatureValidator a validator
    * @return this configurer
    */
@@ -114,7 +114,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
    * If the validation succeeds the validator must assigned the assertion consumer service URL using
    * {@link Saml2AuthnRequestAuthenticationToken#setAssertionConsumerServiceUrl(String)}.
    * </p>
-   * 
+   *
    * @param assertionConsumerServiceValidator the validator
    * @return this configurer
    */
@@ -129,7 +129,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
    * Assigns a replay validator. The default is to use {@link AuthnRequestReplayValidator} with an in-memory
    * {@link MessageReplayChecker}. Use {@link #messageReplayChecker(MessageReplayChecker)} to configure another
    * {@link MessageReplayChecker} but stick with the {@link AuthnRequestReplayValidator}.
-   * 
+   *
    * @param replayValidator the validator
    * @return this configurer
    */
@@ -142,7 +142,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
   /**
    * Assigns a {@link MessageReplayChecker} to the {@link AuthnRequestReplayValidator}. Mutually exlcusive with
    * {@link #replayValidator(AuthnRequestValidator)}.
-   * 
+   *
    * @param messageReplayChecker the message replay checker to use
    * @return this configurer
    */
@@ -156,7 +156,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
   /**
    * Gives access to the list of {@link RequestedAttributeProcessor}s. Using this method the supplied {@link Consumer}
    * may be used to add/remove or modify the processors.
-   * 
+   *
    * @param customizer the customizer
    * @return this configurer
    */
@@ -170,7 +170,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
    * Assigns a custom {@link SignatureMessageExtensionExtractor}. The default is
    * {@link DefaultSignatureMessageExtensionExtractor}. It is possible to disable support for the
    * {@code SignMessage} extension by assigning {@code null}.
-   * 
+   *
    * @param signatureMessageExtensionExtractor the custom extractor (or {@code null})
    * @return this configurer
    */
@@ -183,7 +183,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
   /**
    * Assigns a {@link SignatureMessagePreprocessor} that is used to prepare received sign messages for display. By
    * default no processor is installed.
-   * 
+   *
    * @param signatureMessagePreprocessor the processor.
    * @return this configurer
    */
@@ -196,7 +196,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
   /**
    * Assigns a custom {@link PrincipalSelectionProcessor}. The default is {@link DefaultPrincipalSelectionProcessor}. It
    * is possible to disable support for the {@code PrincipalSelection} extension by assigning {@code null}.
-   * 
+   *
    * @param principalSelectionProcessor the custom principal selection extractor (or {@code null})
    * @return this configurer
    */
@@ -208,7 +208,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
 
   /**
    * Assigns a custom {@link NameIDGeneratorFactory}. The default is {@link DefaultNameIDGeneratorFactory}.
-   * 
+   *
    * @param nameIDGeneratorFactory the custom NameID generator factory
    * @return this configurer
    */
@@ -233,15 +233,10 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
     }
 
     if (this.replayValidator == null) {
-      final MessageReplayChecker messageReplayChecker = httpSecurity.getSharedObject(MessageReplayChecker.class);
-      if (messageReplayChecker != null) {
-        this.replayValidator = new AuthnRequestReplayValidator(messageReplayChecker);
-      }
-      else {
-        this.replayValidator = new AuthnRequestReplayValidator();
-      }
+      this.replayValidator = new AuthnRequestReplayValidator(
+          Saml2IdpConfigurerUtils.getMessageReplayChecker(httpSecurity));
     }
-    
+
     this.encryptCapabilitiesValidator =
         new AuthnRequestEncryptCapabilitiesValidator(settings.getAssertionSettings().getEncryptAssertions());
 
@@ -287,17 +282,17 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
         this.nameIDGeneratorFactory,
         this.signatureMessageExtensionExtractor.orElse(null),
         this.principalSelectionProcessor.orElse(null));
-    
+
     if (this.signatureMessagePreprocessor != null) {
       object.setSignatureMessagePreprocessor(this.signatureMessagePreprocessor);
     }
-    
+
     return object;
   }
 
   /**
    * Gets the default set of {@link RequestedAttributeProcessor}s.
-   * 
+   *
    * @param httpSecurity the HTTP security object
    * @return a list of {@link RequestedAttributeProcessor}s
    */

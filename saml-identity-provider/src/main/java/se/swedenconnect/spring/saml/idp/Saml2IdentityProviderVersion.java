@@ -17,7 +17,7 @@ package se.swedenconnect.spring.saml.idp;
 
 /**
  * Internal class used for serialization across SAML Identity Provider classes.
- * 
+ *
  * @author Martin Lindström
  */
 public final class Saml2IdentityProviderVersion {
@@ -33,15 +33,15 @@ public final class Saml2IdentityProviderVersion {
 
   /**
    * Gets the version string.
-   * 
+   *
    * @return the version string
    */
   public static String getVersion() {
     return MAJOR + "." + MINOR + "." + PATCH;
   }
-  
+
   // Hidden
-  private Saml2IdentityProviderVersion() {    
+  private Saml2IdentityProviderVersion() {
   }
 
 }

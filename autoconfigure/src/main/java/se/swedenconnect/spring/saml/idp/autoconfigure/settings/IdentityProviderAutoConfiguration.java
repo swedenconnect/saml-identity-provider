@@ -19,6 +19,7 @@ import java.security.cert.X509Certificate;
 import java.util.stream.Collectors;
 
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
+import org.opensaml.storage.ReplayCache;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -30,6 +31,9 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 
 import lombok.Setter;
+import se.swedenconnect.opensaml.saml2.response.replay.InMemoryReplayChecker;
+import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayChecker;
+import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayCheckerImpl;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurer;
 import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
@@ -191,6 +195,17 @@ public class IdentityProviderAutoConfiguration {
   @Bean
   Saml2IdpEventPublisher saml2IdpEventPublisher(final ApplicationEventPublisher applicationEventPublisher) {
     return new Saml2IdpEventPublisher(applicationEventPublisher);
+  }
+
+  @ConditionalOnMissingBean
+  @Bean
+  MessageReplayChecker messageReplayChecker(@Autowired(required = false) final ReplayCache replayCache) {
+    if (replayCache == null) {
+      return new InMemoryReplayChecker();
+    }
+    else {
+      return new MessageReplayCheckerImpl(replayCache, "idp-replay-checker");
+    }
   }
 
 }
