@@ -268,7 +268,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
     /**
      * Record recording the usage time and requesting SP for an authentication.
      */
-    public static record AuthnUse(Instant use, String sp, String authnRequestId) {
+    public static record AuthnUse(Instant use, String sp, String authnRequestId) implements Serializable {
     }
 
   }
