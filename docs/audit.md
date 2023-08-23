@@ -36,6 +36,7 @@ will always be present:
   
   - `authn-request-id` - The ID of the authentication request that is being processed (`AuthnRequest`). If not available, `unknown` is used.
 
+<a name="SAML2_REQUEST_RECEIVED"></a>
 ### Authentication Request Received
 
 **Type:** `SAML2_REQUEST_RECEIVED`
@@ -54,6 +55,7 @@ the IdP has not performed any checks to validate the correctness of the message.
 | `is-passive` | Tells whether the SP requires that no user authentication is performed (i.e., requires SSO). | Boolean |
 | `relay-state` | The RelayState variable of the request. | String |
 
+<a name="SAML2_BEFORE_USER_AUTHN"></a>
 ### Before User Authentication
 
 **Type:** `SAML2_BEFORE_USER_AUTHN`
@@ -62,6 +64,7 @@ the IdP has not performed any checks to validate the correctness of the message.
 data except for the common fields is included. The data is the same as for `SAML2_REQUEST_RECEIVED`
 described above.
 
+<a name="SAML2_AFTER_USER_AUTHN"></a>
 ### After User Authentication
 
 **Type:** `SAML2_AFTER_USER_AUTHN`
@@ -83,7 +86,7 @@ audit data.
 | `allowed-to-reuse` | Tells whether the IdP will allow this particular authentication to be re-used in forthcoming operations (i.e., can it be used for SSO?). | Boolean |
 | `sso-information` | If the current authentication was re-used from a previous user authentication (SSO) this field contains the fields `original-requester` and `original-authn-request-id`. These fields identify the requesting entity and the ID of the authentication request when the user authenticated. The `authn-instant` (see above) will in these cases be set to this instant. | SsoInfo |
 
-
+<a name="SAML2_SUCCESS_RESPONSE"></a>
 ### Successful SAML Response
 
 **Type:** `SAML2_SUCCESS_RESPONSE`
@@ -119,6 +122,7 @@ request has been processed, the user authenticated and a SAML assertion created.
 | `authn-authority` | Optional identity of an "authenticating authority", used for proxy IdP:s. | String |
 | `attributes` | A list of elements listing the SAML attributes that was issued. | List of attributes with fields `name` and `value`. |
 
+<a name="SAML2_AUDIT_ERROR_RESPONSE"></a>
 ### Error SAML Response
 
 **Type:** `SAML2_AUDIT_ERROR_RESPONSE`
@@ -142,6 +146,7 @@ Note: The case when the user has cancelled the operation is represented by setti
 | `destination` | The "destination" of the response message, i.e., the URL to which the message is posted. | String |
 | `is-signed` | Tells whether the message is signed. | Boolean |
 
+<a name="SAML2_UNRECOVERABLE_ERROR"></a>
 ### Unrecoverable Error
 
 **Type:** `SAML2_UNRECOVERABLE_ERROR`
