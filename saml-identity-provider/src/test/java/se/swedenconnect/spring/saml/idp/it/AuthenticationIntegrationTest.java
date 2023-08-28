@@ -75,6 +75,7 @@ import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.spring.saml.idp.OpenSamlTestBase;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.audit.Saml2AuditEvent;
+import se.swedenconnect.spring.saml.idp.audit.Saml2AuditEvents;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserDetails;
@@ -109,7 +110,7 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
 
   @Autowired
   private Saml2EventListener eventListener;
-  
+
   @Autowired
   private AuditEventListener auditListener;
 
@@ -176,7 +177,11 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
     Assertions.assertTrue(this.eventListener.getEvents().get(3) instanceof Saml2SuccessResponseEvent);
 
     // Auditing
-    Assertions.assertEquals(4, this.auditListener.getEvents().size()); 
+    Assertions.assertEquals(4, this.auditListener.getEvents().size());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_REQUEST_RECEIVED, this.auditListener.getEvents().get(0).getType());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_BEFORE_USER_AUTHN, this.auditListener.getEvents().get(1).getType());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_AFTER_USER_AUTHN, this.auditListener.getEvents().get(2).getType());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_SUCCESSFUL_RESPONSE, this.auditListener.getEvents().get(3).getType());
   }
 
   @Test
@@ -266,9 +271,9 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
     Assertions.assertTrue(this.eventListener.getEvents().get(1) instanceof Saml2PreUserAuthenticationEvent);
     Assertions.assertTrue(this.eventListener.getEvents().get(2) instanceof Saml2PostUserAuthenticationEvent);
     Assertions.assertTrue(this.eventListener.getEvents().get(3) instanceof Saml2SuccessResponseEvent);
-    
+
     // Auditing
-    Assertions.assertEquals(4, this.auditListener.getEvents().size());     
+    Assertions.assertEquals(4, this.auditListener.getEvents().size());
   }
 
   @Test
@@ -354,9 +359,9 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
     Assertions.assertTrue(Saml2PostUserAuthenticationEvent.class.cast(this.eventListener.getEvents().get(6))
         .getUserAuthentication().isSsoApplied());
     Assertions.assertTrue(this.eventListener.getEvents().get(7) instanceof Saml2SuccessResponseEvent);
-    
+
     // Auditing
-    Assertions.assertEquals(8, this.auditListener.getEvents().size()); 
+    Assertions.assertEquals(8, this.auditListener.getEvents().size());
   }
 
   private EntityDescriptor getIdpMetadata() throws Exception {
@@ -452,7 +457,7 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
     Saml2EventListener saml2EventListener() {
       return new Saml2EventListener();
     }
-    
+
     @Bean
     AuditEventListener auditListener() {
       return new AuditEventListener();
@@ -521,11 +526,11 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
 
     @Override
     public void onApplicationEvent(final AuditApplicationEvent event) {
-      if (event.getAuditEvent() instanceof Saml2AuditEvent e) { 
+      if (event.getAuditEvent() instanceof Saml2AuditEvent e) {
         events.add(e);
       }
     }
-    
+
     public void clear() {
       this.events.clear();
     }

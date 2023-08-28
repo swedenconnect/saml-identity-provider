@@ -6,7 +6,7 @@
   <groupId>se.swedenconnect.spring.saml.idp</groupId>
   <artifactId>spring-saml-idp-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.1.1</version>
+  <version>1.1.2-SNAPSHOT</version>
 
   <name>Sweden Connect :: Spring SAML Identity Provider :: Parent POM</name>
   <description>Parent POM for Spring SAML Identity Provider libraries</description>

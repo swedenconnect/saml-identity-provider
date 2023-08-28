@@ -32,7 +32,7 @@ import se.swedenconnect.spring.saml.idp.audit.data.Saml2AuditData;
 
 /**
  * Audit event for creating event objects for the SAML IdP.
- * 
+ *
  * @author Martin Lindström
  */
 @JsonInclude(Include.NON_EMPTY)
@@ -48,7 +48,7 @@ public class Saml2AuditEvent extends AuditEvent {
 
   /**
    * Constructor.
-   * 
+   *
    * @param type the type of audit event
    * @param timestamp the timestamp (in millis since epoch)
    * @param spEntityId the entityID of the requesting SP
@@ -57,13 +57,13 @@ public class Saml2AuditEvent extends AuditEvent {
    */
   public Saml2AuditEvent(final String type, final long timestamp, final String spEntityId, final String authnRequestId,
       final Saml2AuditData... data) {
-    super(Instant.ofEpochMilli(timestamp), type, Optional.ofNullable(spEntityId).orElseGet(() -> UNKNOWN_SP),
+    super(Instant.ofEpochMilli(timestamp), Optional.ofNullable(spEntityId).orElseGet(() -> UNKNOWN_SP), type,
         buildData(spEntityId, authnRequestId, data));
   }
 
   /**
    * Builds a {@link Map} given the supplied audit data
-   * 
+   *
    * @param spEntityId the entityID of the requesting SP
    * @param authnRequestId the ID of the {@code AuthnRequest}
    * @param data audit data
@@ -87,7 +87,7 @@ public class Saml2AuditEvent extends AuditEvent {
   /**
    * Gets a string suitable to include in log entries. It does not dump the entire audit data that can contain sensible
    * data (that should not be present in proceess logs).
-   * 
+   *
    * @return a log string
    */
   @JsonIgnore
