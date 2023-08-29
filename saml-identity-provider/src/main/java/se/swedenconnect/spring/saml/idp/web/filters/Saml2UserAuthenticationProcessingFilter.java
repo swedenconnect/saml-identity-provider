@@ -243,8 +243,6 @@ public class Saml2UserAuthenticationProcessingFilter extends OncePerRequestFilte
       log.info("Re-directing to {} for external authentication [{}]",
           redirectToken.getAuthnPath(), redirectToken.getAuthnInputToken().getLogString());
 
-      this.eventPublisher.publishBeforeUserAuthenticated(redirectToken.getAuthnInputToken());
-
       // Save the response attributes in the session so that we know how to send back a response
       // when the user returns to the flow.
       //
