@@ -126,7 +126,7 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
   protected NameIDGenerator createNameIDGenerator(final String format, final String nameQualifier,
       final String spNameQualifier) throws Saml2ErrorStatusException {
 
-    final String nameIDFormat = format == null || NameID.UNSPECIFIED == format
+    final String nameIDFormat = format == null || NameID.UNSPECIFIED.equals(format)
         ? this.defaultFormat
         : format;
 
