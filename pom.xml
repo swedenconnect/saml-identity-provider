@@ -6,7 +6,7 @@
   <groupId>se.swedenconnect.spring.saml.idp</groupId>
   <artifactId>spring-saml-idp-parent</artifactId>
   <packaging>pom</packaging>
-  <version>1.1.2-SNAPSHOT</version>
+  <version>1.1.2</version>
 
   <name>Sweden Connect :: Spring SAML Identity Provider :: Parent POM</name>
   <description>Parent POM for Spring SAML Identity Provider libraries</description>
@@ -44,7 +44,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
 
-    <spring.boot.version>2.7.14</spring.boot.version>
+    <spring.boot.version>2.7.15</spring.boot.version>
     <spring.version>5.3.29</spring.version>
     <bc.version>1.76</bc.version>
   </properties>
@@ -173,7 +173,7 @@
       <dependency>
         <groupId>se.swedenconnect.opensaml</groupId>
         <artifactId>opensaml-addons</artifactId>
-        <version>1.2.7</version>
+        <version>1.2.8</version>
       </dependency>
       
       <dependency>
