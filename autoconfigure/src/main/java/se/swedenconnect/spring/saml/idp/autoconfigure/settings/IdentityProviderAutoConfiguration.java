@@ -16,6 +16,7 @@
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
 import java.security.cert.X509Certificate;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
@@ -42,6 +43,8 @@ import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
 import se.swedenconnect.spring.saml.idp.settings.EndpointSettings;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
+import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.EncryptionMethodSettings;
+import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.SigningMethodSettings;
 
 /**
  * Configuration class for Identity Provider general settings.
@@ -138,7 +141,29 @@ public class IdentityProviderAutoConfiguration {
       final MetadataSettings.Builder mdBuilder = MetadataSettings.builder()
           .template(this.properties.getMetadata().getTemplate())
           .cacheDuration(this.properties.getMetadata().getCacheDuration())
-          .validityPeriod(this.properties.getMetadata().getValidityPeriod());
+          .validityPeriod(this.properties.getMetadata().getValidityPeriod())
+          .digestMethods(this.properties.getMetadata().getDigestMethods())
+          .digestMethodsUnderRole(this.properties.getMetadata().isIncludeDigestMethodsUnderRole())
+          .signingMethods(Optional.ofNullable(this.properties.getMetadata().getSigningMethods())
+              .map(list -> list.stream()
+                  .map(s -> SigningMethodSettings.builder()
+                      .algorithm(s.getAlgorithm())
+                      .minKeySize(s.getMinKeySize())
+                      .maxKeySize(s.getMaxKeySize())
+                      .build())
+                  .toList())
+              .orElse(null))
+          .signingMethodsUnderRole(this.properties.getMetadata().isIncludeSigningMethodsUnderRole())
+          .encryptionMethods(Optional.ofNullable(this.properties.getMetadata().getEncryptionMethods())
+              .map(list -> list.stream()
+                  .map(m -> EncryptionMethodSettings.builder()
+                      .algorithm(m.getAlgorithm())
+                      .keySize(m.getKeySize())
+                      .oaepParams(m.getOaepParams())
+                      .digestMethod(m.getDigestMethod())
+                      .build())
+                  .toList())
+              .orElse(null));
 
       if (this.properties.getMetadata().getUiInfo() != null) {
         final MetadataSettings.UIInfoSettings.Builder uiBuilder = MetadataSettings.UIInfoSettings.builder()
