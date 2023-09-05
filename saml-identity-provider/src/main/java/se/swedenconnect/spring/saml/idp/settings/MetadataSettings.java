@@ -26,7 +26,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Settings for the IdP metadata.
- * 
+ *
  * @author Martin Lindström
  */
 public class MetadataSettings extends AbstractSettings {
@@ -49,13 +49,13 @@ public class MetadataSettings extends AbstractSettings {
 
   /**
    * Gets the template for the IdP metadata.
-   * 
+   *
    * @return the template or {@code null} if not assigned.
    */
   public Resource getTemplate() {
     return this.getSetting(SAML_METADATA_TEMPLATE);
   }
-  
+
   /**
    * Default cache duration.
    */
@@ -68,13 +68,13 @@ public class MetadataSettings extends AbstractSettings {
 
   /**
    * Tells how long the published IdP metadata can remain in a cache.
-   * 
+   *
    * @return a {@link Duration}
    */
   public Duration getCacheDuration() {
     return this.getSetting(SAML_METADATA_CACHE_DURATION);
   }
-  
+
   /**
    * Default metadata validity.
    */
@@ -87,11 +87,93 @@ public class MetadataSettings extends AbstractSettings {
 
   /**
    * Tells for how long a published metadata entry should be valid.
-   * 
+   *
    * @return a {@link Duration}
    */
   public Duration getValidityPeriod() {
     return this.getSetting(SAML_METADATA_VALIDITY);
+  }
+
+  /**
+   * The {@code alg:DigestMethod} elements that should be included in the metadata. A {@link List} of strings.
+   */
+  public static final String SAML_METADATA_DIGEST_METHODS = "digest-methods";
+
+  /**
+   * Gets the {@code alg:DigestMethod} elements that should be included in the metadata.
+   *
+   * @return a list of algorithms
+   */
+  public List<String> getDigestMethods() {
+    return this.getSetting(SAML_METADATA_DIGEST_METHODS);
+  }
+
+  /**
+   * Whether {@code alg:DigestMethod} elements should be placed in an {@code Extensions} element under the role
+   * descriptor (i.e., the {@code IDPSSODescriptor}). If {@code false}, the {@code alg:DigestMethod} elements are
+   * included as elements in the {@code Extensions} element of the {@code EntityDescriptor}. A {@link Boolean}.
+   */
+  public static final String SAML_METADATA_DIGEST_METHODS_UNDER_ROLE = "digest-methods-under-role";
+
+  /**
+   * Tells whether {@code alg:DigestMethod} elements should be placed in an {@code Extensions} element under the role
+   * descriptor (i.e., the {@code IDPSSODescriptor}). If {@code false}, the {@code alg:DigestMethod} elements are
+   * included as elements in the {@code Extensions} element of the {@code EntityDescriptor}.
+   *
+   * @return where to place elements
+   */
+  public Boolean getDigestMethodsUnderRole() {
+    return this.getSetting(SAML_METADATA_DIGEST_METHODS_UNDER_ROLE);
+  }
+
+  /**
+   * The {@code alg:SigningMethod} elements that should be included in the metadata. A {@link List} of
+   * {@link SigningMethodSettings}.
+   */
+  public static final String SAML_METADATA_SIGNING_METHODS = "signing-methods";
+
+  /**
+   * Gets the {@code alg:SigningMethod} elements that should be included in the metadata.
+   *
+   * @return a list of signing methods
+   */
+  public List<SigningMethodSettings> getSigningMethods() {
+    return this.getSetting(SAML_METADATA_SIGNING_METHODS);
+  }
+
+  /**
+   * Whether {@code alg:SigningMethod} elements should be placed in an {@code Extensions} element under the role
+   * descriptor (i.e., the {@code IDPSSODescriptor}). If {@code false}, the {@code alg:SigningMethod} elements are
+   * included as elements in the {@code Extensions} element of the {@code EntityDescriptor}. A {@link Boolean}.
+   */
+  public static final String SAML_METADATA_SIGNING_METHODS_UNDER_ROLE = "signing-methods-under-role";
+
+  /**
+   * Tells whether {@code alg:SigningMethod} elements should be placed in an {@code Extensions} element under the role
+   * descriptor (i.e., the {@code IDPSSODescriptor}). If {@code false}, the {@code alg:SigningMethod} elements are
+   * included as elements in the {@code Extensions} element of the {@code EntityDescriptor}.
+   *
+   * @return where to place elements
+   */
+  public Boolean getSigningMethodsUnderRole() {
+    return this.getSetting(SAML_METADATA_SIGNING_METHODS_UNDER_ROLE);
+  }
+
+  /**
+   * The {@code md:EncryptionMethod} elements that should be included under the {@code md:KeyDescriptor} for the
+   * encryption key. Note that these algorithms must match the configured encryption key. {@link List} of
+   * {@link EncryptionMethodSettings}.
+   */
+  public static final String SAML_METADATA_ENCRYPTION_METHODS = "encryption-methods";
+
+  /**
+   * Gets the {@code md:EncryptionMethod} elements that should be included under the {@code md:KeyDescriptor} for the
+   * encryption key. Note that these algorithms must match the configured encryption key.
+   *
+   * @return a list of {@link EncryptionMethodSettings}
+   */
+  public List<EncryptionMethodSettings> getEncryptionMethods() {
+    return this.getSetting(SAML_METADATA_ENCRYPTION_METHODS);
   }
 
   /**
@@ -101,7 +183,7 @@ public class MetadataSettings extends AbstractSettings {
 
   /**
    * Gets the {@link UIInfoSettings}.
-   * 
+   *
    * @return {@link UIInfoSettings} or {@code null}
    */
   public UIInfoSettings getUiInfo() {
@@ -115,7 +197,7 @@ public class MetadataSettings extends AbstractSettings {
 
   /**
    * Gets the {@code Organization} element.
-   * 
+   *
    * @return a {@link OrganizationSettings} or {@code null}
    */
   public OrganizationSettings getOrganization() {
@@ -129,7 +211,7 @@ public class MetadataSettings extends AbstractSettings {
 
   /**
    * Gets a {@link Map} where the keys are {@link ContactPersonType} and the values {@link ContactPersonSettings}.
-   * 
+   *
    * @return a map of contact persons
    */
   public Map<ContactPersonType, ContactPersonSettings> getContactPersons() {
@@ -166,7 +248,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Assigns the template for the IdP metadata.
-     * 
+     *
      * @param template the metadata template
      * @return the builder
      */
@@ -176,7 +258,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Assigns how long the published IdP metadata can remain in a cache.
-     * 
+     *
      * @param cacheDuration the cache duration
      * @return the builder
      */
@@ -186,7 +268,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Assigns for how long a published metadata entry should be valid.
-     * 
+     *
      * @param validityPeriod for how long a published metadata entry should be valid
      * @return the builder
      */
@@ -195,8 +277,63 @@ public class MetadataSettings extends AbstractSettings {
     }
 
     /**
+     * Assigns the {@code alg:DigestMethod} elements that should be included in the metadata.
+     *
+     * @param digestMethods a list of algorithms
+     * @return the builder
+     */
+    public Builder digestMethods(final List<String> digestMethods) {
+      return this.setting(SAML_METADATA_DIGEST_METHODS, digestMethods);
+    }
+
+    /**
+     * Assigns whether {@code alg:DigestMethod} elements should be placed in an {@code Extensions} element under the
+     * role descriptor (i.e., the {@code IDPSSODescriptor}). If {@code false}, the {@code alg:DigestMethod} elements are
+     * included as elements in the {@code Extensions} element of the {@code EntityDescriptor}.
+     *
+     * @param underRole assign under role
+     * @return where to place elements
+     */
+    public Builder digestMethodsUnderRole(final Boolean underRole) {
+      return this.setting(SAML_METADATA_DIGEST_METHODS_UNDER_ROLE, underRole);
+    }
+
+    /**
+     * Assigns the {@code alg:SigningMethod} elements that should be included in the metadata.
+     *
+     * @param signingMethods the signing methods
+     * @return a list of signing methods
+     */
+    public Builder signingMethods(final List<SigningMethodSettings> signingMethods) {
+      return this.setting(SAML_METADATA_SIGNING_METHODS, signingMethods);
+    }
+
+    /**
+     * Assigns whether {@code alg:SigningMethod} elements should be placed in an {@code Extensions} element under the
+     * role descriptor (i.e., the {@code IDPSSODescriptor}). If {@code false}, the {@code alg:SigningMethod} elements
+     * are included as elements in the {@code Extensions} element of the {@code EntityDescriptor}.
+     *
+     * @param underRole assign under role
+     * @return where to place elements
+     */
+    public Builder signingMethodsUnderRole(final Boolean underRole) {
+      return this.setting(SAML_METADATA_SIGNING_METHODS_UNDER_ROLE, underRole);
+    }
+
+    /**
+     * Assigns the {@code md:EncryptionMethod} elements that should be included under the {@code md:KeyDescriptor} for
+     * the encryption key. Note that these algorithms must match the configured encryption key.
+     *
+     * @param encryptionMethods a list of {@link EncryptionMethodSettings}
+     * @return the builder
+     */
+    public Builder encryptionMethods(final List<EncryptionMethodSettings> encryptionMethods) {
+      return this.setting(SAML_METADATA_ENCRYPTION_METHODS, encryptionMethods);
+    }
+
+    /**
      * Assigns the {@link UIInfoSettings}.
-     * 
+     *
      * @param uiInfo {@link UIInfoSettings}
      * @return the builder
      */
@@ -206,7 +343,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Assigns the {@code Organization} element.
-     * 
+     *
      * @param organization an {@link OrganizationSettings}
      * @return the builder
      */
@@ -216,7 +353,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Assigns a {@link Map} where the keys are {@link ContactPersonType} and the values {@link ContactPersonSettings}.
-     * 
+     *
      * @param contactPersons a map of contact persons
      * @return the builder
      */
@@ -233,6 +370,12 @@ public class MetadataSettings extends AbstractSettings {
       if (this.getSettings().get(SAML_METADATA_VALIDITY) == null) {
         this.validityPeriod(SAML_METADATA_VALIDITY_DEFAULT);
       }
+      if (this.getSettings().get(SAML_METADATA_DIGEST_METHODS_UNDER_ROLE) == null) {
+        this.digestMethodsUnderRole(false);
+      }
+      if (this.getSettings().get(SAML_METADATA_SIGNING_METHODS_UNDER_ROLE) == null) {
+        this.signingMethodsUnderRole(false);
+      }
     }
 
     /** {@inheritDoc} */
@@ -244,8 +387,302 @@ public class MetadataSettings extends AbstractSettings {
   }
 
   /**
+   * Configuration for SigningMethod metadata elements.
+   *
+   * @author Martin Lindström
+   */
+  public static class SigningMethodSettings extends AbstractSettings {
+
+    private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
+
+    /**
+     * Constructor.
+     *
+     * @param settings the settings
+     */
+    protected SigningMethodSettings(final Map<String, Object> settings) {
+      super(settings);
+    }
+
+    /**
+     * Identifies the algorithm by means of the URL defined for its use with the XML Signature specification. A
+     * {@link String}.
+     */
+    public static final String ALGORITHM = "algorithm";
+
+    /**
+     * Gets the signing algorithm.
+     *
+     * @return the signing algorithm
+     */
+    public String getAlgorithm() {
+      return this.getSetting(ALGORITHM);
+    }
+
+    /**
+     * The smallest key size, in bits, that the entity supports in conjunction with the algorithm. If omitted, no
+     * minimum is implied. An {@link Integer}.
+     */
+    public static final String MIN_KEYSIZE = "min-keysize";
+
+    /**
+     * Gets the smallest key size, in bits, that the entity supports in conjunction with the algorithm.
+     *
+     * @return minimum key size
+     */
+    public Integer getMinKeySize() {
+      return this.getSetting(MIN_KEYSIZE);
+    }
+
+    /**
+     * The largest key size, in bits, that the entity supports in conjunction with the algorithm. If omitted, no maximum
+     * is implied. An {@link Integer}.
+     */
+    public static final String MAX_KEYSIZE = "max-keysize";
+
+    /**
+     * Gets the largest key size, in bits, that the entity supports in conjunction with the algorithm.
+     *
+     * @return maximum key size
+     */
+    public Integer getMaxKeySize() {
+      return this.getSetting(MAX_KEYSIZE);
+    }
+
+    /**
+     * Constructs a new {@link Builder} with no settings.
+     *
+     * @return the {@link Builder}
+     */
+    public static Builder builder() {
+      return new Builder();
+    }
+
+    /**
+     * Constructs a new {@link Builder} with the provided settings.
+     *
+     * @param settings the settings to initialize the builder
+     * @return the builder
+     */
+    public static Builder withSettings(final Map<String, Object> settings) {
+      Assert.notEmpty(settings, "settings cannot be empty");
+      return new Builder().settings(s -> s.putAll(settings));
+    }
+
+    /**
+     * A builder for {@link SigningMethodSettings}.
+     */
+    public final static class Builder extends AbstractBuilder<SigningMethodSettings, Builder> {
+
+      private Builder() {
+      }
+
+      /**
+       * Assigns the signing algorithm.
+       *
+       * @param algorithm the algorithm
+       * @return the builder
+       */
+      public Builder algorithm(final String algorithm) {
+        return this.setting(ALGORITHM, algorithm);
+      }
+
+      /**
+       * Assigns the smallest key size, in bits, that the entity supports in conjunction with the algorithm.
+       *
+       * @param minKeySize minimum key size
+       * @return the builder
+       */
+      public Builder minKeySize(final Integer minKeySize) {
+        return this.setting(MIN_KEYSIZE, minKeySize);
+      }
+
+      /**
+       * Assigns the largest key size, in bits, that the entity supports in conjunction with the algorithm.
+       *
+       * @param maxKeySize maximum key size
+       * @return the builder
+       */
+      public Builder maxKeySize(final Integer maxKeySize) {
+        return this.setting(MAX_KEYSIZE, maxKeySize);
+      }
+
+      /** {@inheritDoc} */
+      @Override
+      protected void applyDefaultSettings() {
+      }
+
+      /** {@inheritDoc} */
+      @Override
+      protected SigningMethodSettings buildObject() {
+        return new SigningMethodSettings(this.getSettings());
+      }
+    }
+
+  }
+
+  /**
+   * Configuration for EncryptionMethod metadata elements.
+   *
+   * @author Martin Lindström
+   */
+  public static class EncryptionMethodSettings extends AbstractSettings {
+
+    private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
+
+    /**
+     * Constructor.
+     *
+     * @param settings the settings
+     */
+    protected EncryptionMethodSettings(final Map<String, Object> settings) {
+      super(settings);
+    }
+
+    /**
+     * The algorithm URI of the encryption method. A {@link String}.
+     */
+    public static final String ALGORITHM = "algorithm";
+
+    /**
+     * Gets the encryption algorithm.
+     *
+     * @return the encryption algorithm
+     */
+    public String getAlgorithm() {
+      return this.getSetting(ALGORITHM);
+    }
+
+    /**
+     * The key size, in bits, for the encryption algorithm. An {@link Integer}.
+     */
+    public static final String KEYSIZE = "keysize";
+
+    /**
+     * Gets the key size, in bits, for the algorithm.
+     *
+     * @return key size
+     */
+    public Integer getKeySize() {
+      return this.getSetting(KEYSIZE);
+    }
+
+    /**
+     * The OAEP params in base64 encoding. A {@link String}.
+     */
+    public static final String OAEP_PARAMS = "oaep-params";
+
+    /**
+     * Gets the OAEP params.
+     *
+     * @return the OAEP params
+     */
+    public String getOaepParams() {
+      return this.getSetting(OAEP_PARAMS);
+    }
+
+    /**
+     * If {@code algorithm} indicates a key transport algorithm where the digest algorithm needs to be given, this field
+     * should be set to this algorithm URI. A {@link String}.
+     */
+    public static final String DIGEST_METHOD = "digest-method";
+
+    /**
+     * Gets the digest method URI. If {@code algorithm} indicates a key transport algorithm where the digest algorithm
+     * needs to be given, this field should be set to this algorithm URI.
+     *
+     * @return URI
+     */
+    public String getDigestMethod() {
+      return this.getSetting(DIGEST_METHOD);
+    }
+
+    /**
+     * Constructs a new {@link Builder} with no settings.
+     *
+     * @return the {@link Builder}
+     */
+    public static Builder builder() {
+      return new Builder();
+    }
+
+    /**
+     * Constructs a new {@link Builder} with the provided settings.
+     *
+     * @param settings the settings to initialize the builder
+     * @return the builder
+     */
+    public static Builder withSettings(final Map<String, Object> settings) {
+      Assert.notEmpty(settings, "settings cannot be empty");
+      return new Builder().settings(s -> s.putAll(settings));
+    }
+
+    /**
+     * A builder for {@link EncryptionMethodSettings}.
+     */
+    public final static class Builder extends AbstractBuilder<EncryptionMethodSettings, Builder> {
+
+      private Builder() {
+      }
+
+      /**
+       * Assigns the encryption algorithm.
+       *
+       * @param algorithm the algorithm
+       * @return the builder
+       */
+      public Builder algorithm(final String algorithm) {
+        return this.setting(ALGORITHM, algorithm);
+      }
+
+      /**
+       * Assigns the key size.
+       *
+       * @param keySize key size
+       * @return the builder
+       */
+      public Builder keySize(final Integer keySize) {
+        return this.setting(KEYSIZE, keySize);
+      }
+
+      /**
+       * Assigns the OAEP params.
+       *
+       * @param params the OAEP params
+       * @return the builder
+       */
+      public Builder oaepParams(final String params) {
+        return this.setting(OAEP_PARAMS, params);
+      }
+
+      /**
+       * Assigns the digest method URI. If {@code algorithm} indicates a key transport algorithm where the digest algorithm
+       * needs to be given, this field should be set to this algorithm URI.
+       *
+       * @param algorithm algorithm URI
+       * @return the builder
+       */
+      public Builder digestMethod(final String algorithm) {
+        return this.setting(DIGEST_METHOD, algorithm);
+      }
+
+      /** {@inheritDoc} */
+      @Override
+      protected void applyDefaultSettings() {
+      }
+
+      /** {@inheritDoc} */
+      @Override
+      protected EncryptionMethodSettings buildObject() {
+        return new EncryptionMethodSettings(this.getSettings());
+      }
+    }
+
+  }
+
+  /**
    * Configuration for UIInfo metadata element.
-   * 
+   *
    * @author Martin Lindström
    */
   public static class UIInfoSettings extends AbstractSettings {
@@ -269,7 +706,7 @@ public class MetadataSettings extends AbstractSettings {
     /**
      * Gets the UIInfo display names as a map of strings where the key is the language tag and the value is the display
      * name for that language.
-     * 
+     *
      * @return a map of display names
      */
     public Map<String, String> getDisplayNames() {
@@ -284,7 +721,7 @@ public class MetadataSettings extends AbstractSettings {
     /**
      * Gets the UIInfo descriptions as a map of strings where the key is the language tag and the value is the
      * description for that language.
-     * 
+     *
      * @return a map of descriptions
      */
     public Map<String, String> getDescriptions() {
@@ -296,7 +733,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Gets the UIInfo logotypes.
-     * 
+     *
      * @return the UIInfo logotypes.
      */
     public List<LogoSettings> getLogotypes() {
@@ -334,7 +771,7 @@ public class MetadataSettings extends AbstractSettings {
       /**
        * Assigns the UIInfo display name as a map of strings where the key is the language tag and the value is the
        * display name for that language.
-       * 
+       *
        * @param displayName the display name
        * @return the builder
        */
@@ -345,7 +782,7 @@ public class MetadataSettings extends AbstractSettings {
       /**
        * Assigns the UIInfo description as a map of strings where the key is the language tag and the value is the
        * description for that language.
-       * 
+       *
        * @param description a map of descriptions
        * @return the builder
        */
@@ -355,7 +792,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Assigns the UIInfo logotypes.
-       * 
+       *
        * @param logotypes the UIInfo logotypes.
        * @return the builder
        */
@@ -377,7 +814,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Configuration settings for {@code UIInfo.Logo} elements.
-     * 
+     *
      * @author Martin Lindström
      */
     public static class LogoSettings extends AbstractSettings {
@@ -398,7 +835,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Gets the logotype URL. Mutually exclusive with Path.
-       * 
+       *
        * @return the URL
        */
       public String getUrl() {
@@ -410,7 +847,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Gets the logotype path. Mutually exclusive with URL.
-       * 
+       *
        * @return the path
        */
       public String getPath() {
@@ -422,7 +859,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Gets the height of the logo in pixels.
-       * 
+       *
        * @return the logo height
        */
       public Integer getHeight() {
@@ -434,7 +871,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Gets the width of the logo in pixels.
-       * 
+       *
        * @return the logo width
        */
       public Integer getWidth() {
@@ -446,7 +883,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Gets the logo language tag.
-       * 
+       *
        * @return the logo language tag
        */
       public String getLanguageTag() {
@@ -483,7 +920,7 @@ public class MetadataSettings extends AbstractSettings {
 
         /**
          * Assigns the logotype URL.
-         * 
+         *
          * @param url the URL
          * @return the builder
          */
@@ -493,7 +930,7 @@ public class MetadataSettings extends AbstractSettings {
 
         /**
          * Assigns the logotype path.
-         * 
+         *
          * @param path the path
          * @return the builder
          */
@@ -503,7 +940,7 @@ public class MetadataSettings extends AbstractSettings {
 
         /**
          * Assigns the height of the logo in pixels.
-         * 
+         *
          * @param height the logo height
          * @return the builder
          */
@@ -513,7 +950,7 @@ public class MetadataSettings extends AbstractSettings {
 
         /**
          * Assigns the width of the logo in pixels.
-         * 
+         *
          * @param width the logo width
          * @return the builder
          */
@@ -523,7 +960,7 @@ public class MetadataSettings extends AbstractSettings {
 
         /**
          * Assigns the logo language tag.
-         * 
+         *
          * @param languageTag the language tag
          * @return the builder
          */
@@ -550,7 +987,7 @@ public class MetadataSettings extends AbstractSettings {
 
   /**
    * Configuration for Organization metadata element.
-   * 
+   *
    * @author Martin Lindström
    */
   public static class OrganizationSettings extends AbstractSettings {
@@ -574,7 +1011,7 @@ public class MetadataSettings extends AbstractSettings {
     /**
      * Gets the Organization name as a map of strings where the key is the language tag and the value is the description
      * for that language.
-     * 
+     *
      * @return a map of names
      */
     public Map<String, String> getNames() {
@@ -589,7 +1026,7 @@ public class MetadataSettings extends AbstractSettings {
     /**
      * Gets the Organization display names as a map of strings where the key is the language tag and the value is the
      * display name for that language.
-     * 
+     *
      * @return a map of display names
      */
     public Map<String, String> getDisplayNames() {
@@ -603,7 +1040,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Gets the Organization URL:s as a map where the key is the language tag and the URL the value.
-     * 
+     *
      * @return a map of Organization URLs
      */
     public Map<String, String> getUrls() {
@@ -641,7 +1078,7 @@ public class MetadataSettings extends AbstractSettings {
       /**
        * Assigns the Organization names as a map of strings where the key is the language tag and the value is the
        * description for that language.
-       * 
+       *
        * @param names a map of names
        * @return the builder
        */
@@ -652,7 +1089,7 @@ public class MetadataSettings extends AbstractSettings {
       /**
        * Assigns the Organization display name as a map of strings where the key is the language tag and the value is
        * the display name for that language.
-       * 
+       *
        * @param displayName the display name
        * @return the builder
        */
@@ -662,7 +1099,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Assigns the Organization URL:s as a map where the key is the language tag and the URL the value.
-       * 
+       *
        * @param urls a map of Organization URLs
        * @return the builder
        */
@@ -694,7 +1131,7 @@ public class MetadataSettings extends AbstractSettings {
 
   /**
    * Configuration for ContactPerson metadata element.
-   * 
+   *
    * @author Martin Lindström
    */
   public static class ContactPersonSettings extends AbstractSettings {
@@ -717,7 +1154,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Gets the {@code Company} element.
-     * 
+     *
      * @return the {@code Company}
      */
     public String getCompany() {
@@ -731,7 +1168,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Gets the {@code GivenName} element.
-     * 
+     *
      * @return the {@code GivenName}
      */
     public String getGivenName() {
@@ -745,7 +1182,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Gets the {@code SurName} element.
-     * 
+     *
      * @return the {@code SurName}
      */
     public String getSurname() {
@@ -759,7 +1196,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Gets the {@code EmailAddress} elements.
-     * 
+     *
      * @return a list of the {@code EmailAddress}
      */
     public List<String> getEmailAddresses() {
@@ -773,7 +1210,7 @@ public class MetadataSettings extends AbstractSettings {
 
     /**
      * Gets the {@code TelephoneNumber} elements.
-     * 
+     *
      * @return a list of the {@code TelephoneNumber}s
      */
     public List<String> getTelephoneNumbers() {
@@ -810,7 +1247,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Assigns the {@code Company} element.
-       * 
+       *
        * @param company the {@code Company}
        * @return the builder
        */
@@ -820,7 +1257,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Assigns the {@code GivenName} element.
-       * 
+       *
        * @param givenName the {@code GivenName}
        * @return the builder
        */
@@ -830,7 +1267,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Assigns the {@code SurName} element.
-       * 
+       *
        * @param surname the {@code SurName}
        * @return the builder
        */
@@ -840,7 +1277,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Assigns the {@code EmailAddress} elements.
-       * 
+       *
        * @param emailAddresses a list of the {@code EmailAddress}
        * @return the builder
        */
@@ -850,7 +1287,7 @@ public class MetadataSettings extends AbstractSettings {
 
       /**
        * Assigns the {@code TelephoneNumber} elements.
-       * 
+       *
        * @param telephoneNumbers a list of the {@code TelephoneNumber}s
        * @return the builder
        */

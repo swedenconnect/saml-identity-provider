@@ -84,12 +84,27 @@ See https://github.com/swedenconnect/credentials-support for details about the [
 
 | Property | Description | Type | Default value |
 | :--- | :--- | :--- | :--- |
-| `template` | A template for the IdP metadata. This is an XML document containing (partial) SAML metadata. | [Resource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html) (pointing at a XML-file resource). | - |
-| `cache-duration` | Tells how long the published IdP metadata can remain in a cache. | Duration | 24 hours |
+| `template` | A template for the SAML metadata. This is an XML document containing (partial) SAML metadata. | [Resource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html) (pointing at a XML-file resource). | - |
+| `cache-duration` | Tells how long the published metadata can remain in a cache. | Duration | 24 hours |
 | `validity-period` | Tells for how long a published metadata entry should be valid. | Duration | 7 days |
+| `digest-methods[]` | A list of algorithm URI:s representing the `alg:DigestMethod` elements to include in the metadata. | List of strings. | - |
+| `include-digest-methods`<br />`-under-role` | Tells whether `alg:DigestMethod` elements should be placed in an `Extensions` element under the role descriptor (i.e., the `IDPSSODescriptor`). If `false`, the `alg:DigestMethod`elements are included as elements in the `Extensions` element of the `EntityDescriptor`. | Boolean | `false` |
+| `signing-methods[].*` | The `alg:SigningMethod` elements to include in the metadata. Each element is configured with `algorithm` that identifier the algorithm by means of the URL defined for its use with the XML Signature specification, and optionally `min-key-size` which is the smallest key size, in bits, that the entity supports in conjunction with the algorithm and `max-key-size` which is the largest key size, in bits, that the entity supports in conjunction with the algorithm. | List of [MetadataConfigurationProperties.SigningMethod](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataConfigurationProperties.java) | - |
+| `include-signing-methods`<br />`-under-role` | Tells whether `alg:SigningMethod` elements should be placed in an `Extensions` element under the role descriptor (i.e., the `IDPSSODescriptor`). If `false`, the `alg:SigningMethod`elements are included as elements in the `Extensions` element of the `EntityDescriptor`. | Boolean | `false` |
+| `encryption-methods[].*` | The `md:EncryptionMethod` elements that should be included under the `md:KeyDescriptor` for the encryption key. Note that these algorithms must match the configured encryption key. | See [Encryption Methods](#encryption-methods) below. | - |
 | `ui-info.*` | Configuration for the metadata `UIInfo` element. See the `UIInfo` class in [MetadataConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataConfigurationProperties.java) for details. | [MetadataConfigurationProperties.UIInfo](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataConfigurationProperties.java) | - |
 | `organization.*` | Settings for the `Organization` metadata element. See the `Organization` class in the [MetadataConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataConfigurationProperties.java) for details. | [MetadataConfigurationProperties.Organization](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataConfigurationProperties.java) | - |
 | `contact-persons.*` | A map of the metadata `ContactPerson` elements, where the key is the type and the value is a `ContactPerson`. | [MetadataConfigurationProperties.ContactPerson](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataConfigurationProperties.java) | - |
+
+<a name="encryption-methods"></a>
+##### Encryption Methods
+
+| Property | Description | Type | Default value |
+| :--- | :--- | :--- | :--- |
+| `algorithm` | The algorithm URI of the encryption method. | String | - |
+| `key-size` | The key size. | Integer | - |
+| `oaep-params` | The OAEP parameters (in Base64-encoding). | String | - |
+| `digest-method` | If `algorithm` indicates a key transport algorithm where the digest algorithm needs to be given, this field should be set to this algorithm URI. | String | - |
 
 <a name="metadata-provider-configuration"></a>
 #### Metadata Provider Configuration

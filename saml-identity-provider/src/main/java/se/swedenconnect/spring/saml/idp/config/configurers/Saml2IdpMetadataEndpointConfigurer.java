@@ -27,10 +27,13 @@ import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.ext.saml2alg.DigestMethod;
+import org.opensaml.saml.ext.saml2alg.SigningMethod;
 import org.opensaml.saml.ext.saml2mdattr.EntityAttributes;
 import org.opensaml.saml.ext.saml2mdui.UIInfo;
 import org.opensaml.saml.saml2.core.NameID;
 import org.opensaml.saml.saml2.metadata.ContactPersonTypeEnumeration;
+import org.opensaml.saml.saml2.metadata.EncryptionMethod;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.Extensions;
 import org.opensaml.saml.saml2.metadata.IDPSSODescriptor;
@@ -45,6 +48,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.utilities.java.support.xml.XMLParserException;
@@ -52,13 +56,15 @@ import se.swedenconnect.opensaml.common.utils.LocalizedString;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorContainer;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
 import se.swedenconnect.opensaml.saml2.metadata.build.ContactPersonBuilder;
+import se.swedenconnect.opensaml.saml2.metadata.build.DigestMethodBuilder;
+import se.swedenconnect.opensaml.saml2.metadata.build.EncryptionMethodBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.EntityAttributesBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.EntityDescriptorBuilder;
-import se.swedenconnect.opensaml.saml2.metadata.build.ExtensionsBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.IDPSSODescriptorBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.KeyDescriptorBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.LogoBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.OrganizationBuilder;
+import se.swedenconnect.opensaml.saml2.metadata.build.SigningMethodBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.SingleSignOnServiceBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.UIInfoBuilder;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
@@ -122,7 +128,7 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
   void configure(final HttpSecurity httpSecurity) {
 
     final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
-    
+
     if (settings.getMetadata() == null) {
       log.warn("No configuration for SAML metadata provided - IdP will not expose SAML metadata");
       return;
@@ -145,21 +151,23 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
       this.entityDescriptorBuilder.entityID(settings.getEntityId());
       this.entityDescriptorBuilder.cacheDuration(settings.getMetadata().getCacheDuration());
 
+      final Extensions extensions = Optional.ofNullable(this.entityDescriptorBuilder.object().getExtensions())
+          .orElseGet(() -> {
+            final Extensions e = (Extensions) XMLObjectSupport.buildXMLObject(Extensions.DEFAULT_ELEMENT_NAME);
+            this.entityDescriptorBuilder.extensions(e);
+            return e;
+          });
+
       // EntityAttributes
       //
       final EntityAttributesBuilder entityAttributesBuilder = EntityAttributesBuilder.builder();
-      Extensions extensions = this.entityDescriptorBuilder.object().getExtensions();
-      if (extensions != null) {
-        final EntityAttributes entityAttributes =
-            EntityDescriptorUtils.getMetadataExtension(extensions, EntityAttributes.class);
-        if (entityAttributes != null) {
-          entityAttributesBuilder.attributes(entityAttributes.getAttributes());
-          extensions.getUnknownXMLObjects().removeIf(o -> EntityAttributes.class.isAssignableFrom(o.getClass()));
-        }
+      final EntityAttributes entityAttributes =
+          EntityDescriptorUtils.getMetadataExtension(extensions, EntityAttributes.class);
+      if (entityAttributes != null) {
+        entityAttributesBuilder.attributes(entityAttributes.getAttributes());
+        extensions.getUnknownXMLObjects().removeIf(o -> EntityAttributes.class.isAssignableFrom(o.getClass()));
       }
-      else {
-        extensions = (Extensions) XMLObjectSupport.buildXMLObject(Extensions.DEFAULT_ELEMENT_NAME);
-      }
+
       final List<String> authnContextUris = providers.stream()
           .map(UserAuthenticationProvider::getSupportedAuthnContextUris)
           .flatMap(Collection::stream)
@@ -178,7 +186,22 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
       }
 
       extensions.getUnknownXMLObjects().add(entityAttributesBuilder.build());
-      this.entityDescriptorBuilder.extensions(extensions);
+
+      if (settings.getMetadata().getDigestMethods() != null
+          && !settings.getMetadata().getDigestMethodsUnderRole()) {
+        extensions.getUnknownXMLObjects().removeIf(o -> DigestMethod.class.isAssignableFrom(o.getClass()));
+        settings.getMetadata().getDigestMethods().stream()
+            .filter(d -> StringUtils.hasText(d))
+            .forEach(d -> extensions.getUnknownXMLObjects().add(DigestMethodBuilder.builder().algorithm(d).build()));
+      }
+      if (settings.getMetadata().getSigningMethods() != null
+          && !settings.getMetadata().getSigningMethodsUnderRole()) {
+        extensions.getUnknownXMLObjects().removeIf(o -> SigningMethod.class.isAssignableFrom(o.getClass()));
+        settings.getMetadata().getSigningMethods().stream()
+            .filter(s -> StringUtils.hasText(s.getAlgorithm()))
+            .forEach(s -> extensions.getUnknownXMLObjects().add(
+                SigningMethodBuilder.signingMethod(s.getAlgorithm(), s.getMinKeySize(), s.getMaxKeySize())));
+      }
 
       final IDPSSODescriptor existingSsoDescriptor =
           this.entityDescriptorBuilder.object().getIDPSSODescriptor(SAMLConstants.SAML20P_NS);
@@ -188,11 +211,34 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
 
       descBuilder.wantAuthnRequestsSigned(settings.getRequiresSignedRequests());
 
+      final Extensions roleExtensions = Optional.ofNullable(descBuilder.object().getExtensions())
+          .orElseGet(() -> (Extensions) XMLObjectSupport.buildXMLObject(Extensions.DEFAULT_ELEMENT_NAME));
+
       final UIInfo uiInfo = buildUiInfo(settings);
       if (uiInfo != null) {
-        final ExtensionsBuilder extensionsBuilder = descBuilder.getExtensionsBuilder();
-        extensionsBuilder.extensions(uiInfo);
-        descBuilder.extensions(extensionsBuilder.build());
+        roleExtensions.getUnknownXMLObjects().removeIf(o -> UIInfo.class.isAssignableFrom(o.getClass()));
+        roleExtensions.getUnknownXMLObjects().add(uiInfo);
+      }
+
+      if (settings.getMetadata().getDigestMethods() != null
+          && settings.getMetadata().getDigestMethodsUnderRole()) {
+        roleExtensions.getUnknownXMLObjects().removeIf(o -> DigestMethod.class.isAssignableFrom(o.getClass()));
+        settings.getMetadata().getDigestMethods().stream()
+            .filter(d -> StringUtils.hasText(d))
+            .forEach(
+                d -> roleExtensions.getUnknownXMLObjects().add(DigestMethodBuilder.builder().algorithm(d).build()));
+      }
+      if (settings.getMetadata().getSigningMethods() != null
+          && settings.getMetadata().getSigningMethodsUnderRole()) {
+        roleExtensions.getUnknownXMLObjects().removeIf(o -> SigningMethod.class.isAssignableFrom(o.getClass()));
+        settings.getMetadata().getSigningMethods().stream()
+            .filter(s -> StringUtils.hasText(s.getAlgorithm()))
+            .forEach(s -> roleExtensions.getUnknownXMLObjects().add(
+                SigningMethodBuilder.signingMethod(s.getAlgorithm(), s.getMinKeySize(), s.getMaxKeySize())));
+      }
+
+      if (descBuilder.object().getExtensions() == null && !roleExtensions.getUnknownXMLObjects().isEmpty()) {
+        descBuilder.extensions(roleExtensions);
       }
 
       final List<KeyDescriptor> keyDescriptors = new ArrayList<>();
@@ -216,23 +262,73 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
       }
       if (settings.getCredentials().getEncryptCredential() != null) {
         encryptAssigned = true;
-        keyDescriptors.add(
-            KeyDescriptorBuilder.builder()
-                .use(UsageType.ENCRYPTION)
-                .certificate(settings.getCredentials().getEncryptCredential().getCertificate())
-                .keyName(settings.getCredentials().getEncryptCredential().getName())
-                .build());
-        // TODO: encryption methods
+        final KeyDescriptorBuilder kdBuilder = KeyDescriptorBuilder.builder()
+            .use(UsageType.ENCRYPTION)
+            .certificate(settings.getCredentials().getEncryptCredential().getCertificate())
+            .keyName(settings.getCredentials().getEncryptCredential().getName());
+
+        if (settings.getMetadata().getEncryptionMethods() != null) {
+          kdBuilder.encryptionMethodsExt(settings.getMetadata().getEncryptionMethods().stream()
+              .filter(e -> StringUtils.hasText(e.getAlgorithm()))
+              .map(e -> {
+                final EncryptionMethodBuilder builder = EncryptionMethodBuilder.builder()
+                    .algorithm(e.getAlgorithm());
+
+                if (e.getKeySize() != null) {
+                  builder.keySize(e.getKeySize());
+                }
+                if (e.getOaepParams() != null) {
+                  builder.oAEPparams(e.getOaepParams());
+                }
+                final EncryptionMethod em = builder.build();
+
+                if (StringUtils.hasText(e.getDigestMethod())) {
+                  final DigestMethod dm = DigestMethodBuilder.digestMethod(e.getDigestMethod());
+                  em.getUnknownXMLObjects().add(dm);
+                }
+                return em;
+              })
+              .toList());
+        }
+
+        keyDescriptors.add(kdBuilder.build());
       }
       if (settings.getCredentials().getDefaultCredential() != null && (!signAssigned || !encryptAssigned)) {
         final UsageType usage =
             signAssigned ? UsageType.ENCRYPTION : encryptAssigned ? UsageType.SIGNING : UsageType.UNSPECIFIED;
-        keyDescriptors.add(
-            KeyDescriptorBuilder.builder()
-                .use(usage)
-                .certificate(settings.getCredentials().getDefaultCredential().getCertificate())
-                .keyName(settings.getCredentials().getDefaultCredential().getName())
-                .build());
+
+        final KeyDescriptorBuilder kdBuilder = KeyDescriptorBuilder.builder()
+            .use(usage)
+            .certificate(settings.getCredentials().getDefaultCredential().getCertificate())
+            .keyName(settings.getCredentials().getDefaultCredential().getName());
+
+        if (usage == UsageType.ENCRYPTION || usage == UsageType.UNSPECIFIED) {
+          if (settings.getMetadata().getEncryptionMethods() != null) {
+            kdBuilder.encryptionMethodsExt(settings.getMetadata().getEncryptionMethods().stream()
+                .filter(e -> StringUtils.hasText(e.getAlgorithm()))
+                .map(e -> {
+                  final EncryptionMethodBuilder builder = EncryptionMethodBuilder.builder()
+                      .algorithm(e.getAlgorithm());
+
+                  if (e.getKeySize() != null) {
+                    builder.keySize(e.getKeySize());
+                  }
+                  if (e.getOaepParams() != null) {
+                    builder.oAEPparams(e.getOaepParams());
+                  }
+                  final EncryptionMethod em = builder.build();
+
+                  if (StringUtils.hasText(e.getDigestMethod())) {
+                    final DigestMethod dm = DigestMethodBuilder.digestMethod(e.getDigestMethod());
+                    em.getUnknownXMLObjects().add(dm);
+                  }
+                  return em;
+                })
+                .toList());
+          }
+        }
+
+        keyDescriptors.add(kdBuilder.build());
       }
       descBuilder.keyDescriptors(keyDescriptors);
 
@@ -349,7 +445,7 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
 
   /**
    * Builds an {@link UIInfo} element.
-   * 
+   *
    * @param settings the IdP settings
    * @return an {@link UIInfo} element or {@code null}
    */
