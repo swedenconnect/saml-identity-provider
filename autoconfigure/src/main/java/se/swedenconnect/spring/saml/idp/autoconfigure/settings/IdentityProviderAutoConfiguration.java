@@ -163,7 +163,8 @@ public class IdentityProviderAutoConfiguration {
                       .digestMethod(m.getDigestMethod())
                       .build())
                   .toList())
-              .orElse(null));
+              .orElse(null))
+          .requestedPrincipalSelection(this.properties.getMetadata().getRequestedPrincipalSelection());
 
       if (this.properties.getMetadata().getUiInfo() != null) {
         final MetadataSettings.UIInfoSettings.Builder uiBuilder = MetadataSettings.UIInfoSettings.builder()

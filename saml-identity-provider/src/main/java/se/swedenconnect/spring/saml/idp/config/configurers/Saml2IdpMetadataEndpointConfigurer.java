@@ -67,6 +67,9 @@ import se.swedenconnect.opensaml.saml2.metadata.build.OrganizationBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.SigningMethodBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.SingleSignOnServiceBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.UIInfoBuilder;
+import se.swedenconnect.opensaml.sweid.saml2.authn.psc.RequestedPrincipalSelection;
+import se.swedenconnect.opensaml.sweid.saml2.authn.psc.build.MatchValueBuilder;
+import se.swedenconnect.opensaml.sweid.saml2.authn.psc.build.RequestedPrincipalSelectionBuilder;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
@@ -218,6 +221,18 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
       if (uiInfo != null) {
         roleExtensions.getUnknownXMLObjects().removeIf(o -> UIInfo.class.isAssignableFrom(o.getClass()));
         roleExtensions.getUnknownXMLObjects().add(uiInfo);
+      }
+
+      if (settings.getMetadata().getRequestedPrincipalSelection() != null
+          && !settings.getMetadata().getRequestedPrincipalSelection().isEmpty()) {
+        roleExtensions.getUnknownXMLObjects().removeIf(o -> RequestedPrincipalSelection.class.isAssignableFrom(o.getClass()));
+
+        final RequestedPrincipalSelection rps = RequestedPrincipalSelectionBuilder.builder()
+            .matchValues(settings.getMetadata().getRequestedPrincipalSelection().stream()
+                .map(a -> MatchValueBuilder.builder().name(a).build())
+                .toList())
+            .build();
+        roleExtensions.getUnknownXMLObjects().add(rps);
       }
 
       if (settings.getMetadata().getDigestMethods() != null

@@ -83,6 +83,11 @@ public class MetadataConfigurationProperties {
   private UIInfo uiInfo;
 
   /**
+   * Attribute names that should be included under the {@code RequestedPrincipalSelection} metadata extension.
+   */
+  private List<String> requestedPrincipalSelection;
+
+  /**
    * The metadata {@code Organization} element.
    */
   private Organization organization;

@@ -179,7 +179,7 @@ public class MetadataSettings extends AbstractSettings {
   /**
    * The {@code UIInfo} element. A {@link UIInfoSettings}.
    */
-  public static final String UI_INFO = "ui-info";
+  public static final String SAML_METADATA_UI_INFO = "ui-info";
 
   /**
    * Gets the {@link UIInfoSettings}.
@@ -187,13 +187,28 @@ public class MetadataSettings extends AbstractSettings {
    * @return {@link UIInfoSettings} or {@code null}
    */
   public UIInfoSettings getUiInfo() {
-    return this.getSetting(UI_INFO);
+    return this.getSetting(SAML_METADATA_UI_INFO);
+  }
+
+  /**
+   * Attribute names that should be included under the {@code RequestedPrincipalSelection} metadata extension. A
+   * {@link List} of {@link String}s.
+   */
+  public static final String SAML_METADATA_REQUESTED_PRINCIPAL_SELECTION = "requested-principal-selection";
+
+  /**
+   * Gets the attribute names that should be included under the {@code RequestedPrincipalSelection} metadata extension.
+   *
+   * @return list of attribute names
+   */
+  public List<String> getRequestedPrincipalSelection() {
+    return this.getSetting(SAML_METADATA_REQUESTED_PRINCIPAL_SELECTION);
   }
 
   /**
    * The {@code Organization} element. A {@link OrganizationSettings}.
    */
-  public static final String ORGANIZATION = "organization";
+  public static final String SAML_METADATA_ORGANIZATION = "organization";
 
   /**
    * Gets the {@code Organization} element.
@@ -201,13 +216,13 @@ public class MetadataSettings extends AbstractSettings {
    * @return a {@link OrganizationSettings} or {@code null}
    */
   public OrganizationSettings getOrganization() {
-    return this.getSetting(ORGANIZATION);
+    return this.getSetting(SAML_METADATA_ORGANIZATION);
   }
 
   /**
    * A {@link Map} where the keys are {@link ContactPersonType} and the values {@link ContactPersonSettings}.
    */
-  public static final String CONTACT_PERSONS = "contact-persons";
+  public static final String SAML_METADATA_CONTACT_PERSONS = "contact-persons";
 
   /**
    * Gets a {@link Map} where the keys are {@link ContactPersonType} and the values {@link ContactPersonSettings}.
@@ -215,7 +230,7 @@ public class MetadataSettings extends AbstractSettings {
    * @return a map of contact persons
    */
   public Map<ContactPersonType, ContactPersonSettings> getContactPersons() {
-    return this.getSetting(CONTACT_PERSONS);
+    return this.getSetting(SAML_METADATA_CONTACT_PERSONS);
   }
 
   /**
@@ -338,7 +353,17 @@ public class MetadataSettings extends AbstractSettings {
      * @return the builder
      */
     public Builder uiInfo(final UIInfoSettings uiInfo) {
-      return this.setting(UI_INFO, uiInfo);
+      return this.setting(SAML_METADATA_UI_INFO, uiInfo);
+    }
+
+    /**
+     * Assigns the attribute names that should be included under the {@code RequestedPrincipalSelection} metadata extension.
+     *
+     * @param attributeNames list of attribute names
+     * @return the builder
+     */
+    public Builder requestedPrincipalSelection(final List<String> attributeNames) {
+      return this.setting(SAML_METADATA_REQUESTED_PRINCIPAL_SELECTION, attributeNames);
     }
 
     /**
@@ -348,7 +373,7 @@ public class MetadataSettings extends AbstractSettings {
      * @return the builder
      */
     public Builder organization(final OrganizationSettings organization) {
-      return this.setting(ORGANIZATION, organization);
+      return this.setting(SAML_METADATA_ORGANIZATION, organization);
     }
 
     /**
@@ -358,7 +383,7 @@ public class MetadataSettings extends AbstractSettings {
      * @return the builder
      */
     public Builder contactPersons(final Map<ContactPersonType, ContactPersonSettings> contactPersons) {
-      return this.setting(CONTACT_PERSONS, contactPersons);
+      return this.setting(SAML_METADATA_CONTACT_PERSONS, contactPersons);
     }
 
     /** {@inheritDoc} */
@@ -656,8 +681,8 @@ public class MetadataSettings extends AbstractSettings {
       }
 
       /**
-       * Assigns the digest method URI. If {@code algorithm} indicates a key transport algorithm where the digest algorithm
-       * needs to be given, this field should be set to this algorithm URI.
+       * Assigns the digest method URI. If {@code algorithm} indicates a key transport algorithm where the digest
+       * algorithm needs to be given, this field should be set to this algorithm URI.
        *
        * @param algorithm algorithm URI
        * @return the builder
