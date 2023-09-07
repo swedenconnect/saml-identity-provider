@@ -30,7 +30,7 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
  * Abstract base class for {@link UserAuthenticationProvider}.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -45,6 +45,7 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
   public AbstractUserAuthenticationProvider() {
     this.ssoVoters = new ArrayList<>();
     this.ssoVoters.add(new BaseSsoVoter());
+    this.ssoVoters.add(new PrincipalSelectionSsoVoter());
     this.ssoVoters.add(new SignServiceSsoVoter());
   }
 
@@ -84,7 +85,7 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
 
   /**
    * Authenticates the user (after the necessary checks have been made).
-   * 
+   *
    * @param token the input token
    * @param authnContextUris the possible authentication context URI:s
    * @return an authentication token
@@ -96,7 +97,7 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
   /**
    * Applies the rules for re-using authentication, i.e., SSO. If a previous authentication may be re-used its
    * {@link Saml2UserAuthentication} is returned. Otherwise {@code null}.
-   * 
+   *
    * @param token the {@link Saml2UserAuthenticationInputToken}
    * @param authnContextUris filtered authentication context URI:s that are allowed
    * @return a {@link Saml2UserAuthenticationInputToken} for SSO and {@code null} otherwise
@@ -138,7 +139,7 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
    * Given the requested authentication context URI:s, the method filters out those that are supported by the
    * {@link AuthenticationProvider}. If no authentication context URI:s are requested the method returns
    * {@link #getSupportedAuthnContextUris()}.
-   * 
+   *
    * @param token the {@link Saml2UserAuthenticationInputToken}
    * @return a filtered list of possible authentication context URI:s (may be empty)
    */
@@ -154,7 +155,7 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
 
   /**
    * Returns a modifiable list of the installed {@link SsoVoter}s.
-   * 
+   *
    * @return a modifiable list of the installed {@link SsoVoter}s
    */
   public List<SsoVoter> ssoVoters() {
