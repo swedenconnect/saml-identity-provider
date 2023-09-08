@@ -23,6 +23,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.xml.namespace.QName;
+
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
@@ -32,6 +34,7 @@ import org.opensaml.saml.ext.saml2alg.SigningMethod;
 import org.opensaml.saml.ext.saml2mdattr.EntityAttributes;
 import org.opensaml.saml.ext.saml2mdui.UIInfo;
 import org.opensaml.saml.saml2.core.NameID;
+import org.opensaml.saml.saml2.metadata.ContactPerson;
 import org.opensaml.saml.saml2.metadata.ContactPersonTypeEnumeration;
 import org.opensaml.saml.saml2.metadata.EncryptionMethod;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -75,6 +78,7 @@ import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
+import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonType;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.UIInfoSettings;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2IdpMetadataEndpointFilter;
@@ -225,7 +229,8 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
 
       if (settings.getMetadata().getRequestedPrincipalSelection() != null
           && !settings.getMetadata().getRequestedPrincipalSelection().isEmpty()) {
-        roleExtensions.getUnknownXMLObjects().removeIf(o -> RequestedPrincipalSelection.class.isAssignableFrom(o.getClass()));
+        roleExtensions.getUnknownXMLObjects()
+            .removeIf(o -> RequestedPrincipalSelection.class.isAssignableFrom(o.getClass()));
 
         final RequestedPrincipalSelection rps = RequestedPrincipalSelectionBuilder.builder()
             .matchValues(settings.getMetadata().getRequestedPrincipalSelection().stream()
@@ -414,15 +419,8 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
       if (settings.getMetadata().getContactPersons() != null) {
         this.entityDescriptorBuilder.contactPersons(
             settings.getMetadata().getContactPersons().entrySet().stream()
-                .map(e -> ContactPersonBuilder.builder()
-                    .type(toOpenSamlEnum(e.getKey()))
-                    .company(e.getValue().getCompany())
-                    .givenName(e.getValue().getGivenName())
-                    .surname(e.getValue().getSurname())
-                    .emailAddresses(e.getValue().getEmailAddresses())
-                    .telephoneNumbers(e.getValue().getTelephoneNumbers())
-                    .build())
-                .collect(Collectors.toList()));
+                .map(e -> toContactPerson(e.getKey(), e.getValue()))
+                .toList());
       }
 
     }
@@ -498,7 +496,36 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
     return uiBuilder.build();
   }
 
+  /**
+   * Creates a {@link ContactPerson} element.
+   *
+   * @param type the type
+   * @param cpSetting the settings
+   * @return a {@link ContactPerson}
+   */
+  private static ContactPerson toContactPerson(final ContactPersonType type, final ContactPersonSettings cpSetting) {
+
+    final ContactPerson cp = ContactPersonBuilder.builder()
+        .type(toOpenSamlEnum(type))
+        .company(cpSetting.getCompany())
+        .givenName(cpSetting.getGivenName())
+        .surname(cpSetting.getSurname())
+        .emailAddresses(cpSetting.getEmailAddresses())
+        .telephoneNumbers(cpSetting.getTelephoneNumbers())
+        .build();
+
+    if (type == ContactPersonType.security) {
+      cp.getUnknownAttributes().put(new QName("http://refeds.org/metadata", "contactType", "remd"),
+          "http://refeds.org/metadata/contactType/security");
+    }
+
+    return cp;
+  }
+
   private static ContactPersonTypeEnumeration toOpenSamlEnum(final ContactPersonType type) {
+    if (type == ContactPersonType.security) {
+      return ContactPersonTypeEnumeration.OTHER;
+    }
     for (final ContactPersonTypeEnumeration e : ContactPersonTypeEnumeration.values()) {
       if (e.toString().equals(type.name())) {
         return e;
