@@ -357,7 +357,8 @@ public class MetadataSettings extends AbstractSettings {
     }
 
     /**
-     * Assigns the attribute names that should be included under the {@code RequestedPrincipalSelection} metadata extension.
+     * Assigns the attribute names that should be included under the {@code RequestedPrincipalSelection} metadata
+     * extension.
      *
      * @param attributeNames list of attribute names
      * @return the builder
@@ -1149,9 +1150,14 @@ public class MetadataSettings extends AbstractSettings {
 
   /**
    * ContactPerson types.
+   * <p>
+   * Note: The {@code security} type is non-standard and defined by
+   * <a href="https://wiki.refeds.org/display/STAN/Security+Contact+Metadata+Extension+Schema">REFEDS - Security Contact
+   * Metadata Extension Schema</a>
+   * </p>
    */
   public enum ContactPersonType {
-    technical, support, administrative, billing, other
+    technical, support, administrative, billing, other, security
   }
 
   /**
