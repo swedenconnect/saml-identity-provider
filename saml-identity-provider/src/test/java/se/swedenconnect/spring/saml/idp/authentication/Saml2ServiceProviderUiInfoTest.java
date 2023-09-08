@@ -25,6 +25,7 @@ import se.swedenconnect.opensaml.common.utils.LocalizedString;
 import se.swedenconnect.opensaml.saml2.metadata.build.EntityDescriptorBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.ExtensionsBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.LogoBuilder;
+import se.swedenconnect.opensaml.saml2.metadata.build.OrganizationBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.SPSSODescriptorBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.UIInfoBuilder;
 import se.swedenconnect.opensaml.sweid.saml2.authn.psc.build.PrincipalSelectionBuilder;
@@ -32,7 +33,7 @@ import se.swedenconnect.spring.saml.idp.OpenSamlTestBase;
 
 /**
  * Test cases for Saml2ServiceProviderUiInfo.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2ServiceProviderUiInfoTest extends OpenSamlTestBase {
@@ -96,7 +97,7 @@ public class Saml2ServiceProviderUiInfoTest extends OpenSamlTestBase {
                         LogoBuilder.builder()
                             .height(150)
                             .width(150)
-                            .url(SP + "/logo2.png")                            
+                            .url(SP + "/logo2.png")
                             .build(),
                         LogoBuilder.builder().build()))
                     .build())
@@ -111,6 +112,62 @@ public class Saml2ServiceProviderUiInfoTest extends OpenSamlTestBase {
     Assertions.assertEquals("Visningsnamn", ui.getDisplayName("sv"));
     Assertions.assertEquals("Display name", ui.getDisplayName("en"));
     Assertions.assertNull(ui.getDisplayName("de"));
+
+    Assertions.assertTrue(ui.getDescriptions().size() == 2);
+    Assertions.assertEquals("Beskrivning", ui.getDescription("sv"));
+    Assertions.assertEquals("Description", ui.getDescription("en"));
+    Assertions.assertNull(ui.getDescription("de"));
+
+    Assertions.assertTrue(ui.getLogotypes().size() == 2);
+    Assertions.assertEquals(SP + "/logo2.png", ui.getLogotype((p) -> p.getHeight() > 100).getUrl());
+    Assertions.assertEquals("en", ui.getLogotype((p) -> p.getWidth() < 100).getLanguage());
+  }
+
+  @Test
+  public void testUiAndOrganization() {
+    EntityDescriptor ed = EntityDescriptorBuilder.builder()
+        .entityID(SP)
+        .roleDescriptors(SPSSODescriptorBuilder.builder()
+            .extensions(ExtensionsBuilder.builder()
+                .extension(UIInfoBuilder.builder()
+                    .displayNames(
+                        List.of(new LocalizedString("Display name", "en"), new LocalizedString("Visningsnamn", "sv")))
+                    .descriptions(List.of(
+                        new LocalizedString("Description", "en"), new LocalizedString("Beskrivning", "sv")))
+                    .logos(List.of(
+                        LogoBuilder.builder()
+                            .height(50)
+                            .width(50)
+                            .url(SP + "/logo.png")
+                            .language("en")
+                            .build(),
+                        LogoBuilder.builder()
+                            .height(150)
+                            .width(150)
+                            .url(SP + "/logo2.png")
+                            .build(),
+                        LogoBuilder.builder().build()))
+                    .build())
+                .build())
+            .build())
+        .organization(OrganizationBuilder.builder()
+            .organizationDisplayNames(
+                List.of(new LocalizedString("Organization display name", "en"), new LocalizedString("Organisationsvisningsnamn", "sv"),
+                    new LocalizedString("Organisation Anzeigename", "de")))
+            .organizationNames(List.of(new LocalizedString("Organization name", "en"), new LocalizedString("Organisationsnamn", "sv"),
+                new LocalizedString("Organisationname", "de"), new LocalizedString("Nom de l'organisation", "fr")))
+            .build())
+        .build();
+
+    Saml2ServiceProviderUiInfo ui = new Saml2ServiceProviderUiInfo(ed);
+
+    Assertions.assertEquals(SP, ui.getEntityId());
+    Assertions.assertTrue(ui.getDisplayNames().size() == 4);
+    Assertions.assertEquals("Visningsnamn", ui.getDisplayName("sv"));
+    Assertions.assertEquals("Display name", ui.getDisplayName("en"));
+    Assertions.assertEquals("Organisation Anzeigename", ui.getDisplayName("de"));
+    Assertions.assertEquals("Nom de l'organisation", ui.getDisplayName("fr"));
+    Assertions.assertNull(ui.getDisplayName("no"));
 
     Assertions.assertTrue(ui.getDescriptions().size() == 2);
     Assertions.assertEquals("Beskrivning", ui.getDescription("sv"));

@@ -17,6 +17,7 @@ package se.swedenconnect.spring.saml.idp.authentication;
 
 import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -34,6 +35,11 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * A utility class that holds information about a SAML Service Provider that the IdP may want to use in its UI.
+ * <p>
+ * Regarding the display names: The class first looks for display names under the {@code mdui:UIInfo} metadata
+ * extension, then under {@code Organization/OrganizationDisplayNames} and finally under
+ * {@code Organization/OrganizationNames}.
+ * </p>
  *
  * @author Martin Lindström
  */
@@ -73,10 +79,11 @@ public class Saml2ServiceProviderUiInfo implements Serializable {
         .map(UIInfo.class::cast)
         .orElse(null);
 
+    final Map<String, String> displayNamesMap = new HashMap<>();
+
     if (uiInfo != null) {
-      this.displayNames = uiInfo.getDisplayNames().stream()
-          .collect(Collectors.toUnmodifiableMap(
-              d -> Optional.ofNullable(d.getXMLLang()).orElse(NO_LANG), d -> d.getValue()));
+      uiInfo.getDisplayNames().stream()
+          .forEach(d -> displayNamesMap.put(Optional.ofNullable(d.getXMLLang()).orElse(NO_LANG), d.getValue()));
       this.descriptions = uiInfo.getDescriptions().stream()
           .collect(Collectors.toUnmodifiableMap(
               d -> Optional.ofNullable(d.getXMLLang()).orElse(NO_LANG), d -> d.getValue()));
@@ -86,15 +93,33 @@ public class Saml2ServiceProviderUiInfo implements Serializable {
           .collect(Collectors.toUnmodifiableList());
     }
     else {
-      this.displayNames = Collections.emptyMap();
       this.descriptions = Collections.emptyMap();
       this.logotypes = Collections.emptyList();
     }
+
+    if (metadata.getOrganization() != null) {
+      metadata.getOrganization().getDisplayNames().stream()
+          .forEach(dn -> {
+            final String lang = Optional.ofNullable(dn.getXMLLang()).orElseGet(() -> NO_LANG);
+            if (!displayNamesMap.containsKey(lang)) {
+              displayNamesMap.put(lang, dn.getValue());
+            }
+          });
+      metadata.getOrganization().getOrganizationNames().stream()
+          .forEach(on -> {
+            final String lang = Optional.ofNullable(on.getXMLLang()).orElseGet(() -> NO_LANG);
+            if (!displayNamesMap.containsKey(lang)) {
+              displayNamesMap.put(lang, on.getValue());
+            }
+          });
+    }
+
+    this.displayNames = Collections.unmodifiableMap(displayNamesMap);
   }
 
   /**
    * Gets the entityID for the SP.
-   * 
+   *
    * @return the SP entityID
    */
   public String getEntityId() {
