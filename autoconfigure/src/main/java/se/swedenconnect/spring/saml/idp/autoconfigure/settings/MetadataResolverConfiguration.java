@@ -28,17 +28,17 @@ import se.swedenconnect.spring.saml.idp.settings.MetadataProviderUtils;
 
 /**
  * Configuration class that ensures that we have a {@link MetadataResolver} bean.
- * 
+ *
  * @author Martin Lindström
  */
 @Configuration
 @EnableConfigurationProperties(IdentityProviderConfigurationProperties.class)
 public class MetadataResolverConfiguration {
-  
+
   @Setter
   @Autowired(required = false)
   private IdentityProviderConfigurationProperties properties;
-  
+
   @ConditionalOnMissingBean(name = "saml.idp.metadata.Provider")
   @Bean("saml.idp.metadata.Provider")
   MetadataResolver metadataResolver() {
@@ -50,7 +50,7 @@ public class MetadataResolverConfiguration {
           new MetadataProviderSettings[this.properties.getMetadataProviders().size()];
       int pos = 0;
       for (final MetadataProviderConfigurationProperties p : this.properties.getMetadataProviders()) {
-        settings[pos] = MetadataProviderSettings.builder()
+        settings[pos++] = MetadataProviderSettings.builder()
             .location(p.getLocation())
             .backupLocation(p.getBackupLocation())
             .mdq(p.getMdq())
