@@ -178,10 +178,10 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
 
     // Auditing
     Assertions.assertEquals(4, this.auditListener.getEvents().size());
-    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_REQUEST_RECEIVED, this.auditListener.getEvents().get(0).getType());
-    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_BEFORE_USER_AUTHN, this.auditListener.getEvents().get(1).getType());
-    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_AFTER_USER_AUTHN, this.auditListener.getEvents().get(2).getType());
-    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_SUCCESSFUL_RESPONSE, this.auditListener.getEvents().get(3).getType());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_REQUEST_RECEIVED.getTypeName(), this.auditListener.getEvents().get(0).getType());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_BEFORE_USER_AUTHN.getTypeName(), this.auditListener.getEvents().get(1).getType());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_AFTER_USER_AUTHN.getTypeName(), this.auditListener.getEvents().get(2).getType());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_SUCCESSFUL_RESPONSE.getTypeName(), this.auditListener.getEvents().get(3).getType());
   }
 
   @Test

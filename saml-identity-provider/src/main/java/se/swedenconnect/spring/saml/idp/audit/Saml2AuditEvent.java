@@ -55,9 +55,9 @@ public class Saml2AuditEvent extends AuditEvent {
    * @param authnRequestId the ID of the {@code AuthnRequest}
    * @param data audit data
    */
-  public Saml2AuditEvent(final String type, final long timestamp, final String spEntityId, final String authnRequestId,
+  public Saml2AuditEvent(final Saml2AuditEvents type, final long timestamp, final String spEntityId, final String authnRequestId,
       final Saml2AuditData... data) {
-    super(Instant.ofEpochMilli(timestamp), Optional.ofNullable(spEntityId).orElseGet(() -> UNKNOWN_SP), type,
+    super(Instant.ofEpochMilli(timestamp), Optional.ofNullable(spEntityId).orElseGet(() -> UNKNOWN_SP), type.getTypeName(),
         buildData(spEntityId, authnRequestId, data));
   }
 
