@@ -72,7 +72,7 @@ public class MetadataProviderUtils {
         if (md.getLocation() == null) {
           throw new IllegalArgumentException("Missing location for metadata provider");
         }
-        if (UrlResource.class.isInstance(md.getLocation())) {
+        if (md.getLocation() instanceof UrlResource urlResource && !urlResource.isFile()) {
           if (md.getBackupLocation() == null) {
             log.warn("No backup-location for metadata source {} - Using a backup file is strongly recommended",
                 md.getLocation());
