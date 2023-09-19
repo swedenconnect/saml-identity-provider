@@ -2,7 +2,7 @@
 
 # Spring Security SAML Identity Provider
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp)
 
 The https://github.com/swedenconnect/saml-identity-provider repository comprises of a Spring Security
 module for setting up a SAML Identity Provider according to the [Swedish eID Framework specifications]( 
