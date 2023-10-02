@@ -17,27 +17,26 @@ package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
 import java.util.Collections;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
 
+import jakarta.servlet.http.HttpServletRequest;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
  * Test cases for ResumedAuthenticationToken.
- * 
+ *
  * @author Martin Lindström
  */
 public class ResumedAuthenticationTokenTest {
 
   @Test
   public void testSuccess() {
-    
+
     final Authentication authn = Mockito.mock(Authentication.class);
     Mockito.when(authn.getName()).thenReturn("NAME");
     Mockito.when(authn.getAuthorities()).thenReturn(Collections.emptyList());
@@ -45,20 +44,20 @@ public class ResumedAuthenticationTokenTest {
     Mockito.when(authn.getDetails()).thenReturn("DETAILS");
     Mockito.when(authn.getPrincipal()).thenReturn("USER");
     Mockito.when(authn.isAuthenticated()).thenReturn(true);
-    
+
     final ResumedAuthenticationToken token = new ResumedAuthenticationToken(authn);
-    
+
     Assertions.assertNotNull(token.getAuthnToken());
     Assertions.assertNull(token.getError());
     Assertions.assertNull(token.getAuthnInputToken());
-    
+
     token.setAuthnInputToken(Mockito.mock(Saml2UserAuthenticationInputToken.class));
     Assertions.assertNotNull(token.getAuthnInputToken());
-    
+
     Assertions.assertNull(token.getServletRequest());
     token.setServletRequest(Mockito.mock(HttpServletRequest.class));
     Assertions.assertNotNull(token.getServletRequest());
-    
+
     Assertions.assertEquals("NAME", token.getName());
     Assertions.assertTrue(token.getAuthorities().isEmpty());
     Assertions.assertEquals("CRED", token.getCredentials());
@@ -67,20 +66,20 @@ public class ResumedAuthenticationTokenTest {
     Assertions.assertTrue(token.isAuthenticated());
     Assertions.assertThrows(IllegalArgumentException.class, () -> token.setAuthenticated(false));
   }
-  
+
   @Test
   public void testError() {
-        
+
     final ResumedAuthenticationToken token = new ResumedAuthenticationToken(
         new Saml2ErrorStatusException(Saml2ErrorStatus.AUTHN_FAILED));
-    
+
     Assertions.assertNull(token.getAuthnToken());
     Assertions.assertNotNull(token.getError());
     Assertions.assertNull(token.getAuthnInputToken());
-    
+
     token.setAuthnInputToken(Mockito.mock(Saml2UserAuthenticationInputToken.class));
     Assertions.assertNotNull(token.getAuthnInputToken());
-    
+
     Assertions.assertEquals("unknown", token.getName());
     Assertions.assertTrue(token.getAuthorities().isEmpty());
     Assertions.assertNull(token.getCredentials());
@@ -88,6 +87,6 @@ public class ResumedAuthenticationTokenTest {
     Assertions.assertEquals("saml-error", token.getPrincipal());
     Assertions.assertFalse(token.isAuthenticated());
     Assertions.assertThrows(IllegalArgumentException.class, () -> token.setAuthenticated(false));
-  }  
-  
+  }
+
 }

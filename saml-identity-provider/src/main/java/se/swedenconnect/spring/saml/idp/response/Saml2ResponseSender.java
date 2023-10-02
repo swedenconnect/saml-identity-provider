@@ -19,18 +19,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.Response;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.codec.Base64Support;
-import net.shibboleth.utilities.java.support.codec.EncodingException;
-import net.shibboleth.utilities.java.support.codec.HTMLEncoder;
-import net.shibboleth.utilities.java.support.xml.SerializeSupport;
+import net.shibboleth.shared.codec.Base64Support;
+import net.shibboleth.shared.codec.EncodingException;
+import net.shibboleth.shared.codec.HTMLEncoder;
+import net.shibboleth.shared.xml.SerializeSupport;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
@@ -48,7 +47,7 @@ public class Saml2ResponseSender {
   /**
    * Directs the user agent to a page that issues a HTML POST containing the SAML response, and optionally, also the
    * {@code RelayState} variable.
-   * 
+   *
    * @param httpServletRequest the HTTP servlet request
    * @param httpServletResponse the HTTP servlet response
    * @param destinationUrl the destination URL
@@ -77,7 +76,7 @@ public class Saml2ResponseSender {
 
   /**
    * Assigns the {@link ResponsePage} to use when posting back the user. The default is {@link DefaultResponsePage}.
-   * 
+   *
    * @param responsePage the {@link ResponsePage}
    */
   public void setResponsePage(final ResponsePage responsePage) {
@@ -86,7 +85,7 @@ public class Saml2ResponseSender {
 
   /**
    * Encodes the supplied {@link Response} message for being included in a HTML form.
-   * 
+   *
    * @param samlResponse the response message
    * @return the Base64-encoding of the message
    * @throws UnrecoverableSaml2IdpException for encoding errors

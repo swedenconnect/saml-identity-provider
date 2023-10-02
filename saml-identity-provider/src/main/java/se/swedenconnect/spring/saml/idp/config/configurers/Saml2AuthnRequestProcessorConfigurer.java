@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -34,6 +32,7 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 
+import jakarta.servlet.http.HttpServletRequest;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationConverter;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
@@ -70,7 +69,7 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
 
   /**
    * Constructor.
-   * 
+   *
    * @param objectPostProcessor the object post processor
    */
   Saml2AuthnRequestProcessorConfigurer(final ObjectPostProcessor<Object> objectPostProcessor) {
@@ -112,7 +111,7 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
   /**
    * Customizes the {@link Saml2AuthnRequestAuthenticationProviderConfigurer} that is used to create the default
    * authentication provider - {@link Saml2AuthnRequestAuthenticationProvider}.
-   * 
+   *
    * @param customizer the customizer that is given access to the
    *          {@link Saml2AuthnRequestAuthenticationProviderConfigurer}
    * @return the {@link Saml2AuthnRequestProcessorConfigurer} for further configuration
@@ -155,25 +154,25 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
   @Override
   protected void init(final HttpSecurity httpSecurity) {
     this.requestMatcher = Saml2IdpConfigurerUtils.getAuthnEndpointsRequestMatcher(httpSecurity);
- 
+
     this.authenticationProviderConfigurer.init(httpSecurity);
   }
 
   /** {@inheritDoc} */
   @Override
   void configure(final HttpSecurity httpSecurity) {
-    
+
     final AuthenticationProvider authenticationProvider = this.customAuthenticationProvider != null
         ? this.customAuthenticationProvider
         : this.authenticationProviderConfigurer.getObject(httpSecurity);
-    
+
     httpSecurity.authenticationProvider(this.postProcess(authenticationProvider));
 
     final List<AuthenticationConverter> authnConverters = new ArrayList<>();
     final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     final MetadataResolver resolver = httpSecurity.getSharedObject(MetadataResolver.class);
     authnConverters.add(new Saml2AuthnRequestAuthenticationConverter(resolver, settings));
-    
+
     if (!this.authnRequestConverters.isEmpty()) {
       authnConverters.addAll(0, this.authnRequestConverters);
     }
@@ -200,7 +199,7 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
 
     httpSecurity.addFilterAfter(this.postProcess(filter), Saml2ErrorResponseProcessingFilter.class);
   }
-  
+
   /** {@inheritDoc} */
   @Override
   RequestMatcher getRequestMatcher() {

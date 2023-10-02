@@ -15,9 +15,6 @@
  */
 package se.swedenconnect.spring.saml.idp.demo.authn;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -27,6 +24,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Setter;
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.AbstractAuthenticationController;
 import se.swedenconnect.spring.saml.idp.demo.user.SimulatedUser;
@@ -36,7 +35,7 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
  * The controller handling user authentication.
- * 
+ *
  * @author Martin Lindström
  */
 @Controller
@@ -60,7 +59,7 @@ public class SimulatedAuthenticationController
 
   /**
    * The entry point for the user authentication.
-   * 
+   *
    * @param request the HTTP servlet request
    * @param response the HTTP servlet response
    * @return a {@link ModelAndView}
@@ -74,7 +73,7 @@ public class SimulatedAuthenticationController
 
   /**
    * When the user has "authenticated", the browser is posted back to this entry point to complete the authentication.
-   * 
+   *
    * @param request the HTTP servlet request
    * @param response the HTTP servlet response
    * @param userName the user name of the simulated user

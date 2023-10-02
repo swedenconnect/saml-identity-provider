@@ -18,6 +18,7 @@ package se.swedenconnect.spring.saml.idp.demo;
 import org.opensaml.saml.saml2.core.NameID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.EndpointRequest;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import se.swedenconnect.spring.saml.idp.attributes.nameid.DefaultNameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurerAdapter;
@@ -40,7 +41,7 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
  * Configuration for the IdP.
- * 
+ *
  * @author Martin Lindström
  */
 @Configuration
@@ -62,7 +63,7 @@ public class IdpConfiguration {
 
   /**
    * Our simulated users.
-   * 
+   *
    * @return an {@link UserDetailsService}
    */
   @Bean
@@ -74,7 +75,7 @@ public class IdpConfiguration {
 
   /**
    * Creates the authentication provider bean.
-   * 
+   *
    * @return a {@link SimulatedAuthenticationProvider}
    */
   @Bean
@@ -84,7 +85,7 @@ public class IdpConfiguration {
 
   /**
    * Gets a {@link Saml2IdpConfigurerAdapter} that configures the IdP past configuration using application properties.
-   * 
+   *
    * @param templateEngine the template engine (needed for setting up our own POST page)
    * @return a {@link Saml2IdpConfigurerAdapter}
    */
@@ -111,11 +112,10 @@ public class IdpConfiguration {
         .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
         .cors(Customizer.withDefaults())
         .authorizeHttpRequests((authorize) -> authorize
-            .antMatchers("/images/**", "/error", "/assets/**", "/scripts/**", "/webjars/**", "/view/**", "/api/**",
-                "/css/**", "/**/resume", SimulatedAuthenticationController.AUTHN_PATH + "/**")
+            .requestMatchers("/images/**", "/error", "/assets/**", "/scripts/**", "/webjars/**", "/view/**", "/api/**",
+                "/css/**", "/resume/**", SimulatedAuthenticationController.AUTHN_PATH + "/**")
             .permitAll()
-            .antMatchers("/actuator/**")
-            .permitAll()
+            .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
             .anyRequest().denyAll());
 
     return http.build();

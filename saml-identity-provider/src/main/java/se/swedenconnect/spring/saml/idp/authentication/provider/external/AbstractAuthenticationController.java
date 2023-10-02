@@ -17,12 +17,11 @@ package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.servlet.http.HttpServletRequest;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
@@ -30,16 +29,16 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
 /**
  * A helper class that {@link Controller}s that implement "external user authentication" may inherit from.
- * 
+ *
  * @param <T> the type of the authentication provider
- * 
+ *
  * @author Martin Lindström
  */
 public abstract class AbstractAuthenticationController<T extends UserRedirectAuthenticationProvider> {
 
   /**
    * Gets the {@link RedirectForAuthenticationToken} that is the input for the "external authentication" process.
-   * 
+   *
    * @param request the HTTP servlet request
    * @return a {@link RedirectForAuthenticationToken}
    * @throws UnrecoverableSaml2IdpException if no token is available
@@ -55,7 +54,7 @@ public abstract class AbstractAuthenticationController<T extends UserRedirectAut
    * Utility method that saves the authentication result in the {@link ExternalAuthenticatorTokenRepository} of the
    * provider and redirects the user back to the SAML IdP Spring Security flow
    * ({@link UserRedirectAuthenticationProvider#getResumeAuthnPath()}).
-   * 
+   *
    * @param request the HTTP servlet request
    * @param authentication the authentication object
    * @return a {@link ModelAndView} that redirects the user back to the configured resume path
@@ -70,7 +69,7 @@ public abstract class AbstractAuthenticationController<T extends UserRedirectAut
    * Utility method that saves the authentication error in the {@link ExternalAuthenticatorTokenRepository} of the
    * provider and redirects the user back to the SAML IdP Spring Security flow
    * ({@link UserRedirectAuthenticationProvider#getResumeAuthnPath()}).
-   * 
+   *
    * @param request the HTTP servlet request
    * @param error the authentication error
    * @return a {@link ModelAndView} that redirects the user back to the configured resume path
@@ -83,7 +82,7 @@ public abstract class AbstractAuthenticationController<T extends UserRedirectAut
 
   /**
    * Maps to {@code complete(request, new Saml2ErrorStatusException(Saml2ErrorStatus.CANCEL))}.
-   * 
+   *
    * @param request the HTTP servlet request
    * @return a {@link ModelAndView} that redirects the user back to the configured resume path
    */
@@ -93,7 +92,7 @@ public abstract class AbstractAuthenticationController<T extends UserRedirectAut
 
   /**
    * Gets the {@link UserRedirectAuthenticationProvider} for this type of user authentication.
-   * 
+   *
    * @return the user authentication provider
    */
   protected abstract T getProvider();

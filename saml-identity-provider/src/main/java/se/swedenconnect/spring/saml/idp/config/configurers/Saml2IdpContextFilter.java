@@ -18,13 +18,12 @@ package se.swedenconnect.spring.saml.idp.config.configurers;
 import java.io.IOException;
 import java.util.Objects;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContext;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
@@ -54,7 +53,7 @@ class Saml2IdpContextFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
       throws ServletException, IOException {
-    
+
     try {
       Saml2IdpContextHolder.setContext(new DefaultIdentityProviderContext(this.settings));
       filterChain.doFilter(request, response);
@@ -68,7 +67,7 @@ class Saml2IdpContextFilter extends OncePerRequestFilter {
    * Implementation of the {@link Saml2IdpContext}.
    */
   private static class DefaultIdentityProviderContext implements Saml2IdpContext {
-    
+
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     private final IdentityProviderSettings settings;
@@ -77,7 +76,7 @@ class Saml2IdpContextFilter extends OncePerRequestFilter {
 
     /**
      * Constructor.
-     * 
+     *
      * @param settings the IdP settings
      */
     private DefaultIdentityProviderContext(final IdentityProviderSettings settings) {

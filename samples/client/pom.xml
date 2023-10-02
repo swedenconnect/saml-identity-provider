@@ -9,7 +9,7 @@
   <parent>
     <groupId>se.swedenconnect.spring.saml.idp</groupId>
     <artifactId>spring-saml-idp-samples-parent</artifactId>
-    <version>1.1.5</version>
+    <version>2.0.0-SNAPSHOT</version>
   </parent>
 
   <name>Sweden Connect :: Spring SAML Identity Provider :: Samples :: Client Application</name>
@@ -45,7 +45,39 @@
   </developers>
 
   <properties>
+    <opensaml.version>5.0.0</opensaml.version>
   </properties>
+  
+  <dependencyManagement>
+    
+    <dependencies>
+    
+      <!-- 
+        Since spring-security-saml2-service-provider still uses OpenSAML 4,
+        we need to use older dependencies ...
+      -->
+      <dependency>
+        <groupId>se.swedenconnect.security</groupId>
+        <artifactId>credentials-support</artifactId>
+        <version>1.2.6</version>      
+      </dependency>
+      
+      <dependency>
+        <groupId>se.swedenconnect.opensaml</groupId>
+        <artifactId>opensaml-security-ext</artifactId>
+        <version>3.1.2</version> 
+      </dependency>
+      
+      <dependency>
+        <groupId>se.swedenconnect.opensaml</groupId>
+        <artifactId>opensaml-addons</artifactId>
+        <version>1.2.8</version>
+      </dependency>
+      
+    </dependencies>
+    
+  </dependencyManagement>
+  
   <dependencies>
         
     <dependency>
@@ -80,8 +112,8 @@
           <artifactId>opensaml-saml-impl</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>    
-
+    </dependency>
+        
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
@@ -102,7 +134,7 @@
       <groupId>se.swedenconnect.opensaml</groupId>
       <artifactId>opensaml-addons</artifactId> 
     </dependency>
-        
+            
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>

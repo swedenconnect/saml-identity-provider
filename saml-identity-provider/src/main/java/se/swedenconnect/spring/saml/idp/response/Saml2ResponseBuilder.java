@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.shared.component.ComponentInitializationException;
 import se.swedenconnect.opensaml.xmlsec.encryption.support.SAMLObjectEncrypter;
 import se.swedenconnect.opensaml.xmlsec.signature.support.SAMLObjectSigner;
 import se.swedenconnect.security.credential.PkiCredential;
@@ -84,7 +84,7 @@ public class Saml2ResponseBuilder {
 
   /**
    * Constructor.
-   * 
+   *
    * @param idpEntityId the entityID for the IdP
    * @param signingCredential the IdP signing credential (for signing of {@link Response} objects)
    * @param eventPublisher the event publisher
@@ -103,7 +103,7 @@ public class Saml2ResponseBuilder {
   /**
    * Given an error {@link Status} object, the method builds a {@link Response} object indicating the error and signs
    * it.
-   * 
+   *
    * @param responseAttributes the response attributes needed for building the {@link Response} object
    * @param errorStatus the SAML status object
    * @return a {@link Response} object
@@ -130,7 +130,7 @@ public class Saml2ResponseBuilder {
   /**
    * Given a {@link Saml2ErrorStatusException} exception, the method builds a {@link Response} object indicating the
    * error {@link Status} given by the exception and signs it.
-   * 
+   *
    * @param responseAttributes the response attributes needed for building the {@link Response} object
    * @param error the SAML error
    * @return a {@link Response} object
@@ -149,7 +149,7 @@ public class Saml2ResponseBuilder {
    * Given an {@link Assertion}, the method builds a {@link Response} object including the supplied {@link Assertion}.
    * If the Identity Provider is configured to encrypt assertions, the method encrypts the supplied {@link Assertion}
    * for the recipient given by {@link Saml2ResponseAttributes#getPeerMetadata()}.
-   * 
+   *
    * @param responseAttributes the response attributes needed for building the {@link Response} object
    * @param assertion the SAML {@link Assertion}
    * @return a {@link Response} object
@@ -184,7 +184,7 @@ public class Saml2ResponseBuilder {
   /**
    * Creates a {@link Response} object with the basic attributes {@code ID}, {@code Destination} and
    * {@code InResponseTo} as well as the {@code Issuer} element and the supplied {@code Status} element.
-   * 
+   *
    * @param responseAttributes the response attributes needed for building the {@link Response} object
    * @param status the SAML {@link Status} object
    * @return a {@link Response} object
@@ -213,7 +213,7 @@ public class Saml2ResponseBuilder {
 
   /**
    * Signs the {@link Response} message.
-   * 
+   *
    * @param samlResponse the object to sign
    * @param peerMetadata the peer metadata (may be used to select signing algorithm)
    * @throws UnrecoverableSaml2IdpException for signing errors
@@ -240,7 +240,7 @@ public class Saml2ResponseBuilder {
 
   /**
    * Encrypts the supplied {@link Assertion}.
-   * 
+   *
    * @param assertion the assertion to encrypt
    * @param peerMetadata the metadata for the peer to whom we encrypt for
    * @return an {@link EncryptedAssertion}
@@ -271,7 +271,7 @@ public class Saml2ResponseBuilder {
 
   /**
    * Tells whether assertions are encrypted.
-   * 
+   *
    * @return {@code true} if assertions are encrypted, and {@code false} otherwise
    */
   public boolean isEncryptAssertions() {
@@ -280,7 +280,7 @@ public class Saml2ResponseBuilder {
 
   /**
    * Assigns whether assertions should be encrypted.
-   * 
+   *
    * @param encryptAssertions whether assertions should be encrypted
    */
   public void setEncryptAssertions(final boolean encryptAssertions) {
@@ -301,7 +301,7 @@ public class Saml2ResponseBuilder {
 
   /**
    * Assigns a custom ID generator. The default is {@link DefaultSaml2MessageIDGenerator}.
-   * 
+   *
    * @param idGenerator the ID generator
    */
   public void setIdGenerator(final Saml2MessageIDGenerator idGenerator) {
@@ -311,7 +311,7 @@ public class Saml2ResponseBuilder {
   /**
    * By assigning a {@link Customizer} the {@link Response} object that is built can be modified. The customizer is
    * invoked when the {@link Response} object has been completely built, but before it is signed.
-   * 
+   *
    * @param responseCustomizer a {@link Customizer}
    */
   public void setResponseCustomizer(final Customizer<Response> responseCustomizer) {
@@ -320,7 +320,7 @@ public class Saml2ResponseBuilder {
 
   /**
    * Assigns a message source for resolving error messages.
-   * 
+   *
    * @param messageSource the {@link MessageSource}
    */
   public void setMessageSource(final MessageSource messageSource) {

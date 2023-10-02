@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
@@ -31,7 +31,7 @@ import se.swedenconnect.spring.saml.testsp.ext.ExtendedSaml2AuthenticationTokenC
 
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SamlSpSecurityConfiguration {
 
   @Autowired
@@ -44,16 +44,15 @@ public class SamlSpSecurityConfiguration {
   SecurityFilterChain samlLoginFilterChain(final HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(
         (authorize) -> authorize
-            .antMatchers(HttpMethod.GET, "/private/**").authenticated()
-            .antMatchers(HttpMethod.POST, "/saml/**", "/private/**").authenticated())
-        .rememberMe().disable()
+            .requestMatchers(HttpMethod.GET, "/private/**").authenticated()
+            .requestMatchers(HttpMethod.POST, "/saml/**", "/private/**").authenticated()
+            .anyRequest().permitAll())
+        .rememberMe(rm -> rm.disable())
         .authenticationProvider(this.openSaml4AuthenticationProvider)
-        .saml2Login().authenticationConverter(this.saml2AuthenticationTokenConverter)
-        .and()
+        .saml2Login(login -> login.authenticationConverter(this.saml2AuthenticationTokenConverter))
         .saml2Logout(Customizer.withDefaults())
-        .csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-        .and()
-        .cors();
+        .csrf(csrf -> csrf.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+        .cors(Customizer.withDefaults());
     return http.build();
   }
 

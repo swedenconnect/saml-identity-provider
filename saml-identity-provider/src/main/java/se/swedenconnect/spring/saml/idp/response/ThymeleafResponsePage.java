@@ -19,18 +19,18 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.http.MediaType;
 import org.thymeleaf.context.WebContext;
-import org.thymeleaf.spring5.SpringTemplateEngine;
+import org.thymeleaf.spring6.SpringTemplateEngine;
+import org.thymeleaf.web.servlet.JakartaServletWebApplication;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * A {@link ResponsePage} implementation that uses a Thymeleaf template engine.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -46,7 +46,7 @@ public class ThymeleafResponsePage implements ResponsePage {
 
   /**
    * Constructor.
-   * 
+   *
    * @param templateEngine the template engine
    * @param templateId the template id, for example "post.html"
    */
@@ -62,8 +62,11 @@ public class ThymeleafResponsePage implements ResponsePage {
 
     log.debug("Invoking template to create POST body");
 
+    final JakartaServletWebApplication webApplication = JakartaServletWebApplication.buildApplication(
+        httpServletRequest.getServletContext());
+
     final WebContext thymeleafContext =
-        new WebContext(httpServletRequest, httpServletResponse, httpServletRequest.getServletContext());
+        new WebContext(webApplication.buildExchange(httpServletRequest, httpServletResponse));
 
     thymeleafContext.setVariable("action", destination);
     thymeleafContext.setVariable("SAMLResponse", samlResponse);

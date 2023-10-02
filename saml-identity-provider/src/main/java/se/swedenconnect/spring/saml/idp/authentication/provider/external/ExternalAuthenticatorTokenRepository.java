@@ -15,11 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.security.core.Authentication;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProcessingFilter;
 
@@ -37,7 +36,7 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProce
  * The persistence mechanism used will depend on the implementation, but most commonly the {@link HttpSession} will be
  * used to store the tokens.
  * </p>
- * 
+ *
  * @author Martin Lindström
  * @see FilterAuthenticationTokenRepository
  */
@@ -45,7 +44,7 @@ public interface ExternalAuthenticatorTokenRepository {
 
   /**
    * Gets the {@link RedirectForAuthenticationToken} that is the input for an external authentication process.
-   * 
+   *
    * @param request the HTTP servlet request
    * @return the {@link RedirectForAuthenticationToken} or {@code null} if not present
    */
@@ -53,7 +52,7 @@ public interface ExternalAuthenticatorTokenRepository {
 
   /**
    * Is invoken to commit the {@link Authentication} token that is the result from the external user authentication.
-   * 
+   *
    * @param token the {@link Authentication} token
    * @param request the current HTTP request
    * @throws IllegalStateException if the corresponding {@link RedirectForAuthenticationToken} is not available in the
@@ -64,7 +63,7 @@ public interface ExternalAuthenticatorTokenRepository {
 
   /**
    * Is invoken to commit the {@link Saml2ErrorStatusException} that is a description for a failed user authentication.
-   * 
+   *
    * @param error the error
    * @param request the current HTTP request
    * @throws IllegalStateException if the corresponding {@link RedirectForAuthenticationToken} is not available in the

@@ -18,18 +18,17 @@ package se.swedenconnect.spring.saml.idp.web.filters;
 import java.io.IOException;
 import java.util.Objects;
 
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.opensaml.saml.saml2.core.Response;
 import org.springframework.security.web.util.ThrowableAnalyzer;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
@@ -40,7 +39,7 @@ import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 
 /**
  * A {@link Filter} responsible of sending SAML error response messages.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
@@ -53,7 +52,7 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
 
   /** The response sender. */
   private final Saml2ResponseSender responseSender;
-  
+
   /** The event publisher. */
   private final Saml2IdpEventPublisher eventPublisher;
 
@@ -62,7 +61,7 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
 
   /**
    * Constructor.
-   * 
+   *
    * @param requestMatcher the request matcher
    * @param responseBuilder the {@link Saml2ResponseBuilder}
    * @param responseSender the {@link Saml2ResponseSender}
@@ -74,7 +73,7 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
     this.requestMatcher = Objects.requireNonNull(requestMatcher, "requestMatcher must not be null");
     this.responseBuilder = Objects.requireNonNull(responseBuilder, "responseBuilder must not be null");
     this.responseSender = Objects.requireNonNull(responseSender, "responseSender must not be null");
-    this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher must not be null"); 
+    this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher must not be null");
   }
 
   /** {@inheritDoc} */
@@ -82,7 +81,7 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
   protected void doFilterInternal(
       final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
       throws ServletException, IOException {
-    
+
     if (!this.requestMatcher.matches(request)) {
       filterChain.doFilter(request, response);
       return;
@@ -102,7 +101,7 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
         if (e instanceof UnrecoverableSaml2IdpException unrecoverable) {
           this.eventPublisher.publishUnrecoverableSamlError(unrecoverable);
         }
-        
+
         if (e instanceof ServletException) {
           throw (ServletException) e;
         }
@@ -121,7 +120,7 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
 
   /**
    * Sends a SAML error {@link Response} message.
-   * 
+   *
    * @param request the HTTP servlet request
    * @param response the HTTP servlet response
    * @param error the SAML error
@@ -139,7 +138,7 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
 
   /**
    * Assigns a custom {@link ThrowableAnalyzer}.
-   * 
+   *
    * @param throwableAnalyzer a throwable analyzer
    */
   public void setThrowableAnalyzer(final ThrowableAnalyzer throwableAnalyzer) {

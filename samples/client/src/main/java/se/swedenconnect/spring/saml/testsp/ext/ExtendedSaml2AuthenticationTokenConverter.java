@@ -15,13 +15,13 @@
  */
 package se.swedenconnect.spring.saml.testsp.ext;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticationToken;
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
 import org.springframework.security.saml2.provider.service.web.Saml2AuthenticationTokenConverter;
 import org.springframework.security.web.authentication.AuthenticationConverter;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public class ExtendedSaml2AuthenticationTokenConverter implements AuthenticationConverter {
 

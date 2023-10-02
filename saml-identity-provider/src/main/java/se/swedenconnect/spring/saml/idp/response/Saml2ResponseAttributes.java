@@ -22,8 +22,8 @@ import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.springframework.util.Assert;
 
+import se.swedenconnect.opensaml.common.utils.SerializableOpenSamlObject;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
-import se.swedenconnect.spring.saml.idp.utils.SerializableOpenSamlObject;
 
 /**
  * Attributes needed when creating a SAML {@link Response} message.
@@ -54,7 +54,7 @@ public class Saml2ResponseAttributes implements Serializable {
 
   /**
    * Gets the {@code RelayState} variable.
-   * 
+   *
    * @return the {@code RelayState} variable
    */
   public String getRelayState() {
@@ -63,7 +63,7 @@ public class Saml2ResponseAttributes implements Serializable {
 
   /**
    * Assigns the {@code RelayState} variable.
-   * 
+   *
    * @param relayState the {@code RelayState} variable
    */
   public void setRelayState(final String relayState) {
@@ -72,7 +72,7 @@ public class Saml2ResponseAttributes implements Serializable {
 
   /**
    * Gets the {@code InResponseTo} attribute.
-   * 
+   *
    * @return the {@code InResponseTo} attribute
    */
   public String getInResponseTo() {
@@ -81,7 +81,7 @@ public class Saml2ResponseAttributes implements Serializable {
 
   /**
    * Assigns the {@code InResponseTo} attribute.
-   * 
+   *
    * @param inResponseTo the {@code InResponseTo} attribute
    */
   public void setInResponseTo(final String inResponseTo) {
@@ -90,7 +90,7 @@ public class Saml2ResponseAttributes implements Serializable {
 
   /**
    * Gets the {@code Destination} attribute.
-   * 
+   *
    * @return the {@code Destination} attribute
    */
   public String getDestination() {
@@ -99,7 +99,7 @@ public class Saml2ResponseAttributes implements Serializable {
 
   /**
    * Gets the {@code Destination} attribute.
-   * 
+   *
    * @param destination the {@code Destination} attribute
    */
   public void setDestination(final String destination) {
@@ -108,7 +108,7 @@ public class Saml2ResponseAttributes implements Serializable {
 
   /**
    * Gets the peer SAML metadata.
-   * 
+   *
    * @return the peer SAML metadata
    */
   public EntityDescriptor getPeerMetadata() {
@@ -117,7 +117,7 @@ public class Saml2ResponseAttributes implements Serializable {
 
   /**
    * Assigns the peer SAML metadata.
-   * 
+   *
    * @param peerMetadata the peer SAML metadata
    */
   public void setPeerMetadata(final EntityDescriptor peerMetadata) {
@@ -126,7 +126,7 @@ public class Saml2ResponseAttributes implements Serializable {
 
   /**
    * Fills the object with the supplied {@link Saml2ResponseAttributes}.
-   * 
+   *
    * @param responseAttributes the object to copy from
    */
   public void copyInto(final Saml2ResponseAttributes responseAttributes) {

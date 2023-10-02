@@ -15,12 +15,11 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.util.Assert;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**

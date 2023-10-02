@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Sweden Connect
+ * Copyright 2022-2023 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,15 +107,16 @@ public class Saml2IdpConfiguration {
     final RequestMatcher endpointsMatcher = idpConfigurer.getEndpointsMatcher();
 
     http
-        .requestMatcher(endpointsMatcher)
+        .securityMatcher(endpointsMatcher)
         .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
         .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+        .securityContext((sc) -> sc.requireExplicitSave(false))
         .apply(idpConfigurer);
   }
 
   /**
    * Creates the {@link Saml2IdpAuditListener}.
-   * 
+   *
    * @param publisher the event publisher
    * @return a {@link Saml2IdpAuditListener}
    */

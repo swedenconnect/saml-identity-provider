@@ -18,8 +18,6 @@ package se.swedenconnect.spring.saml.idp.authnrequest;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.messaging.context.MessageContext;
@@ -48,10 +46,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.util.StringUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
-import net.shibboleth.utilities.java.support.resolver.CriteriaSet;
-import net.shibboleth.utilities.java.support.resolver.ResolverException;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.resolver.CriteriaSet;
+import net.shibboleth.shared.resolver.ResolverException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
@@ -77,7 +76,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
    * indicated in the message.
    */
   private ReceivedEndpointSecurityHandler receivedEndpointSecurityHandler;
-  
+
   /**
    * Message handler for checking that the messages received are not too old.
    */
@@ -88,7 +87,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
 
   /**
    * Constructor.
-   * 
+   *
    * @param metadataResolver the metadata resolver that we use when finding SP metadata
    * @param settings the IdP settings
    */
@@ -206,7 +205,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
         log.error("{}", msg, e);
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.ENDPOINT_CHECK_FAILURE, msg, e, token);
       }
-      
+
       // Check the message lifetime, i.e., that the recived message is not too old.
       //
       try {
@@ -217,7 +216,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
         log.error("{}", msg, e);
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.MESSAGE_TOO_OLD, msg, e, token);
       }
-      
+
       // Locate peer metadata.
       //
       final CriteriaSet criteria = new CriteriaSet(new EntityIdCriterion(peerEntityId),
@@ -258,7 +257,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       final String msg = "Unable to decode incoming authentication request";
       log.error("{}", msg, e);
       throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.FAILED_DECODE, msg, e, null);
-    }    
+    }
   }
 
   /**

@@ -15,12 +15,11 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProcessingFilter;
 
@@ -35,7 +34,7 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProce
  * The persistence mechanism used will depend on the implementation, but most commonly the {@link HttpSession} will be
  * used to store the tokens.
  * </p>
- * 
+ *
  * @author Martin Lindström
  * @see ExternalAuthenticatorTokenRepository
  */
@@ -50,7 +49,7 @@ public interface FilterAuthenticationTokenRepository {
    * <p>
    * Any previously stored tokens are cleared.
    * </p>
-   * 
+   *
    * @param token the {@link RedirectForAuthenticationToken}
    * @param request the HTTP servlet request
    */
@@ -65,7 +64,7 @@ public interface FilterAuthenticationTokenRepository {
    * {@link ExternalAuthenticatorTokenRepository#completeExternalAuthentication(Saml2ErrorStatusException, HttpServletRequest)})
    * and creates a {@link ResumedAuthenticationToken}.
    * </p>
-   * 
+   *
    * @param request the HTTP request
    * @return a {@link ResumedAuthenticationToken} or {@code null} if no token exists
    * @throws IllegalStateException if a {@link ResumedAuthenticationToken} token exists, but no corresponding
@@ -76,7 +75,7 @@ public interface FilterAuthenticationTokenRepository {
 
   /**
    * Clears the current external authentication.
-   * 
+   *
    * @param request the HTTP servlet request
    */
   void clear(final HttpServletRequest request);

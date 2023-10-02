@@ -42,7 +42,7 @@ import net.shibboleth.utilities.java.support.xml.XMLParserException;
 public class SerializableOpenSamlObject<T extends XMLObject> implements Serializable {
 
   private static final long serialVersionUID = 2505230422941307872L;
-  
+
   /** The object that we wrap. */
   private T object;
 

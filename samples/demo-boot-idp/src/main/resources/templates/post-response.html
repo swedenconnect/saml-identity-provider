@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"> 
-<head th:include="fragments/base :: headerFragment">
+<head th:insert="~{fragments/base :: headerFragment}">
   <title id="pageTitle" th:inline="text">[[#{idp.msg.title}]]</title>
 </head>
 <body onload="document.forms[0].submit()">
@@ -36,7 +36,7 @@
             
           </div>
           
-          <div th:replace="fragments/footer :: copyright"></div>
+          <div th:replace="~{fragments/footer :: copyright}"></div>
           
         </div>
       </div>

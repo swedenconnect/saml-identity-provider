@@ -17,12 +17,12 @@ package se.swedenconnect.spring.saml.idp.response;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * A response page for posting back SAML responses. The POST page typically looks like:
- * 
+ *
  * <pre>
  * &lt;!DOCTYPE html&gt;
  * &lt;html lang="en"&gt;
@@ -43,14 +43,14 @@ import javax.servlet.http.HttpServletResponse;
  * &lt;/body&gt;
  * &lt;/html&gt;
  * </pre>
- * 
+ *
  * @author Martin Lindström
  */
 public interface ResponsePage {
 
   /**
    * Sends a SAML Response message to the given destination.
-   * 
+   *
    * @param httpServletRequest the HTTP servlet request (in case the implementation wants to redirect the user)
    * @param httpServletResponse the HTTP servlet response
    * @param destination the destination URL

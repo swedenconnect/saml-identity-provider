@@ -38,7 +38,7 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
+import net.shibboleth.shared.component.ComponentInitializationException;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
@@ -78,7 +78,7 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
 
   /**
    * Customizes the {@code AuthnRequest} processor.
-   * 
+   *
    * @param customizer the {@link Customizer} providing access to the {@link Saml2AuthnRequestProcessorConfigurer}
    * @return the {@link Saml2IdpConfigurer} for further configuration
    */
@@ -89,7 +89,7 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
 
   /**
    * Customizes the user authentication processor.
-   * 
+   *
    * @param customizer the {@link Customizer} providing access to the {@link Saml2UserAuthenticationConfigurer}
    * @return the {@link Saml2IdpConfigurer} for further configuration
    */
@@ -100,7 +100,7 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
 
   /**
    * Customizes the {@link Saml2ResponseBuilder}.
-   * 
+   *
    * @param customizer the {@link Customizer} providing access to the {@link Saml2ResponseBuilder}
    * @return the {@link Saml2IdpConfigurer} for further configuration
    */
@@ -111,7 +111,7 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
 
   /**
    * Customizes the {@link Saml2ResponseSender}.
-   * 
+   *
    * @param customizer the {@link Customizer} providing access to the {@link Saml2ResponseSender}
    * @return the {@link Saml2IdpConfigurer} for further configuration
    */
@@ -135,7 +135,7 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
     final IdentityProviderSettings identityProviderSettings =
         Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     validateIdentityProviderSettings(identityProviderSettings);
-    
+
     // Metadata resolver ...
     //
     MetadataResolver metadataResolver = identityProviderSettings.getMetadataProvider();
@@ -196,7 +196,7 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
 
     final IdentityProviderSettings identityProviderSettings =
         Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
-    
+
     // Add context filter ...
     //
     final Saml2IdpContextFilter contextFilter = new Saml2IdpContextFilter(identityProviderSettings);
@@ -235,7 +235,7 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
 
   /**
    * Gets a configurer of a given type.
-   * 
+   *
    * @param <T> the class
    * @param type the type
    * @return the configurer or {@code null}
