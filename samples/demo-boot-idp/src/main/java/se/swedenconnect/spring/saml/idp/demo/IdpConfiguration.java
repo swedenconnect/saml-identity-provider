@@ -113,10 +113,9 @@ public class IdpConfiguration {
         .cors(Customizer.withDefaults())
         .authorizeHttpRequests((authorize) -> authorize
             .requestMatchers("/images/**", "/error", "/assets/**", "/scripts/**", "/webjars/**", "/view/**", "/api/**",
-                "/css/**", "/**/resume", SimulatedAuthenticationController.AUTHN_PATH + "/**")
+                "/css/**", "/resume/**", SimulatedAuthenticationController.AUTHN_PATH + "/**")
             .permitAll()
-            .requestMatchers(EndpointRequest.toAnyEndpoint())
-            .permitAll()
+            .requestMatchers(EndpointRequest.toAnyEndpoint()).permitAll()
             .anyRequest().denyAll());
 
     return http.build();

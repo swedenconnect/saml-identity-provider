@@ -45,7 +45,8 @@ public class SamlSpSecurityConfiguration {
     http.authorizeHttpRequests(
         (authorize) -> authorize
             .requestMatchers(HttpMethod.GET, "/private/**").authenticated()
-            .requestMatchers(HttpMethod.POST, "/saml/**", "/private/**").authenticated())
+            .requestMatchers(HttpMethod.POST, "/saml/**", "/private/**").authenticated()
+            .anyRequest().permitAll())
         .rememberMe(rm -> rm.disable())
         .authenticationProvider(this.openSaml4AuthenticationProvider)
         .saml2Login(login -> login.authenticationConverter(this.saml2AuthenticationTokenConverter))

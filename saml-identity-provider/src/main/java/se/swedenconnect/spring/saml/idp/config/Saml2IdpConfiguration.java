@@ -106,10 +106,11 @@ public class Saml2IdpConfiguration {
 
     final RequestMatcher endpointsMatcher = idpConfigurer.getEndpointsMatcher();
 
-    http.securityContext((sc) -> sc.requireExplicitSave(false))
+    http
         .securityMatcher(endpointsMatcher)
         .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
         .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
+        .securityContext((sc) -> sc.requireExplicitSave(false))
         .apply(idpConfigurer);
   }
 

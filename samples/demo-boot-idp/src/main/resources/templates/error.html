@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"> 
-<head th:include="fragments/base :: headerFragment">
+<head th:insert="~{fragments/base :: headerFragment}">
   <title id="pageTitle" th:inline="text">[[#{idp.msg.title}]]</title>
 </head>
 <body>
   
-  <div th:replace="fragments/header :: logotype"></div>
+  <div th:replace="~{fragments/header :: logotype}"></div>
   
   <div class="container main">
   
@@ -30,14 +30,14 @@
 
       </div> <!-- /.col-sm-12 content-container -->
       
-      <div th:replace="fragments/footer :: copyright"></div>      
+      <div th:replace="~{fragments/footer :: copyright}"></div>      
       
     </div> <!-- /#mainDiv -->
 
   </div> <!-- /.container main -->
 
 
-  <th:block th:include="fragments/base :: scriptFragment"></th:block>
+  <th:block th:insert="~{fragments/base :: scriptFragment}"></th:block>
   
 </body>
 </html>

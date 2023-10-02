@@ -29,13 +29,13 @@ import org.springframework.security.core.Authentication;
 
 import lombok.Getter;
 import lombok.Setter;
+import se.swedenconnect.opensaml.common.utils.SerializableOpenSamlObject;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
 import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryConstants;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGenerator;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
-import se.swedenconnect.spring.saml.idp.utils.SerializableOpenSamlObject;
 
 /**
  * An {@link Authentication} object for a SAML authentication request. This token will act as the input for the user
@@ -101,7 +101,7 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
 
   /**
    * Gets the entityID of the requesting entity.
-   * 
+   *
    * @return the entityID of the requesting entity
    */
   public String getEntityId() {
@@ -146,7 +146,7 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
 
   /**
    * Predicate that tells if the peer is a "signature service" peer.
-   * 
+   *
    * @return {@code true} if the peer is a signature service and {@code false}
    */
   public boolean isSignatureServicePeer() {
@@ -171,7 +171,7 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
 
   /**
    * Gets the assertion consumer servuce URL to use when posting back an assertion.
-   * 
+   *
    * @return URL
    */
   public String getAssertionConsumerServiceUrl() {
