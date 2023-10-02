@@ -20,8 +20,6 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -43,8 +41,9 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import net.shibboleth.utilities.java.support.resolver.ResolverException;
-import net.shibboleth.utilities.java.support.xml.XMLParserException;
+import jakarta.servlet.http.HttpServletRequest;
+import net.shibboleth.shared.resolver.ResolverException;
+import net.shibboleth.shared.xml.XMLParserException;
 import se.swedenconnect.opensaml.saml2.request.AbstractAuthnRequestGenerator;
 import se.swedenconnect.opensaml.saml2.request.AuthnRequestGeneratorContext;
 import se.swedenconnect.opensaml.saml2.request.RequestHttpObject;
@@ -55,7 +54,7 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
  * Test cases for Saml2AuthnRequestAuthenticationConverter.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBase {
@@ -143,16 +142,16 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     Assertions.assertNotNull(token.getPeerMetadata());
     Assertions.assertEquals(RELAY_STATE, token.getRelayState());
     Assertions.assertNotNull(token.getMessageContext());
-    
+
     Assertions.assertEquals(spMetadata.getEntityID(), token.getPrincipal());
     Assertions.assertEquals(spMetadata.getEntityID(), token.getEntityId());
     Assertions.assertEquals(SAMLConstants.SAML2_REDIRECT_BINDING_URI, token.getBindingUri());
-    
-    Assertions.assertEquals(String.format("entity-id: '%s', authn-request: '%s'", 
+
+    Assertions.assertEquals(String.format("entity-id: '%s', authn-request: '%s'",
         spMetadata.getEntityID(), authnRequest.getRequest().getID()),
         token.getLogString());
   }
-  
+
   @Test
   public void testPost() throws Exception {
 
@@ -190,10 +189,10 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     Assertions.assertNotNull(token.getPeerMetadata());
     Assertions.assertEquals(RELAY_STATE, token.getRelayState());
     Assertions.assertNotNull(token.getMessageContext());
-    
+
     Assertions.assertEquals(SAMLConstants.SAML2_POST_BINDING_URI, token.getBindingUri());
   }
-  
+
   @Test
   public void testBadMethod() throws Exception {
     final MetadataResolver metadataResolver = Mockito.mock(MetadataResolver.class);
@@ -204,10 +203,10 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
 
     final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
     Mockito.when(request.getMethod()).thenReturn("PUT");
-    
+
     Assertions.assertThrows(UnrecoverableSaml2IdpException.class, () -> converter.convert(request));
   }
-  
+
   @Test
   public void testDecodeError() throws Exception {
 
@@ -218,7 +217,7 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     Mockito.when(request.getRequestURL()).thenReturn(new StringBuffer(REDIRECT_RECEIVE_URL));
 
     Mockito.when(request.getParameter(Mockito.matches("SAMLRequest"))).thenReturn("HJHKDJKHSKJHDKS");
-    
+
     final ServletRequestAttributes servletRequestAttributes = Mockito.mock(ServletRequestAttributes.class);
     Mockito.when(servletRequestAttributes.getRequest()).thenReturn(request);
 
@@ -232,11 +231,11 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     final Saml2AuthnRequestAuthenticationConverter converter =
         new Saml2AuthnRequestAuthenticationConverter(metadataResolver, settings);
 
-    Assertions.assertEquals(UnrecoverableSaml2IdpError.FAILED_DECODE, 
+    Assertions.assertEquals(UnrecoverableSaml2IdpError.FAILED_DECODE,
         Assertions.assertThrows(UnrecoverableSaml2IdpException.class, () -> converter.convert(request))
           .getError());
-  }  
-  
+  }
+
   @Test
   public void testNoMetadataFound() throws Exception {
 
@@ -273,10 +272,10 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     final Saml2AuthnRequestAuthenticationConverter converter =
         new Saml2AuthnRequestAuthenticationConverter(metadataResolver, settings);
 
-    Assertions.assertEquals(UnrecoverableSaml2IdpError.UNKNOWN_PEER, 
+    Assertions.assertEquals(UnrecoverableSaml2IdpError.UNKNOWN_PEER,
         Assertions.assertThrows(UnrecoverableSaml2IdpException.class, () -> converter.convert(request)).getError());
   }
-  
+
   @Test
   public void testMetadataError() throws Exception {
 
@@ -313,10 +312,10 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     final Saml2AuthnRequestAuthenticationConverter converter =
         new Saml2AuthnRequestAuthenticationConverter(metadataResolver, settings);
 
-    Assertions.assertEquals(UnrecoverableSaml2IdpError.UNKNOWN_PEER, 
+    Assertions.assertEquals(UnrecoverableSaml2IdpError.UNKNOWN_PEER,
         Assertions.assertThrows(UnrecoverableSaml2IdpException.class, () -> converter.convert(request)).getError());
-  }  
-  
+  }
+
   @Test
   public void testBadUrl() throws Exception {
 
@@ -353,9 +352,9 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     final Saml2AuthnRequestAuthenticationConverter converter =
         new Saml2AuthnRequestAuthenticationConverter(metadataResolver, settings);
 
-    Assertions.assertEquals(UnrecoverableSaml2IdpError.ENDPOINT_CHECK_FAILURE, 
+    Assertions.assertEquals(UnrecoverableSaml2IdpError.ENDPOINT_CHECK_FAILURE,
         Assertions.assertThrows(UnrecoverableSaml2IdpException.class, () -> converter.convert(request)).getError());
-  }  
+  }
 
   private RequestHttpObject<AuthnRequest> getSamlRequest(final String binding) throws Exception {
     final TestAuthnRequestGenerator generator = new TestAuthnRequestGenerator(null);

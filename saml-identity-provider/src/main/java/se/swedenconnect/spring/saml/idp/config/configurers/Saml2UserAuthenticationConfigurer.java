@@ -19,8 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.opensaml.saml.saml2.core.Assertion;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -33,6 +31,7 @@ import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import jakarta.servlet.http.HttpServletRequest;
 import se.swedenconnect.spring.saml.idp.attributes.release.AttributeProducer;
 import se.swedenconnect.spring.saml.idp.attributes.release.AttributeReleaseManager;
 import se.swedenconnect.spring.saml.idp.attributes.release.AttributeReleaseVoter;
@@ -57,7 +56,7 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProce
 
 /**
  * A configurer for handling user authentication and issuance of SAML {@link Assertion}s.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
@@ -89,7 +88,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
 
   /**
    * Constructor.
-   * 
+   *
    * @param objectPostProcessor the object post processor
    */
   Saml2UserAuthenticationConfigurer(final ObjectPostProcessor<Object> objectPostProcessor) {
@@ -109,7 +108,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
    * {@link AbstractUserRedirectAuthenticationProvider} is using the same persistence strategy as the assigned
    * repository bean.
    * </p>
-   * 
+   *
    * @param authenticationTokenRepository the repository to use
    * @return the {@link Saml2UserAuthenticationConfigurer} for further configuration
    */
@@ -123,7 +122,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
   /**
    * By assigning a {@link Customizer} the {@link Assertion} object that is built can be modified. The customizer is
    * invoked when the {@link Assertion} object has been completely built, but before it is signed.
-   * 
+   *
    * @param assertionCustomizer a {@link Customizer}
    * @return the {@link Saml2UserAuthenticationConfigurer} for further configuration
    */
@@ -134,7 +133,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
 
   /**
    * Assigns a custom {@link Saml2MessageIDGenerator} to be used by the assertion builder.
-   * 
+   *
    * @param idGenerator the {@link Saml2MessageIDGenerator}
    * @return the {@link Saml2UserAuthenticationConfigurer} for further configuration
    */
@@ -146,7 +145,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
   /**
    * Customizes the list of {@link AttributeProducer}s that will later be installed to the
    * {@link AttributeReleaseManager} and SAML attribute builder.
-   * 
+   *
    * @param customizer a {@link Customizer}
    * @return the {@link Saml2UserAuthenticationConfigurer} for further configuration
    */
@@ -158,7 +157,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
   /**
    * Customizes the list of {@link AttributeReleaseVoter}s that will later be installed to the
    * {@link AttributeReleaseManager} and SAML attribute builder.
-   * 
+   *
    * @param customizer a {@link Customizer}
    * @return the {@link Saml2UserAuthenticationConfigurer} for further configuration
    */
@@ -170,7 +169,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
 
   /**
    * Customizes the list of {@link PostAuthenticationProcessor}s.
-   * 
+   *
    * @param customizer a {@link Customizer}
    * @return the {@link Saml2UserAuthenticationConfigurer} for further configuration
    */
@@ -193,7 +192,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
     final AuthenticationManager authenticationManager = httpSecurity.getSharedObject(AuthenticationManager.class);
     final Saml2ResponseBuilder responseBuilder = Saml2IdpConfigurerUtils.getResponseBuilder(httpSecurity);
     final Saml2ResponseSender responseSender = Saml2IdpConfigurerUtils.getResponseSender(httpSecurity);
-    
+
     // Assign SAD factory ...
     //
     for (final AttributeProducer p : this.attributeProducers) {
@@ -204,8 +203,8 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
         }
       }
     }
-    
-    final AttributeReleaseManager attributeReleaseManager = 
+
+    final AttributeReleaseManager attributeReleaseManager =
         new DefaultAttributeReleaseManager(this.attributeProducers, this.attributeReleaseVoters);
 
     final Saml2AssertionBuilder assertionBuilder = new Saml2AssertionBuilder(settings.getEntityId(),

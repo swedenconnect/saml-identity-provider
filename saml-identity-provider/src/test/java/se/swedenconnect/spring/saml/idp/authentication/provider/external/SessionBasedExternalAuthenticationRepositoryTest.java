@@ -15,21 +15,20 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
  * Test cases for SessionBasedExternalAuthenticationRepository.
- * 
+ *
  * @author Martin Lindström
  */
 public class SessionBasedExternalAuthenticationRepositoryTest {
@@ -182,31 +181,31 @@ public class SessionBasedExternalAuthenticationRepositoryTest {
     Assertions.assertThrows(IllegalStateException.class,
         () -> repo.completeExternalAuthentication(Mockito.mock(Saml2ErrorStatusException.class), request));
   }
-  
+
   @Test
   public void testClear() {
     final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
     final HttpSession session = Mockito.mock(HttpSession.class);
     Mockito.when(request.getSession(ArgumentMatchers.eq(false))).thenReturn(session);
-    
+
     final SessionBasedExternalAuthenticationRepository repo = new SessionBasedExternalAuthenticationRepository();
     repo.clear(request);
-    
+
     Mockito.verify(session, Mockito.times(1)).removeAttribute(
         Mockito.matches(SessionBasedExternalAuthenticationRepository.INPUT_SESSION_KEY));
     Mockito.verify(session, Mockito.times(1)).removeAttribute(
-        Mockito.matches(SessionBasedExternalAuthenticationRepository.RESULT_SESSION_KEY));    
+        Mockito.matches(SessionBasedExternalAuthenticationRepository.RESULT_SESSION_KEY));
   }
-  
+
   @Test
   public void testClearNoSession() {
     final HttpServletRequest request = Mockito.mock(HttpServletRequest.class);
     final HttpSession session = Mockito.mock(HttpSession.class);
     Mockito.when(request.getSession(ArgumentMatchers.eq(false))).thenReturn(null);
-    
+
     final SessionBasedExternalAuthenticationRepository repo = new SessionBasedExternalAuthenticationRepository();
     repo.clear(request);
-    
+
     Mockito.verify(session, Mockito.times(0)).removeAttribute(Mockito.anyString());
   }
 

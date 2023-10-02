@@ -17,8 +17,6 @@ package se.swedenconnect.spring.saml.idp.authnrequest.validation;
 
 import java.util.Objects;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.opensaml.core.config.ConfigurationService;
 import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.saml.common.binding.security.impl.SAMLProtocolMessageXMLSignatureSecurityHandler;
@@ -33,9 +31,10 @@ import org.opensaml.xmlsec.signature.support.SignatureTrustEngine;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.util.StringUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
-import net.shibboleth.utilities.java.support.primitive.NonnullSupplier;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.primitive.NonnullSupplier;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
@@ -45,7 +44,7 @@ import se.swedenconnect.spring.saml.idp.utils.OpenSamlUtils;
 /**
  * Implementation of a {@link AuthnRequestValidator} using OpenSAML mechanisms to verify the signature of the
  * {@code AuthnRequest}.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -65,7 +64,7 @@ public class AuthnRequestSignatureValidator implements AuthnRequestValidator {
 
   /**
    * Constructor.
-   * 
+   *
    * @param signatureTrustEngine the OpenSAML signature trust engine used to verify signatures
    */
   public AuthnRequestSignatureValidator(final SignatureTrustEngine signatureTrustEngine) {
@@ -122,7 +121,7 @@ public class AuthnRequestSignatureValidator implements AuthnRequestValidator {
 
   /**
    * Predicate that tells whether the received authentication request was signed.
-   * 
+   *
    * @param token the authentication request token
    * @return {@code true} if the authentication request was signed, and {@code false} otherwise
    */
@@ -139,7 +138,7 @@ public class AuthnRequestSignatureValidator implements AuthnRequestValidator {
   /**
    * Given the IdP settings, and possibly also the SP {@link EntityDescriptor} we determine whether the received
    * {@link AuthnRequest} is required to be signed.
-   * 
+   *
    * @param token the token
    * @return {@code true} if the {@link AuthnRequest} must be signed, and {@code false} otherwise
    */
@@ -157,7 +156,7 @@ public class AuthnRequestSignatureValidator implements AuthnRequestValidator {
 
   /**
    * Creates an OpenSAML {@link SecurityParametersContext} used during signature validation.
-   * 
+   *
    * @return a {@link SecurityParametersContext}
    */
   private SecurityParametersContext createSecurityParametersContext() {

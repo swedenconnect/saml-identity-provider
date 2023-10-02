@@ -20,11 +20,10 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 
+import jakarta.servlet.http.HttpServletRequest;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
@@ -91,7 +90,7 @@ public class ResumedAuthenticationToken implements Authentication {
 
   /**
    * Gets the {@link Saml2UserAuthenticationInputToken} for this operation.
-   * 
+   *
    * @return a {@link Saml2UserAuthenticationInputToken}
    */
   public Saml2UserAuthenticationInputToken getAuthnInputToken() {
@@ -100,7 +99,7 @@ public class ResumedAuthenticationToken implements Authentication {
 
   /**
    * Assigns the {@link Saml2UserAuthenticationInputToken} for this operation
-   * 
+   *
    * @param authnInputToken a {@link Saml2UserAuthenticationInputToken}
    */
   public void setAuthnInputToken(final Saml2UserAuthenticationInputToken authnInputToken) {
@@ -109,7 +108,7 @@ public class ResumedAuthenticationToken implements Authentication {
 
   /**
    * Gets the servlet request associated with this token.
-   * 
+   *
    * @return the {@link HttpServletRequest} or {@code null} if not available
    */
   public HttpServletRequest getServletRequest() {
@@ -118,7 +117,7 @@ public class ResumedAuthenticationToken implements Authentication {
 
   /**
    * Assigns the servlet request to associate with this token
-   * 
+   *
    * @param servletRequest a {@link HttpServletRequest}
    */
   public void setServletRequest(final HttpServletRequest servletRequest) {

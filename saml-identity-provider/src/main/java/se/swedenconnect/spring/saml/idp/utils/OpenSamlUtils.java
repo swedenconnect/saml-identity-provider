@@ -25,25 +25,25 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import javax.servlet.AsyncContext;
-import javax.servlet.DispatcherType;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.ServletInputStream;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpUpgradeHandler;
-import javax.servlet.http.Part;
-
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
-import net.shibboleth.utilities.java.support.primitive.NonnullSupplier;
+import jakarta.servlet.AsyncContext;
+import jakarta.servlet.DispatcherType;
+import jakarta.servlet.RequestDispatcher;
+import jakarta.servlet.ServletConnection;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.ServletInputStream;
+import jakarta.servlet.ServletRequest;
+import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpUpgradeHandler;
+import jakarta.servlet.http.Part;
+import net.shibboleth.shared.primitive.NonnullSupplier;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
@@ -209,11 +209,6 @@ public class OpenSamlUtils {
 
     @Override
     public RequestDispatcher getRequestDispatcher(final String path) {
-      return null;
-    }
-
-    @Override
-    public String getRealPath(final String path) {
       return null;
     }
 
@@ -399,11 +394,6 @@ public class OpenSamlUtils {
     }
 
     @Override
-    public boolean isRequestedSessionIdFromUrl() {
-      return false;
-    }
-
-    @Override
     public boolean authenticate(final HttpServletResponse response) throws IOException, ServletException {
       return false;
     }
@@ -428,6 +418,21 @@ public class OpenSamlUtils {
 
     @Override
     public <T extends HttpUpgradeHandler> T upgrade(final Class<T> handlerClass) throws IOException, ServletException {
+      return null;
+    }
+
+    @Override
+    public String getRequestId() {
+      return null;
+    }
+
+    @Override
+    public String getProtocolRequestId() {
+      return null;
+    }
+
+    @Override
+    public ServletConnection getServletConnection() {
       return null;
     }
 

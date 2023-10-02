@@ -29,8 +29,8 @@ import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 
-import net.shibboleth.utilities.java.support.xml.SerializeSupport;
-import net.shibboleth.utilities.java.support.xml.XMLParserException;
+import net.shibboleth.shared.xml.SerializeSupport;
+import net.shibboleth.shared.xml.XMLParserException;
 
 /**
  * Utility class for storing OpenSAML objects in a serializable manner.
@@ -42,7 +42,7 @@ import net.shibboleth.utilities.java.support.xml.XMLParserException;
 public class SerializableOpenSamlObject<T extends XMLObject> implements Serializable {
 
   private static final long serialVersionUID = 2505230422941307872L;
-  
+
   /** The object that we wrap. */
   private T object;
 

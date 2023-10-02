@@ -18,9 +18,6 @@ package se.swedenconnect.spring.saml.idp.autoconfigure.error;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorViewResolver;
@@ -33,12 +30,14 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.util.HtmlUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
 /**
  * A SAML error view resolver for handling {@link UnrecoverableSaml2IdpException}.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2IdpErrorViewResolver implements ErrorViewResolver, Ordered {
@@ -53,7 +52,7 @@ public class Saml2IdpErrorViewResolver implements ErrorViewResolver, Ordered {
 
   /**
    * Constructor.
-   * 
+   *
    * @param applicationContext the application context
    */
   public Saml2IdpErrorViewResolver(final ApplicationContext applicationContext) {
@@ -70,7 +69,7 @@ public class Saml2IdpErrorViewResolver implements ErrorViewResolver, Ordered {
 
   /**
    * Assigns the order for this bean.
-   * 
+   *
    * @param order the order
    */
   public void setOrder(final int order) {
@@ -79,7 +78,7 @@ public class Saml2IdpErrorViewResolver implements ErrorViewResolver, Ordered {
 
   /**
    * Assigns the view name for IdP errors. The default is {@code error/idp}.
-   * 
+   *
    * @param idpErrorViewName the view name
    */
   public void setIdpErrorViewName(final String idpErrorViewName) {

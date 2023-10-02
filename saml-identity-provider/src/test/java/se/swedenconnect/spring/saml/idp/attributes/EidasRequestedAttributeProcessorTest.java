@@ -23,7 +23,7 @@ import org.mockito.Mockito;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 
-import se.litsec.eidas.opensaml.ext.RequestedAttributes;
+import se.swedenconnect.opensaml.eidas.ext.RequestedAttributes;
 import se.swedenconnect.opensaml.saml2.core.build.AuthnRequestBuilder;
 import se.swedenconnect.opensaml.saml2.core.build.ExtensionsBuilder;
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
@@ -32,7 +32,7 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthentica
 
 /**
  * Test cases for EidasRequestedAttributeProcessor.
- * 
+ *
  * @author Martin Lindström
  */
 public class EidasRequestedAttributeProcessorTest extends OpenSamlTestBase {
@@ -51,38 +51,38 @@ public class EidasRequestedAttributeProcessorTest extends OpenSamlTestBase {
 
     Assertions.assertTrue(processor.extractRequestedAttributes(token).isEmpty());
   }
-  
+
   @Test
   public void testExtension() {
     final RequestedAttributes rattrs = (RequestedAttributes) XMLObjectSupport.buildXMLObject(RequestedAttributes.DEFAULT_ELEMENT_NAME);
-    final se.litsec.eidas.opensaml.ext.RequestedAttribute r1 = (se.litsec.eidas.opensaml.ext.RequestedAttribute) 
-        XMLObjectSupport.buildXMLObject(se.litsec.eidas.opensaml.ext.RequestedAttribute.DEFAULT_ELEMENT_NAME);
+    final se.swedenconnect.opensaml.eidas.ext.RequestedAttribute r1 = (se.swedenconnect.opensaml.eidas.ext.RequestedAttribute)
+        XMLObjectSupport.buildXMLObject(se.swedenconnect.opensaml.eidas.ext.RequestedAttribute.DEFAULT_ELEMENT_NAME);
     r1.setName(AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER);
     r1.setIsRequired(true);
     rattrs.getRequestedAttributes().add(r1);
-    
+
     final AuthnRequest authnRequest = AuthnRequestBuilder.builder()
         .extensions(ExtensionsBuilder.builder()
             .extension(rattrs)
             .build())
         .build();
-    
+
     final Saml2AuthnRequestAuthenticationToken token = Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
     Mockito.when(token.getAuthnRequest()).thenReturn(authnRequest);
     Mockito.when(token.getLogString()).thenReturn("logstring");
-    
+
     final EidasRequestedAttributeProcessor processor = new EidasRequestedAttributeProcessor();
     Collection<RequestedAttribute> attrs = processor.extractRequestedAttributes(token);
-    
+
     Assertions.assertTrue(attrs.size() == 1);
     Assertions.assertTrue(attrs.stream()
         .filter(a -> a.getId().equals(AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER))
         .map(a -> a.isRequired())
         .findFirst()
         .orElse(false));
-        
-        
-      
+
+
+
   }
 
 }

@@ -17,13 +17,12 @@ package se.swedenconnect.spring.saml.idp.autoconfigure.error;
 
 import java.util.Map;
 
-import javax.servlet.ServletException;
-
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.web.context.request.WebRequest;
 
+import jakarta.servlet.ServletException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
@@ -37,11 +36,11 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
  * <li>{@value #IDP_ERROR_DESCRIPTION} - The textual description ({@link UnrecoverableSaml2IdpError#getDescription()}).
  * Should be the fallback text if the above does not render a text.</li>
  * </ul>
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2IdpErrorAttributes extends DefaultErrorAttributes {
-  
+
   public static final String IDP_ERROR_CODE = "idpErrorCode";
   public static final String IDP_ERROR_MESSAGE_CODE = "idpErrorMessageCode";
   public static final String IDP_ERROR_DESCRIPTION = "idpErrorDescription";

@@ -25,7 +25,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  * @author Martin Lindström
  */
 public class RequestedAttribute extends UserAttribute {
-  
+
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /**
@@ -36,7 +36,7 @@ public class RequestedAttribute extends UserAttribute {
 
   /**
    * Constructor.
-   * 
+   *
    * @param id the attribute ID (name)
    */
   public RequestedAttribute(final String id) {
@@ -45,7 +45,7 @@ public class RequestedAttribute extends UserAttribute {
 
   /**
    * Constructor.
-   * 
+   *
    * @param id the attribute ID (name)
    * @param friendlyName the attribute friendly name
    */
@@ -55,7 +55,7 @@ public class RequestedAttribute extends UserAttribute {
 
   /**
    * Constructor.
-   * 
+   *
    * @param id the attribute ID (name)
    * @param friendlyName the attribute friendly name
    * @param isRequired whether the attribute is "required", meaning that the requester requires it to be included in a
@@ -69,10 +69,10 @@ public class RequestedAttribute extends UserAttribute {
   /**
    * Constructor creating an {@link RequestedAttribute} from an OpenSAML eIDAS
    * {@link se.litsec.eidas.opensaml.ext.RequestedAttribute}.
-   * 
+   *
    * @param attribute the eIDAS {@link se.litsec.eidas.opensaml.ext.RequestedAttribute}
    */
-  public RequestedAttribute(final se.litsec.eidas.opensaml.ext.RequestedAttribute attribute) {
+  public RequestedAttribute(final se.swedenconnect.opensaml.eidas.ext.RequestedAttribute attribute) {
     super(attribute);
     this.isRequired = attribute.isRequired();
   }
@@ -80,7 +80,7 @@ public class RequestedAttribute extends UserAttribute {
   /**
    * Constructor creating an {@link RequestedAttribute} from an OpenSAML SAML metadata
    * {@link org.opensaml.saml.saml2.metadata.RequestedAttribute}.
-   * 
+   *
    * @param attribute the {@link org.opensaml.saml.saml2.metadata.RequestedAttribute}
    */
   public RequestedAttribute(final org.opensaml.saml.saml2.metadata.RequestedAttribute attribute) {
@@ -115,7 +115,7 @@ public class RequestedAttribute extends UserAttribute {
     sb.append(", is-required=").append(this.isRequired);
     return sb.toString();
   }
-  
-  
+
+
 
 }

@@ -15,12 +15,18 @@
  */
 package se.swedenconnect.spring.saml.idp.utils;
 
-import net.shibboleth.utilities.java.support.security.impl.RandomIdentifierGenerationStrategy;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.SecureRandom;
+
+import org.apache.commons.codec.binary.Hex;
+
+import net.shibboleth.shared.security.RandomIdentifierParameterSpec;
+import net.shibboleth.shared.security.impl.RandomIdentifierGenerationStrategy;
 
 /**
  * An implementation of the {@link Saml2MessageIDGenerator} based on Shibboleth's
  * {@link RandomIdentifierGenerationStrategy} that ensures that XML-safe identifiers are generated.
- * 
+ *
  * @author Martin Lindström
  */
 public class DefaultSaml2MessageIDGenerator implements Saml2MessageIDGenerator {
@@ -32,16 +38,22 @@ public class DefaultSaml2MessageIDGenerator implements Saml2MessageIDGenerator {
    * Default constructor. Uses 16 bytes identifiers.
    */
   public DefaultSaml2MessageIDGenerator() {
-    this(16);
+    this.generator = new RandomIdentifierGenerationStrategy();
   }
 
   /**
    * Constructor.
-   * 
+   *
    * @param idSize the number of bytes used for the identifier
    */
   public DefaultSaml2MessageIDGenerator(final int idSize) {
-    this.generator = new RandomIdentifierGenerationStrategy(idSize);
+    try {
+      this.generator = new RandomIdentifierGenerationStrategy(
+          new RandomIdentifierParameterSpec(new SecureRandom(), idSize, new Hex()));
+    }
+    catch (final InvalidAlgorithmParameterException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   /** {@inheritDoc} */

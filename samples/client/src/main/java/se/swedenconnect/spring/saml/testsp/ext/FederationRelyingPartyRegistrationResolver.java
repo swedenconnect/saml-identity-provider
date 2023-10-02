@@ -15,10 +15,10 @@
  */
 package se.swedenconnect.spring.saml.testsp.ext;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public class FederationRelyingPartyRegistrationResolver implements RelyingPartyRegistrationResolver {
 

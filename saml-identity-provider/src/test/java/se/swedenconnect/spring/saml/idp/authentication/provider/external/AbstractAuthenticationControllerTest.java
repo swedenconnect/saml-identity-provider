@@ -17,15 +17,14 @@ package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.servlet.ModelAndView;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import se.swedenconnect.spring.saml.idp.OpenSamlTestBase;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
@@ -36,7 +35,7 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
 /**
  * Test cases for AbstractAuthenticationController.
- * 
+ *
  * @author Martin Lindström
  */
 public class AbstractAuthenticationControllerTest extends OpenSamlTestBase {

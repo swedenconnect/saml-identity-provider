@@ -18,15 +18,15 @@ package se.swedenconnect.spring.saml.idp.response;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 /**
  * A helper for creating the HTML page that posts the response back to the Service Provider.
- * 
+ *
  * @author Martin Lindström
  */
 public class DefaultResponsePage implements ResponsePage {
@@ -49,7 +49,7 @@ public class DefaultResponsePage implements ResponsePage {
 
   /**
    * Generates a HTML page for posting the SAML response message.
-   * 
+   *
    * @param destination the destination URL
    * @param samlResponse the Base64-encoded SAML response message
    * @param relayState the relay state (may be null)

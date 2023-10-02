@@ -23,9 +23,9 @@ import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
 import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.net.URIComparator;
-import net.shibboleth.utilities.java.support.net.URIException;
-import net.shibboleth.utilities.java.support.net.impl.BasicURLComparator;
+import net.shibboleth.shared.net.URIComparator;
+import net.shibboleth.shared.net.URIException;
+import net.shibboleth.shared.net.impl.BasicURLComparator;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
@@ -33,7 +33,7 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 /**
  * Asserts that the AssertionConsumerService information given in the {@code AuthnRequest} is registered in the SAML
  * metadata. Updates the {@link Saml2AuthnRequestAuthenticationToken} with this information.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -44,7 +44,7 @@ public class AssertionConsumerServiceValidator implements AuthnRequestValidator 
 
   /**
    * Assigns a custom {@link URIComparator}. The default is {@link BasicURLComparator}.
-   * 
+   *
    * @param uriComparator the comparator to use
    */
   public void setUriComparator(final URIComparator uriComparator) {

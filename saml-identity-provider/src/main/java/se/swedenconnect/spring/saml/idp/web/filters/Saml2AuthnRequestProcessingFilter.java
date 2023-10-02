@@ -1,12 +1,22 @@
+/*
+ * Copyright 2023 Sweden Connect
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package se.swedenconnect.spring.saml.idp.web.filters;
 
 import java.io.IOException;
 import java.util.Objects;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -18,6 +28,10 @@ import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
@@ -42,7 +56,7 @@ public class Saml2AuthnRequestProcessingFilter extends OncePerRequestFilter {
 
   /**
    * Constructor.
-   * 
+   *
    * @param authenticationManager the authentication manager
    * @param requestMatcher the request matcher for matching incoming requests
    * @param authenticationConverter the authentication converter that converts a SAML {@code AuthnRequest} message
@@ -55,7 +69,7 @@ public class Saml2AuthnRequestProcessingFilter extends OncePerRequestFilter {
         Objects.requireNonNull(authenticationManager, "authenticationManager must not be null");
     this.requestMatcher = Objects.requireNonNull(requestMatcher, "requestMatcher must not be null");
     this.authenticationConverter =
-        Objects.requireNonNull(authenticationConverter, "authenticationConverter must not be null");    
+        Objects.requireNonNull(authenticationConverter, "authenticationConverter must not be null");
   }
 
   /** {@inheritDoc} */
@@ -107,7 +121,7 @@ public class Saml2AuthnRequestProcessingFilter extends OncePerRequestFilter {
 
   /**
    * Default authentication success handler.
-   * 
+   *
    * @param request the HTTP servlet request
    * @param response the HTTP servlet response
    * @param authentication the authentication object

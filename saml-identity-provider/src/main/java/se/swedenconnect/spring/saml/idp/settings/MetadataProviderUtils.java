@@ -26,8 +26,8 @@ import java.util.List;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.TrustManager;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.conn.ssl.DefaultHostnameVerifier;
+import org.apache.hc.client5.http.classic.HttpClient;
+import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.springframework.core.io.FileSystemResource;
@@ -36,12 +36,12 @@ import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
 
 import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.utilities.java.support.component.ComponentInitializationException;
-import net.shibboleth.utilities.java.support.httpclient.HttpClientBuilder;
-import net.shibboleth.utilities.java.support.httpclient.HttpClientSupport;
-import net.shibboleth.utilities.java.support.httpclient.TLSSocketFactoryBuilder;
-import net.shibboleth.utilities.java.support.resolver.ResolverException;
-import net.shibboleth.utilities.java.support.xml.XMLParserException;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.httpclient.HttpClientBuilder;
+import net.shibboleth.shared.httpclient.HttpClientSupport;
+import net.shibboleth.shared.httpclient.TLSSocketFactoryBuilder;
+import net.shibboleth.shared.resolver.ResolverException;
+import net.shibboleth.shared.xml.XMLParserException;
 import se.swedenconnect.opensaml.saml2.metadata.provider.AbstractMetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.CompositeMetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
@@ -52,15 +52,15 @@ import se.swedenconnect.opensaml.saml2.metadata.provider.StaticMetadataProvider;
 
 /**
  * Utility methods for handling metadata providers.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
 public class MetadataProviderUtils {
-  
+
   /**
    * Based on one or more {@link MetadataProviderSettings} object(s) a {@link MetadataResolver} is created.
-   * 
+   *
    * @param config configuration
    * @return a {@link MetadataResolver}
    */
@@ -193,9 +193,9 @@ public class MetadataProviderUtils {
       throw new IllegalArgumentException("Invalid backup-location");
     }
   }
-  
+
   // Hidden ctor
-  private MetadataProviderUtils() {    
+  private MetadataProviderUtils() {
   }
 
 }

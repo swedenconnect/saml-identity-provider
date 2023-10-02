@@ -32,7 +32,7 @@ import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Element;
 
-import net.shibboleth.utilities.java.support.xml.XMLParserException;
+import net.shibboleth.shared.xml.XMLParserException;
 
 /**
  * A {@link Converter} that gets the property value (e.g., {@code classpath:metadata.xml}) and instantiates an
@@ -52,7 +52,7 @@ import net.shibboleth.utilities.java.support.xml.XMLParserException;
  *   return new PropertyToEntityDescriptorConverter();
  * }
  * </pre>
- * 
+ *
  * @author Martin Lindström
  */
 public class PropertyToEntityDescriptorConverter

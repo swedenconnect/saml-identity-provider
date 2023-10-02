@@ -15,8 +15,6 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.error;
 
-import javax.servlet.Servlet;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,9 +36,11 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.DispatcherServlet;
 
+import jakarta.servlet.Servlet;
+
 /**
  * IdP specific {@link EnableAutoConfiguration Auto-configuration} to render errors via an MVC error controller.
- * 
+ *
  * @author Martin Lindström
  */
 @AutoConfiguration(before = { WebMvcAutoConfiguration.class, ErrorMvcAutoConfiguration.class })
@@ -48,7 +48,7 @@ import org.springframework.web.servlet.DispatcherServlet;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 @EnableConfigurationProperties({ ServerProperties.class, WebMvcProperties.class })
 public class Saml2IdpErrorAutoConfiguration {
-  
+
   /**
    * Path of the IdP error view name.
    */
