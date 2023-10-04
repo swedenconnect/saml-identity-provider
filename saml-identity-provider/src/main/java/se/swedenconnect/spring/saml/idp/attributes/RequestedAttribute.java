@@ -68,9 +68,9 @@ public class RequestedAttribute extends UserAttribute {
 
   /**
    * Constructor creating an {@link RequestedAttribute} from an OpenSAML eIDAS
-   * {@link se.litsec.eidas.opensaml.ext.RequestedAttribute}.
+   * {@link se.swedenconnect.opensaml.eidas.ext.RequestedAttribute}.
    *
-   * @param attribute the eIDAS {@link se.litsec.eidas.opensaml.ext.RequestedAttribute}
+   * @param attribute the eIDAS {@link se.swedenconnect.opensaml.eidas.ext.RequestedAttribute}
    */
   public RequestedAttribute(final se.swedenconnect.opensaml.eidas.ext.RequestedAttribute attribute) {
     super(attribute);
