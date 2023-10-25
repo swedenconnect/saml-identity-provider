@@ -14,7 +14,7 @@
 
   <name>Sweden Connect :: Spring SAML Identity Provider :: Samples :: Spring Boot Starter Demo Application</name>
   <description>Demo Application for Spring SAML Identity Provider using the SpringBoot Starter</description>
-  <url>https://docs.swedenconnect.se/spring-saml-identity-provider</url>
+  <url>https://docs.swedenconnect.se/saml-identity-provider</url>
 
   <licenses>
     <license>
@@ -25,9 +25,9 @@
   </licenses>
 
   <scm>
-    <connection>scm:git:https://github.com/swedenconnect/spring-saml-identity-provider.git</connection>
-    <developerConnection>scm:git:https://github.com/swedenconnect/spring-saml-identity-provider.git</developerConnection>
-    <url>https://github.com/swedenconnect/spring-saml-identity-provider/tree/master</url>
+    <connection>scm:git:https://github.com/swedenconnect/saml-identity-provider.git</connection>
+    <developerConnection>scm:git:https://github.com/swedenconnect/saml-identity-provider.git</developerConnection>
+    <url>https://github.com/swedenconnect/saml-identity-provider/tree/master</url>
   </scm>
 
   <organization>
