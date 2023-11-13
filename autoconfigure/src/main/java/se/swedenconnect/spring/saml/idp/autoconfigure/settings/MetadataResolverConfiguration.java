@@ -52,6 +52,7 @@ public class MetadataResolverConfiguration {
       for (final MetadataProviderConfigurationProperties p : this.properties.getMetadataProviders()) {
         settings[pos++] = MetadataProviderSettings.builder()
             .location(p.getLocation())
+            .skipHostnameVerification(p.getSkipHostnameVerification())
             .backupLocation(p.getBackupLocation())
             .mdq(p.getMdq())
             .validationCertificate(p.getValidationCertificate())
