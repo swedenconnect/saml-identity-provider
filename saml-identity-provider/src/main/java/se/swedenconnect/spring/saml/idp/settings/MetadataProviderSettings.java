@@ -26,7 +26,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Settings for configuring SAML metadata providers (resolvers).
- * 
+ *
  * @author Martin Lindström
  */
 public class MetadataProviderSettings extends AbstractSettings {
@@ -50,11 +50,26 @@ public class MetadataProviderSettings extends AbstractSettings {
 
   /**
    * Gets the location of the metadata. Can be an URL, a file, or even a classpath resource.
-   * 
+   *
    * @return the metadata location
    */
   public Resource getLocation() {
     return this.getSetting(SAML_METADATA_PROVIDER_LOCATION);
+  }
+
+  /**
+   * If the {@code location} is an HTTPS resource, this setting tells whether to skip hostname verification in the TLS
+   * connection (useful during testing).
+   */
+  public static final String SAML_METADATA_PROVIDER_SKIP_HOSTNAME_VERIFICATION = "skip-hostname-verification";
+
+  /**
+   * Tells whether to skip hostname verification in the TLS connection (useful during testing).
+   *
+   * @return {@code true} if hostname verification should be skipped
+   */
+  public Boolean getSkipHostnameVerification() {
+    return this.getSetting(SAML_METADATA_PROVIDER_SKIP_HOSTNAME_VERIFICATION);
   }
 
   /**
@@ -66,7 +81,7 @@ public class MetadataProviderSettings extends AbstractSettings {
   /**
    * If the {@code location} setting is an URL, a "backup location" may be assigned to store downloaded metadata. This
    * method returns this file.
-   * 
+   *
    * @return a file or {@code null}
    */
   public File getBackupLocation() {
@@ -82,7 +97,7 @@ public class MetadataProviderSettings extends AbstractSettings {
   /**
    * If the {@code location} setting is an URL, setting the MDQ-flag means that the metadata MDQ
    * (https://www.ietf.org/id/draft-young-md-query-17.html) protocol is used. This method returns this setting.
-   * 
+   *
    * @return whether MDQ is active or not
    */
   public Boolean getMdq() {
@@ -96,7 +111,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
   /**
    * Gets the certificate used to validate the metadata.
-   * 
+   *
    * @return the validation certificate or {@code null} if not assigned
    */
   public X509Certificate getValidationCertificate() {
@@ -111,7 +126,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
   /**
    * Gets the HTTP proxy settings.
-   * 
+   *
    * @return the proxy settings or {@code null}
    */
   public HttpProxySettings getHttpProxy() {
@@ -148,7 +163,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
     /**
      * Assigns the location of the metadata. Can be an URL, a file, or even a classpath resource.
-     * 
+     *
      * @param location the metadata location
      * @return the builder
      */
@@ -157,11 +172,21 @@ public class MetadataProviderSettings extends AbstractSettings {
     }
 
     /**
+     * Tells whether to skip hostname verification in the TLS connection (useful during testing).
+     *
+     * @param {@code true} if hostname verification should be skipped
+     * @return the builder
+     */
+    public Builder skipHostnameVerification(final Boolean skip) {
+      return this.setting(SAML_METADATA_PROVIDER_SKIP_HOSTNAME_VERIFICATION, skip);
+    }
+
+    /**
      * Assigns the backup file.
      * <p>
      * If the {@code location} setting is an URL, a "backup location" may be assigned to store downloaded metadata.
      * </p>
-     * 
+     *
      * @param backupLocation the backup location file
      * @return the builder
      */
@@ -175,7 +200,7 @@ public class MetadataProviderSettings extends AbstractSettings {
      * If the {@code location} setting is an URL, setting the MDQ-flag means that the metadata MDQ
      * (https://www.ietf.org/id/draft-young-md-query-17.html) protocol is used.
      * </p>
-     * 
+     *
      * @param mdq whether MDQ should be be used
      * @return the builder
      */
@@ -185,7 +210,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
     /**
      * Assigns the certificate used to validate the metadata.
-     * 
+     *
      * @param validationCertificate the validation certificate
      * @return the builder
      */
@@ -195,7 +220,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
     /**
      * Assigns the HTTP proxy settings.
-     * 
+     *
      * @param httpProxy the proxy settings
      * @return the builder
      */
@@ -206,10 +231,12 @@ public class MetadataProviderSettings extends AbstractSettings {
     /** {@inheritDoc} */
     @Override
     protected void applyDefaultSettings() {
+      if (this.getSettings().get(SAML_METADATA_PROVIDER_SKIP_HOSTNAME_VERIFICATION) == null) {
+        this.skipHostnameVerification(Boolean.FALSE);
+      }
       if (this.getSettings().get(SAML_METADATA_PROVIDER_MDQ) == null) {
         this.mdq(false);
       }
-      // TODO: Default to Sweden Connect prod?
     }
 
     /** {@inheritDoc} */
@@ -222,7 +249,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
   /**
    * Settings for representing HTTP proxy configuration.
-   * 
+   *
    * @author Martin Lindström
    */
   public static class HttpProxySettings extends AbstractSettings {
@@ -245,7 +272,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
     /**
      * Gets the HTTP proxy host.
-     * 
+     *
      * @return the HTTP proxy host
      */
     public String getHost() {
@@ -259,7 +286,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
     /**
      * Gets the HTTP proxy port.
-     * 
+     *
      * @return the HTTP proxy port
      */
     public Integer getPort() {
@@ -273,7 +300,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
     /**
      * Gets the HTTP proxy user name.
-     * 
+     *
      * @return the proxy user name or {@code null}
      */
     public String getUserName() {
@@ -287,7 +314,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
     /**
      * Gets the HTTP proxy password.
-     * 
+     *
      * @return the HTTP proxy password or {@code null}
      */
     public String getPassword() {
@@ -324,7 +351,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
       /**
        * Assigns the HTTP proxy host.
-       * 
+       *
        * @param host the HTTP proxy host
        * @return the builder
        */
@@ -334,7 +361,7 @@ public class MetadataProviderSettings extends AbstractSettings {
 
       /**
        * Assigns the HTTP proxy port.
-       * 
+       *
        * @param port the HTTP proxy port
        * @return the builder
        */
@@ -344,23 +371,23 @@ public class MetadataProviderSettings extends AbstractSettings {
 
       /**
        * Assigns the HTTP proxy user name.
-       * 
+       *
        * @param userName the proxy user name
        * @return the builder
        */
       public Builder userName(final String userName) {
         return this.setting(HTTP_PROXY_USER_NAME, userName);
       }
-      
+
       /**
        * Assigns the HTTP proxy password.
-       * 
+       *
        * @param password the HTTP proxy password
        * @return the builder
        */
       public Builder password(final String password) {
         return this.setting(HTTP_PROXY_PASSWORD, password);
-      }      
+      }
 
       /** {@inheritDoc} */
       @Override

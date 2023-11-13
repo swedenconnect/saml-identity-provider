@@ -24,38 +24,44 @@ import lombok.Data;
 
 /**
  * Configuration properties for metadata provider configuration.
- * 
+ *
  * @author Martin Lindström
  */
 @Data
 public class MetadataProviderConfigurationProperties {
-  
+
   /**
    * The location of the metadata. Can be an URL, a file, or even a classpath resource.
    */
   private Resource location;
-  
+
+  /**
+   * If the {@code location} is an HTTPS resource, this setting tells whether to skip hostname verification in the TLS
+   * connection (useful during testing).
+   */
+  private Boolean skipHostnameVerification;
+
   /**
    * If the {@code location} setting is an URL, a "backup location" may be assigned to store downloaded metadata.
    */
   private File backupLocation;
-  
+
   /**
    * If the {@code location} setting is an URL, setting the MDQ-flag means that the metadata MDQ
    * (https://www.ietf.org/id/draft-young-md-query-17.html) protocol is used.
    */
   private Boolean mdq;
-  
+
   /**
    * The certificate used to validate the metadata.
    */
   private X509Certificate validationCertificate;
-  
+
   /**
    * If the {@code location} setting is an URL and a HTTP proxy is required this setting configures this proxy.
    */
   private HttpProxy httpProxy;
-  
+
   /**
    * Configuration properties for an HTTP proxy.
    */
@@ -81,6 +87,6 @@ public class MetadataProviderConfigurationProperties {
      * The proxy user name (optional).
      */
     private String userName;
-  }  
+  }
 
 }
