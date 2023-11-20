@@ -112,7 +112,7 @@ public class Saml2IdpMetadataEndpointFilter extends OncePerRequestFilter {
       if (this.entityDescriptorContainer.updateRequired(true)) {
         log.debug("Metadata needs to be updated ...");
         this.entityDescriptorContainer.update(true);
-        log.debug("Metadata was updated and signed");
+        log.debug("Metadata was updated");
       }
       else {
         log.debug("Metadata is up-to-date, using cached metadata");
