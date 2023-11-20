@@ -174,7 +174,7 @@ public class MetadataProviderSettings extends AbstractSettings {
     /**
      * Tells whether to skip hostname verification in the TLS connection (useful during testing).
      *
-     * @param {@code true} if hostname verification should be skipped
+     * @param skip {@code true} if hostname verification should be skipped
      * @return the builder
      */
     public Builder skipHostnameVerification(final Boolean skip) {
