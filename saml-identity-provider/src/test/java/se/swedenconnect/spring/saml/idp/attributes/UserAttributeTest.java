@@ -24,6 +24,7 @@ import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.schema.XSAny;
 import org.opensaml.core.xml.schema.XSBase64Binary;
 import org.opensaml.core.xml.schema.XSBoolean;
@@ -35,14 +36,30 @@ import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 
+import se.swedenconnect.opensaml.eidas.ext.attributes.BirthNameType;
+import se.swedenconnect.opensaml.eidas.ext.attributes.CurrentAddressStructuredType;
+import se.swedenconnect.opensaml.eidas.ext.attributes.CurrentAddressType;
+import se.swedenconnect.opensaml.eidas.ext.attributes.CurrentFamilyNameType;
+import se.swedenconnect.opensaml.eidas.ext.attributes.CurrentGivenNameType;
+import se.swedenconnect.opensaml.eidas.ext.attributes.DateOfBirthType;
+import se.swedenconnect.opensaml.eidas.ext.attributes.GenderType;
+import se.swedenconnect.opensaml.eidas.ext.attributes.GenderTypeEnumeration;
+import se.swedenconnect.opensaml.eidas.ext.attributes.PersonIdentifierType;
+import se.swedenconnect.opensaml.eidas.ext.attributes.PlaceOfBirthType;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeUtils;
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
 import se.swedenconnect.spring.saml.idp.OpenSamlTestBase;
+import se.swedenconnect.spring.saml.idp.attributes.eidas.CurrentAddress;
+import se.swedenconnect.spring.saml.idp.attributes.eidas.DateOfBirth;
+import se.swedenconnect.spring.saml.idp.attributes.eidas.Gender;
+import se.swedenconnect.spring.saml.idp.attributes.eidas.PersonIdentifier;
+import se.swedenconnect.spring.saml.idp.attributes.eidas.PlaceOfBirth;
+import se.swedenconnect.spring.saml.idp.attributes.eidas.TransliterationString;
 
 /**
  * Test cases for UserAttribute.
- * 
+ *
  * @author Martin Lindström
  */
 public class UserAttributeTest extends OpenSamlTestBase {
@@ -188,7 +205,7 @@ public class UserAttributeTest extends OpenSamlTestBase {
   public void testSamlIntegerAttribute() {
     final XSInteger i = AttributeBuilder.createValueObject(XSInteger.class);
     i.setValue(17);
-    
+
     final XSInteger i2 = AttributeBuilder.createValueObject(XSInteger.class);
     i2.setValue(42);
 
@@ -281,22 +298,31 @@ public class UserAttributeTest extends OpenSamlTestBase {
   @Test
   public void testUnsupportedTypeInAttribute() {
 
-    final EntityDescriptor e = (EntityDescriptor) XMLObjectSupport.buildXMLObject(EntityDescriptor.DEFAULT_ELEMENT_NAME); 
+    final EntityDescriptor e =
+        (EntityDescriptor) XMLObjectSupport.buildXMLObject(EntityDescriptor.DEFAULT_ELEMENT_NAME);
+    e.setID("Hello");
 
     final Attribute attribute = AttributeBuilder.builder("Attribute")
         .value(e)
         .build();
-    Assertions.assertThrows(IllegalArgumentException.class, () -> {
-      new UserAttribute(attribute);
-    });
+
+    final UserAttribute ua = new UserAttribute(attribute);
+
+    final Attribute attribute2 = ua.toOpenSamlAttribute();
+    Assertions.assertEquals("Attribute", attribute2.getName());
+    Assertions.assertEquals(1, attribute2.getAttributeValues().size());
+    Assertions.assertTrue(attribute2.getAttributeValues().get(0) instanceof EntityDescriptor);
+    Assertions.assertEquals("Hello",
+        ((EntityDescriptor) attribute2.getAttributeValues().get(0)).getID());
+
   }
-  
+
   @Test
   public void testSamlDifferentValueTypes() {
-    
+
     final XSString s = AttributeBuilder.createValueObject(XSString.class);
     s.setValue("Val");
-    
+
     final XSInteger i = AttributeBuilder.createValueObject(XSInteger.class);
     i.setValue(17);
 
@@ -304,34 +330,372 @@ public class UserAttributeTest extends OpenSamlTestBase {
         .value(s)
         .value(i)
         .build();
-    
+
     Assertions.assertThrows(IllegalArgumentException.class, () -> {
       new UserAttribute(attribute);
-    }); 
+    });
   }
-  
+
   @Test
   public void testUnsupportedValueType() {
-    
+
     final UserAttribute ua = new UserAttribute("ID", null, new HashMap<String, String>());
     Assertions.assertThrows(IllegalArgumentException.class, () -> {
       ua.toOpenSamlAttribute();
     });
   }
-  
+
   @Test
   public void testLocalDate() {
     final LocalDate d = LocalDate.parse("1965-04-06");
     final UserAttribute ua = new UserAttribute(AttributeConstants.ATTRIBUTE_NAME_DATE_OF_BIRTH,
         AttributeConstants.ATTRIBUTE_FRIENDLY_NAME_DATE_OF_BIRTH, d);
-    
+
     final Attribute a2 = ua.toOpenSamlAttribute();
     Assertions.assertEquals(AttributeConstants.ATTRIBUTE_NAME_DATE_OF_BIRTH, a2.getName());
     Assertions.assertEquals(AttributeConstants.ATTRIBUTE_FRIENDLY_NAME_DATE_OF_BIRTH, a2.getFriendlyName());
     Assertions.assertTrue(a2.getAttributeValues().size() == 1);
     Assertions.assertTrue(a2.getAttributeValues().get(0) instanceof XSString);
     Assertions.assertEquals("1965-04-06", AttributeUtils.getAttributeStringValue(a2));
-    
+
+  }
+
+  @Test
+  public void testEidasPersonIdentifier() {
+    final PersonIdentifierType pi =
+        AttributeBuilder.createValueObject(PersonIdentifierType.TYPE_NAME, PersonIdentifierType.class);
+    pi.setValue("ES/AT/02635542Y");
+
+    final Attribute attribute = AttributeBuilder.builder(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_PERSON_IDENTIFIER_ATTRIBUTE_NAME)
+        .friendlyName(
+            se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_PERSON_IDENTIFIER_ATTRIBUTE_FRIENDLY_NAME)
+        .value(pi)
+        .build();
+
+    final UserAttribute ua = new UserAttribute(attribute);
+
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_PERSON_IDENTIFIER_ATTRIBUTE_NAME,
+        ua.getId());
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_PERSON_IDENTIFIER_ATTRIBUTE_FRIENDLY_NAME,
+        ua.getFriendlyName());
+
+    Assertions.assertTrue(ua.getValues().get(0) instanceof PersonIdentifier);
+    Assertions.assertEquals("ES/AT/02635542Y", ua.getValues().get(0).toString());
+
+    final Attribute attribute2 = ua.toOpenSamlAttribute();
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_PERSON_IDENTIFIER_ATTRIBUTE_NAME,
+        attribute2.getName());
+    Assertions.assertTrue(attribute2.getAttributeValues().size() == 1);
+    Assertions.assertTrue(attribute2.getAttributeValues().get(0) instanceof PersonIdentifierType);
+    Assertions.assertEquals("ES/AT/02635542Y",
+        ((PersonIdentifierType) attribute2.getAttributeValues().get(0)).getValue());
+  }
+
+  @Test
+  public void testEidasBirthName() {
+    final BirthNameType value = AttributeBuilder.createValueObject(BirthNameType.TYPE_NAME, BirthNameType.class);
+    value.setValue("Jackie Onassis");
+    value.setLatinScript(true);
+
+    final BirthNameType value2 = AttributeBuilder.createValueObject(BirthNameType.TYPE_NAME, BirthNameType.class);
+    value2.setValue("Jαξκιε Ονασσισ");
+    value2.setLatinScript(false);
+
+    final Attribute attribute = AttributeBuilder.builder(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_BIRTH_NAME_ATTRIBUTE_NAME)
+        .friendlyName(
+            se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_BIRTH_NAME_ATTRIBUTE_FRIENDLY_NAME)
+        .value(value)
+        .value(value2)
+        .build();
+
+    final UserAttribute ua = new UserAttribute(attribute);
+
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_BIRTH_NAME_ATTRIBUTE_NAME,
+        ua.getId());
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_BIRTH_NAME_ATTRIBUTE_FRIENDLY_NAME,
+        ua.getFriendlyName());
+
+    Assertions.assertEquals(2, ua.getValues().size());
+    Assertions.assertTrue(ua.getValues().get(0) instanceof TransliterationString);
+    Assertions.assertEquals("Jackie Onassis", ua.getValues().get(0).toString());
+    Assertions.assertTrue(ua.getValues().get(1) instanceof TransliterationString);
+    Assertions.assertEquals("Jαξκιε Ονασσισ", ua.getValues().get(1).toString());
+
+    final Attribute attribute2 = ua.toOpenSamlAttribute();
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_BIRTH_NAME_ATTRIBUTE_NAME,
+        attribute2.getName());
+    Assertions.assertTrue(attribute2.getAttributeValues().size() == 2);
+    Assertions.assertTrue(attribute2.getAttributeValues().get(0) instanceof BirthNameType);
+    Assertions.assertEquals("Jackie Onassis",
+        ((BirthNameType) attribute2.getAttributeValues().get(0)).getValue());
+    Assertions.assertTrue(((BirthNameType) attribute2.getAttributeValues().get(0)).getLatinScript());
+
+    Assertions.assertTrue(attribute2.getAttributeValues().get(1) instanceof BirthNameType);
+    Assertions.assertEquals("Jαξκιε Ονασσισ",
+        ((BirthNameType) attribute2.getAttributeValues().get(1)).getValue());
+    Assertions.assertFalse(((BirthNameType) attribute2.getAttributeValues().get(1)).getLatinScript());
+  }
+
+  @Test
+  public void testEidasCurrentFamilyName() {
+    final CurrentFamilyNameType value =
+        AttributeBuilder.createValueObject(CurrentFamilyNameType.TYPE_NAME, CurrentFamilyNameType.class);
+    value.setValue("Onassis");
+    value.setLatinScript(true);
+
+    final CurrentFamilyNameType value2 =
+        AttributeBuilder.createValueObject(CurrentFamilyNameType.TYPE_NAME, CurrentFamilyNameType.class);
+    value2.setValue("Ονασσισ");
+    value2.setLatinScript(false);
+
+    final Attribute attribute = AttributeBuilder.builder(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_FAMILY_NAME_ATTRIBUTE_NAME)
+        .friendlyName(
+            se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_FAMILY_NAME_ATTRIBUTE_FRIENDLY_NAME)
+        .value(value)
+        .value(value2)
+        .build();
+
+    final UserAttribute ua = new UserAttribute(attribute);
+
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_FAMILY_NAME_ATTRIBUTE_NAME,
+        ua.getId());
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_FAMILY_NAME_ATTRIBUTE_FRIENDLY_NAME,
+        ua.getFriendlyName());
+
+    Assertions.assertEquals(2, ua.getValues().size());
+    Assertions.assertTrue(ua.getValues().get(0) instanceof TransliterationString);
+    Assertions.assertEquals("Onassis", ua.getValues().get(0).toString());
+    Assertions.assertTrue(ua.getValues().get(1) instanceof TransliterationString);
+    Assertions.assertEquals("Ονασσισ", ua.getValues().get(1).toString());
+
+    final Attribute attribute2 = ua.toOpenSamlAttribute();
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_FAMILY_NAME_ATTRIBUTE_NAME,
+        attribute2.getName());
+    Assertions.assertTrue(attribute2.getAttributeValues().size() == 2);
+    Assertions.assertTrue(attribute2.getAttributeValues().get(0) instanceof CurrentFamilyNameType);
+    Assertions.assertEquals("Onassis",
+        ((CurrentFamilyNameType) attribute2.getAttributeValues().get(0)).getValue());
+    Assertions.assertTrue(((CurrentFamilyNameType) attribute2.getAttributeValues().get(0)).getLatinScript());
+
+    Assertions.assertTrue(attribute2.getAttributeValues().get(1) instanceof CurrentFamilyNameType);
+    Assertions.assertEquals("Ονασσισ",
+        ((CurrentFamilyNameType) attribute2.getAttributeValues().get(1)).getValue());
+    Assertions.assertFalse(((CurrentFamilyNameType) attribute2.getAttributeValues().get(1)).getLatinScript());
+  }
+
+  @Test
+  public void testEidasCurrentGivenName() {
+    final CurrentGivenNameType value =
+        AttributeBuilder.createValueObject(CurrentGivenNameType.TYPE_NAME, CurrentGivenNameType.class);
+    value.setValue("Jackie");
+
+    final Attribute attribute = AttributeBuilder.builder(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_GIVEN_NAME_ATTRIBUTE_NAME)
+        .friendlyName(
+            se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_GIVEN_NAME_ATTRIBUTE_FRIENDLY_NAME)
+        .value(value)
+        .build();
+
+    final UserAttribute ua = new UserAttribute(attribute);
+
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_GIVEN_NAME_ATTRIBUTE_NAME,
+        ua.getId());
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_GIVEN_NAME_ATTRIBUTE_FRIENDLY_NAME,
+        ua.getFriendlyName());
+
+    Assertions.assertEquals(1, ua.getValues().size());
+    Assertions.assertTrue(ua.getValues().get(0) instanceof TransliterationString);
+    Assertions.assertEquals("Jackie", ua.getValues().get(0).toString());
+
+    final Attribute attribute2 = ua.toOpenSamlAttribute();
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_GIVEN_NAME_ATTRIBUTE_NAME,
+        attribute2.getName());
+    Assertions.assertTrue(attribute2.getAttributeValues().size() == 1);
+    Assertions.assertTrue(attribute2.getAttributeValues().get(0) instanceof CurrentGivenNameType);
+    Assertions.assertEquals("Jackie",
+        ((CurrentGivenNameType) attribute2.getAttributeValues().get(0)).getValue());
+    Assertions.assertTrue(((CurrentGivenNameType) attribute2.getAttributeValues().get(0)).getLatinScript());
+    Assertions
+        .assertNull(((CurrentGivenNameType) attribute2.getAttributeValues().get(0)).getLatinScriptXSBooleanValue());
+  }
+
+  @Test
+  public void testEidasDateOfBirth() {
+
+    LocalDate date = LocalDate.parse("1929-07-28");
+
+    final DateOfBirthType dob = AttributeBuilder.createValueObject(DateOfBirthType.TYPE_NAME, DateOfBirthType.class);
+    dob.setDate(date);
+
+    final Attribute attribute = AttributeBuilder.builder(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_DATE_OF_BIRTH_ATTRIBUTE_NAME)
+        .friendlyName(
+            se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_DATE_OF_BIRTH_ATTRIBUTE_FRIENDLY_NAME)
+        .value(dob)
+        .build();
+
+    final UserAttribute ua = new UserAttribute(attribute);
+
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_DATE_OF_BIRTH_ATTRIBUTE_NAME,
+        ua.getId());
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_DATE_OF_BIRTH_ATTRIBUTE_FRIENDLY_NAME,
+        ua.getFriendlyName());
+
+    Assertions.assertTrue(ua.getValues().get(0) instanceof DateOfBirth);
+    Assertions.assertEquals(date.toString(), ua.getValues().get(0).toString());
+
+    final Attribute attribute2 = ua.toOpenSamlAttribute();
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_DATE_OF_BIRTH_ATTRIBUTE_NAME,
+        attribute2.getName());
+    Assertions.assertTrue(attribute2.getAttributeValues().size() == 1);
+    Assertions.assertTrue(attribute2.getAttributeValues().get(0) instanceof DateOfBirthType);
+    Assertions.assertEquals(date,
+        ((DateOfBirthType) attribute2.getAttributeValues().get(0)).getDate());
+  }
+
+  @Test
+  public void testEidasGender() {
+    final GenderType gender = AttributeBuilder.createValueObject(GenderType.TYPE_NAME, GenderType.class);
+    gender.setGender(GenderTypeEnumeration.MALE);
+
+    final Attribute attribute = AttributeBuilder.builder(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_GENDER_ATTRIBUTE_NAME)
+        .friendlyName(
+            se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_GENDER_ATTRIBUTE_FRIENDLY_NAME)
+        .value(gender)
+        .build();
+
+    final UserAttribute ua = new UserAttribute(attribute);
+
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_GENDER_ATTRIBUTE_NAME,
+        ua.getId());
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_GENDER_ATTRIBUTE_FRIENDLY_NAME,
+        ua.getFriendlyName());
+
+    Assertions.assertTrue(ua.getValues().get(0) instanceof Gender);
+    Assertions.assertEquals("Male", ua.getValues().get(0).toString());
+
+    final Attribute attribute2 = ua.toOpenSamlAttribute();
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_GENDER_ATTRIBUTE_NAME,
+        attribute2.getName());
+    Assertions.assertTrue(attribute2.getAttributeValues().size() == 1);
+    Assertions.assertTrue(attribute2.getAttributeValues().get(0) instanceof GenderType);
+    Assertions.assertEquals(GenderTypeEnumeration.MALE,
+        ((GenderType) attribute2.getAttributeValues().get(0)).getGender());
+  }
+
+  @Test
+  public void testEidasPlaceOfBirth() {
+    final PlaceOfBirthType pob = AttributeBuilder.createValueObject(PlaceOfBirthType.TYPE_NAME, PlaceOfBirthType.class);
+    pob.setValue("Stockholm");
+
+    final Attribute attribute = AttributeBuilder.builder(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_PLACE_OF_BIRTH_ATTRIBUTE_NAME)
+        .friendlyName(
+            se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_PLACE_OF_BIRTH_ATTRIBUTE_FRIENDLY_NAME)
+        .value(pob)
+        .build();
+
+    final UserAttribute ua = new UserAttribute(attribute);
+
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_PLACE_OF_BIRTH_ATTRIBUTE_NAME,
+        ua.getId());
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_PLACE_OF_BIRTH_ATTRIBUTE_FRIENDLY_NAME,
+        ua.getFriendlyName());
+
+    Assertions.assertTrue(ua.getValues().get(0) instanceof PlaceOfBirth);
+    Assertions.assertEquals("Stockholm", ua.getValues().get(0).toString());
+
+    final Attribute attribute2 = ua.toOpenSamlAttribute();
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_PLACE_OF_BIRTH_ATTRIBUTE_NAME,
+        attribute2.getName());
+    Assertions.assertTrue(attribute2.getAttributeValues().size() == 1);
+    Assertions.assertTrue(attribute2.getAttributeValues().get(0) instanceof PlaceOfBirthType);
+    Assertions.assertEquals("Stockholm",
+        ((PlaceOfBirthType) attribute2.getAttributeValues().get(0)).getValue());
+  }
+
+  @Test
+  public void testEidasCurrentAddress() {
+
+    final CurrentAddressType address = (CurrentAddressType) XMLObjectProviderRegistrySupport.getBuilderFactory()
+        .getBuilder(CurrentAddressType.TYPE_NAME)
+        .buildObject(CurrentAddressType.TYPE_NAME.getNamespaceURI(),
+            CurrentAddressType.TYPE_NAME.getLocalPart(), "eidas");
+    fillAddress(address);
+
+    final Attribute attribute = AttributeBuilder.builder(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_ADDRESS_ATTRIBUTE_NAME)
+        .friendlyName(
+            se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_ADDRESS_ATTRIBUTE_FRIENDLY_NAME)
+        .value(address)
+        .build();
+
+    final UserAttribute ua = new UserAttribute(attribute);
+
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_ADDRESS_ATTRIBUTE_NAME,
+        ua.getId());
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_ADDRESS_ATTRIBUTE_FRIENDLY_NAME,
+        ua.getFriendlyName());
+
+    Assertions.assertTrue(ua.getValues().get(0) instanceof CurrentAddress);
+    Assertions.assertEquals(address.toSwedishEidString(), ua.getValues().get(0).toString());
+
+    final Attribute attribute2 = ua.toOpenSamlAttribute();
+    Assertions.assertEquals(
+        se.swedenconnect.opensaml.eidas.ext.attributes.AttributeConstants.EIDAS_CURRENT_ADDRESS_ATTRIBUTE_NAME,
+        attribute2.getName());
+    Assertions.assertTrue(attribute2.getAttributeValues().size() == 1);
+    Assertions.assertTrue(attribute2.getAttributeValues().get(0) instanceof CurrentAddressType);
+
+    verifyAddress(address, (CurrentAddressType) attribute2.getAttributeValues().get(0));
+  }
+
+  private static void fillAddress(final CurrentAddressStructuredType address) {
+    address.setLocatorDesignator("6 tr");
+    address.setLocatorName("10");
+    address.setThoroughfare("Korta gatan");
+    address.setPostName("Solna");
+    address.setPostCode("19174");
+    address.setAdminunitFirstline("SE");
+    address.setAdminunitSecondline("Uppland");
+  }
+
+  private static void verifyAddress(final CurrentAddressStructuredType expected, final CurrentAddressStructuredType actual) {
+    Assertions.assertEquals(expected.getElementQName(), actual.getElementQName());
+    Assertions.assertEquals(expected.getLocatorDesignator(), actual.getLocatorDesignator());
+    Assertions.assertEquals(expected.getLocatorName(), actual.getLocatorName());
+    Assertions.assertEquals(expected.getThoroughfare(), actual.getThoroughfare());
+    Assertions.assertEquals(expected.getPostName(), actual.getPostName());
+    Assertions.assertEquals(expected.getPostCode(), actual.getPostCode());
+
+    Assertions.assertEquals(expected.getCvaddressArea(), actual.getCvaddressArea());
   }
 
 }
