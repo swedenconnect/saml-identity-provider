@@ -13,35 +13,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp;
+package se.swedenconnect.spring.saml.idp.attributes.eidas;
+
+import java.io.Serializable;
+
+import org.opensaml.core.xml.XMLObject;
+import org.opensaml.saml.saml2.core.Assertion;
 
 /**
- * Internal class used for serialization across SAML Identity Provider classes.
+ * Interface representing an eIDAS attribute value.
+ *
+ * @param <T> the eIDAS type
  *
  * @author Martin Lindström
  */
-public final class Saml2IdentityProviderVersion {
-
-  private static final int MAJOR = 2;
-  private static final int MINOR = 0;
-  private static final int PATCH = 2;
+public interface EidasAttributeValue<T extends XMLObject> extends Serializable {
 
   /**
-   * Global serialization value for SAML Identity Provider classes.
-   */
-  public static final long SERIAL_VERSION_UID = getVersion().hashCode();
-
-  /**
-   * Gets the version string.
+   * Gets the string representation of the value.
    *
-   * @return the version string
+   * @return a string
    */
-  public static String getVersion() {
-    return MAJOR + "." + MINOR + "." + PATCH;
-  }
+  String getValueAsString();
 
-  // Hidden
-  private Saml2IdentityProviderVersion() {
-  }
+  /**
+   * Creates the {@link XMLObject} value for insertion as an attribute value in an {@link Assertion}.
+   *
+   * @return the attribute value
+   */
+  T createXmlObject();
 
 }

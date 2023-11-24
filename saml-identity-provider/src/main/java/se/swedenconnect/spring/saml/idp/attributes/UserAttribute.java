@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes;
 
+import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -27,6 +28,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.opensaml.core.xml.XMLObject;
+import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.MarshallingException;
+import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.schema.XSAny;
 import org.opensaml.core.xml.schema.XSBase64Binary;
 import org.opensaml.core.xml.schema.XSBoolean;
@@ -34,12 +38,18 @@ import org.opensaml.core.xml.schema.XSBooleanValue;
 import org.opensaml.core.xml.schema.XSDateTime;
 import org.opensaml.core.xml.schema.XSInteger;
 import org.opensaml.core.xml.schema.XSString;
+import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.springframework.util.Assert;
+import org.w3c.dom.Element;
 
+import net.shibboleth.shared.xml.SerializeSupport;
+import net.shibboleth.shared.xml.XMLParserException;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeUtils;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.attributes.eidas.EidasAttributeValue;
+import se.swedenconnect.spring.saml.idp.attributes.eidas.EidasAttributeValueConverter;
 
 /**
  * A representation of a user (identity) attribute.
@@ -68,26 +78,26 @@ public class UserAttribute implements Serializable {
 
   /**
    * Constructor.
-   * 
+   *
    * @param id the attribute ID (name)
    */
   public UserAttribute(final String id) {
-    this(id, null, (Serializable)null);
+    this(id, null, (Serializable) null);
   }
 
   /**
    * Constructor.
-   * 
+   *
    * @param id the attribute ID (name)
    * @param friendlyName the attribute friendly name
    */
   public UserAttribute(final String id, final String friendlyName) {
-    this(id, friendlyName, (Serializable)null);
+    this(id, friendlyName, (Serializable) null);
   }
-  
+
   /**
    * Constructor.
-   * 
+   *
    * @param id the attribute ID (name)
    * @param friendlyName the attribute friendly name
    * @param value the attribute value
@@ -95,10 +105,10 @@ public class UserAttribute implements Serializable {
   public UserAttribute(final String id, final String friendlyName, final Serializable value) {
     this(id, friendlyName, Optional.ofNullable(value).map(v -> List.of(v)).orElse(null));
   }
-  
+
   /**
    * Constructor.
-   * 
+   *
    * @param id the attribute ID (name)
    * @param friendlyName the attribute friendly name
    * @param values the attribute values
@@ -111,7 +121,7 @@ public class UserAttribute implements Serializable {
 
   /**
    * Constructs an {@code UserAttribute} given an OpenSAML {@link Attribute}.
-   * 
+   *
    * @param attribute an OpenSAML {@link Attribute}
    */
   public UserAttribute(final Attribute attribute) {
@@ -124,7 +134,10 @@ public class UserAttribute implements Serializable {
       // Assert that all values have the same type and return this type.
       final Class<?> valueType = processValueType(attribute.getAttributeValues());
 
-      if (XSString.class.isAssignableFrom(valueType) || XSAny.class.isAssignableFrom(valueType)) {
+      if (EidasAttributeValueConverter.isEidasAttribute(valueType)) {
+        this.values = EidasAttributeValueConverter.getValues(attribute, valueType);
+      }
+      else if (XSString.class.isAssignableFrom(valueType) || XSAny.class.isAssignableFrom(valueType)) {
         this.values = AttributeUtils.getAttributeValues(attribute, XSString.class).stream()
             .map(XSString::getValue)
             .collect(Collectors.toList());
@@ -152,8 +165,10 @@ public class UserAttribute implements Serializable {
             .collect(Collectors.toList());
       }
       else {
-        throw new IllegalArgumentException(
-            String.format("Unsupported attribute value type %s for %s", valueType.getSimpleName(), this.id));
+        this.values = attribute.getAttributeValues().stream()
+            .map(v -> new UnknownAttributeValue(v))
+            .collect(Collectors.toList());
+
       }
     }
   }
@@ -178,7 +193,7 @@ public class UserAttribute implements Serializable {
 
   /**
    * Assigns the friendly name.
-   * 
+   *
    * @param friendlyName the friendly name
    */
   public void setFriendlyName(final String friendlyName) {
@@ -196,7 +211,7 @@ public class UserAttribute implements Serializable {
 
   /**
    * Assigns the attribute name format.
-   * 
+   *
    * @param nameFormat the name format
    */
   public void setNameFormat(final String nameFormat) {
@@ -209,12 +224,12 @@ public class UserAttribute implements Serializable {
    * @return the attribute value(s)
    */
   public List<? extends Serializable> getValues() {
-    return Optional.ofNullable(this.values).orElseGet(() -> Collections.emptyList()); 
+    return Optional.ofNullable(this.values).orElseGet(() -> Collections.emptyList());
   }
 
   /**
    * Assigns the attribute value.
-   * 
+   *
    * @param value the value
    * @see #setValues(List)
    */
@@ -224,7 +239,7 @@ public class UserAttribute implements Serializable {
 
   /**
    * Assigns the attribute values.
-   * 
+   *
    * @param values the values
    * @see #setValue(Serializable)
    */
@@ -234,7 +249,7 @@ public class UserAttribute implements Serializable {
 
   /**
    * Converts this object into an OpenSAML {@link Attribute} object.
-   * 
+   *
    * @return an OpenSAML {@link Attribute}
    */
   public Attribute toOpenSamlAttribute() {
@@ -272,6 +287,14 @@ public class UserAttribute implements Serializable {
           o.setValue(Base64.getEncoder().encodeToString((byte[]) v));
           builder.value(o);
         }
+        else if (v instanceof EidasAttributeValue) {
+          final XMLObject o = ((EidasAttributeValue<?>) v).createXmlObject();
+          builder.value(o);
+        }
+        else if (v instanceof UnknownAttributeValue) {
+          final XMLObject o = ((UnknownAttributeValue) v).createXmlObject();
+          builder.value(o);
+        }
         else {
           throw new IllegalArgumentException("Unsupported attribute value - " + v.getClass().getSimpleName());
         }
@@ -289,7 +312,7 @@ public class UserAttribute implements Serializable {
     if (this.friendlyName != null) {
       sb.append(", (").append(this.friendlyName).append(")");
     }
-    final List<? extends Serializable> v = this.getValues(); 
+    final List<? extends Serializable> v = this.getValues();
     if (!v.isEmpty()) {
       if (v.size() == 1) {
         sb.append(", value=").append(v.get(0));
@@ -300,7 +323,7 @@ public class UserAttribute implements Serializable {
     }
     return sb.toString();
   }
-  
+
   public String valuesToString() {
     final StringBuffer sb = new StringBuffer();
     final List<? extends Serializable> values = this.getValues();
@@ -333,6 +356,54 @@ public class UserAttribute implements Serializable {
       }
     }
     return type;
+  }
+
+  /**
+   * Class used to store attribute value types that we don't know how to parse.
+   */
+  public static class UnknownAttributeValue implements Serializable {
+
+    private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
+
+    /** The encoding of the value object. */
+    private final String encoding;
+
+    /**
+     * Constructor.
+     *
+     * @param value
+     */
+    public UnknownAttributeValue(final XMLObject value) {
+      try {
+        final Element element = XMLObjectSupport.marshall(Objects.requireNonNull(value, "value must not be null"));
+        this.encoding = SerializeSupport.nodeToString(element);
+      }
+      catch (final MarshallingException e) {
+        throw new IllegalArgumentException("Failed to marshall " + value.getElementQName().toString(), e);
+      }
+    }
+
+    /**
+     * Creates the {@link XMLObject} given its encoding.
+     *
+     * @return an {@link XMLObject}
+     */
+    public XMLObject createXmlObject() {
+      try {
+        return XMLObjectSupport.unmarshallFromInputStream(
+            XMLObjectProviderRegistrySupport.getParserPool(), new ByteArrayInputStream(this.encoding.getBytes()));
+      }
+      catch (XMLParserException | UnmarshallingException e) {
+        throw new SecurityException(e);
+      }
+    }
+
+    /** {@inheritDoc} */
+    @Override
+    public String toString() {
+      return this.encoding;
+    }
+
   }
 
 }
