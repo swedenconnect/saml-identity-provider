@@ -152,6 +152,7 @@ public class UserAttributeTest extends OpenSamlTestBase {
     Assertions.assertEquals(UserAttribute.DEFAULT_NAME_FORMAT, ua.getNameFormat());
     Assertions.assertTrue(ua.getValues().size() == 1);
     Assertions.assertEquals("Kalle", ua.getValues().get(0));
+    Assertions.assertEquals("Kalle", ua.getStringValues().get(0));
     Assertions.assertNotNull(ua.toString());
 
     final Attribute a2 = ua.toOpenSamlAttribute();
@@ -193,6 +194,7 @@ public class UserAttributeTest extends OpenSamlTestBase {
     Assertions.assertEquals(UserAttribute.DEFAULT_NAME_FORMAT, ua.getNameFormat());
     Assertions.assertTrue(ua.getValues().size() == 1);
     Assertions.assertEquals(Boolean.TRUE, ua.getValues().get(0));
+    Assertions.assertEquals("true", ua.getStringValues().get(0));
 
     final Attribute a2 = ua.toOpenSamlAttribute();
     Assertions.assertEquals("BooleanAttribute", a2.getName());
@@ -219,6 +221,8 @@ public class UserAttributeTest extends OpenSamlTestBase {
     Assertions.assertTrue(ua.getValues().size() == 2);
     Assertions.assertEquals(17, ua.getValues().get(0));
     Assertions.assertEquals(42, ua.getValues().get(1));
+    Assertions.assertEquals("17", ua.getStringValues().get(0));
+    Assertions.assertEquals("42", ua.getStringValues().get(1));
 
     final Attribute a2 = ua.toOpenSamlAttribute();
     Assertions.assertEquals("IntegerAttribute", a2.getName());
@@ -233,6 +237,7 @@ public class UserAttributeTest extends OpenSamlTestBase {
   public void testSamlDateTimeAttribute() {
 
     final Instant instant = Instant.now();
+    final String instantString = instant.toString();
 
     final XSDateTime dt = AttributeBuilder.createValueObject(XSDateTime.class);
     dt.setValue(instant);
@@ -244,6 +249,7 @@ public class UserAttributeTest extends OpenSamlTestBase {
     Assertions.assertEquals("DateTimeAttribute", ua.getId());
     Assertions.assertTrue(ua.getValues().size() == 1);
     Assertions.assertEquals(instant, ua.getValues().get(0));
+    Assertions.assertEquals(instantString, ua.getStringValues().get(0));
 
     final Attribute a2 = ua.toOpenSamlAttribute();
     Assertions.assertEquals("DateTimeAttribute", a2.getName());
@@ -265,6 +271,7 @@ public class UserAttributeTest extends OpenSamlTestBase {
     Assertions.assertEquals("AnyAttribute", ua.getId());
     Assertions.assertTrue(ua.getValues().size() == 1);
     Assertions.assertEquals("TextValue", ua.getValues().get(0));
+    Assertions.assertEquals("TextValue", ua.getStringValues().get(0));
 
     final Attribute a2 = ua.toOpenSamlAttribute();
     Assertions.assertEquals("AnyAttribute", a2.getName());
@@ -286,6 +293,7 @@ public class UserAttributeTest extends OpenSamlTestBase {
     Assertions.assertEquals("B64Attribute", ua.getId());
     Assertions.assertTrue(ua.getValues().size() == 1);
     Assertions.assertArrayEquals("VALUE".getBytes(), (byte[]) ua.getValues().get(0));
+    Assertions.assertEquals(Base64.getEncoder().encodeToString("VALUE".getBytes()), ua.getStringValues().get(0));
 
     final Attribute a2 = ua.toOpenSamlAttribute();
     Assertions.assertEquals("B64Attribute", a2.getName());
@@ -351,6 +359,8 @@ public class UserAttributeTest extends OpenSamlTestBase {
     final UserAttribute ua = new UserAttribute(AttributeConstants.ATTRIBUTE_NAME_DATE_OF_BIRTH,
         AttributeConstants.ATTRIBUTE_FRIENDLY_NAME_DATE_OF_BIRTH, d);
 
+    Assertions.assertEquals("1965-04-06", ua.getStringValues().get(0));
+
     final Attribute a2 = ua.toOpenSamlAttribute();
     Assertions.assertEquals(AttributeConstants.ATTRIBUTE_NAME_DATE_OF_BIRTH, a2.getName());
     Assertions.assertEquals(AttributeConstants.ATTRIBUTE_FRIENDLY_NAME_DATE_OF_BIRTH, a2.getFriendlyName());
@@ -384,6 +394,7 @@ public class UserAttributeTest extends OpenSamlTestBase {
 
     Assertions.assertTrue(ua.getValues().get(0) instanceof PersonIdentifier);
     Assertions.assertEquals("ES/AT/02635542Y", ua.getValues().get(0).toString());
+    Assertions.assertEquals("ES/AT/02635542Y", ua.getStringValues().get(0).toString());
 
     final Attribute attribute2 = ua.toOpenSamlAttribute();
     Assertions.assertEquals(
