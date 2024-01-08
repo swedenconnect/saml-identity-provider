@@ -10,7 +10,7 @@
   <parent>
     <groupId>se.swedenconnect.spring.saml.idp</groupId>
     <artifactId>spring-saml-idp-parent</artifactId>
-    <version>2.0.2-SNAPSHOT</version>
+    <version>2.1.0-SNAPSHOT</version>
   </parent>
 
   <name>Sweden Connect :: Spring SAML Identity Provider :: Spring Boot Autoconfigure module</name>
@@ -77,7 +77,27 @@
       <artifactId>spring-saml-idp</artifactId>
       <version>${project.version}</version>
     </dependency>
+        
+    <!-- Optional Redis support -->
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-redis</artifactId>
+      <optional>true</optional>      
+     </dependency>    
     
+    <dependency>
+      <groupId>org.springframework.session</groupId>
+      <artifactId>spring-session-data-redis</artifactId>
+      <optional>true</optional>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.redisson</groupId>
+      <artifactId>redisson-spring-boot-starter</artifactId>
+      <version>3.25.2</version>
+      <optional>true</optional>
+    </dependency>    
+        
   </dependencies>
 
 </project>

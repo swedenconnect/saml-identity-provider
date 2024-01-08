@@ -42,6 +42,8 @@ This section documents all properties that can be provided to configure the IdP.
 | `saml.idp.assertions.*` | Configuration for IdP Assertion issuance, see [Assertion Settings Configuration](#assertion-settings-configuration) below. | [AssertionSettingsConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/AssertionSettingsConfigurationProperties.java) | See below. |
 | `saml.idp.metadata.*` | Configuration for the SAML metadata produced (and published) by the IdP, see [MetadataConfiguration](#metadata-configuration) below. | [MetadataConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataConfigurationProperties.java) | See below. |
 | `saml.idp-metadata-providers[].*` | A list of "metadata providers" that tells how the IdP downloads federation metadata. See [Metadata Provider Configuration](#metadata-provider-configuration) below. | [MetadataProviderConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataProviderConfigurationProperties.java) | See below. |
+| `saml.idp.replay.*` | Configuration for message replay checking. See [Replay Checker Configuration](#replay-checker-configuration) below. | [ReplayCheckerConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/IdentityProviderConfigurationProperties.java) | See below. |
+| `saml.idp.session.module` | The session module to use. Supported values are "memory" and "redis". Set to other value if you extend the IdP with your own session handling. | String | `memory` |
 
 <a name="credentials-configuration"></a>
 #### Credentials Configuration
@@ -117,7 +119,22 @@ See https://github.com/swedenconnect/credentials-support for details about the [
 | `validation-certificate` | The certificate used to validate the metadata. | [Resource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html) pointing at the certificate resource. | - |
 | `http-proxy.*` | If the `location` setting is an URL and a HTTP proxy is required this setting configures this proxy.<br /><br />**Note:** This setting is only needed if you require another HTTP proxy that what is configured for the system, or if the system HTTP proxy settings are not set. If Java's HTTP proxy settings are set (see [Java Networking and Proxies](https://docs.oracle.com/javase/8/docs/technotes/guides/net/proxies.html)), these settings will be used by the metadata provider. | [MetadataProviderConfigurationProperties.HttpProxy](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataProviderConfigurationProperties.java) | - |
 
+<a name="replay-checker-configuration"></a>
+#### Replay Checker Configuration
+
+The SAML IdP makes use of a [MessageReplayChecker](https://docs.swedenconnect.se/opensaml-addons/apidoc/se/swedenconnect/opensaml/saml2/response/replay/MessageReplayChecker.html) to protect against replay
+attacks (i.e., that an authentication request is "replayed"). 
+
+If no [MessageReplayChecker](https://docs.swedenconnect.se/opensaml-addons/apidoc/se/swedenconnect/opensaml/saml2/response/replay/MessageReplayChecker.html) bean is provided by the application the
+IdP Spring Boot starter will create this bean (using the configuration settings below). If the `type`
+is set to "redis", Redis must be available and configured. Otherwise an in-memory version
+(not recommended for production) is created.
+
+| Property | Description | Type | Default value |
+| :--- | :--- | :--- | :--- |
+| `expiration` | For how long should authentication request ID:s be stored in the cache before they expire? | [Duration](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html) | 5 minutes |
+| `context` | Under which context should the cache be stored? Applies to repositories that persist/distribute the cache. | String | `idp-replay-checker` |
 
 ---
 
-Copyright &copy; 2022-2023, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se). Licensed under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
+Copyright &copy; 2022-2024, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se). Licensed under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
