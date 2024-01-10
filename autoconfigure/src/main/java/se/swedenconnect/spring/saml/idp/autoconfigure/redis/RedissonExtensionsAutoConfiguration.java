@@ -51,7 +51,7 @@ import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedissonClusterPrope
  */
 @ConditionalOnClass(RedissonAutoConfigurationV2.class)
 @AutoConfiguration(before = RedissonAutoConfigurationV2.class)
-@EnableConfigurationProperties({ RedisProperties.class, RedissonClusterProperties.class, ExtendedSslBundleProperties.class })
+@EnableConfigurationProperties({ RedisProperties.class, RedissonClusterProperties.class, RedisTlsProperties.class })
 @Import({ RedisTlsExtensionsConfiguration.class, RedissonAutoConfigurationV2.class })
 public class RedissonExtensionsAutoConfiguration {
 
@@ -67,9 +67,9 @@ public class RedissonExtensionsAutoConfiguration {
   @Autowired
   private RedisProperties redisProperties;
 
-  /** Extended SSL bundle properties. */
+  /** Redis TLS extensions. */
   @Autowired
-  private ExtendedSslBundleProperties extBundleProperties;
+  private RedisTlsProperties redisTlsProperties;
 
   /** Redis cluster properties. */
   @Autowired
@@ -87,7 +87,7 @@ public class RedissonExtensionsAutoConfiguration {
     return c -> {
       final BaseConfig<?> config = this.getRedissonConfiguration(c);
       if (this.redisProperties.getSsl().isEnabled()) {
-        config.setSslEnableEndpointIdentification(this.extBundleProperties.isEnableClientHostnameVerification());
+        config.setSslEnableEndpointIdentification(this.redisTlsProperties.isEnableHostnameVerification());
         final String bundle = this.redisProperties.getSsl().getBundle();
         if (bundle != null) {
           final SslBundle sslBundle = this.sslBundles.getBundle(bundle);

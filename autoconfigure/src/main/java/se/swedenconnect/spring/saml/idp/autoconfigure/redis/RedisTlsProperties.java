@@ -19,6 +19,7 @@ import java.security.KeyStore;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
@@ -29,35 +30,49 @@ import lombok.Setter;
  * Spring Boot's Redis support does not enable us to configure SSL/TLS against the Redis server in a good way.
  * Therefore, we extend Spring's Redis configuration with this configuration properties class.
  *
- * @deprecated Instead use the SslBundles features
- *
  * @author Martin Lindström
  * @author Felix Hellman
  */
 @ConfigurationProperties(prefix = "spring.data.redis.ssl-ext")
-@Deprecated(since = "2.0.2")
 public class RedisTlsProperties implements InitializingBean {
 
   /**
    * Configuration for the KeyStore holding the Redis client SSL/TLS credential.
    */
   @Setter
-  @Getter
   private KeyStoreConfiguration credential;
 
   /**
    * Should we verify the the peer's hostname as part of the SSL/TLS handshake?
    */
-  @Getter
   @Setter
+  @Getter
   private boolean enableHostnameVerification = true;
 
   /**
-   * In order to configure a specific trust for SSL/TLS we can supply a trust KeyStore.
+   * To configure a specific trust for SSL/TLS we can supply a trust KeyStore.
    */
-  @Getter
   @Setter
   private KeyStoreConfiguration trust;
+
+  /**
+   * Configuration for the KeyStore holding the Redis client SSL/TLS credential.
+   *
+   * @return keystore configuration
+   */
+  @DeprecatedConfigurationProperty(reason = "Use SslBundles instead")
+  public KeyStoreConfiguration getCredential() {
+    return this.credential;
+  }
+
+  /**
+   * To configure a specific trust for SSL/TLS we can supply a trust KeyStore.
+   * @return keystore configuration
+   */
+  @DeprecatedConfigurationProperty(reason = "Use SslBundles instead")
+  public KeyStoreConfiguration getTrust() {
+    return this.trust;
+  }
 
   /** {@inheritDoc} */
   @Override
@@ -74,7 +89,6 @@ public class RedisTlsProperties implements InitializingBean {
   /**
    * Configuration for a {@link KeyStore}.
    */
-  @Deprecated(since = "2.0.2")
   public static class KeyStoreConfiguration {
 
     /**

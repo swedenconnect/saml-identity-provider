@@ -42,7 +42,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author Martin Lindström
  */
-@SuppressWarnings("deprecation")
 @Configuration
 @EnableConfigurationProperties({ RedisProperties.class, RedisTlsProperties.class })
 @Slf4j
@@ -57,23 +56,17 @@ public class RedisTlsExtensionsConfiguration {
   /** The extended Redis TLS properties. */
   private final RedisTlsProperties tlsProperties;
 
-  /** Extended SSL bundle properties. */
-  private final ExtendedSslBundleProperties bundleProperties;
-
   /**
    * Constructor.
    *
    * @param redisProperties the Redis properties
    * @param tlsProperties the extended Redis TLS properties
-   * @param bundleProperties extended bundle properties
    * @param sslBundleRegistry for registering SslBundles
    */
   public RedisTlsExtensionsConfiguration(final RedisProperties redisProperties,
-      final RedisTlsProperties tlsProperties, final ExtendedSslBundleProperties bundleProperties,
-      final SslBundleRegistry sslBundleRegistry) {
+      final RedisTlsProperties tlsProperties, final SslBundleRegistry sslBundleRegistry) {
     this.redisProperties = redisProperties;
     this.tlsProperties = tlsProperties;
-    this.bundleProperties = bundleProperties;
     this.sslBundleRegistry = sslBundleRegistry;
   }
 
@@ -86,7 +79,7 @@ public class RedisTlsExtensionsConfiguration {
    */
   @Bean
   SslBundleRegistrationBean sslBundleRegistrationBean() throws Exception {
-    return new SslBundleRegistrationBean(this.redisProperties, this.tlsProperties, this.bundleProperties, this.sslBundleRegistry);
+    return new SslBundleRegistrationBean(this.redisProperties, this.tlsProperties, this.sslBundleRegistry);
   }
 
   /**
@@ -95,12 +88,7 @@ public class RedisTlsExtensionsConfiguration {
   public static class SslBundleRegistrationBean {
 
     public SslBundleRegistrationBean(final RedisProperties redisProperties,
-        final RedisTlsProperties tlsProperties, final ExtendedSslBundleProperties bundleProperties,
-        final SslBundleRegistry sslBundleRegistry) throws Exception {
-
-      if (!tlsProperties.isEnableHostnameVerification()) {
-        bundleProperties.setEnableClientHostnameVerification(false);
-      }
+        final RedisTlsProperties tlsProperties, final SslBundleRegistry sslBundleRegistry) throws Exception {
 
       // If a bundle is configured, we use that ...
       //

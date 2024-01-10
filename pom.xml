@@ -44,8 +44,8 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
 
-    <spring.boot.version>3.1.5</spring.boot.version>
-    <spring.version>6.0.13</spring.version>
+    <spring.boot.version>3.2.1</spring.boot.version>
+    <spring.version>6.1.2</spring.version>
     <bc.version>1.76</bc.version>
   </properties>
 

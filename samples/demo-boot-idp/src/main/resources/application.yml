@@ -13,7 +13,7 @@ spring:
             location: classpath:ssl.jks
             password: secret
             type: JKS
-            
+                        
 server:
   port: 8443
   servlet:

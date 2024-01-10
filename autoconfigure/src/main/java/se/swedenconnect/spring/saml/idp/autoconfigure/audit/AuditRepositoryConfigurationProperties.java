@@ -60,14 +60,14 @@ public class AuditRepositoryConfigurationProperties implements InitializingBean 
   private RedisRepository redis;
 
   /**
-   * A list of event ID:s for the events that will be logged to the repository (and file). If not set, all events will
+   * A list of event ID:s for the events that will be logged to the repository. If not set, all events will
    * be logged (except to excluded by the "exclude-events").
    */
   @Getter
   private List<String> includeEvents = new ArrayList<>();
 
   /**
-   * A list of event ID:s to exclude from being logged to the repository (and file). See also the "include-events"
+   * A list of event ID:s to exclude from being logged to the repository. See also the "include-events"
    * setting.
    */
   @Getter

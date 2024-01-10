@@ -42,6 +42,7 @@ This section documents all properties that can be provided to configure the IdP.
 | `saml.idp.assertions.*` | Configuration for IdP Assertion issuance, see [Assertion Settings Configuration](#assertion-settings-configuration) below. | [AssertionSettingsConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/AssertionSettingsConfigurationProperties.java) | See below. |
 | `saml.idp.metadata.*` | Configuration for the SAML metadata produced (and published) by the IdP, see [MetadataConfiguration](#metadata-configuration) below. | [MetadataConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataConfigurationProperties.java) | See below. |
 | `saml.idp-metadata-providers[].*` | A list of "metadata providers" that tells how the IdP downloads federation metadata. See [Metadata Provider Configuration](#metadata-provider-configuration) below. | [MetadataProviderConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataProviderConfigurationProperties.java) | See below. |
+| `saml.idp.audit.*` | Audit logging configuration. See [Audit Configuration](#audit-configuration) below. | [AuditRepositoryConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/audit/AuditRepositoryConfigurationProperties.java) | See below. |
 | `saml.idp.replay.*` | Configuration for message replay checking. See [Replay Checker Configuration](#replay-checker-configuration) below. | [ReplayCheckerConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/IdentityProviderConfigurationProperties.java) | See below. |
 | `saml.idp.session.module` | The session module to use. Supported values are "memory" and "redis". Set to other value if you extend the IdP with your own session handling. | String | `memory` |
 
@@ -119,6 +120,24 @@ See https://github.com/swedenconnect/credentials-support for details about the [
 | `validation-certificate` | The certificate used to validate the metadata. | [Resource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html) pointing at the certificate resource. | - |
 | `http-proxy.*` | If the `location` setting is an URL and a HTTP proxy is required this setting configures this proxy.<br /><br />**Note:** This setting is only needed if you require another HTTP proxy that what is configured for the system, or if the system HTTP proxy settings are not set. If Java's HTTP proxy settings are set (see [Java Networking and Proxies](https://docs.oracle.com/javase/8/docs/technotes/guides/net/proxies.html)), these settings will be used by the metadata provider. | [MetadataProviderConfigurationProperties.HttpProxy](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataProviderConfigurationProperties.java) | - |
 
+<a name="audit-configuration"></a>
+#### Audit Configuration
+
+The SAML IdP Spring Boot starter offers automatic support for setting up a [AuditEventRepository](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/actuate/audit/AuditEventRepository.html) bean
+based on the below settings. Also see the [Identity Provider Auditing](audit.html) page.
+
+| Property | Description | Type | Default value |
+| :--- | :--- | :--- | :--- |
+| `file.log-file` | For audit logging to a file. | String | - |
+| `im-memory.capacity` | For audit logging to an in-memory repository. Sets the capacity (number of stored events) of this repository. | Integer | - |
+| `redis.name` | For logging to Redis. The name of the Redis list/time series object that will hold the audit events. | String | - |
+| `redis.type` | For logging to Redis. The type of Redis storage - "list" or "timeseries". Note that Redisson is required for Redis Timeseries. | String | - |
+| `include-events[]` | A list of event ID:s for the events that will be logged to the repository. If not set, all events will be logged (except to excluded by the `exclude-events`). | List of strings | Empty list |
+| `exclude-events[]` | A list of event ID:s to exclude from being logged to the repository. See also the `include-events` setting. | List of strings | Empty list |
+
+If no repository is configured and no [AuditEventRepository](https://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/actuate/audit/AuditEventRepository.html) bean exists, an in-memory
+repository with the `capacity` set to `1000` will be created.
+
 <a name="replay-checker-configuration"></a>
 #### Replay Checker Configuration
 
@@ -134,6 +153,80 @@ is set to "redis", Redis must be available and configured. Otherwise an in-memor
 | :--- | :--- | :--- | :--- |
 | `expiration` | For how long should authentication request ID:s be stored in the cache before they expire? | [Duration](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html) | 5 minutes |
 | `context` | Under which context should the cache be stored? Applies to repositories that persist/distribute the cache. | String | `idp-replay-checker` |
+
+<a name="redis-configuration"></a>
+#### Redis Configuration
+
+Redis may be used for session handling and/or replay checking. 
+
+How Redis is configured and setup for Spring Boot is described here:
+
+- [Spring Boot Reference Documentation - Common Application Properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#appendix.application-properties)
+- [Spring Session Redis](https://docs.spring.io/spring-session/reference/configuration/redis.html)
+- [Spring Data Redis](https://spring.io/projects/spring-data-redis/)
+
+The SAML IdP Spring Boot Starter defines a few extensions to the core Spring Redis configuration:
+
+The setting `spring.data.redis.ssl-ext.enable-hostname-verification` may be set to `false` in
+order to turn off hostname verification when SSL/TLS is configured (using [SslBundles](https://spring.io/blog/2023/06/07/securing-spring-boot-applications-with-ssl/)) for the Redis connection. This can 
+be useful during testing.
+
+Example:
+
+```
+data:
+  redis:
+    ...
+    ssl:      
+      enabled: true        
+      bundle: redis-tls-bundle
+    ssl-ext:
+      enable-hostname-verification: false
+```
+
+It Redisson is used for the Redis client, the starter also adds extended support to configure
+Redis clusters:
+
+In order to configure Redis Clusters NAT translation for addresses have been added. This is done
+so that the application knows how to reach the Redis cluster if it is not located on the same network.
+This can be done under the key `spring.data.redis.cluster-ext`. This property key is a list of
+entries as described below:
+
+| Property | Description | Type |
+| :--- | :--- | :--- |
+| `nat-translation[].from` | Address to translate from. e.g. "172.20.0.31:2001". | String |
+| `nat-translation[].to`| Address to translate to, e.g., "redis1.local.dev.swedenconnect.se:2001". | String |
+| `read-mode`| Set cluster read mode to either `SLAVE`, `MASTER` or `MASTER_SLAVE`. The default value is `MASTER` since read/write is highly coupled in Spring Session, selecting `SLAVE` can result in race-conditions leading to the session not being synchronized to the slave in time causing errors. | String |
+
+**Example:**
+
+The three Redis nodes are exposed via NAT to the application on redis(1-3).local.dev.swedenconnect.se.
+But internally they refer to eachother as 172.20.0.3(1-3).
+When the application connects to the first node, it will reconfigure itself by reading the configuration
+from redis1.
+
+Since the application is not located on the same network the connection will fail since those addresses are not located on the same network.
+
+This solution is to add the configuration below that will re-map outgoing connections to the correct node.
+
+```yaml
+  data:
+    redis:
+      cluster:
+        nodes:
+          - redis1.local.dev.swedenconnect.se:2001
+          - redis2.local.dev.swedenconnect.se:2002
+          - redis3.local.dev.swedenconnect.se:2003
+      cluster-ext:
+        nat-translation:
+          - from: "172.20.0.31:2001"
+            to: "redis1.local.dev.swedenconnect.se:2001"
+          - from: "172.20.0.32:2002"
+            to: "redis2.local.dev.swedenconnect.se:2002"
+          - from: "172.20.0.33:2003"
+            to: "redis3.local.dev.swedenconnect.se:2003"
+```
+
 
 ---
 

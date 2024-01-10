@@ -37,7 +37,7 @@ import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsCo
  */
 @AutoConfiguration(before = RedisAutoConfiguration.class)
 @ConditionalOnClass(RedisOperations.class)
-@EnableConfigurationProperties({ RedisProperties.class, ExtendedSslBundleProperties.class })
+@EnableConfigurationProperties({ RedisProperties.class, RedisTlsProperties.class })
 @Import({ RedisTlsExtensionsConfiguration.class, RedisAutoConfiguration.class })
 public class RedisExtensionsAutoConfiguration {
 
@@ -49,9 +49,9 @@ public class RedisExtensionsAutoConfiguration {
   @Autowired
   private RedisProperties redisProperties;
 
-  /** Extended SSL bundle properties. */
+  /** The Redis properties. */
   @Autowired
-  private ExtendedSslBundleProperties extBundleProperties;
+  private RedisTlsProperties redisTlsProperties;
 
   /**
    * If Jedis is available, a {@link JedisClientConfigurationBuilderCustomizer} is created that configures the Jedis
@@ -64,7 +64,7 @@ public class RedisExtensionsAutoConfiguration {
   JedisClientConfigurationBuilderCustomizer jedisCustomizer() {
     return c -> {
       if (this.redisProperties.getSsl().isEnabled()) {
-        if (!this.extBundleProperties.isEnableClientHostnameVerification()) {
+        if (!this.redisTlsProperties.isEnableHostnameVerification()) {
           c.useSsl().hostnameVerifier(NoopHostnameVerifier.INSTANCE);
         }
       }
@@ -82,7 +82,7 @@ public class RedisExtensionsAutoConfiguration {
   LettuceClientConfigurationBuilderCustomizer lettuceCustomizer() {
     return c -> {
       if (this.redisProperties.getSsl().isEnabled()) {
-        if (!this.extBundleProperties.isEnableClientHostnameVerification()) {
+        if (!this.redisTlsProperties.isEnableHostnameVerification()) {
           c.useSsl().disablePeerVerification();
         }
       }

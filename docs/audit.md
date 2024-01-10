@@ -16,7 +16,7 @@ If you want to be able to obtain audit logs via Spring Boot Actuator you need to
 - Include the string `auditevents` among the list specified by the setting 
 `management.endpoints.web.exposure.include`.
 
-- Make sure a `org.springframework.boot.actuate.audit.AuditEventRepository` bean exists.
+- Make sure a `org.springframework.boot.actuate.audit.AuditEventRepository` bean exists. See [Audit Configuration](configuration.html#audit-configuration).
 
 ## Audit Events
 
