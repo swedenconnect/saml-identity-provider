@@ -28,7 +28,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.shared.codec.Base64Support;
 import net.shibboleth.shared.codec.EncodingException;
-import net.shibboleth.shared.codec.HTMLEncoder;
 import net.shibboleth.shared.xml.SerializeSupport;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
@@ -60,11 +59,11 @@ public class Saml2ResponseSender {
       throws UnrecoverableSaml2IdpException {
 
     final String encodedResponse = this.encodeResponse(response);
-    final String encodedRelayState = HTMLEncoder.encodeForHTMLAttribute(relayState);
+    // final String encodedRelayState = HTMLEncoder.encodeForHTMLAttribute(relayState);
 
     try {
       this.responsePage.sendResponse(httpServletRequest, httpServletResponse,
-          destinationUrl, encodedResponse, encodedRelayState);
+          destinationUrl, encodedResponse, relayState);
     }
     catch (final IOException e) {
       log.error("Failed to send SAML Response to {} - {}", destinationUrl, e.getMessage(), e);
