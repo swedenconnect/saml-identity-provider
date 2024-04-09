@@ -173,14 +173,16 @@ be useful during testing.
 Example:
 
 ```
-data:
-  redis:
-    ...
-    ssl:      
-      enabled: true        
-      bundle: redis-tls-bundle
-    ssl-ext:
-      enable-hostname-verification: false
+spring:
+  ...
+  data:
+    redis:
+      ...
+      ssl:      
+        enabled: true        
+        bundle: redis-tls-bundle
+      ssl-ext:
+        enable-hostname-verification: false
 ```
 
 It Redisson is used for the Redis client, the starter also adds extended support to configure
@@ -209,6 +211,8 @@ Since the application is not located on the same network the connection will fai
 This solution is to add the configuration below that will re-map outgoing connections to the correct node.
 
 ```yaml
+spring:
+  ...
   data:
     redis:
       cluster:
