@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package se.swedenconnect.spring.saml.idp.authnrequest.validation.replay;
+package se.swedenconnect.spring.saml.idp.authnrequest.validation;
 
 import java.time.Duration;
 

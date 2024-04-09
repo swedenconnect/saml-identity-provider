@@ -20,10 +20,10 @@ import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author Martin Lindström
  */
-@Data
 @ConfigurationProperties("saml.idp")
 @Slf4j
 public class IdentityProviderConfigurationProperties implements InitializingBean {
@@ -41,11 +40,15 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
   /**
    * The Identity Provider SAML entityID.
    */
+  @Getter
+  @Setter
   private String entityId;
 
   /**
    * The Identity Provider base URL, i.e., the protocol, domain and context path. Must not end with an '/'.
    */
+  @Getter
+  @Setter
   private String baseUrl;
 
   /**
@@ -56,71 +59,91 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
    * this setting represents this base URL.
    * </p>
    */
+  @Getter
+  @Setter
   private String hokBaseUrl;
 
   /**
    * Whether the IdP requires signed authentication requests.
    */
+  @Getter
+  @Setter
   private Boolean requiresSignedRequests;
 
   /**
    * Clock skew adjustment (in both directions) to consider for accepting messages based on their age.
    */
+  @Getter
+  @Setter
   private Duration clockSkewAdjustment;
 
   /**
    * Maximum allowed age of received messages.
    */
+  @Getter
+  @Setter
   private Duration maxMessageAge;
 
   /**
    * Based on a previous authentication, for how long may this authentication be re-used?
    */
+  @Getter
+  @Setter
   private Duration ssoDurationLimit;
 
   /**
    * The Identity Provider credentials.
    */
+  @Getter
+  @Setter
   private CredentialConfigurationProperties credentials;
 
   /**
    * The SAML IdP endpoints.
    */
+  @Getter
+  @Setter
   private EndpointsConfigurationProperties endpoints;
 
   /**
    * Assertion settings.
    */
+  @Getter
+  @Setter
   private AssertionSettingsConfigurationProperties assertions;
 
   /**
    * The IdP metadata.
    */
+  @Getter
+  @Setter
   private MetadataConfigurationProperties metadata;
 
   /**
    * The IdP metadata provider(s).
    */
+  @Getter
+  @Setter
   private List<MetadataProviderConfigurationProperties> metadataProviders;
 
   /**
    * Configuration for replay checking.
    */
-  private ReplayCheckerConfigurationProperties replay;
+  @Getter
+  @NestedConfigurationProperty
+  private ReplayCheckerConfigurationProperties replay = new ReplayCheckerConfigurationProperties();
 
   /**
    * Session configuration.
    */
-  private SessionConfiguration session;
+  @Getter
+  @NestedConfigurationProperty
+  private SessionConfiguration session = new SessionConfiguration();
 
   /** {@inheritDoc} */
   @Override
   public void afterPropertiesSet() throws Exception {
     Assert.hasText(this.entityId, "saml.idp.entity-id must be assigned");
-    if (this.replay == null) {
-      this.replay = new ReplayCheckerConfigurationProperties();
-    }
-    this.replay.afterPropertiesSet();
     if (this.credentials == null) {
       log.debug("saml.idp.credentials.* is not assigned, assuming externally defined credential beans");
     }
@@ -133,9 +156,7 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
     if (this.assertions == null) {
       log.debug("saml.idp.assertions.* is not assigned, will apply default values");
     }
-    if (this.session == null) {
-      this.session = new SessionConfiguration();
-    }
+    this.replay.afterPropertiesSet();
     this.session.afterPropertiesSet();
   }
 
@@ -155,9 +176,6 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
     /** {@inheritDoc} */
     @Override
     public void afterPropertiesSet() throws Exception {
-      if (!StringUtils.hasText(this.module)) {
-        this.module = "memory";
-      }
     }
 
   }
@@ -197,9 +215,6 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
     /** {@inheritDoc} */
     @Override
     public void afterPropertiesSet() throws Exception {
-      if (!StringUtils.hasText(this.type)) {
-        this.type = "memory";
-      }
       if (this.expiration == null) {
         this.expiration = DEFAULT_EXPIRATION;
       }

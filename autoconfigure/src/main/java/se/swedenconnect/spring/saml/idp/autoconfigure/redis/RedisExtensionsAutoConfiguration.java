@@ -35,10 +35,10 @@ import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsCo
  *
  * @author Martin Lindström
  */
-@AutoConfiguration(before = RedisAutoConfiguration.class)
+@AutoConfiguration(before = RedisAutoConfiguration.class )
 @ConditionalOnClass(RedisOperations.class)
 @EnableConfigurationProperties({ RedisProperties.class, RedisTlsProperties.class })
-@Import({ RedisTlsExtensionsConfiguration.class, RedisAutoConfiguration.class })
+@Import(RedisTlsExtensionsConfiguration.class)
 public class RedisExtensionsAutoConfiguration {
 
   /** To ensure that the TLS extensions have been processed. */

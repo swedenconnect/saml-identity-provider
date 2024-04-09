@@ -26,7 +26,7 @@ import se.swedenconnect.spring.saml.idp.audit.repository.AuditEventMapper;
  * For creating Redis {@link AuditEventRepository} beans.
  */
 @FunctionalInterface
-interface AuditEventRepositoryFactory {
+public interface AuditEventRepositoryFactory {
 
   /**
    * Creates an {@link AuditEventRepository}.

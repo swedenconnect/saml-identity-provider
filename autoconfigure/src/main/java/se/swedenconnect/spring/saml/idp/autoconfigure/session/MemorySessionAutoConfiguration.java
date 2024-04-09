@@ -44,7 +44,7 @@ import org.springframework.session.config.annotation.web.http.EnableSpringHttpSe
 @ConditionalOnClass(Session.class)
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnWebApplication
-@AutoConfiguration(before = SessionAutoConfiguration.class)
+@AutoConfiguration(before = SessionAutoConfiguration.class, after = RedisSessionAutoConfiguration.class)
 @EnableConfigurationProperties({ ServerProperties.class, SessionProperties.class })
 @EnableSpringHttpSession
 @EnableScheduling

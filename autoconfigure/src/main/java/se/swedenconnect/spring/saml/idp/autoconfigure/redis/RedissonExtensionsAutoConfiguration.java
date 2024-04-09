@@ -21,7 +21,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.redisson.Redisson;
 import org.redisson.api.HostPortNatMapper;
 import org.redisson.config.BaseConfig;
 import org.redisson.config.ClusterServersConfig;
@@ -39,7 +38,6 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-import org.springframework.data.redis.core.RedisOperations;
 
 import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsConfiguration.SslBundleRegistrationBean;
 import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedissonClusterProperties.NatTranslationEntry;
@@ -49,10 +47,10 @@ import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedissonClusterPrope
  *
  * @author Martin Lindström
  */
-@ConditionalOnClass(RedissonAutoConfigurationV2.class)
 @AutoConfiguration(before = RedissonAutoConfigurationV2.class)
+@ConditionalOnClass(RedissonAutoConfigurationV2.class)
 @EnableConfigurationProperties({ RedisProperties.class, RedissonClusterProperties.class, RedisTlsProperties.class })
-@Import({ RedisTlsExtensionsConfiguration.class, RedissonAutoConfigurationV2.class })
+@Import(RedisTlsExtensionsConfiguration.class)
 public class RedissonExtensionsAutoConfiguration {
 
   /** To ensure that the TLS extensions have been processed. */
@@ -81,7 +79,6 @@ public class RedissonExtensionsAutoConfiguration {
    *
    * @return a {@link RedissonAutoConfigurationCustomizer} bean
    */
-  @ConditionalOnClass({ Redisson.class, RedisOperations.class })
   @Bean
   RedissonAutoConfigurationCustomizer redissonCustomizer() {
     return c -> {
@@ -106,8 +103,8 @@ public class RedissonExtensionsAutoConfiguration {
       return RedissonAddressCustomizers.singleServerSslCustomizer.apply(config.useSingleServer());
     }
     if (config.isClusterConfig()) {
-      return RedissonAddressCustomizers.clusterServerCustomizer.apply(config.useClusterServers(),
-          this.clusterProperties);
+      return RedissonAddressCustomizers.clusterServerCustomizer.apply(
+          config.useClusterServers(), this.clusterProperties);
     }
     if (config.isSentinelConfig()) {
       throw new IllegalArgumentException("Sentinel Configuration is not implementend");

@@ -17,8 +17,10 @@ package se.swedenconnect.spring.saml.idp.autoconfigure.session;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.session.SessionRepository;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.data.redis.config.annotation.web.http.RedisHttpSessionConfiguration;
 
@@ -30,10 +32,13 @@ import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedissonExtensionsAu
  *
  * @author Martin Lindström
  */
-@ConditionalOnProperty(value = "saml.idp.session.module", havingValue = "redis", matchIfMissing = false)
+@ConditionalOnProperty(value = "saml.idp.session.module", havingValue = "redis", matchIfMissing = true)
 @ConditionalOnClass(RedisHttpSessionConfiguration.class)
+@ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnWebApplication
-@AutoConfiguration(after = { RedissonExtensionsAutoConfiguration.class, RedisExtensionsAutoConfiguration.class })
+@AutoConfiguration(
+    after = { RedissonExtensionsAutoConfiguration.class, RedisExtensionsAutoConfiguration.class },
+    before = MemorySessionAutoConfiguration.class)
 @EnableRedisHttpSession
 public class RedisSessionAutoConfiguration {
 }

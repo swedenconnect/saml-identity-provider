@@ -96,15 +96,15 @@ public class AuditRepositoryAutoConfiguration {
     final Predicate<AuditEvent> filter = FilteringAuditEventRepository.inclusionExclusionPredicate(
         this.properties.getIncludeEvents(), this.properties.getExcludeEvents());
 
-    if (this.properties.getInMemory() != null) {
-      repositories.add(new MemoryBasedAuditEventRepository(filter, this.properties.getInMemory().getCapacity()));
-    }
     if (this.properties.getFile() != null) {
       repositories
           .add(new FileBasedAuditEventRepository(this.properties.getFile().getLogFile(), auditEventMapper, filter));
     }
     if (redisFactory != null) {
       repositories.add(redisFactory.create(this.properties.getRedis().getName(), auditEventMapper, filter));
+    }
+    if (this.properties.getInMemory() != null) {
+      repositories.add(new MemoryBasedAuditEventRepository(filter, this.properties.getInMemory().getCapacity()));
     }
 
     // The file repository does not support reads, so if this is the only repository, install an in-memory

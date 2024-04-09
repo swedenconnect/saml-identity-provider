@@ -38,8 +38,8 @@ import se.swedenconnect.spring.saml.idp.authnrequest.validation.replay.RedisRepl
  */
 @ConditionalOnMissingBean(MessageReplayChecker.class)
 @AutoConfiguration(before = IdentityProviderAutoConfiguration.class)
-@Import(MessageReplayCheckerAutoConfiguration.RedisMessageReplayCheckerConfiguration.class)
 @EnableConfigurationProperties(IdentityProviderConfigurationProperties.class)
+@Import(MessageReplayCheckerAutoConfiguration.RedisMessageReplayCheckerConfiguration.class)
 public class MessageReplayCheckerAutoConfiguration {
 
   /** The configuration properties. */
@@ -83,7 +83,7 @@ public class MessageReplayCheckerAutoConfiguration {
   /**
    * For configuration of a {@link RedisReplayCache} bean.
    */
-  @ConditionalOnProperty(value = "saml.idp.replay.type", havingValue = "redis", matchIfMissing = false)
+  @ConditionalOnProperty(value = "saml.idp.replay.type", havingValue = "redis", matchIfMissing = true)
   @ConditionalOnBean(StringRedisTemplate.class)
   @Configuration
   public static class RedisMessageReplayCheckerConfiguration {

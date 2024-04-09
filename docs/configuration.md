@@ -44,7 +44,7 @@ This section documents all properties that can be provided to configure the IdP.
 | `saml.idp-metadata-providers[].*` | A list of "metadata providers" that tells how the IdP downloads federation metadata. See [Metadata Provider Configuration](#metadata-provider-configuration) below. | [MetadataProviderConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/MetadataProviderConfigurationProperties.java) | See below. |
 | `saml.idp.audit.*` | Audit logging configuration. See [Audit Configuration](#audit-configuration) below. | [AuditRepositoryConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/audit/AuditRepositoryConfigurationProperties.java) | See below. |
 | `saml.idp.replay.*` | Configuration for message replay checking. See [Replay Checker Configuration](#replay-checker-configuration) below. | [ReplayCheckerConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/IdentityProviderConfigurationProperties.java) | See below. |
-| `saml.idp.session.module` | The session module to use. Supported values are "memory" and "redis". Set to other value if you extend the IdP with your own session handling. | String | `memory` |
+| `saml.idp.session.module` | The session module to use. Supported values are "memory" and "redis". Set to other value if you extend the IdP with your own session handling. | String | If Redis and Spring Session are available `redis` is the default, otherwise `memory`. |
 
 <a name="credentials-configuration"></a>
 #### Credentials Configuration
@@ -145,12 +145,11 @@ The SAML IdP makes use of a [MessageReplayChecker](https://docs.swedenconnect.se
 attacks (i.e., that an authentication request is "replayed"). 
 
 If no [MessageReplayChecker](https://docs.swedenconnect.se/opensaml-addons/apidoc/se/swedenconnect/opensaml/saml2/response/replay/MessageReplayChecker.html) bean is provided by the application the
-IdP Spring Boot starter will create this bean (using the configuration settings below). If the `type`
-is set to "redis", Redis must be available and configured. Otherwise an in-memory version
-(not recommended for production) is created.
+IdP Spring Boot starter will create this bean (using the configuration settings below).
 
 | Property | Description | Type | Default value |
 | :--- | :--- | :--- | :--- |
+| `type` | The type of replay checker. Supported values are "memory" and "redis". If set to "redis", Redis must be available and configured. | String | If Redis is available, `redis` is the default, otherwise `memory` |
 | `expiration` | For how long should authentication request ID:s be stored in the cache before they expire? | [Duration](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html) | 5 minutes |
 | `context` | Under which context should the cache be stored? Applies to repositories that persist/distribute the cache. | String | `idp-replay-checker` |
 
