@@ -44,9 +44,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <java.version>17</java.version>
 
-    <spring.boot.version>3.2.1</spring.boot.version>
-    <spring.version>6.1.2</spring.version>
-    <bc.version>1.76</bc.version>
+    <spring.boot.version>3.2.4</spring.boot.version>
+    <spring.version>6.1.5</spring.version>
+    <bc.version>1.77</bc.version>
   </properties>
 
   <repositories>
@@ -149,7 +149,7 @@
       <dependency>
         <groupId>se.swedenconnect.opensaml</groupId>
         <artifactId>opensaml-eidas</artifactId>
-        <version>3.0.0</version>
+        <version>3.0.1</version>
       </dependency>      
 
       <dependency>
