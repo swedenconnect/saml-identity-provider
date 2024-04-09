@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -303,7 +303,10 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
                 final EncryptionMethod em = builder.build();
 
                 if (StringUtils.hasText(e.getDigestMethod())) {
-                  final DigestMethod dm = DigestMethodBuilder.digestMethod(e.getDigestMethod());
+                  final org.opensaml.xmlsec.signature.DigestMethod dm =
+                      (org.opensaml.xmlsec.signature.DigestMethod) XMLObjectSupport.buildXMLObject(
+                          org.opensaml.xmlsec.signature.DigestMethod.DEFAULT_ELEMENT_NAME);
+                  dm.setAlgorithm(e.getDigestMethod());
                   em.getUnknownXMLObjects().add(dm);
                 }
                 return em;
@@ -339,7 +342,10 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
                   final EncryptionMethod em = builder.build();
 
                   if (StringUtils.hasText(e.getDigestMethod())) {
-                    final DigestMethod dm = DigestMethodBuilder.digestMethod(e.getDigestMethod());
+                    final org.opensaml.xmlsec.signature.DigestMethod dm =
+                        (org.opensaml.xmlsec.signature.DigestMethod) XMLObjectSupport.buildXMLObject(
+                            org.opensaml.xmlsec.signature.DigestMethod.DEFAULT_ELEMENT_NAME);
+                    dm.setAlgorithm(e.getDigestMethod());
                     em.getUnknownXMLObjects().add(dm);
                   }
                   return em;
