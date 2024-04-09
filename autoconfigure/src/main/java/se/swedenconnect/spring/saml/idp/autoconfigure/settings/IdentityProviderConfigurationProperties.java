@@ -20,9 +20,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -30,7 +33,6 @@ import lombok.extern.slf4j.Slf4j;
  *
  * @author Martin Lindström
  */
-@Data
 @ConfigurationProperties("saml.idp")
 @Slf4j
 public class IdentityProviderConfigurationProperties implements InitializingBean {
@@ -38,11 +40,15 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
   /**
    * The Identity Provider SAML entityID.
    */
+  @Getter
+  @Setter
   private String entityId;
 
   /**
    * The Identity Provider base URL, i.e., the protocol, domain and context path. Must not end with an '/'.
    */
+  @Getter
+  @Setter
   private String baseUrl;
 
   /**
@@ -53,52 +59,86 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
    * this setting represents this base URL.
    * </p>
    */
+  @Getter
+  @Setter
   private String hokBaseUrl;
 
   /**
    * Whether the IdP requires signed authentication requests.
    */
+  @Getter
+  @Setter
   private Boolean requiresSignedRequests;
-  
+
   /**
    * Clock skew adjustment (in both directions) to consider for accepting messages based on their age.
    */
+  @Getter
+  @Setter
   private Duration clockSkewAdjustment;
-  
+
   /**
    * Maximum allowed age of received messages.
    */
+  @Getter
+  @Setter
   private Duration maxMessageAge;
-  
+
   /**
    * Based on a previous authentication, for how long may this authentication be re-used?
    */
+  @Getter
+  @Setter
   private Duration ssoDurationLimit;
 
   /**
    * The Identity Provider credentials.
    */
+  @Getter
+  @Setter
   private CredentialConfigurationProperties credentials;
 
   /**
    * The SAML IdP endpoints.
    */
+  @Getter
+  @Setter
   private EndpointsConfigurationProperties endpoints;
-  
+
   /**
    * Assertion settings.
    */
+  @Getter
+  @Setter
   private AssertionSettingsConfigurationProperties assertions;
 
   /**
    * The IdP metadata.
    */
+  @Getter
+  @Setter
   private MetadataConfigurationProperties metadata;
 
   /**
    * The IdP metadata provider(s).
    */
+  @Getter
+  @Setter
   private List<MetadataProviderConfigurationProperties> metadataProviders;
+
+  /**
+   * Configuration for replay checking.
+   */
+  @Getter
+  @NestedConfigurationProperty
+  private ReplayCheckerConfigurationProperties replay = new ReplayCheckerConfigurationProperties();
+
+  /**
+   * Session configuration.
+   */
+  @Getter
+  @NestedConfigurationProperty
+  private SessionConfiguration session = new SessionConfiguration();
 
   /** {@inheritDoc} */
   @Override
@@ -116,6 +156,73 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
     if (this.assertions == null) {
       log.debug("saml.idp.assertions.* is not assigned, will apply default values");
     }
+    this.replay.afterPropertiesSet();
+    this.session.afterPropertiesSet();
+  }
+
+  /**
+   * Session handling configuration.
+   */
+  public static class SessionConfiguration implements InitializingBean {
+
+    /**
+     * The session module to use. Supported values are "memory" and "redis". Set to other value if you extend the IdP
+     * with your own session handling.
+     */
+    @Getter
+    @Setter
+    private String module;
+
+    /** {@inheritDoc} */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+    }
+
+  }
+
+  /**
+   * For configuring the message replay checker.
+   */
+  public static class ReplayCheckerConfigurationProperties implements InitializingBean {
+
+    /** The default expiration time for entries added to the cache. */
+    public static final Duration DEFAULT_EXPIRATION = Duration.ofMinutes(5);
+
+    /** The default context name to use for storing the cache. */
+    public static final String DEFAULT_CONTEXT_NAME = "idp-replay-checker";
+
+    /**
+     * The type of replay checker. Supported values are "memory" and "redis".
+     */
+    @Getter
+    @Setter
+    private String type;
+
+    /**
+     * For how long should authentication request ID:s be stored in the cache before they expire?
+     */
+    @Getter
+    @Setter
+    private Duration expiration;
+
+    /**
+     * Under which context should the cache be stored? Applies to repositories that persist/distribute the cache.
+     */
+    @Getter
+    @Setter
+    private String context;
+
+    /** {@inheritDoc} */
+    @Override
+    public void afterPropertiesSet() throws Exception {
+      if (this.expiration == null) {
+        this.expiration = DEFAULT_EXPIRATION;
+      }
+      if (!StringUtils.hasText(this.context)) {
+        this.context = DEFAULT_CONTEXT_NAME;
+      }
+    }
+
   }
 
 }

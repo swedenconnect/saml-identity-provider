@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.RequestMatcher;
@@ -111,7 +112,7 @@ public class Saml2IdpConfiguration {
         .authorizeHttpRequests(authorizeRequests -> authorizeRequests.anyRequest().authenticated())
         .csrf(csrf -> csrf.ignoringRequestMatchers(endpointsMatcher))
         .securityContext((sc) -> sc.requireExplicitSave(false))
-        .apply(idpConfigurer);
+        .with(idpConfigurer, Customizer.withDefaults());
   }
 
   /**

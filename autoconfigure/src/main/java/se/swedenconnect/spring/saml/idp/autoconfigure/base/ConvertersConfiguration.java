@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.convert.converter.Converter;
 
 import se.swedenconnect.opensaml.common.utils.LocalizedString;
@@ -35,7 +34,7 @@ import se.swedenconnect.spring.saml.idp.metadata.PropertyToEntityDescriptorConve
  * Configuration class that registers converters for Spring converters needed to applying properties to SignService
  * configuration properties classes.
  */
-@AutoConfiguration
+@AutoConfiguration(after = OpenSAMLConfiguration.class)
 public class ConvertersConfiguration {
 
   /**
@@ -60,7 +59,6 @@ public class ConvertersConfiguration {
   @ConditionalOnMissingBean
   @Bean
   @ConfigurationPropertiesBinding
-  @DependsOn("openSAML")
   PropertyToEntityDescriptorConverter propertyToEntityDescriptorConverter() {
     return new PropertyToEntityDescriptorConverter();
   }
