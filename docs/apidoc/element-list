@@ -1,5 +1,6 @@
 se.swedenconnect.spring.saml.idp
 se.swedenconnect.spring.saml.idp.attributes
+se.swedenconnect.spring.saml.idp.attributes.eidas
 se.swedenconnect.spring.saml.idp.attributes.nameid
 se.swedenconnect.spring.saml.idp.attributes.release
 se.swedenconnect.spring.saml.idp.audit
