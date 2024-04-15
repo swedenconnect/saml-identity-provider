@@ -72,7 +72,7 @@ public class RedissonTimeSeriesAuditEventRepository extends FilteringAuditEventR
       final AuditEventMapper mapper, final Predicate<AuditEvent> filter) {
     super(filter);
     this.client = Objects.requireNonNull(client, "client must not be null");
-    this.tsName = Objects.requireNonNull(tsName, "tsName must not be null");
+    this.tsName = "%s:%s".formatted(Objects.requireNonNull(tsName, "keyName must not be null"), "timeseries");;
     this.eventMapper = Objects.requireNonNull(mapper, "mapper must not be null");
   }
 
