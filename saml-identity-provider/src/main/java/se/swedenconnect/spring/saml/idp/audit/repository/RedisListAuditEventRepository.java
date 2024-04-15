@@ -71,7 +71,7 @@ public class RedisListAuditEventRepository extends FilteringAuditEventRepository
       final AuditEventMapper mapper, final Predicate<AuditEvent> filter) {
     super(filter);
     this.listOps = Objects.requireNonNull(redisTemplate, "redisTemplate must not be null").opsForList();
-    this.keyName = Objects.requireNonNull(keyName, "keyName must not be null");
+    this.keyName = "%s:%s".formatted(Objects.requireNonNull(keyName, "keyName must not be null"), "list");
     this.eventMapper = Objects.requireNonNull(mapper, "mapper must not be null");
   }
 
