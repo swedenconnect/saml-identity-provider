@@ -129,7 +129,7 @@ based on the below settings. Also see the [Identity Provider Auditing](audit.htm
 | Property | Description | Type | Default value |
 | :--- | :--- | :--- | :--- |
 | `file.log-file` | For audit logging to a file. | String | - |
-| `im-memory.capacity` | For audit logging to an in-memory repository. Sets the capacity (number of stored events) of this repository. | Integer | - |
+| `in-memory.capacity` | For audit logging to an in-memory repository. Sets the capacity (number of stored events) of this repository. | Integer | - |
 | `redis.name` | For logging to Redis. The name of the Redis list/time series object that will hold the audit events. | String | - |
 | `redis.type` | For logging to Redis. The type of Redis storage - "list" or "timeseries". Note that Redisson is required for Redis Timeseries. | String | - |
 | `include-events[]` | A list of event ID:s for the events that will be logged to the repository. If not set, all events will be logged (except to excluded by the `exclude-events`). | List of strings | Empty list |
