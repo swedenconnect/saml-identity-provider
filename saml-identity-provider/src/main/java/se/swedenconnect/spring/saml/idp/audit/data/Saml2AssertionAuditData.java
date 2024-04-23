@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.opensaml.saml.saml2.core.Assertion;
+import org.opensaml.saml.saml2.core.Attribute;
 import org.opensaml.saml.saml2.core.AttributeStatement;
 import org.opensaml.saml.saml2.core.AuthenticatingAuthority;
 import org.opensaml.saml.saml2.core.AuthnContext;
@@ -41,8 +42,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import se.swedenconnect.opensaml.saml2.attribute.AttributeUtils;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 
 /**
  * Audit data for a SAML {@code Assertion}.
@@ -95,12 +96,12 @@ public class Saml2AssertionAuditData extends Saml2AuditData {
   @Setter
   @JsonProperty(value = "authn-instant")
   private Instant authnInstant;
-  
+
   /** The subject's (assigned) ID. */
   @Getter
   @Setter
   @JsonProperty(value = "subject-id")
-  private String subjectId;  
+  private String subjectId;
 
   /** The subject locality (IP). */
   @Getter
@@ -134,7 +135,7 @@ public class Saml2AssertionAuditData extends Saml2AuditData {
 
   /**
    * Creates a {@link Saml2AssertionAuditData} given an {@link Assertion}.
-   * 
+   *
    * @param assertion the SAML assertion
    * @param encrypted whether this assertion is encrypted (when placed in response)
    * @return a {@link Saml2AssertionAuditData}
@@ -178,11 +179,27 @@ public class Saml2AssertionAuditData extends Saml2AuditData {
     final AttributeStatement attributeStatement = assertion.getAttributeStatements().stream().findFirst().orElse(null);
     if (attributeStatement != null) {
       data.setAttributes(attributeStatement.getAttributes().stream()
-          .map(a -> new SamlAttribute(a.getName(), AttributeUtils.getAttributeStringValue(a)))
+          .map(a -> new SamlAttribute(a.getName(), getAttributeValue(a)))
           .toList());
     }
 
     return data;
+  }
+
+  /**
+   * Gets attribute value as a string. If multi-valued, the first value is read.
+   *
+   * @param attribute the attribute
+   * @return value as a String
+   */
+  protected static String getAttributeValue(final Attribute attribute) {
+    try {
+      final UserAttribute userAttribute = new UserAttribute(attribute);
+      return userAttribute.getStringValues().stream().findFirst().orElse(null);
+    }
+    catch (final Exception e) {
+      return null;
+    }
   }
 
   /** {@inheritDoc} */
