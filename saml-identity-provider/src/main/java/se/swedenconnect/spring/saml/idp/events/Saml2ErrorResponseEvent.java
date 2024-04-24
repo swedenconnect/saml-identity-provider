@@ -18,11 +18,12 @@ package se.swedenconnect.spring.saml.idp.events;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.Status;
 
+import se.swedenconnect.opensaml.common.utils.SerializableOpenSamlObject;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * An event that signals that a SAML error response is being sent.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2ErrorResponseEvent extends AbstractSaml2IdpEvent {
@@ -34,27 +35,28 @@ public class Saml2ErrorResponseEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Constructor.
-   * 
+   *
    * @param response the SAML response
    * @param spEntityId the entityID of the SP that we are sending the response to
    */
   public Saml2ErrorResponseEvent(final Response response, final String spEntityId) {
-    super(response);
+    super(new SerializableOpenSamlObject<Response>(response));
     this.spEntityId = spEntityId;
   }
 
   /**
    * Gets the SAML response.
-   * 
+   *
    * @return the {@link Response}
    */
+  @SuppressWarnings("unchecked")
   public Response getResponse() {
-    return Response.class.cast(this.getSource());
+    return ((SerializableOpenSamlObject<Response>) this.getSource()).get();
   }
 
   /**
    * Gets the entityID of the SP that we are sending the response to.
-   * 
+   *
    * @return SP SAML entityID
    */
   public String getSpEntityId() {
@@ -63,7 +65,7 @@ public class Saml2ErrorResponseEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Gets the SAML {@link Status} that was sent.
-   * 
+   *
    * @return SAML {@link Status}
    */
   public Status getStatus() {
