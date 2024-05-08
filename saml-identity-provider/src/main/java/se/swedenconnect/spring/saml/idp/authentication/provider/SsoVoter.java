@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,8 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationIn
 @FunctionalInterface
 public interface SsoVoter {
 
-  public enum Vote {
-    OK, DENY, DONT_KNOW;
+  enum Vote {
+    OK, DENY, DONT_KNOW
   }
 
   /**

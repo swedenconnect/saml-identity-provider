@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServletServerHttpResponse;
+import org.springframework.lang.NonNull;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
@@ -96,8 +97,9 @@ public class Saml2IdpMetadataEndpointFilter extends OncePerRequestFilter {
 
   /** {@inheritDoc} */
   @Override
-  protected void doFilterInternal(final HttpServletRequest request, final HttpServletResponse response,
-      final FilterChain filterChain) throws ServletException, IOException {
+  protected void doFilterInternal(@NonNull final HttpServletRequest request,
+      @NonNull final HttpServletResponse response, @NonNull final FilterChain filterChain)
+      throws ServletException, IOException {
 
     if (!this.requestMatcher.matches(request)) {
       filterChain.doFilter(request, response);

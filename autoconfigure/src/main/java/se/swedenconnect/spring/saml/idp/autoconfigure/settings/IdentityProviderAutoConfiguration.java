@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
 import java.security.cert.X509Certificate;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -190,7 +191,7 @@ public class IdentityProviderAutoConfiguration {
 
       if (this.properties.getMetadata().getContactPersons() != null) {
         mdBuilder.contactPersons(this.properties.getMetadata().getContactPersons().entrySet().stream()
-            .collect(Collectors.toMap(e -> e.getKey(),
+            .collect(Collectors.toMap(Map.Entry::getKey,
                 e -> MetadataSettings.ContactPersonSettings.builder()
                     .company(e.getValue().getCompany())
                     .givenName(e.getValue().getGivenName())

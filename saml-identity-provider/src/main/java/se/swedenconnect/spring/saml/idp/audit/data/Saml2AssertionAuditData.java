@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,15 @@
  */
 package se.swedenconnect.spring.saml.idp.audit.data;
 
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.List;
-import java.util.Optional;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Attribute;
-import org.opensaml.saml.saml2.core.AttributeStatement;
 import org.opensaml.saml.saml2.core.AuthenticatingAuthority;
 import org.opensaml.saml.saml2.core.AuthnContext;
 import org.opensaml.saml.saml2.core.AuthnContextClassRef;
@@ -33,17 +34,15 @@ import org.opensaml.saml.saml2.core.Subject;
 import org.opensaml.saml.saml2.core.SubjectConfirmation;
 import org.opensaml.saml.saml2.core.SubjectConfirmationData;
 import org.opensaml.saml.saml2.core.SubjectLocality;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Audit data for a SAML {@code Assertion}.
@@ -53,6 +52,7 @@ import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 @JsonInclude(Include.NON_EMPTY)
 public class Saml2AssertionAuditData extends Saml2AuditData {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The assertion ID. */
@@ -157,6 +157,7 @@ public class Saml2AssertionAuditData extends Saml2AuditData {
       data.setInResponseTo(
           subject.getSubjectConfirmations().stream()
               .map(SubjectConfirmation::getSubjectConfirmationData)
+              .filter(Objects::nonNull)
               .map(SubjectConfirmationData::getInResponseTo)
               .findFirst()
               .orElse(null));
@@ -176,18 +177,16 @@ public class Saml2AssertionAuditData extends Saml2AuditData {
           .map(a -> a.stream().map(AuthenticatingAuthority::getURI).findFirst().orElse(null))
           .orElse(null));
     }
-    final AttributeStatement attributeStatement = assertion.getAttributeStatements().stream().findFirst().orElse(null);
-    if (attributeStatement != null) {
-      data.setAttributes(attributeStatement.getAttributes().stream()
-          .map(a -> new SamlAttribute(a.getName(), getAttributeValue(a)))
-          .toList());
-    }
+    assertion.getAttributeStatements().stream().findFirst()
+        .ifPresent(attributeStatement -> data.setAttributes(attributeStatement.getAttributes().stream()
+            .map(a -> new SamlAttribute(a.getName(), getAttributeValue(a)))
+            .toList()));
 
     return data;
   }
 
   /**
-   * Gets attribute value as a string. If multi-valued, the first value is read.
+   * Gets attribute value as a string. If multivalued, the first value is read.
    *
    * @param attribute the attribute
    * @return value as a String
@@ -220,6 +219,7 @@ public class Saml2AssertionAuditData extends Saml2AuditData {
   @NoArgsConstructor
   public static class SamlAttribute implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /** The attribute name. */

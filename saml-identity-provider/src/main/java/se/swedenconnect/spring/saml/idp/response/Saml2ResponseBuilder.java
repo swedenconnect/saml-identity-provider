@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,9 +94,7 @@ public class Saml2ResponseBuilder {
     this.responseIssuer = Optional.ofNullable(idpEntityId).filter(StringUtils::hasText)
         .orElseThrow(() -> new IllegalArgumentException("idpEntityId must be set"));
     Assert.notNull(signingCredential, "signingCredential must not be null");
-    this.signingCredential = OpenSamlCredential.class.isInstance(signingCredential)
-        ? OpenSamlCredential.class.cast(signingCredential)
-        : new OpenSamlCredential(signingCredential);
+    this.signingCredential = new OpenSamlCredential(signingCredential);
     this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher must not be null");
   }
 

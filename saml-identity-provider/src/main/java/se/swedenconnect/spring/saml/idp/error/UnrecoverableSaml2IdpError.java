@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -112,7 +112,7 @@ public enum UnrecoverableSaml2IdpError {
    * @param messageCode the error message code
    * @param description a textual description
    */
-  private UnrecoverableSaml2IdpError(final String messageCode, final String description) {
+  UnrecoverableSaml2IdpError(final String messageCode, final String description) {
     this.messageCode = messageCode;
     this.description = description;
   }

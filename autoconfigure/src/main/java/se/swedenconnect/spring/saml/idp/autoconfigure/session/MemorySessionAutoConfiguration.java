@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.session;
 
+import java.io.Serial;
 import java.time.Duration;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -34,6 +35,7 @@ import org.springframework.session.MapSessionRepository;
 import org.springframework.session.Session;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.config.annotation.web.http.EnableSpringHttpSession;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Configuration class for setting up Spring Session to use an in-memory map for storing sessions.
@@ -101,7 +103,8 @@ public class MemorySessionAutoConfiguration {
    */
   private static class PurgeableMap extends ConcurrentHashMap<String, Session> {
 
-    private static final long serialVersionUID = 3055404662826427441L;
+    @Serial
+    private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /**
      * Purges expired sessions.

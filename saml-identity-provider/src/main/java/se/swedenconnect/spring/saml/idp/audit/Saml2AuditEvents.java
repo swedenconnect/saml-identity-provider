@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public enum Saml2AuditEvents {
   /** The user has been successfully authenticated, but the SAML assertion has not yet been created. */
   SAML2_AUDIT_AFTER_USER_AUTHN("SAML2_AFTER_USER_AUTHN"),
 
-  /** An error occurred and we could not direct the user back to the SP. */
+  /** An error occurred, and we could not direct the user back to the SP. */
   SAML2_AUDIT_UNRECOVERABLE_ERROR("SAML2_UNRECOVERABLE_ERROR");
 
 

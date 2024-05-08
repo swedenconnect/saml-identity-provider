@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,9 @@
  */
 package se.swedenconnect.spring.saml.idp.metadata;
 
-import java.io.IOException;
-
+import net.shibboleth.shared.xml.ParserPool;
+import net.shibboleth.shared.xml.SerializeSupport;
+import net.shibboleth.shared.xml.XMLParserException;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.io.UnmarshallingException;
@@ -29,10 +30,11 @@ import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.http.converter.HttpMessageNotWritableException;
+import org.springframework.lang.NonNull;
 import org.w3c.dom.Element;
 
-import net.shibboleth.shared.xml.SerializeSupport;
-import net.shibboleth.shared.xml.XMLParserException;
+import java.io.IOException;
+import java.util.Optional;
 
 /**
  * A {@link HttpMessageConverter} that reads and writes {@link EntityDescriptor} objects.
@@ -50,20 +52,25 @@ public class Saml2MetadataHttpMessageConverter extends AbstractHttpMessageConver
 
   /** {@inheritDoc} */
   @Override
-  protected boolean supports(final Class<?> clazz) {
+  protected boolean supports(@NonNull final Class<?> clazz) {
     return EntityDescriptor.class.isAssignableFrom(clazz);
   }
 
   /** {@inheritDoc} */
   @Override
-  protected EntityDescriptor readInternal(
-      final Class<? extends EntityDescriptor> clazz, final HttpInputMessage inputMessage)
-      throws IOException, HttpMessageNotReadableException {
+  @NonNull
+  protected EntityDescriptor readInternal(@NonNull final Class<? extends EntityDescriptor> clazz,
+      final HttpInputMessage inputMessage) throws IOException, HttpMessageNotReadableException {
 
     try {
-      final Element elm =
-          XMLObjectProviderRegistrySupport.getParserPool().parse(inputMessage.getBody()).getDocumentElement();
-      return EntityDescriptor.class.cast(XMLObjectSupport.getUnmarshaller(elm).unmarshall(elm));
+      final ParserPool pool = XMLObjectProviderRegistrySupport.getParserPool();
+      final Element elm = Optional.ofNullable(pool)
+          .orElseThrow(() -> new XMLParserException("No parser pool"))
+          .parse(inputMessage.getBody()).getDocumentElement();
+
+      return (EntityDescriptor) Optional.ofNullable(XMLObjectSupport.getUnmarshaller(elm))
+          .orElseThrow(() -> new UnmarshallingException("No unmarshaller found for EntityDescriptor"))
+          .unmarshall(elm);
     }
     catch (final UnmarshallingException | XMLParserException e) {
       throw new HttpMessageNotReadableException("Failed to unmarshall input to EntityDescriptor", e, inputMessage);
@@ -72,7 +79,7 @@ public class Saml2MetadataHttpMessageConverter extends AbstractHttpMessageConver
 
   /** {@inheritDoc} */
   @Override
-  protected void writeInternal(final EntityDescriptor t, final HttpOutputMessage outputMessage)
+  protected void writeInternal(@NonNull final EntityDescriptor t, final HttpOutputMessage outputMessage)
       throws IOException, HttpMessageNotWritableException {
     try {
       SerializeSupport.writeNode(XMLObjectSupport.marshall(t), outputMessage.getBody());

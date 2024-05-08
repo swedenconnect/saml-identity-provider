@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.audit;
 
+import java.io.Serial;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -38,6 +39,7 @@ import se.swedenconnect.spring.saml.idp.audit.data.Saml2AuditData;
 @JsonInclude(Include.NON_EMPTY)
 public class Saml2AuditEvent extends AuditEvent {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** Symbolic constant for an unknown SP. */
@@ -57,7 +59,7 @@ public class Saml2AuditEvent extends AuditEvent {
    */
   public Saml2AuditEvent(final Saml2AuditEvents type, final long timestamp, final String spEntityId, final String authnRequestId,
       final Saml2AuditData... data) {
-    super(Instant.ofEpochMilli(timestamp), Optional.ofNullable(spEntityId).orElseGet(() -> UNKNOWN_SP), type.getTypeName(),
+    super(Instant.ofEpochMilli(timestamp), Optional.ofNullable(spEntityId).orElse(UNKNOWN_SP), type.getTypeName(),
         buildData(spEntityId, authnRequestId, data));
   }
 

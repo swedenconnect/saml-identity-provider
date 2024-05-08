@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import org.opensaml.saml.saml2.core.Response;
 import se.swedenconnect.opensaml.common.utils.SerializableOpenSamlObject;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
+import java.io.Serial;
+
 /**
  * An event that signals that a successful SAML response is being sent.
  *
@@ -28,13 +30,14 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  */
 public class Saml2SuccessResponseEvent extends AbstractSaml2IdpEvent {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The issued SAML assertion (un-encrypted). */
   private final SerializableOpenSamlObject<Assertion> assertion;
 
   /** The entityID of the SP that we are sending the response to. */
-  private String spEntityId;
+  private final String spEntityId;
 
   /**
    * Constructor.
@@ -44,8 +47,8 @@ public class Saml2SuccessResponseEvent extends AbstractSaml2IdpEvent {
    * @param spEntityId the entityID of the SP that we are sending the response to
    */
   public Saml2SuccessResponseEvent(final Response response, final Assertion assertion, final String spEntityId) {
-    super(new SerializableOpenSamlObject<Response>(response));
-    this.assertion = new SerializableOpenSamlObject<Assertion>(assertion);
+    super(new SerializableOpenSamlObject<>(response));
+    this.assertion = new SerializableOpenSamlObject<>(assertion);
     this.spEntityId = spEntityId;
   }
 

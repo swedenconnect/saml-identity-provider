@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 import org.opensaml.saml.saml2.core.Response;
+import org.springframework.lang.NonNull;
 import org.springframework.security.web.util.ThrowableAnalyzer;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
@@ -78,8 +79,8 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
 
   /** {@inheritDoc} */
   @Override
-  protected void doFilterInternal(
-      final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
+  protected void doFilterInternal(@NonNull final HttpServletRequest request,
+      @NonNull final HttpServletResponse response, @NonNull final FilterChain filterChain)
       throws ServletException, IOException {
 
     if (!this.requestMatcher.matches(request)) {
@@ -98,17 +99,14 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
           .getFirstThrowableOfType(Saml2ErrorStatusException.class, causeChain);
 
       if (samlException == null) {
-        if (e instanceof UnrecoverableSaml2IdpException unrecoverable) {
+        if (e instanceof final UnrecoverableSaml2IdpException unrecoverable) {
           this.eventPublisher.publishUnrecoverableSamlError(unrecoverable);
         }
 
         if (e instanceof ServletException) {
           throw (ServletException) e;
         }
-        if (e instanceof RuntimeException) {
-          throw (RuntimeException) e;
-        }
-        throw new RuntimeException(e);
+        throw (RuntimeException) e;
       }
       if (response.isCommitted()) {
         throw new ServletException(

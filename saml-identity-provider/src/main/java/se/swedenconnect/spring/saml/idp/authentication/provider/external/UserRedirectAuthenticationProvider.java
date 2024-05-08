@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProcessingFilter;
 
 /**
- * If the user authentication is performed outside of the SAML IdP Spring Security flow an
+ * If the user authentication is performed outside the SAML IdP Spring Security flow an
  * {@link UserRedirectAuthenticationProvider} should be provided. The
  * {@link #authenticateUser(Saml2UserAuthenticationInputToken)} method of this provider should return a
  * {@link RedirectForAuthenticationToken} that tells the {@link Saml2UserAuthenticationProcessingFilter} where to
@@ -45,15 +45,14 @@ public interface UserRedirectAuthenticationProvider extends UserAuthenticationPr
    */
   @Override
   default Authentication authenticate(final Authentication authentication) throws AuthenticationException {
-    if (ResumedAuthenticationToken.class.isInstance(authentication)) {
-      final ResumedAuthenticationToken resumeToken = ResumedAuthenticationToken.class.cast(authentication);
+    if (authentication instanceof final ResumedAuthenticationToken resumeToken) {
       if (!this.supportsUserAuthenticationToken(resumeToken.getAuthnToken())) {
         return null;
       }
       return this.resumeAuthentication(resumeToken);
     }
     try {
-      return this.authenticateUser(Saml2UserAuthenticationInputToken.class.cast(authentication));
+      return this.authenticateUser((Saml2UserAuthenticationInputToken) authentication);
     }
     catch (final ClassCastException e) {
       return null;
@@ -61,7 +60,7 @@ public interface UserRedirectAuthenticationProvider extends UserAuthenticationPr
   }
 
   /**
-   * Is invoked when the user has been authenticated outside of the SAML IdP Spring Security flow and the user agent has
+   * Is invoked when the user has been authenticated outside the SAML IdP Spring Security flow and the user agent has
    * been re-directed back to the {@link #getResumeAuthnPath()}.
    * 
    * @param token the {@link ResumedAuthenticationToken}
@@ -91,7 +90,7 @@ public interface UserRedirectAuthenticationProvider extends UserAuthenticationPr
   boolean supportsUserAuthenticationToken(final Authentication authentication);
 
   /**
-   * The provider, or any of its sub-components, uses an {@link ExternalAuthenticatorTokenRepository} to get hold of the
+   * The provider, or any of its subcomponents, uses an {@link ExternalAuthenticatorTokenRepository} to get hold of the
    * {@link RedirectForAuthenticationToken} that is the input for the external authentication process. It also uses the
    * repository to commit, or save, the result of an external authentication process (an {@link Authentication} object)
    * before the user agent is redirected back to the Spring Security flow. These method returns the

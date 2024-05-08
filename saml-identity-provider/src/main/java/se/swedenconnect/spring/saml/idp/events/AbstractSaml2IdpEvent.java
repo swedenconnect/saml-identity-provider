@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import org.springframework.context.ApplicationEvent;
 
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
+import java.io.Serial;
+
 /**
  * Abstract base class for all events published by the SAML IdP.
  * 
@@ -26,6 +28,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  */
 public abstract class AbstractSaml2IdpEvent extends ApplicationEvent {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /**

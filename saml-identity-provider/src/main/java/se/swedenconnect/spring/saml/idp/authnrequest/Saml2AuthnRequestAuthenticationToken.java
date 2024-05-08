@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest;
 
+import java.io.Serial;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
@@ -45,6 +46,7 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
  */
 public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthenticationToken {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The AuthnRequest that was received. */
@@ -151,7 +153,7 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
    */
   public boolean isSignatureServicePeer() {
     return Optional.ofNullable(this.getPeerMetadata())
-        .map(e -> EntityDescriptorUtils.getEntityCategories(e))
+        .map(EntityDescriptorUtils::getEntityCategories)
         .filter(c -> c.contains(EntityCategoryConstants.SERVICE_TYPE_CATEGORY_SIGSERVICE.getUri()))
         .isPresent();
   }
@@ -219,8 +221,8 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
    */
   public String getLogString() {
     return String.format("entity-id: '%s', authn-request: '%s'",
-        Optional.ofNullable(this.getPeerMetadata()).map(EntityDescriptor::getEntityID).orElseGet(() -> "unknown"),
-        Optional.ofNullable(this.getAuthnRequest()).map(AuthnRequest::getID).orElseGet(() -> "unknown"));
+        Optional.ofNullable(this.getPeerMetadata()).map(EntityDescriptor::getEntityID).orElse("unknown"),
+        Optional.ofNullable(this.getAuthnRequest()).map(AuthnRequest::getID).orElse("unknown"));
   }
 
 }

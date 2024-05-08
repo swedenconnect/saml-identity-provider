@@ -95,10 +95,10 @@ public class RedisListAuditEventRepository extends FilteringAuditEventRepository
       return Collections.emptyList();
     }
     return list.stream()
-        .map(e -> this.eventMapper.read(e))
-        .filter(e -> type != null ? type.equals(e.getType()) : true)
-        .filter(e -> principal != null ? principal.equals(e.getPrincipal()) : true)
-        .filter(e -> after != null ? after.isBefore(e.getTimestamp()) : true)
+        .map(this.eventMapper::read)
+        .filter(e -> type == null || type.equals(e.getType()))
+        .filter(e -> principal == null || principal.equals(e.getPrincipal()))
+        .filter(e -> after == null || after.isBefore(e.getTimestamp()))
         .toList();
   }
 }

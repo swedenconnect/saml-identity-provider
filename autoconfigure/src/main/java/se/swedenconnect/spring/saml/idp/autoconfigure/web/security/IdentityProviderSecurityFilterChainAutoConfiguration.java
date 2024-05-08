@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import se.swedenconnect.spring.saml.idp.config.Saml2IdpConfiguration;
 
 /**
- * Auto configuration class for setting up the {@link SecurityFilterChain} for the SAML IdP.
+ * Autoconfiguration class for setting up the {@link SecurityFilterChain} for the SAML IdP.
  * 
  * @author Martin Lindström
  */

@@ -41,9 +41,6 @@ public class FileBasedAuditEventRepository extends FilteringAuditEventRepository
   /** The audit logger (Java Util Logging logger). */
   private final java.util.logging.Logger auditLogger;
 
-  /** The underlying JUL handler. */
-  private final DateRollingFileHandler handler;
-
   /** For mapping events to strings. */
   private final AuditEventMapper eventMapper;
 
@@ -73,13 +70,14 @@ public class FileBasedAuditEventRepository extends FilteringAuditEventRepository
     super(filter);
     this.eventMapper = Objects.requireNonNull(eventMapper, "eventMapper must not be null");
 
-    this.handler = new DateRollingFileHandler(logFile);
+    final DateRollingFileHandler handler = new DateRollingFileHandler(logFile);
+
     // Build the logger name based on the log file name ...
     final String loggerName = Path.of(logFile).toAbsolutePath().toString();
 
     this.auditLogger = Logger.getLogger(loggerName);
     this.auditLogger.setLevel(Level.INFO);
-    this.auditLogger.addHandler(this.handler);
+    this.auditLogger.addHandler(handler);
     this.auditLogger.setUseParentHandlers(false);
   }
 

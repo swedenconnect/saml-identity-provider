@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,7 +182,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
 
   /**
    * Assigns a {@link SignatureMessagePreprocessor} that is used to prepare received sign messages for display. By
-   * default no processor is installed.
+   * default, no processor is installed.
    *
    * @param signatureMessagePreprocessor the processor.
    * @return this configurer
@@ -252,10 +252,10 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
 
     final List<PkiCredential> decryptionCredentials = new ArrayList<>();
     Optional.ofNullable(Saml2IdpConfigurerUtils.getEncryptCredential(httpSecurity))
-        .ifPresent(c -> decryptionCredentials.add(c));
+        .ifPresent(decryptionCredentials::add);
     if (!decryptionCredentials.isEmpty()) {
       Optional.ofNullable(settings.getCredentials().getPreviousEncryptCredential())
-          .ifPresent(c -> decryptionCredentials.add(c));
+          .ifPresent(decryptionCredentials::add);
     }
 
     if (this.signatureMessageExtensionExtractor == null) {

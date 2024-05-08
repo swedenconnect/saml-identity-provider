@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ import se.swedenconnect.spring.saml.idp.utils.DefaultSaml2MessageIDGenerator;
 import se.swedenconnect.spring.saml.idp.utils.Saml2MessageIDGenerator;
 
 /**
- * The {@code Saml2AssertionBuilder} is responsible of building SAML {@link Assertion}s given
+ * The {@code Saml2AssertionBuilder} is responsible for building SAML {@link Assertion}s given
  * {@link Saml2UserAuthentication} objects.
  *
  * @author Martin Lindström
@@ -71,7 +71,7 @@ public class Saml2AssertionBuilder {
   private final String issuer;
 
   /** Component that decides which attributes from the user token that should be released in the assertion. */
-  private AttributeReleaseManager attributeReleaseManager;
+  private final AttributeReleaseManager attributeReleaseManager;
 
   /** The IdP signature credential. */
   private final Credential signatureCredential;
@@ -228,7 +228,7 @@ public class Saml2AssertionBuilder {
     {
       final SPSSODescriptor ssoDescriptor =
           authnRequestToken.getPeerMetadata().getSPSSODescriptor(SAMLConstants.SAML20P_NS);
-      if (ssoDescriptor.getWantAssertionsSigned()) {
+      if (Boolean.TRUE.equals(ssoDescriptor.getWantAssertionsSigned())) {
         try {
           SAMLObjectSigner.sign(assertion, this.signatureCredential,
               SecurityConfigurationSupport.getGlobalSignatureSigningConfiguration(),

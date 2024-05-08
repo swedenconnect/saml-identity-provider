@@ -15,12 +15,6 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.redis;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import org.redisson.api.HostPortNatMapper;
 import org.redisson.config.BaseConfig;
 import org.redisson.config.ClusterServersConfig;
@@ -29,7 +23,6 @@ import org.redisson.config.ReadMode;
 import org.redisson.config.SingleServerConfig;
 import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer;
 import org.redisson.spring.starter.RedissonAutoConfigurationV2;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
@@ -38,9 +31,14 @@ import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
-
 import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsConfiguration.SslBundleRegistrationBean;
 import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedissonClusterProperties.NatTranslationEntry;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * For configuring Redisson extensions.
@@ -53,25 +51,35 @@ import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedissonClusterPrope
 @Import(RedisTlsExtensionsConfiguration.class)
 public class RedissonExtensionsAutoConfiguration {
 
-  /** To ensure that the TLS extensions have been processed. */
-  @Autowired
-  SslBundleRegistrationBean _dummy;
-
   /** For accessing SslBundles. */
-  @Autowired
-  private SslBundles sslBundles;
+  private final SslBundles sslBundles;
 
   /** Spring Data Redis properties. */
-  @Autowired
-  private RedisProperties redisProperties;
+  private final RedisProperties redisProperties;
 
   /** Redis TLS extensions. */
-  @Autowired
-  private RedisTlsProperties redisTlsProperties;
+  private final RedisTlsProperties redisTlsProperties;
 
   /** Redis cluster properties. */
-  @Autowired
-  private RedissonClusterProperties clusterProperties;
+  private final RedissonClusterProperties clusterProperties;
+
+  /**
+   * Constructor.
+   *
+   * @param sslBundles for accessing SslBundles
+   * @param redisProperties the Spring Data Redis properties
+   * @param redisTlsProperties the Redis TLS extensions
+   * @param clusterProperties the Redis cluster properties
+   * @param ignoredDummy dummy to ensure that the TLS extensions have been processed
+   */
+  public RedissonExtensionsAutoConfiguration(final SslBundles sslBundles, final RedisProperties redisProperties,
+      final RedisTlsProperties redisTlsProperties, final RedissonClusterProperties clusterProperties,
+      final SslBundleRegistrationBean ignoredDummy) {
+    this.sslBundles = sslBundles;
+    this.redisProperties = redisProperties;
+    this.redisTlsProperties = redisTlsProperties;
+    this.clusterProperties = clusterProperties;
+  }
 
   /**
    * If Redisson is used, a {@link RedissonAutoConfigurationCustomizer} is created that configures the Redisson client

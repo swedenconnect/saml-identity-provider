@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,14 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes;
 
+import lombok.extern.slf4j.Slf4j;
+import se.swedenconnect.opensaml.saml2.attribute.AttributeTemplate;
+import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
+import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryRegistry;
+import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.ServiceEntityCategory;
+import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
+import se.swedenconnect.spring.saml.idp.metadata.EntityCategoryHelper;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,15 +32,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import lombok.extern.slf4j.Slf4j;
-import se.swedenconnect.opensaml.saml2.attribute.AttributeTemplate;
-import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
-import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryRegistry;
-import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.ServiceEntityCategory;
-import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
-import se.swedenconnect.spring.saml.idp.metadata.EntityCategoryHelper;
 
 /**
  * A {@link RequestedAttributeProcessor} that extracts the requested attributes from declared entity categories. See
@@ -91,7 +90,7 @@ public class EntityCategoryRequestedAttributeProcessor implements RequestedAttri
             .filter(ServiceEntityCategory.class::isInstance)
             .filter(c -> this.idpDeclaredEntityCategories.contains(c.getUri()))
             .map(ServiceEntityCategory.class::cast)
-            .collect(Collectors.toList());
+            .toList();
 
     if (serviceCategories.isEmpty()) {
       log.debug("No matching service entity categories found that could be used to determine attribute release [{}]",
@@ -107,10 +106,10 @@ public class EntityCategoryRequestedAttributeProcessor implements RequestedAttri
       if (sec.getAttributeSet() != null) {
         Arrays.stream(sec.getAttributeSet().getRequiredAttributes())
             .map(t -> new ImplicitRequestedAttribute(sec.getUri(), t.getName(), t.getFriendlyName(), true))
-            .forEach(a -> requestedAttributes.add(a));
+            .forEach(requestedAttributes::add);
         Arrays.stream(sec.getAttributeSet().getRecommendedAttributes())
             .map(t -> new ImplicitRequestedAttribute(sec.getUri(), t.getName(), t.getFriendlyName(), false))
-            .forEach(a -> requestedAttributes.add(a));
+            .forEach(requestedAttributes::add);
       }
     }
     else {
@@ -151,7 +150,7 @@ public class EntityCategoryRequestedAttributeProcessor implements RequestedAttri
         }
         else {
           // If all isRequired is true, we keep that, otherwise false.
-          ra.get(0).setRequired(ra.stream().allMatch(r -> r.isRequired()));
+          ra.get(0).setRequired(ra.stream().allMatch(RequestedAttribute::isRequired));
           requestedAttributes.add(ra.get(0));
         }
       }

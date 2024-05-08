@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
   private RequestMatcher requestMatcher;
 
   /** The configurer for creating a {@link Saml2AuthnRequestAuthenticationProvider}. */
-  private Saml2AuthnRequestAuthenticationProviderConfigurer authenticationProviderConfigurer =
+  private final Saml2AuthnRequestAuthenticationProviderConfigurer authenticationProviderConfigurer =
       new Saml2AuthnRequestAuthenticationProviderConfigurer();
 
   /** May be used to override the use of {@link Saml2AuthnRequestAuthenticationProvider}. */
@@ -102,7 +102,7 @@ public class Saml2AuthnRequestProcessorConfigurer extends AbstractSaml2Configure
    * @return the {@link Saml2AuthnRequestProcessorConfigurer} for further configuration
    */
   public Saml2AuthnRequestProcessorConfigurer authnRequestConverters(
-      Consumer<List<AuthenticationConverter>> authnRequestConvertersConsumer) {
+      final Consumer<List<AuthenticationConverter>> authnRequestConvertersConsumer) {
     Assert.notNull(authnRequestConvertersConsumer, "authnRequestConvertersConsumer cannot be null");
     this.authnRequestConvertersConsumer = authnRequestConvertersConsumer;
     return this;

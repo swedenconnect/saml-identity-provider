@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
+import java.io.Serial;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
@@ -34,6 +35,7 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthentica
  */
 public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationToken {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The authentication request token. */
@@ -127,7 +129,7 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
     if (this.uiInfo == null) {
       this.uiInfo = Optional.ofNullable(this.authnRequestToken)
           .map(Saml2AuthnRequestAuthenticationToken::getPeerMetadata)
-          .map(e -> new Saml2ServiceProviderUiInfo(e))
+          .map(Saml2ServiceProviderUiInfo::new)
           .orElse(null);
     }
     return this.uiInfo;

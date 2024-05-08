@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@ public class Saml2ResponseSender {
   private ResponsePage responsePage = new DefaultResponsePage();
 
   /**
-   * Directs the user agent to a page that issues a HTML POST containing the SAML response, and optionally, also the
+   * Directs the user agent to a page that issues na HTML POST containing the SAML response, and optionally, also the
    * {@code RelayState} variable.
    *
    * @param httpServletRequest the HTTP servlet request
@@ -83,7 +83,7 @@ public class Saml2ResponseSender {
   }
 
   /**
-   * Encodes the supplied {@link Response} message for being included in a HTML form.
+   * Encodes the supplied {@link Response} message for being included in na HTML form.
    *
    * @param samlResponse the response message
    * @return the Base64-encoding of the message

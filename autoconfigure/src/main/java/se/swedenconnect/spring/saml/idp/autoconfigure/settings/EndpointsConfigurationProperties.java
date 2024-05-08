@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,41 +15,51 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Configuration properties for endpoint configuration.
  *
  * @author Martin Lindström
  */
-@Data
 public class EndpointsConfigurationProperties {
 
   /**
    * The endpoint where the Identity Provider receives authentication requests via HTTP redirect.
    */
+  @Setter
+  @Getter
   private String redirectAuthn;
 
   /**
    * The endpoint where the Identity Provider receives authentication requests via HTTP POST.
    */
+  @Setter
+  @Getter
   private String postAuthn;
 
   /**
    * The endpoint where the Identity Provider receives authentication requests via HTTP redirect where Holder-of-key
    * (HoK) is used.
    */
+  @Setter
+  @Getter
   private String hokRedirectAuthn;
 
   /**
    * The endpoint where the Identity Provider receives authentication requests via HTTP POST where Holder-of-key
    * (HoK) is used.
    */
+  @Setter
+  @Getter
   private String hokPostAuthn;
 
   /**
    * The SAML metadata publishing endpoint.
    */
+  @Setter
+  @Getter
   private String metadata;
 
 }

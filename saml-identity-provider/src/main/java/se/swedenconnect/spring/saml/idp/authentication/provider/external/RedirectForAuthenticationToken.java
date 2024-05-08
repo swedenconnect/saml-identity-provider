@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -38,19 +39,20 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProce
  */
 public class RedirectForAuthenticationToken implements Authentication {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The authentication input token. */
-  private Saml2UserAuthenticationInputToken authnInputToken;
+  private final Saml2UserAuthenticationInputToken authnInputToken;
 
   /** The path to where we redirect the user for authentication. */
-  private String authnPath;
+  private final String authnPath;
 
   /**
    * The path that the authenticator uses to redirect the user back after a completed authentication (successful or
    * not).
    */
-  private String resumeAuthnPath;
+  private final String resumeAuthnPath;
 
   /**
    * Constructor.
@@ -140,7 +142,7 @@ public class RedirectForAuthenticationToken implements Authentication {
    * Must not be called, will throw {@link IllegalArgumentException}.
    */
   @Override
-  public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
+  public void setAuthenticated(final boolean isAuthenticated) throws IllegalArgumentException {
     throw new IllegalArgumentException(
         "setAuthenticated on " + this.getClass().getSimpleName() + " must not be called");
   }

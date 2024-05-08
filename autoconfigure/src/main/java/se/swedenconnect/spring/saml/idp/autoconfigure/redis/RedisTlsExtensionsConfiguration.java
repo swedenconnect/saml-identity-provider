@@ -119,7 +119,7 @@ public class RedisTlsExtensionsConfiguration {
               try {
                 return keyStore.isKeyEntry(a);
               }
-              catch (KeyStoreException e) {
+              catch (final KeyStoreException e) {
                 return false;
               }
             })

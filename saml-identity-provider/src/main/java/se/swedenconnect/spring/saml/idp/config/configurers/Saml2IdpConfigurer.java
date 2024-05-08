@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,11 +59,8 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
   private final Map<Class<? extends AbstractSaml2Configurer>, AbstractSaml2Configurer> configurers =
       this.createConfigurers();
 
-  /** The endpoints matcher. */
+  /** The endpoints' matcher. */
   private RequestMatcher endpointsMatcher;
-
-  /** Request matcher for authn endpoints. */
-  private RequestMatcher authnEndpointsMatcher;
 
   /**
    * Customizes the IdP metadata endpoint.
@@ -175,10 +172,10 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
 
     // Configurers ...
     //
-    this.authnEndpointsMatcher = Saml2IdpConfigurerUtils.getAuthnEndpointsRequestMatcher(httpSecurity);
+    final RequestMatcher authnEndpointsMatcher = Saml2IdpConfigurerUtils.getAuthnEndpointsRequestMatcher(httpSecurity);
 
     final List<RequestMatcher> requestMatchers = new ArrayList<>();
-    requestMatchers.add(this.authnEndpointsMatcher);
+    requestMatchers.add(authnEndpointsMatcher);
 
     this.configurers.values().forEach(configurer -> {
       configurer.init(httpSecurity);
@@ -310,7 +307,7 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
         if (md.getLocation() == null) {
           throw new IllegalArgumentException("Missing location for metadata provider at position " + i);
         }
-        if (UrlResource.class.isInstance(md.getLocation())) {
+        if (md.getLocation() instanceof UrlResource) {
           if (md.getBackupLocation() == null) {
             log.warn("No backup-location for metadata source {} - Using a backup file is strongly recommended",
                 md.getLocation());

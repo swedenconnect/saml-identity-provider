@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ public class SwedenConnectAttributeReleaseVoter implements AttributeReleaseVoter
       return false;
     }
     try {
-      final Integer day = Integer.parseInt(id.substring(6, 8));
+      final int day = Integer.parseInt(id.substring(6, 8));
       return (day >= 61);
     }
     catch (final Exception e) {

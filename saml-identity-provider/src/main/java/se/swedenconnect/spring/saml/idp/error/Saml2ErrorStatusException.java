@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.error;
 
+import java.io.Serial;
 import java.util.Locale;
 import java.util.Objects;
 
@@ -41,6 +42,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 public class Saml2ErrorStatusException extends AuthenticationException {
 
   /** For serializing. */
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The major status code. */
@@ -216,7 +218,7 @@ public class Saml2ErrorStatusException extends AuthenticationException {
       try {
         statusMessage = messageSource.getMessage(this.statusMessageCode, null, this.defaultStatusMessage, locale);
       }
-      catch (NoSuchMessageException e) {
+      catch (final NoSuchMessageException ignored) {
       }
     }
     if (statusMessage == null) {

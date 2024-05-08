@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import lombok.Setter;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
+import java.io.Serial;
+
 /**
  * Audit data for unrecoverable errors that are reported in the UI.
  * 
@@ -32,6 +34,7 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 @JsonInclude(Include.NON_EMPTY)
 public class Saml2UnrecoverableErrorAuditData extends Saml2AuditData {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The error code. */

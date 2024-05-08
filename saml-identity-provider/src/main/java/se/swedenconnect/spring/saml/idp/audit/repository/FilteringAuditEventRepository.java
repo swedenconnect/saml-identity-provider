@@ -110,7 +110,7 @@ public abstract class FilteringAuditEventRepository implements AuditEventReposit
   }
 
   /**
-   * Returns an audit event filter that combines {@link #inclusionExclusionPredicate(List, List)} and
+   * Returns an audit event filter that combines {@code inclusionExclusionPredicate(List, List)} and
    * {@link #exclusionPredicate(List)}.
    *
    * @param includeTypes the types to include (if {@code null} or empty, all events are accepted)

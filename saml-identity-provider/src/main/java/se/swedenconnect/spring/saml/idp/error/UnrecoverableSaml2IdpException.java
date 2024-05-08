@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.error;
 
+import java.io.Serial;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -36,6 +37,7 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthentica
  */
 public class UnrecoverableSaml2IdpException extends RuntimeException {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The error. */
@@ -129,19 +131,19 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
     if (authn == null) {
       return;
     }
-    if (authn instanceof Saml2UserAuthentication ua) {
+    if (authn instanceof final Saml2UserAuthentication ua) {
       this.setupTraceId(ua.getAuthnRequestToken());
     }
-    else if (authn instanceof Saml2AuthnRequestAuthenticationToken ar) {
+    else if (authn instanceof final Saml2AuthnRequestAuthenticationToken ar) {
       this.authnRequestId = Optional.ofNullable(ar.getAuthnRequest()).map(AuthnRequest::getID).orElse(null);
       this.spEntityId = ar.getEntityId();
     }
-    else if (authn instanceof ResumedAuthenticationToken ra) {
+    else if (authn instanceof final ResumedAuthenticationToken ra) {
       this.setupTraceId(Optional.ofNullable(ra.getAuthnInputToken())
           .map(Saml2UserAuthenticationInputToken::getAuthnRequestToken)
           .orElse(null));
     }
-    else if (authn instanceof TraceAuthentication ta) {
+    else if (authn instanceof final TraceAuthentication ta) {
       this.authnRequestId = ta.getAuthnRequestId();
       this.spEntityId = ta.getSpEntityId();
     }
@@ -155,6 +157,7 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
    */
   public static class TraceAuthentication extends AbstractAuthenticationToken {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     @Getter

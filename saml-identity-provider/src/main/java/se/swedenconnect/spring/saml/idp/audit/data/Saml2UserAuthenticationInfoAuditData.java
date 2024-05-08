@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.audit.data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.List;
@@ -40,6 +41,7 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserDetails;
 @JsonInclude(Include.NON_EMPTY)
 public class Saml2UserAuthenticationInfoAuditData extends Saml2AuditData {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The authentication instant. */
@@ -159,6 +161,7 @@ public class Saml2UserAuthenticationInfoAuditData extends Saml2AuditData {
   @NoArgsConstructor
   public static class SsoInformation implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /**

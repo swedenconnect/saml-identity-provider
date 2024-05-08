@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ class Saml2IdpConfigurerUtils {
     publisher = getOptionalBean(httpSecurity, Saml2IdpEventPublisher.class);
     if (publisher == null) {
       final ApplicationEventPublisher applicationEventPublisher =
-          (ApplicationEventPublisher) httpSecurity.getSharedObject(ApplicationContext.class);
+          httpSecurity.getSharedObject(ApplicationContext.class);
       publisher = new Saml2IdpEventPublisher(applicationEventPublisher);
     }
     httpSecurity.setSharedObject(Saml2IdpEventPublisher.class, publisher);
@@ -173,8 +173,7 @@ class Saml2IdpConfigurerUtils {
   static PkiCredential getEncryptCredential(final HttpSecurity httpSecurity) {
     final IdentityProviderSettings settings = getIdentityProviderSettings(httpSecurity);
     return Optional.ofNullable(settings.getCredentials().getEncryptCredential())
-        .orElseGet(() -> Optional.ofNullable(settings.getCredentials().getDefaultCredential())
-            .orElse(null));
+        .orElseGet(() -> settings.getCredentials().getDefaultCredential());
   }
 
   /**

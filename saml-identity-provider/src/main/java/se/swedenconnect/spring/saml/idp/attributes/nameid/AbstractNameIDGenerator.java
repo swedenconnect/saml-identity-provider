@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.nameid;
 
+import java.io.Serial;
 import java.util.Optional;
 
 import org.opensaml.core.xml.util.XMLObjectSupport;
@@ -33,6 +34,7 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthentica
 @Slf4j
 public abstract class AbstractNameIDGenerator implements NameIDGenerator {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The name qualifier, usually the IdP entityID. */
@@ -71,7 +73,7 @@ public abstract class AbstractNameIDGenerator implements NameIDGenerator {
 
     log.debug("Generating NameID '{}' with Format '{}' [{}]", identifier, format,
         Optional.ofNullable(authentication.getAuthnRequestToken())
-            .map(Saml2AuthnRequestAuthenticationToken::getLogString).orElseGet(() -> ""));
+            .map(Saml2AuthnRequestAuthenticationToken::getLogString).orElse(""));
 
     final NameID nameID = (NameID) XMLObjectSupport.buildXMLObject(NameID.DEFAULT_ELEMENT_NAME);
     nameID.setValue(identifier);

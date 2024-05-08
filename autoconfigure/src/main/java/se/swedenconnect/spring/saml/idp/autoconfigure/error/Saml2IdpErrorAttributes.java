@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,8 +57,7 @@ public class Saml2IdpErrorAttributes extends DefaultErrorAttributes {
         error = error.getCause();
       }
     }
-    if (error != null && UnrecoverableSaml2IdpException.class.isInstance(error)) {
-      final UnrecoverableSaml2IdpException samlError = UnrecoverableSaml2IdpException.class.cast(error);
+    if (error instanceof final UnrecoverableSaml2IdpException samlError) {
       errorAttributes.put(IDP_ERROR_CODE, samlError.getError().toString());
       errorAttributes.put(IDP_ERROR_MESSAGE_CODE, samlError.getError().getMessageCode());
       errorAttributes.put(IDP_ERROR_DESCRIPTION, samlError.getError().getDescription());

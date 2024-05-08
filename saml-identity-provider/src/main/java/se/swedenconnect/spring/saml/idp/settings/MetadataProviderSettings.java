@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package se.swedenconnect.spring.saml.idp.settings;
 
 import java.io.File;
+import java.io.Serial;
 import java.security.cert.X509Certificate;
 import java.util.Map;
 
@@ -31,6 +32,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  */
 public class MetadataProviderSettings extends AbstractSettings {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /**
@@ -43,13 +45,13 @@ public class MetadataProviderSettings extends AbstractSettings {
   }
 
   /**
-   * The location of the metadata. Can be an URL, a file, or even a classpath resource. Represented using a
+   * The location of the metadata. Can be a URL, a file, or even a classpath resource. Represented using a
    * {@link Resource}.
    */
   public static final String SAML_METADATA_PROVIDER_LOCATION = "location";
 
   /**
-   * Gets the location of the metadata. Can be an URL, a file, or even a classpath resource.
+   * Gets the location of the metadata. Can be a URL, a file, or even a classpath resource.
    *
    * @return the metadata location
    */
@@ -73,13 +75,13 @@ public class MetadataProviderSettings extends AbstractSettings {
   }
 
   /**
-   * If the {@code location} setting is an URL, a "backup location" may be assigned to store downloaded metadata. A
+   * If the {@code location} setting is a URL, a "backup location" may be assigned to store downloaded metadata. A
    * {@link File}.
    */
   public static final String SAML_METADATA_PROVIDER_BACKUP_LOCATION = "backup-location";
 
   /**
-   * If the {@code location} setting is an URL, a "backup location" may be assigned to store downloaded metadata. This
+   * If the {@code location} setting is a URL, a "backup location" may be assigned to store downloaded metadata. This
    * method returns this file.
    *
    * @return a file or {@code null}
@@ -89,13 +91,13 @@ public class MetadataProviderSettings extends AbstractSettings {
   }
 
   /**
-   * If the {@code location} setting is an URL, setting the MDQ-flag means that the metadata MDQ
+   * If the {@code location} setting is a URL, setting the MDQ-flag means that the metadata MDQ
    * (https://www.ietf.org/id/draft-young-md-query-17.html) protocol is used. A {@code Boolean}.
    */
   public static final String SAML_METADATA_PROVIDER_MDQ = "mdq";
 
   /**
-   * If the {@code location} setting is an URL, setting the MDQ-flag means that the metadata MDQ
+   * If the {@code location} setting is a URL, setting the MDQ-flag means that the metadata MDQ
    * (https://www.ietf.org/id/draft-young-md-query-17.html) protocol is used. This method returns this setting.
    *
    * @return whether MDQ is active or not
@@ -119,7 +121,7 @@ public class MetadataProviderSettings extends AbstractSettings {
   }
 
   /**
-   * If the {@code location} setting is an URL and a HTTP proxy is required this setting configures this proxy. A
+   * If the {@code location} setting is a URL and an HTTP proxy is required this setting configures this proxy. A
    * {@link HttpProxySettings}.
    */
   public static final String SAML_METADATA_PROVIDER_HTTP_PROXY = "http-proxy";
@@ -162,7 +164,7 @@ public class MetadataProviderSettings extends AbstractSettings {
     }
 
     /**
-     * Assigns the location of the metadata. Can be an URL, a file, or even a classpath resource.
+     * Assigns the location of the metadata. Can be a URL, a file, or even a classpath resource.
      *
      * @param location the metadata location
      * @return the builder
@@ -201,7 +203,7 @@ public class MetadataProviderSettings extends AbstractSettings {
      * (https://www.ietf.org/id/draft-young-md-query-17.html) protocol is used.
      * </p>
      *
-     * @param mdq whether MDQ should be be used
+     * @param mdq whether MDQ should be used
      * @return the builder
      */
     public Builder mdq(final Boolean mdq) {
@@ -254,6 +256,7 @@ public class MetadataProviderSettings extends AbstractSettings {
    */
   public static class HttpProxySettings extends AbstractSettings {
 
+    @Serial
     private static final long serialVersionUID = -2085596061776876139L;
 
     /**
@@ -294,14 +297,14 @@ public class MetadataProviderSettings extends AbstractSettings {
     }
 
     /**
-     * The HTTP proxy user name. A {@link String}.
+     * The HTTP proxy username. A {@link String}.
      */
     public static final String HTTP_PROXY_USER_NAME = "user-name";
 
     /**
-     * Gets the HTTP proxy user name.
+     * Gets the HTTP proxy username.
      *
-     * @return the proxy user name or {@code null}
+     * @return the proxy username or {@code null}
      */
     public String getUserName() {
       return this.getSetting(HTTP_PROXY_USER_NAME);
@@ -370,9 +373,9 @@ public class MetadataProviderSettings extends AbstractSettings {
       }
 
       /**
-       * Assigns the HTTP proxy user name.
+       * Assigns the HTTP proxy username.
        *
-       * @param userName the proxy user name
+       * @param userName the proxy username
        * @return the builder
        */
       public Builder userName(final String userName) {

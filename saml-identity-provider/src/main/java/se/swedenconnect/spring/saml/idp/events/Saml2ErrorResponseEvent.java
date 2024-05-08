@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import org.opensaml.saml.saml2.core.Status;
 import se.swedenconnect.opensaml.common.utils.SerializableOpenSamlObject;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
+import java.io.Serial;
+
 /**
  * An event that signals that a SAML error response is being sent.
  *
@@ -28,6 +30,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  */
 public class Saml2ErrorResponseEvent extends AbstractSaml2IdpEvent {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The entityID of the SP that we are sending the response to. */
@@ -40,7 +43,7 @@ public class Saml2ErrorResponseEvent extends AbstractSaml2IdpEvent {
    * @param spEntityId the entityID of the SP that we are sending the response to
    */
   public Saml2ErrorResponseEvent(final Response response, final String spEntityId) {
-    super(new SerializableOpenSamlObject<Response>(response));
+    super(new SerializableOpenSamlObject<>(response));
     this.spEntityId = spEntityId;
   }
 

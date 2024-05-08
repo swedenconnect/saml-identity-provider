@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,22 +34,22 @@ public class AbstractSaml2IdpEventListener implements ApplicationListener<Abstra
   public void onApplicationEvent(final AbstractSaml2IdpEvent event) {
     log.debug("Received {} event", event.getClass().getSimpleName());
     
-    if (event instanceof Saml2AuthnRequestReceivedEvent e) {
+    if (event instanceof final Saml2AuthnRequestReceivedEvent e) {
       this.onAuthnRequestReceivedEvent(e);
     }
-    else if (event instanceof Saml2SuccessResponseEvent e) {
+    else if (event instanceof final Saml2SuccessResponseEvent e) {
       this.onSuccessResponseEvent(e);
     }
-    else if (event instanceof Saml2ErrorResponseEvent e) {
+    else if (event instanceof final Saml2ErrorResponseEvent e) {
       this.onErrorResponseEvent(e);
     }
-    else if (event instanceof Saml2PreUserAuthenticationEvent e) {
+    else if (event instanceof final Saml2PreUserAuthenticationEvent e) {
       this.onPreUserAuthenticationEvent(e);
     }
-    else if (event instanceof Saml2PostUserAuthenticationEvent e) {
+    else if (event instanceof final Saml2PostUserAuthenticationEvent e) {
       this.onPostUserAuthenticationEvent(e);
     }
-    else if (event instanceof Saml2UnrecoverableErrorEvent e) {
+    else if (event instanceof final Saml2UnrecoverableErrorEvent e) {
       this.onUnrecoverableErrorEvent(e);
     }
   }

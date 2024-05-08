@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,12 +75,12 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
    * Message handler which checks the validity of the SAML protocol message receiver endpoint against requirements
    * indicated in the message.
    */
-  private ReceivedEndpointSecurityHandler receivedEndpointSecurityHandler;
+  private final ReceivedEndpointSecurityHandler receivedEndpointSecurityHandler;
 
   /**
    * Message handler for checking that the messages received are not too old.
    */
-  private MessageLifetimeSecurityHandler messageLifetimeSecurityHandler;
+  private final MessageLifetimeSecurityHandler messageLifetimeSecurityHandler;
 
   /** Resolves peer metadata entries. */
   private final MetadataResolver metadataResolver;
@@ -105,7 +105,8 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       this.httpRedirectDeflateDecoder = new HTTPRedirectDeflateDecoder();
       this.httpRedirectDeflateDecoder.setBindingDescriptor(redirectBindingDescriptor);
       this.httpRedirectDeflateDecoder.setHttpServletRequestSupplier(OpenSamlUtils.getHttpServletRequestSupplier());
-      this.httpRedirectDeflateDecoder.setParserPool(XMLObjectProviderRegistrySupport.getParserPool());
+      this.httpRedirectDeflateDecoder.setParserPool(
+          Objects.requireNonNull(XMLObjectProviderRegistrySupport.getParserPool()));
       this.httpRedirectDeflateDecoder.initialize();
 
       final BindingDescriptor postBindingDescriptor = new BindingDescriptor();
@@ -154,12 +155,11 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       final MessageContext msgContext = decoder.getMessageContext();
       log.debug("Incoming request decoded into a message of type {}", msgContext.getMessage().getClass().getName());
 
-      if (!AuthnRequest.class.isInstance(msgContext.getMessage())) {
+      if (!(msgContext.getMessage() instanceof final AuthnRequest authnRequest)) {
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_FORMAT,
             "Incoming request is not an SAML V2 AuthnRequest message", null);
       }
       log.debug("AuthnRequest successfully decoded");
-      final AuthnRequest authnRequest = AuthnRequest.class.cast(msgContext.getMessage());
       final String relayState = SAMLBindingSupport.getRelayState(msgContext);
 
       final Saml2AuthnRequestAuthenticationToken token =
