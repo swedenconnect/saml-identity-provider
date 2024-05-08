@@ -1,5 +1,5 @@
 /*
-x * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@ x * Copyright 2023 Sweden Connect
 package se.swedenconnect.spring.saml.idp.config.configurers;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.util.Objects;
 
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -68,6 +69,7 @@ class Saml2IdpContextFilter extends OncePerRequestFilter {
    */
   private static class DefaultIdentityProviderContext implements Saml2IdpContext {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     private final IdentityProviderSettings settings;

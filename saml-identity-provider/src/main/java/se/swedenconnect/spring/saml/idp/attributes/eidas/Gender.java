@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.eidas;
 
+import java.io.Serial;
 import java.util.Objects;
 
 import se.swedenconnect.opensaml.eidas.ext.attributes.GenderType;
@@ -29,10 +30,10 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  */
 public class Gender implements EidasAttributeValue<GenderType> {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
-  /** The value. */
-  private GenderTypeEnumeration gender;
+  private final String gender;
 
   /**
    * Constructor.
@@ -40,27 +41,27 @@ public class Gender implements EidasAttributeValue<GenderType> {
    * @param gender the gender type
    */
   public Gender(final GenderType gender) {
-    this.gender = Objects.requireNonNull(gender, "gender must not be null").getGender();
+    this.gender = Objects.requireNonNull(gender, "gender must not be null").getGender().getValue();
   }
 
   /** {@inheritDoc} */
   @Override
   public String getValueAsString() {
-    return this.gender.getValue();
+    return this.gender;
   }
 
   /** {@inheritDoc} */
   @Override
   public GenderType createXmlObject() {
     final GenderType xmlValue = AttributeBuilder.createValueObject(GenderType.TYPE_NAME, GenderType.class);
-    xmlValue.setGender(this.gender);
+    xmlValue.setGender(GenderTypeEnumeration.fromValue(this.gender));
     return xmlValue;
   }
 
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return this.getValueAsString();
+    return this.gender;
   }
 
 }

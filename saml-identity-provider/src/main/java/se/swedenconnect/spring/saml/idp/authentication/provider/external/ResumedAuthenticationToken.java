@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
@@ -36,6 +37,7 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
  */
 public class ResumedAuthenticationToken implements Authentication {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** Is set if the token represents a successful authentication. */
@@ -129,7 +131,7 @@ public class ResumedAuthenticationToken implements Authentication {
   public String getName() {
     return Optional.ofNullable(this.authnToken)
         .map(Authentication::getName)
-        .orElseGet(() -> "unknown");
+        .orElse("unknown");
   }
 
   /** {@inheritDoc} */
@@ -137,7 +139,7 @@ public class ResumedAuthenticationToken implements Authentication {
   public Collection<? extends GrantedAuthority> getAuthorities() {
     return Optional.ofNullable(this.authnToken)
         .map(Authentication::getAuthorities)
-        .orElseGet(() -> Collections.emptyList());
+        .orElse(Collections.emptyList());
   }
 
   /** {@inheritDoc} */
@@ -161,7 +163,7 @@ public class ResumedAuthenticationToken implements Authentication {
   public Object getPrincipal() {
     return Optional.ofNullable(this.authnToken)
         .map(Authentication::getPrincipal)
-        .orElseGet(() -> "saml-error");
+        .orElse("saml-error");
   }
 
   /** {@inheritDoc} */

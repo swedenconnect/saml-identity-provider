@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@ public class AuthnRequestSignatureValidator implements AuthnRequestValidator {
    * @param token the authentication request token
    * @return {@code true} if the authentication request was signed, and {@code false} otherwise
    */
-  protected boolean isSigned(Saml2AuthnRequestAuthenticationToken token) {
+  protected boolean isSigned(final Saml2AuthnRequestAuthenticationToken token) {
     if (SAMLConstants.SAML2_REDIRECT_BINDING_URI.equals(token.getBindingUri())) {
       final String signature = this.httpServletRequest.get().getParameter("Signature");
       return StringUtils.hasText(signature);
@@ -146,12 +146,8 @@ public class AuthnRequestSignatureValidator implements AuthnRequestValidator {
     if (Saml2IdpContextHolder.getContext().getSettings().getRequiresSignedRequests()) {
       return true;
     }
-    if (token.getPeerMetadata().getSPSSODescriptor(SAMLConstants.SAML20P_NS).isAuthnRequestsSigned()) {
-      return true;
-    }
-    else {
-      return false;
-    }
+    return Boolean.TRUE.equals(
+        token.getPeerMetadata().getSPSSODescriptor(SAMLConstants.SAML20P_NS).isAuthnRequestsSigned());
   }
 
   /**

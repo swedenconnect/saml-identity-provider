@@ -64,14 +64,14 @@ public class AuditRepositoryConfigurationProperties implements InitializingBean 
    * be logged (except to excluded by the "exclude-events").
    */
   @Getter
-  private List<String> includeEvents = new ArrayList<>();
+  private final List<String> includeEvents = new ArrayList<>();
 
   /**
    * A list of event ID:s to exclude from being logged to the repository. See also the "include-events"
    * setting.
    */
   @Getter
-  private List<String> excludeEvents = new ArrayList<>();
+  private final List<String> excludeEvents = new ArrayList<>();
 
   /** {@inheritDoc} */
   @Override
@@ -127,7 +127,7 @@ public class AuditRepositoryConfigurationProperties implements InitializingBean 
 
     /** {@inheritDoc} */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
       if (this.capacity == null) {
         this.capacity = MemoryBasedAuditEventRepository.DEFAULT_CAPACITY;
       }
@@ -156,7 +156,7 @@ public class AuditRepositoryConfigurationProperties implements InitializingBean 
 
     /** {@inheritDoc} */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
       if (this.type == null) {
         this.type = "list";
         log.info("saml.idp.audit.redis.type not set, defaulting to {}", this.type);

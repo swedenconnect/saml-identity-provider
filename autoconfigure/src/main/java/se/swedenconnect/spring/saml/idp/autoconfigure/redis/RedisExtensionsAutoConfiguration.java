@@ -16,7 +16,6 @@
 package se.swedenconnect.spring.saml.idp.autoconfigure.redis;
 
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.data.redis.JedisClientConfigurationBuilderCustomizer;
@@ -31,7 +30,7 @@ import org.springframework.data.redis.core.RedisOperations;
 import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsConfiguration.SslBundleRegistrationBean;
 
 /**
- * Auto configuration for Redis extensions.
+ * Autoconfiguration for Redis extensions.
  *
  * @author Martin Lindström
  */
@@ -41,17 +40,24 @@ import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsCo
 @Import(RedisTlsExtensionsConfiguration.class)
 public class RedisExtensionsAutoConfiguration {
 
-  /** To ensure that the TLS extensions have been processed. */
-  @Autowired
-  SslBundleRegistrationBean _dummy;
-
   /** Spring Data Redis properties. */
-  @Autowired
-  private RedisProperties redisProperties;
+  private final RedisProperties redisProperties;
 
   /** The Redis properties. */
-  @Autowired
-  private RedisTlsProperties redisTlsProperties;
+  private final RedisTlsProperties redisTlsProperties;
+
+  /**
+   * Constructor.
+   *
+   * @param redisProperties the Spring Data Redis properties
+   * @param redisTlsProperties the Redis properties
+   * @param ignoredDummy dummy parameter to ensure that the TLS extensions have been processed
+   */
+  public RedisExtensionsAutoConfiguration(final RedisProperties redisProperties,
+      final RedisTlsProperties redisTlsProperties, final SslBundleRegistrationBean ignoredDummy) {
+    this.redisProperties = redisProperties;
+    this.redisTlsProperties = redisTlsProperties;
+  }
 
   /**
    * If Jedis is available, a {@link JedisClientConfigurationBuilderCustomizer} is created that configures the Jedis

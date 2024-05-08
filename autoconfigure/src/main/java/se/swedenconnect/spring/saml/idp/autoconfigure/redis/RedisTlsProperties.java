@@ -43,7 +43,7 @@ public class RedisTlsProperties implements InitializingBean {
   private KeyStoreConfiguration credential;
 
   /**
-   * Should we verify the the peer's hostname as part of the SSL/TLS handshake?
+   * Should we verify the peer's hostname as part of the SSL/TLS handshake?
    */
   @Setter
   @Getter
@@ -76,7 +76,7 @@ public class RedisTlsProperties implements InitializingBean {
 
   /** {@inheritDoc} */
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() throws IllegalArgumentException {
     if (this.credential != null) {
       Assert.notNull(this.credential.getResource(), "spring.redis.ssl-ext.credential.resource must be set");
       Assert.hasText(this.credential.getPassword(), "spring.redis.ssl-ext.credential.password must be set");

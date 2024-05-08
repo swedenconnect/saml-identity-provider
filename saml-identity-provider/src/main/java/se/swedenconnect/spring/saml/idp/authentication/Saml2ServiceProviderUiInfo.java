@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import org.opensaml.core.xml.schema.XSString;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.ext.saml2mdui.Logo;
 import org.opensaml.saml.ext.saml2mdui.UIInfo;
@@ -45,6 +47,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  */
 public class Saml2ServiceProviderUiInfo implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** Constant used if no language tag has been set in SP metadata. */
@@ -82,15 +85,15 @@ public class Saml2ServiceProviderUiInfo implements Serializable {
     final Map<String, String> displayNamesMap = new HashMap<>();
 
     if (uiInfo != null) {
-      uiInfo.getDisplayNames().stream()
+      uiInfo.getDisplayNames()
           .forEach(d -> displayNamesMap.put(Optional.ofNullable(d.getXMLLang()).orElse(NO_LANG), d.getValue()));
       this.descriptions = uiInfo.getDescriptions().stream()
           .collect(Collectors.toUnmodifiableMap(
-              d -> Optional.ofNullable(d.getXMLLang()).orElse(NO_LANG), d -> d.getValue()));
+              d -> Optional.ofNullable(d.getXMLLang()).orElse(NO_LANG), XSString::getValue));
       this.logotypes = uiInfo.getLogos().stream()
-          .map(l -> new Logotype(l))
+          .map(Logotype::new)
           .filter(Logotype::isValid)
-          .collect(Collectors.toUnmodifiableList());
+          .toList();
     }
     else {
       this.descriptions = Collections.emptyMap();
@@ -98,16 +101,16 @@ public class Saml2ServiceProviderUiInfo implements Serializable {
     }
 
     if (metadata.getOrganization() != null) {
-      metadata.getOrganization().getDisplayNames().stream()
+      metadata.getOrganization().getDisplayNames()
           .forEach(dn -> {
-            final String lang = Optional.ofNullable(dn.getXMLLang()).orElseGet(() -> NO_LANG);
+            final String lang = Optional.ofNullable(dn.getXMLLang()).orElse(NO_LANG);
             if (!displayNamesMap.containsKey(lang)) {
               displayNamesMap.put(lang, dn.getValue());
             }
           });
-      metadata.getOrganization().getOrganizationNames().stream()
+      metadata.getOrganization().getOrganizationNames()
           .forEach(on -> {
-            final String lang = Optional.ofNullable(on.getXMLLang()).orElseGet(() -> NO_LANG);
+            final String lang = Optional.ofNullable(on.getXMLLang()).orElse(NO_LANG);
             if (!displayNamesMap.containsKey(lang)) {
               displayNamesMap.put(lang, on.getValue());
             }
@@ -184,7 +187,7 @@ public class Saml2ServiceProviderUiInfo implements Serializable {
   public Logotype getLogotype(final Predicate<Logotype> predicate) {
     Assert.notNull(predicate, "predicate must not be null");
     return this.logotypes.stream()
-        .filter(logo -> predicate.test(logo))
+        .filter(predicate)
         .findFirst()
         .orElse(null);
   }

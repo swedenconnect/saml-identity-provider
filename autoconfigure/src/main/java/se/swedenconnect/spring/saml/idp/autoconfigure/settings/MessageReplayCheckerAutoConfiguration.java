@@ -32,7 +32,7 @@ import se.swedenconnect.spring.saml.idp.authnrequest.validation.replay.InMemoryR
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.replay.RedisReplayCache;
 
 /**
- * Auto configuration for setting up a {@link MessageReplayChecker} bean.
+ * Autoconfiguration for setting up a {@link MessageReplayChecker} bean.
  *
  * @author Martin Lindström
  */

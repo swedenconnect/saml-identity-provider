@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,18 @@ import org.opensaml.saml.saml2.core.NameID;
 
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 
+/**
+ * Interface for a {@code NameID} generator.
+ *
+ * @author Martin Lindström
+ */
 public interface NameIDGenerator extends Serializable {
-  
+
+  /**
+   * Generate a {@code NameID} based on the supplied authentication object.
+   * @param authentication the authentication object
+   * @return a {@link NameID}
+   */
   NameID getNameID(final Saml2UserAuthentication authentication);
 
 }

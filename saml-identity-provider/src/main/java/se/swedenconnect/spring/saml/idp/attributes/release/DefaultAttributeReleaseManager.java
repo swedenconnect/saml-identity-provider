@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public class DefaultAttributeReleaseManager implements AttributeReleaseManager {
   private final List<AttributeProducer> producers;
 
   /** The attribute release voters. */
-  private List<AttributeReleaseVoter> voters;
+  private final List<AttributeReleaseVoter> voters;
 
   /**
    * Constructor.

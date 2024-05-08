@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.opensaml.core.xml.schema.XSURI;
 import org.opensaml.saml.saml2.core.RequestedAuthnContext;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
@@ -166,7 +167,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
   public Authentication authenticate(final Authentication authentication) throws AuthenticationException {
 
     final Saml2AuthnRequestAuthenticationToken token =
-        Saml2AuthnRequestAuthenticationToken.class.cast(authentication);
+        (Saml2AuthnRequestAuthenticationToken) authentication;
     
     this.eventPublisher.publishAuthnRequestReceived(token);
 
@@ -246,8 +247,8 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
       final Saml2AuthnRequestAuthenticationToken token)
       throws Saml2ErrorStatusException, UnrecoverableSaml2IdpException {
 
-    final boolean forceAuthn = token.getAuthnRequest().isForceAuthn();
-    final boolean isPassive = token.getAuthnRequest().isPassive();
+    final boolean forceAuthn = Boolean.TRUE.equals(token.getAuthnRequest().isForceAuthn());
+    final boolean isPassive = Boolean.TRUE.equals(token.getAuthnRequest().isPassive());
 
     if (forceAuthn && isPassive) {
       final String msg = "Invalid AuthnRequest - ForceAuthn and IsPassive cannot both be set";
@@ -272,7 +273,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
         .orElse(null);
     if (sadRequest != null) {
       if (!token.isSignatureServicePeer()) {
-        log.info("Received SADRequest from non SignService SP, ignoring ... [{}]");
+        log.info("Received SADRequest from non SignService SP, ignoring ... [{}]", token.getLogString());
         sadRequest = null;
       }
       else {
@@ -288,12 +289,12 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
         .authnContextRequirements(Optional.ofNullable(token.getAuthnRequest().getRequestedAuthnContext())
             .map(RequestedAuthnContext::getAuthnContextClassRefs)
             .map(refs -> refs.stream()
-                .map(r -> r.getURI())
+                .map(XSURI::getURI)
                 .collect(Collectors.toList()))
-            .orElseGet(() -> Collections.emptyList()))
+            .orElseGet(Collections::emptyList))
         .principalSelectionAttributes(Optional.ofNullable(this.principalSelectionProcessor)
             .map(p -> p.extractPrincipalSelection(token))
-            .orElseGet(() -> Collections.emptyList()))
+            .orElseGet(Collections::emptyList))
         .signatureMessageExtension(signMessageExtension)
         .sadRequestExtension(sadRequest != null ? new SadRequestExtension(sadRequest) : null)
         .build();

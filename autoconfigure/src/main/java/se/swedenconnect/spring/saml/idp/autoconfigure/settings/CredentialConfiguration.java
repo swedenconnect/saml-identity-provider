@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,9 +38,17 @@ import se.swedenconnect.security.credential.factory.PkiCredentialFactoryBean;
 public class CredentialConfiguration {
   
   /** The properties. */
-  @Setter
-  @Autowired(required = false)
-  private IdentityProviderConfigurationProperties properties;
+  private final IdentityProviderConfigurationProperties properties;
+
+  /**
+   * Constructor.
+   *
+    * @param properties the IdP properties
+   */
+  public CredentialConfiguration(
+      @Autowired(required = false) final IdentityProviderConfigurationProperties properties) {
+    this.properties = properties;
+  }
   
   @ConditionalOnMissingBean(name = "saml.idp.credentials.Default")
   @Bean("saml.idp.credentials.Default")
@@ -58,7 +66,7 @@ public class CredentialConfiguration {
   
   @ConditionalOnMissingBean(name = "saml.idp.credentials.FutureSign")
   @Bean("saml.idp.credentials.FutureSign")
-  X509Certificate futureSignCertificate() throws Exception {
+  X509Certificate futureSignCertificate() {
     if (this.properties != null && this.properties.getCredentials() != null) {
       return this.properties.getCredentials().getFutureSign();
     }
@@ -99,7 +107,7 @@ public class CredentialConfiguration {
     if (props == null) {
       return null;
     }
-    PkiCredentialFactoryBean factory = new PkiCredentialFactoryBean(props);
+    final PkiCredentialFactoryBean factory = new PkiCredentialFactoryBean(props);
     factory.afterPropertiesSet();
     return factory.getObject();
   }

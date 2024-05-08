@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthentica
  */
 public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The user details. */
@@ -213,6 +215,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
    */
   public static class AuthenticationInfoTrack implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /** Listing of all times the user authentication object has been used. */
@@ -268,7 +271,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
     /**
      * Record recording the usage time and requesting SP for an authentication.
      */
-    public static record AuthnUse(Instant use, String sp, String authnRequestId) implements Serializable {
+    public record AuthnUse(Instant use, String sp, String authnRequestId) implements Serializable {
     }
 
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package se.swedenconnect.spring.saml.idp.attributes;
 
 import java.io.ByteArrayInputStream;
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -63,13 +64,14 @@ public class UserAttribute implements Serializable {
   public static final String DEFAULT_NAME_FORMAT = Attribute.URI_REFERENCE;
 
   /** For serializing. */
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The date time formatter to use. */
   private static final DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
 
   /** The attribute ID (name). */
-  private String id;
+  private final String id;
 
   /** The attribute friendly name. */
   private String friendlyName;
@@ -107,7 +109,7 @@ public class UserAttribute implements Serializable {
    * @param value the attribute value
    */
   public UserAttribute(final String id, final String friendlyName, final Serializable value) {
-    this(id, friendlyName, Optional.ofNullable(value).map(v -> List.of(v)).orElse(null));
+    this(id, friendlyName, Optional.ofNullable(value).map(List::of).orElse(null));
   }
 
   /**
@@ -149,6 +151,7 @@ public class UserAttribute implements Serializable {
       else if (XSBoolean.class.isAssignableFrom(valueType)) {
         this.values = AttributeUtils.getAttributeValues(attribute, XSBoolean.class).stream()
             .map(XSBoolean::getValue)
+            .filter(Objects::nonNull)
             .map(XSBooleanValue::getValue)
             .collect(Collectors.toList());
       }
@@ -170,7 +173,7 @@ public class UserAttribute implements Serializable {
       }
       else {
         this.values = attribute.getAttributeValues().stream()
-            .map(v -> new UnknownAttributeValue(v))
+            .map(UnknownAttributeValue::new)
             .collect(Collectors.toList());
 
       }
@@ -228,7 +231,7 @@ public class UserAttribute implements Serializable {
    * @return the attribute value(s)
    */
   public List<? extends Serializable> getValues() {
-    return Optional.ofNullable(this.values).orElseGet(() -> Collections.emptyList());
+    return Optional.ofNullable(this.values).orElse(Collections.emptyList());
   }
 
   /**
@@ -239,7 +242,7 @@ public class UserAttribute implements Serializable {
   public List<String> getStringValues() {
     return this.getValues().stream()
         .filter(Objects::nonNull)
-        .map(v -> toStringValue(v))
+        .map(UserAttribute::toStringValue)
         .toList();
   }
 
@@ -270,26 +273,26 @@ public class UserAttribute implements Serializable {
    * @return a {@link String}
    */
   private static String toStringValue(final Serializable value) {
-    if (String.class.isInstance(value)) {
-      return String.class.cast(value);
+    if (value instanceof String) {
+      return (String) value;
     }
-    else if (Integer.class.isInstance(value)) {
-      return Integer.class.cast(value).toString();
+    else if (value instanceof Integer) {
+      return ((Integer) value).toString();
     }
-    else if (Boolean.class.isInstance(value)) {
-      return Boolean.class.cast(value).toString();
+    else if (value instanceof Boolean) {
+      return ((Boolean) value).toString();
     }
-    else if (LocalDate.class.isInstance(value)) {
-      return formatter.format(LocalDate.class.cast(value));
+    else if (value instanceof LocalDate) {
+      return formatter.format((LocalDate) value);
     }
-    else if (Instant.class.isInstance(value)) {
-      return Instant.class.cast(value).toString();
+    else if (value instanceof Instant) {
+      return ((Instant) value).toString();
     }
     else if (value instanceof byte[]) {
       return Base64.getEncoder().encodeToString((byte[]) value);
     }
-    else if (EidasAttributeValue.class.isInstance(value)) {
-      return EidasAttributeValue.class.cast(value).getValueAsString();
+    else if (value instanceof EidasAttributeValue) {
+      return ((EidasAttributeValue<?>) value).getValueAsString();
     }
     else {
       return value.toString();
@@ -308,25 +311,25 @@ public class UserAttribute implements Serializable {
 
     if (this.values != null) {
       for (final Object v : this.values) {
-        if (String.class.isInstance(v)) {
+        if (v instanceof String) {
           builder.value((String) v);
         }
-        else if (Integer.class.isInstance(v)) {
+        else if (v instanceof Integer) {
           final XSInteger o = AttributeBuilder.createValueObject(XSInteger.TYPE_NAME, XSInteger.class);
           o.setValue((Integer) v);
           builder.value(o);
         }
-        else if (Boolean.class.isInstance(v)) {
+        else if (v instanceof Boolean) {
           final XSBoolean o = AttributeBuilder.createValueObject(XSBoolean.TYPE_NAME, XSBoolean.class);
           o.setValue(new XSBooleanValue((Boolean) v, false));
           builder.value(o);
         }
-        else if (LocalDate.class.isInstance(v)) {
+        else if (v instanceof LocalDate) {
           // OpenSAML doesn't support xs:date, so I guess it is seldom used. Let's put it in a
           // string value ...
           builder.value(formatter.format((LocalDate) v));
         }
-        else if (Instant.class.isInstance(v)) {
+        else if (v instanceof Instant) {
           final XSDateTime o = AttributeBuilder.createValueObject(XSDateTime.TYPE_NAME, XSDateTime.class);
           o.setValue((Instant) v);
           builder.value(o);
@@ -336,11 +339,11 @@ public class UserAttribute implements Serializable {
           o.setValue(Base64.getEncoder().encodeToString((byte[]) v));
           builder.value(o);
         }
-        else if (EidasAttributeValue.class.isInstance(v)) {
+        else if (v instanceof EidasAttributeValue) {
           final XMLObject o = ((EidasAttributeValue<?>) v).createXmlObject();
           builder.value(o);
         }
-        else if (UnknownAttributeValue.class.isInstance(v)) {
+        else if (v instanceof UnknownAttributeValue) {
           final XMLObject o = ((UnknownAttributeValue) v).createXmlObject();
           builder.value(o);
         }
@@ -356,7 +359,7 @@ public class UserAttribute implements Serializable {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
     sb.append(this.id);
     if (this.friendlyName != null) {
       sb.append(", (").append(this.friendlyName).append(")");
@@ -374,7 +377,7 @@ public class UserAttribute implements Serializable {
   }
 
   public String valuesToString() {
-    final StringBuffer sb = new StringBuffer();
+    final StringBuilder sb = new StringBuilder();
     final List<? extends Serializable> values = this.getValues();
     if (values.isEmpty()) {
       return null;
@@ -412,6 +415,7 @@ public class UserAttribute implements Serializable {
    */
   public static class UnknownAttributeValue implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /** The encoding of the value object. */
@@ -420,7 +424,7 @@ public class UserAttribute implements Serializable {
     /**
      * Constructor.
      *
-     * @param value
+     * @param value the XML value
      */
     public UnknownAttributeValue(final XMLObject value) {
       try {
@@ -428,7 +432,7 @@ public class UserAttribute implements Serializable {
         this.encoding = SerializeSupport.nodeToString(element);
       }
       catch (final MarshallingException e) {
-        throw new IllegalArgumentException("Failed to marshall " + value.getElementQName().toString(), e);
+        throw new IllegalArgumentException("Failed to marshall " + value.getElementQName(), e);
       }
     }
 
@@ -440,9 +444,10 @@ public class UserAttribute implements Serializable {
     public XMLObject createXmlObject() {
       try {
         return XMLObjectSupport.unmarshallFromInputStream(
-            XMLObjectProviderRegistrySupport.getParserPool(), new ByteArrayInputStream(this.encoding.getBytes()));
+            Objects.requireNonNull(XMLObjectProviderRegistrySupport.getParserPool()),
+            new ByteArrayInputStream(this.encoding.getBytes()));
       }
-      catch (XMLParserException | UnmarshallingException e) {
+      catch (final XMLParserException | UnmarshallingException e) {
         throw new SecurityException(e);
       }
     }

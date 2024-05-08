@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
   private RequestMatcher authnRequestRequestMatcher;
 
   /** Request matcher for resuming authentication after redirecting the user agent for authentication. */
-  private DeferredRequestMatcher resumeAuthnRequestMatcher = new DeferredRequestMatcher();
+  private final DeferredRequestMatcher resumeAuthnRequestMatcher = new DeferredRequestMatcher();
 
   /** For customizing the assertions being created. */
   private Customizer<Assertion> assertionCustomizer;
@@ -74,13 +74,13 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
   private Saml2MessageIDGenerator idGenerator;
 
   /** The attribute producers used by the {@link AttributeReleaseManager} (and SAML assertion builder). */
-  private List<AttributeProducer> attributeProducers = this.createDefaultAttributeProducers();
+  private final List<AttributeProducer> attributeProducers = this.createDefaultAttributeProducers();
 
   /** The attribute release voters used by the {@link AttributeReleaseManager} (and SAML assertion builder). */
-  private List<AttributeReleaseVoter> attributeReleaseVoters = this.createDefaultAttributeReleaseVoters();
+  private final List<AttributeReleaseVoter> attributeReleaseVoters = this.createDefaultAttributeReleaseVoters();
 
   /** The post authentication processors. */
-  private List<PostAuthenticationProcessor> postAuthenticationProcessors =
+  private final List<PostAuthenticationProcessor> postAuthenticationProcessors =
       this.createDefaultPostAuthenticationProcessors();
 
   /** Repository storing authentication objects used for external authentication. */
@@ -196,8 +196,7 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
     // Assign SAD factory ...
     //
     for (final AttributeProducer p : this.attributeProducers) {
-      if (p instanceof SwedenConnectAttributeProducer) {
-        final SwedenConnectAttributeProducer scap = (SwedenConnectAttributeProducer) p;
+      if (p instanceof final SwedenConnectAttributeProducer scap) {
         if (scap.getSadFactory() == null) {
           scap.setSadFactory(Saml2IdpConfigurerUtils.getSadFactory(httpSecurity));
         }
@@ -243,27 +242,27 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
   }
 
   private List<AttributeProducer> createDefaultAttributeProducers() {
-    List<AttributeProducer> producers = new ArrayList<>();
+    final List<AttributeProducer> producers = new ArrayList<>();
     producers.add(new SwedenConnectAttributeProducer());
     return producers;
   }
 
   private List<AttributeReleaseVoter> createDefaultAttributeReleaseVoters() {
-    List<AttributeReleaseVoter> voters = new ArrayList<>();
+    final List<AttributeReleaseVoter> voters = new ArrayList<>();
     voters.add(new IncludeAllAttributeReleaseVoter());
     voters.add(new SwedenConnectAttributeReleaseVoter());
     return voters;
   }
 
   private List<PostAuthenticationProcessor> createDefaultPostAuthenticationProcessors() {
-    List<PostAuthenticationProcessor> processors = new ArrayList<>();
+    final List<PostAuthenticationProcessor> processors = new ArrayList<>();
     processors.add(new SwedenConnectPostAuthenticationProcessor());
     return processors;
   }
 
   private static class DeferredRequestMatcher implements RequestMatcher {
 
-    private List<String> paths = new ArrayList<>();
+    private final List<String> paths = new ArrayList<>();
 
     private RequestMatcher matcher = new NegatedRequestMatcher(AnyRequestMatcher.INSTANCE);
 

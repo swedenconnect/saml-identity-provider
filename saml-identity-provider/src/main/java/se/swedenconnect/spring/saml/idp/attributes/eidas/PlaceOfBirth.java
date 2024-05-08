@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.eidas;
 
+import java.io.Serial;
 import java.util.Objects;
 
 import se.swedenconnect.opensaml.eidas.ext.attributes.PlaceOfBirthType;
@@ -28,6 +29,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  */
 public class PlaceOfBirth implements EidasAttributeValue<PlaceOfBirthType> {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The contents of the attribute value. */

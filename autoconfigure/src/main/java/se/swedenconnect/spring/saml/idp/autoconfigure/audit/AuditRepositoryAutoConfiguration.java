@@ -42,7 +42,7 @@ import se.swedenconnect.spring.saml.idp.audit.repository.JsonAuditEventMapper;
 import se.swedenconnect.spring.saml.idp.audit.repository.MemoryBasedAuditEventRepository;
 
 /**
- * Auto configuration for auditing support where an {@link AuditEventRepository} is created.
+ * Autoconfiguration for auditing support where an {@link AuditEventRepository} is created.
  *
  * @author Martin Lindström
  */

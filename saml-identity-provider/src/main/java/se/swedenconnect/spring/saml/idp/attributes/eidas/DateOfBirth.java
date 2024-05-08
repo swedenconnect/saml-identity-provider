@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.eidas;
 
+import java.io.Serial;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -31,6 +32,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  */
 public class DateOfBirth implements EidasAttributeValue<DateOfBirthType> {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The date time formatter to use. */
@@ -52,7 +54,7 @@ public class DateOfBirth implements EidasAttributeValue<DateOfBirthType> {
   @Override
   public String getValueAsString() {
     return Optional.ofNullable(this.value)
-        .map(v -> formatter.format(v))
+        .map(formatter::format)
         .orElse("");
   }
 

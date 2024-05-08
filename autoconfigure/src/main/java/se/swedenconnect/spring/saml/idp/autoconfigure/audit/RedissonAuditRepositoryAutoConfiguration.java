@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Bean;
 import se.swedenconnect.spring.saml.idp.audit.repository.RedissonTimeSeriesAuditEventRepository;
 
 /**
- * Auto configuration for auditing support where a Redis {@link AuditEventRepository} is created.
+ * Autoconfiguration for auditing support where a Redis {@link AuditEventRepository} is created.
  *
  * @author Martin Lindström
  */

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,8 +44,8 @@ public class SignServiceSsoVoter implements SsoVoter {
     //
     final List<String> entityCategories = Optional.ofNullable(token.getAuthnRequestToken())
         .map(Saml2AuthnRequestAuthenticationToken::getPeerMetadata)
-        .map(m -> EntityDescriptorUtils.getEntityCategories(m))
-        .orElseGet(() -> Collections.emptyList());
+        .map(EntityDescriptorUtils::getEntityCategories)
+        .orElseGet(Collections::emptyList);
 
     if (entityCategories.contains(EntityCategoryConstants.SERVICE_TYPE_CATEGORY_SIGSERVICE.getUri())) {
       return Vote.DENY;

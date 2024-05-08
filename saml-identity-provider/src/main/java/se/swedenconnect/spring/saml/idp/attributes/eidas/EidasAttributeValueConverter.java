@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,57 +69,57 @@ public class EidasAttributeValueConverter {
     if (PersonIdentifierType.class.isAssignableFrom(valueType)) {
       return attribute.getAttributeValues().stream()
           .map(PersonIdentifierType.class::cast)
-          .map(p -> new PersonIdentifier(p))
+          .map(PersonIdentifier::new)
           .collect(Collectors.toList());
     }
     if (TransliterationStringType.class.isAssignableFrom(valueType)) {
       return attribute.getAttributeValues().stream()
-          .map(v -> toTransliterationString(v))
+          .map(EidasAttributeValueConverter::toTransliterationString)
           .filter(Objects::nonNull)
           .collect(Collectors.toList());
     }
     if (DateOfBirthType.class.isAssignableFrom(valueType)) {
       return attribute.getAttributeValues().stream()
           .map(DateOfBirthType.class::cast)
-          .map(d -> new DateOfBirth(d))
+          .map(DateOfBirth::new)
           .collect(Collectors.toList());
     }
     if (GenderType.class.isAssignableFrom(valueType)) {
       return attribute.getAttributeValues().stream()
           .map(GenderType.class::cast)
-          .map(g -> new Gender(g))
+          .map(Gender::new)
           .collect(Collectors.toList());
     }
     if (PlaceOfBirthType.class.isAssignableFrom(valueType)) {
       return attribute.getAttributeValues().stream()
           .map(PlaceOfBirthType.class::cast)
-          .map(p -> new PlaceOfBirth(p))
+          .map(PlaceOfBirth::new)
           .collect(Collectors.toList());
     }
     if (CurrentAddressType.class.isAssignableFrom(valueType)) {
       return attribute.getAttributeValues().stream()
           .map(CurrentAddressType.class::cast)
-          .map(c -> new CurrentAddress(c))
+          .map(CurrentAddress::new)
           .collect(Collectors.toList());
     }
 
     log.warn("Unsupported eIDAS attribute - {}", attribute.getName());
     return attribute.getAttributeValues().stream()
-        .map(v -> new UserAttribute.UnknownAttributeValue(v))
+        .map(UserAttribute.UnknownAttributeValue::new)
         .collect(Collectors.toList());
   }
 
   private static TransliterationString<?> toTransliterationString(final XMLObject value) {
     if (value instanceof BirthNameType) {
-      return new TransliterationString<BirthNameType>((BirthNameType) value, BirthNameType.TYPE_NAME,
+      return new TransliterationString<>((BirthNameType) value, BirthNameType.TYPE_NAME,
           BirthNameType.class);
     }
     else if (value instanceof CurrentFamilyNameType) {
-      return new TransliterationString<CurrentFamilyNameType>((CurrentFamilyNameType) value,
+      return new TransliterationString<>((CurrentFamilyNameType) value,
           CurrentFamilyNameType.TYPE_NAME, CurrentFamilyNameType.class);
     }
     else if (value instanceof CurrentGivenNameType) {
-      return new TransliterationString<CurrentGivenNameType>((CurrentGivenNameType) value,
+      return new TransliterationString<>((CurrentGivenNameType) value,
           CurrentGivenNameType.TYPE_NAME, CurrentGivenNameType.class);
     }
 

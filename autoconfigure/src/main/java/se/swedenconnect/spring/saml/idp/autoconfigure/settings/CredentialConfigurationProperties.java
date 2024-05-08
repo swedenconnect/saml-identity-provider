@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,47 +15,59 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
-import java.security.cert.X509Certificate;
-
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import se.swedenconnect.security.credential.factory.PkiCredentialConfigurationProperties;
+
+import java.security.cert.X509Certificate;
 
 /**
  * Configuration properties for the IdP credentials.
  * 
  * @author Martin Lindström
  */
-@Data
 public class CredentialConfigurationProperties {
     
   /**
    * The IdP default credential.
    */
+  @Setter
+  @Getter
   private PkiCredentialConfigurationProperties defaultCredential;
 
   /**
    * The IdP signing credential.
    */
+  @Setter
+  @Getter
   private PkiCredentialConfigurationProperties sign;
 
   /**
    * A certificate that will be the future signing certificate. Is set before a key-rollover is performed.
    */
+  @Setter
+  @Getter
   private X509Certificate futureSign;
 
   /**
    * The IdP encryption credential.
    */
+  @Setter
+  @Getter
   private PkiCredentialConfigurationProperties encrypt;
   
   /**
    * The previous IdP encryption credential. Assigned after a key-rollover.
    */
+  @Setter
+  @Getter
   private PkiCredentialConfigurationProperties previousEncrypt;
   
   /**
    * The SAML metadata signing credential.
    */
+  @Setter
+  @Getter
   private PkiCredentialConfigurationProperties metadataSign;
   
 }

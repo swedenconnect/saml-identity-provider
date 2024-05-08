@@ -72,7 +72,7 @@ public class RedissonTimeSeriesAuditEventRepository extends FilteringAuditEventR
       final AuditEventMapper mapper, final Predicate<AuditEvent> filter) {
     super(filter);
     this.client = Objects.requireNonNull(client, "client must not be null");
-    this.tsName = "%s:%s".formatted(Objects.requireNonNull(tsName, "keyName must not be null"), "timeseries");;
+    this.tsName = "%s:%s".formatted(Objects.requireNonNull(tsName, "keyName must not be null"), "timeseries");
     this.eventMapper = Objects.requireNonNull(mapper, "mapper must not be null");
   }
 
@@ -94,14 +94,14 @@ public class RedissonTimeSeriesAuditEventRepository extends FilteringAuditEventR
     final Collection<TimeSeriesEntry<Object, Object>> timeSeries =
         this.client.getTimeSeries(this.tsName).entryRange(
             Optional.ofNullable(after)
-                .orElseGet(() -> Instant.EPOCH)
+                .orElse(Instant.EPOCH)
                 .toEpochMilli(),
             Instant.now().plus(1, ChronoUnit.MINUTES).toEpochMilli());
 
     return timeSeries.stream()
         .map(e -> this.eventMapper.read((String) e.getValue()))
-        .filter(e -> type != null ? type.equals(e.getType()) : true)
-        .filter(e -> principal != null ? principal.equals(e.getPrincipal()) : true)
+        .filter(e -> type == null || type.equals(e.getType()))
+        .filter(e -> principal == null || principal.equals(e.getPrincipal()))
         .toList();
   }
 

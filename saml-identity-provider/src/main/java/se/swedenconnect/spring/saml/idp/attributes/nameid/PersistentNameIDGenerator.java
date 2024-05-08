@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.nameid;
 
+import java.io.Serial;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -34,6 +35,7 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
  */
 public class PersistentNameIDGenerator extends AbstractNameIDGenerator {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The JCE hash-algorithm to use. The default is {@code SHA-256}. */

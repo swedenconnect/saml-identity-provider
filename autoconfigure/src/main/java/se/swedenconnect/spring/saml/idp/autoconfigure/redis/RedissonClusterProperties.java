@@ -54,7 +54,7 @@ public class RedissonClusterProperties implements InitializingBean {
 
   /** {@inheritDoc} */
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() throws IllegalArgumentException {
     if (this.natTranslation != null) {
       for (final NatTranslationEntry entry : this.natTranslation) {
         Assert.hasText(entry.getTo(), "Invalid NAT translation configuration - 'to' is required");
@@ -95,7 +95,7 @@ public class RedissonClusterProperties implements InitializingBean {
   /**
    * Read mode from Redis cluster.
    */
-  public static enum ReadMode {
+  public enum ReadMode {
 
     /**
      * Read from slave nodes.

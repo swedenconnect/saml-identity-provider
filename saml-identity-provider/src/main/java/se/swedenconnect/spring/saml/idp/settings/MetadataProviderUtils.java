@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,13 @@
  */
 package se.swedenconnect.spring.saml.idp.settings;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.TrustManager;
-
+import lombok.extern.slf4j.Slf4j;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.httpclient.HttpClientBuilder;
+import net.shibboleth.shared.httpclient.HttpClientSupport;
+import net.shibboleth.shared.httpclient.TLSSocketFactoryBuilder;
+import net.shibboleth.shared.resolver.ResolverException;
+import net.shibboleth.shared.xml.XMLParserException;
 import org.apache.hc.client5.http.classic.HttpClient;
 import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
@@ -36,14 +31,6 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.StringUtils;
 import org.w3c.dom.Document;
-
-import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.shared.component.ComponentInitializationException;
-import net.shibboleth.shared.httpclient.HttpClientBuilder;
-import net.shibboleth.shared.httpclient.HttpClientSupport;
-import net.shibboleth.shared.httpclient.TLSSocketFactoryBuilder;
-import net.shibboleth.shared.resolver.ResolverException;
-import net.shibboleth.shared.xml.XMLParserException;
 import se.swedenconnect.opensaml.saml2.metadata.provider.AbstractMetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.CompositeMetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.FilesystemMetadataProvider;
@@ -51,6 +38,17 @@ import se.swedenconnect.opensaml.saml2.metadata.provider.HTTPMetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.MDQMetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.MetadataProvider;
 import se.swedenconnect.opensaml.saml2.metadata.provider.StaticMetadataProvider;
+
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.TrustManager;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Utility methods for handling metadata providers.
@@ -69,18 +67,18 @@ public class MetadataProviderUtils {
   public static MetadataResolver createMetadataResolver(final MetadataProviderSettings[] config) {
     try {
       final List<MetadataProvider> providers = new ArrayList<>();
-      for (MetadataProviderSettings md : config) {
-        AbstractMetadataProvider provider = null;
+      for (final MetadataProviderSettings md : config) {
+        final AbstractMetadataProvider provider;
         if (md.getLocation() == null) {
           throw new IllegalArgumentException("Missing location for metadata provider");
         }
-        if (md.getLocation() instanceof UrlResource urlResource && !urlResource.isFile()) {
+        if (md.getLocation() instanceof final UrlResource urlResource && !urlResource.isFile()) {
           if (md.getBackupLocation() == null) {
             log.warn("No backup-location for metadata source {} - Using a backup file is strongly recommended",
                 md.getLocation());
           }
 
-          if (md.getMdq() != null && md.getMdq().booleanValue()) {
+          if (md.getMdq() != null && md.getMdq()) {
             provider = new MDQMetadataProvider(md.getLocation().getURL().toString(), createHttpClient(md),
                 preProcessBackupDirectory(md.getBackupLocation()));
           }
@@ -96,12 +94,12 @@ public class MetadataProviderUtils {
                 + "- downloaded metadata can not be trusted", md.getLocation());
           }
         }
-        else if (FileSystemResource.class.isInstance(md.getLocation())) {
+        else if (md.getLocation() instanceof FileSystemResource) {
           provider = new FilesystemMetadataProvider(md.getLocation().getFile());
         }
         else {
-          final Document doc =
-              XMLObjectProviderRegistrySupport.getParserPool().parse(md.getLocation().getInputStream());
+          final Document doc = Objects.requireNonNull(XMLObjectProviderRegistrySupport.getParserPool())
+              .parse(md.getLocation().getInputStream());
           provider = new StaticMetadataProvider(doc.getDocumentElement());
         }
         provider.setPerformSchemaValidation(false);
@@ -124,18 +122,18 @@ public class MetadataProviderUtils {
   }
 
   /**
-   * Creates a HTTP client to use for the {@link MetadataResolver}.
+   * Creates an HTTP client to use for the {@link MetadataResolver}.
    *
    * @return a HttpClient
    */
   private static HttpClient createHttpClient(final MetadataProviderSettings config) {
     try {
-      final List<TrustManager> managers = Arrays.asList(HttpClientSupport.buildNoTrustX509TrustManager());
+      final List<TrustManager> managers = List.of(HttpClientSupport.buildNoTrustX509TrustManager());
       final HostnameVerifier hnv = Optional.ofNullable(config.getSkipHostnameVerification()).orElse(false)
           ? new NoopHostnameVerifier()
           : new DefaultHostnameVerifier();
 
-      HttpClientBuilder builder = new HttpClientBuilder();
+      final HttpClientBuilder builder = new HttpClientBuilder();
       builder.setUseSystemProperties(true);
       if (config.getHttpProxy() != null) {
         if (config.getHttpProxy().getHost() == null || config.getHttpProxy().getPort() == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package se.swedenconnect.spring.saml.idp.attributes.eidas;
 
 import java.io.ByteArrayInputStream;
+import java.io.Serial;
 import java.util.Objects;
 
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
@@ -36,6 +37,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  */
 public class CurrentAddress implements EidasAttributeValue<CurrentAddressType> {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The value. */
@@ -71,10 +73,10 @@ public class CurrentAddress implements EidasAttributeValue<CurrentAddressType> {
   public CurrentAddressType createXmlObject() {
     try {
       return (CurrentAddressType) XMLObjectSupport.unmarshallFromInputStream(
-          XMLObjectProviderRegistrySupport.getParserPool(),
+          Objects.requireNonNull(XMLObjectProviderRegistrySupport.getParserPool()),
           new ByteArrayInputStream(this.value.getBytes()));
     }
-    catch (XMLParserException | UnmarshallingException e) {
+    catch (final XMLParserException | UnmarshallingException e) {
       throw new SecurityException(e);
     }
   }

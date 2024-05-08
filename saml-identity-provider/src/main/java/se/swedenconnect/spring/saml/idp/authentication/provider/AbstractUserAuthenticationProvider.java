@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
     final List<String> filteredAuthnContextUris = this.filterRequestedAuthnContextUris(token);
     if (filteredAuthnContextUris.isEmpty()) {
       final String msg = String.format(
-          "None of the requested authentication contexts ({}) are supported by provider {}",
+          "None of the requested authentication contexts (%s) are supported by provider %s",
           token.getAuthnRequirements().getAuthnContextRequirements(), this.getClass().getSimpleName());
       log.info("{} [{}]", msg, token.getAuthnRequestToken().getLogString());
       return null;
@@ -69,7 +69,7 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
     //
     final Saml2UserAuthentication ssoAuthentication = this.applySso(token, filteredAuthnContextUris);
     if (ssoAuthentication != null) {
-      log.info("SSO: {} decided to re-use authentication for '{}' [{}]", ssoAuthentication.getName(),
+      log.info("SSO: {} decided to re-use authentication [{}]", ssoAuthentication.getName(),
           token.getLogString());
       return ssoAuthentication;
     }
@@ -110,10 +110,9 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
     if (token.getAuthnRequirements().isForceAuthn()) {
       return null;
     }
-    if (!Saml2UserAuthentication.class.isInstance(token.getUserAuthentication())) {
+    if (!(token.getUserAuthentication() instanceof final Saml2UserAuthentication userAuth)) {
       return null;
     }
-    final Saml2UserAuthentication userAuth = Saml2UserAuthentication.class.cast(token.getUserAuthentication());
     if (!userAuth.isReuseAuthentication()) {
       return null;
     }
@@ -149,7 +148,7 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
       return supported;
     }
     return token.getAuthnRequirements().getAuthnContextRequirements().stream()
-        .filter(a -> supported.contains(a))
+        .filter(supported::contains)
         .collect(Collectors.toList());
   }
 

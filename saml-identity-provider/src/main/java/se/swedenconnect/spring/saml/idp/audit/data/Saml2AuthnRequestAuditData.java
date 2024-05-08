@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,10 +15,12 @@
  */
 package se.swedenconnect.spring.saml.idp.audit.data;
 
+import java.io.Serial;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.opensaml.core.xml.schema.XSURI;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.RequestedAuthnContext;
@@ -39,6 +41,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 @JsonInclude(Include.NON_EMPTY)
 public class Saml2AuthnRequestAuditData extends Saml2AuditData {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The AuthnRequest ID. */
@@ -100,11 +103,11 @@ public class Saml2AuthnRequestAuditData extends Saml2AuditData {
     data.setAuthnContextClassRefs(Optional.ofNullable(authnRequest.getRequestedAuthnContext())
         .map(RequestedAuthnContext::getAuthnContextClassRefs)
         .map(refs -> refs.stream()
-            .map(r -> r.getURI())
+            .map(XSURI::getURI)
             .collect(Collectors.toList()))
         .orElse(null));
-    data.setForceAuthn(authnRequest.isForceAuthn());
-    data.setPassive(authnRequest.isPassive());
+    data.setForceAuthn(Boolean.TRUE.equals(authnRequest.isForceAuthn()));
+    data.setPassive(Boolean.TRUE.equals(authnRequest.isPassive()));
     data.setRelayState(relayState);
 
     return data;

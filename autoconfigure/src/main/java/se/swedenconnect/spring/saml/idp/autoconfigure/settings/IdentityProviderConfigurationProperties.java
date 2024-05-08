@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,18 +131,18 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
    */
   @Getter
   @NestedConfigurationProperty
-  private ReplayCheckerConfigurationProperties replay = new ReplayCheckerConfigurationProperties();
+  private final ReplayCheckerConfigurationProperties replay = new ReplayCheckerConfigurationProperties();
 
   /**
    * Session configuration.
    */
   @Getter
   @NestedConfigurationProperty
-  private SessionConfiguration session = new SessionConfiguration();
+  private final SessionConfiguration session = new SessionConfiguration();
 
   /** {@inheritDoc} */
   @Override
-  public void afterPropertiesSet() throws Exception {
+  public void afterPropertiesSet() throws IllegalArgumentException {
     Assert.hasText(this.entityId, "saml.idp.entity-id must be assigned");
     if (this.credentials == null) {
       log.debug("saml.idp.credentials.* is not assigned, assuming externally defined credential beans");
@@ -175,7 +175,7 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
 
     /** {@inheritDoc} */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
     }
 
   }
@@ -214,7 +214,7 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
 
     /** {@inheritDoc} */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
       if (this.expiration == null) {
         this.expiration = DEFAULT_EXPIRATION;
       }

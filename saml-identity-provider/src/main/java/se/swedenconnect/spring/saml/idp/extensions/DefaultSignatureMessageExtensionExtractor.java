@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,23 @@
  */
 package se.swedenconnect.spring.saml.idp.extensions;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.security.credential.Credential;
 import org.opensaml.xmlsec.encryption.support.DecryptionException;
 import org.springframework.util.StringUtils;
-
-import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.opensaml.sweid.saml2.signservice.dss.Message;
 import se.swedenconnect.opensaml.sweid.saml2.signservice.dss.SignMessage;
 import se.swedenconnect.opensaml.xmlsec.encryption.support.SAMLObjectDecrypter;
-import se.swedenconnect.security.credential.Pkcs11Credential;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * Default implementation of the {@link SignatureMessageExtensionExtractor} interface.
@@ -44,7 +42,7 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 public class DefaultSignatureMessageExtensionExtractor implements SignatureMessageExtensionExtractor {
 
   /** The entityID of the current Identity Provider. */
-  private String entityId;
+  private final String entityId;
 
   /** The SAML object decrypter. */
   private SAMLObjectDecrypter decrypter;
@@ -58,22 +56,12 @@ public class DefaultSignatureMessageExtensionExtractor implements SignatureMessa
   public DefaultSignatureMessageExtensionExtractor(final String entityId, final List<PkiCredential> credentials) {
     this.entityId = Optional.ofNullable(entityId).filter(StringUtils::hasText)
         .orElseThrow(() -> new IllegalArgumentException("entityId must be assigned"));
+
     if (credentials != null && !credentials.isEmpty()) {
       final List<Credential> creds = new ArrayList<>();
-      for (final PkiCredential c : credentials) {
-        if (c instanceof OpenSamlCredential) {
-          creds.add((OpenSamlCredential) c);
-        }
-        else {
-          creds.add(new OpenSamlCredential(c));
-        }
-      }
-      boolean p11Flag = credentials.get(0) instanceof Pkcs11Credential; // TODO: replace with predicate
-
+      credentials.stream().map(OpenSamlCredential::new).forEach(creds::add);
       this.decrypter = new SAMLObjectDecrypter(creds);
-      if (p11Flag) {
-        this.decrypter.setPkcs11Workaround(p11Flag);
-      }
+      this.decrypter.setPkcs11Workaround(credentials.stream().anyMatch(PkiCredential::isHardwareCredential));
     }
     else {
       log.warn("No encrypt/decrypt credentials available - Encrypted SignMessage elements will not be supported");
@@ -90,34 +78,23 @@ public class DefaultSignatureMessageExtensionExtractor implements SignatureMessa
 
     final List<PkiCredential> decryptionCredentials = new ArrayList<>();
     Optional.ofNullable(settings.getCredentials().getEncryptCredential())
-        .ifPresent((c) -> decryptionCredentials.add(c));
+        .ifPresent(decryptionCredentials::add);
     if (decryptionCredentials.isEmpty()) {
       Optional.ofNullable(settings.getCredentials().getDefaultCredential())
-          .ifPresent((c) -> decryptionCredentials.add(c));
+          .ifPresent(decryptionCredentials::add);
     }
     if (!decryptionCredentials.isEmpty()) {
       Optional.ofNullable(settings.getCredentials().getPreviousEncryptCredential())
-          .ifPresent((c) -> decryptionCredentials.add(c));
+          .ifPresent(decryptionCredentials::add);
     }
     if (decryptionCredentials.isEmpty()) {
       log.warn("No encrypt/decrypt credentials available - Encrypted SignMessage elements will not be supported");
     }
     else {
       final List<Credential> creds = new ArrayList<>();
-      for (final PkiCredential c : decryptionCredentials) {
-        if (c instanceof OpenSamlCredential) {
-          creds.add((OpenSamlCredential) c);
-        }
-        else {
-          creds.add(new OpenSamlCredential(c));
-        }
-      }
-      boolean p11Flag = decryptionCredentials.get(0) instanceof Pkcs11Credential; // TODO: replace with predicate
-
+      decryptionCredentials.stream().map(OpenSamlCredential::new).forEach(creds::add);
       this.decrypter = new SAMLObjectDecrypter(creds);
-      if (p11Flag) {
-        this.decrypter.setPkcs11Workaround(p11Flag);
-      }
+      this.decrypter.setPkcs11Workaround(decryptionCredentials.stream().anyMatch(PkiCredential::isHardwareCredential));
     }
   }
 

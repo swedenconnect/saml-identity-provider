@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,8 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
 
+import java.io.Serial;
+
 /**
  * An event that is fired after the user has been authenticated by a {@link UserAuthenticationProvider} but before we
  * filter release attributes and compile the SAML assertion.
@@ -27,6 +29,7 @@ import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticati
  */
 public class Saml2PostUserAuthenticationEvent extends AbstractSaml2IdpEvent {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /**
@@ -44,7 +47,7 @@ public class Saml2PostUserAuthenticationEvent extends AbstractSaml2IdpEvent {
    * @return a {@link Saml2UserAuthentication}
    */
   public Saml2UserAuthentication getUserAuthentication() {
-    return Saml2UserAuthentication.class.cast(this.getSource());
+    return (Saml2UserAuthentication) this.getSource();
   }
 
 }

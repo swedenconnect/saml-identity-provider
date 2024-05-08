@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,6 @@ public enum AttributeReleaseVote {
   DONT_INCLUDE,
   
   /** The voter has no opinion whether the attribute should be released. */
-  DONT_KNOW;
+  DONT_KNOW
 
 }

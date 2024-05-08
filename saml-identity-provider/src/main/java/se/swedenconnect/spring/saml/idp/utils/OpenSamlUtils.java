@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 package se.swedenconnect.spring.saml.idp.utils;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.security.Principal;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Optional;
-
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
 import jakarta.servlet.AsyncContext;
 import jakarta.servlet.DispatcherType;
@@ -44,8 +31,19 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
 import net.shibboleth.shared.primitive.NonnullSupplier;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.security.Principal;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Utility methods for OpenSAML.
@@ -63,13 +61,11 @@ public class OpenSamlUtils {
    * @return a supplier for the current {@link HttpServletRequest}.
    */
   public static NonnullSupplier<HttpServletRequest> getHttpServletRequestSupplier() {
-    return () -> {
-      return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
-          .filter(ServletRequestAttributes.class::isInstance)
-          .map(ServletRequestAttributes.class::cast)
-          .map(ServletRequestAttributes::getRequest)
-          .orElseGet(() -> new DummyHttpServletRequest());
-    };
+    return () -> Optional.ofNullable(RequestContextHolder.getRequestAttributes())
+        .filter(ServletRequestAttributes.class::isInstance)
+        .map(ServletRequestAttributes.class::cast)
+        .map(ServletRequestAttributes::getRequest)
+        .orElseGet(DummyHttpServletRequest::new);
   }
 
   /**
@@ -78,14 +74,12 @@ public class OpenSamlUtils {
    * @return a supplier for the current {@link HttpServletResponse}.
    */
   public static NonnullSupplier<HttpServletResponse> getHttpServletResponseSupplier() {
-    return () -> {
-      return Optional.ofNullable(RequestContextHolder.getRequestAttributes())
-          .filter(ServletRequestAttributes.class::isInstance)
-          .map(ServletRequestAttributes.class::cast)
-          .map(ServletRequestAttributes::getResponse)
-          .orElseThrow(() -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
-              "Could not get HttpServletResponse", null));
-    };
+    return () -> Optional.ofNullable(RequestContextHolder.getRequestAttributes())
+        .filter(ServletRequestAttributes.class::isInstance)
+        .map(ServletRequestAttributes.class::cast)
+        .map(ServletRequestAttributes::getResponse)
+        .orElseThrow(() -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL,
+            "Could not get HttpServletResponse", null));
   }
 
   private static class DummyHttpServletRequest implements HttpServletRequest {
@@ -106,7 +100,7 @@ public class OpenSamlUtils {
     }
 
     @Override
-    public void setCharacterEncoding(final String env) throws UnsupportedEncodingException {
+    public void setCharacterEncoding(final String env) {
     }
 
     @Override

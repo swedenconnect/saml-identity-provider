@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +15,37 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
-import java.time.Duration;
+import lombok.Getter;
+import lombok.Setter;
 
-import lombok.Data;
+import java.time.Duration;
 
 /**
  * Configuration properties for assertion settings.
  * 
  * @author Martin Lindström
  */
-@Data
 public class AssertionSettingsConfigurationProperties {
 
   /**
    * Tells whether the Identity Provider encrypts assertions.
    */
+  @Getter
+  @Setter
   private Boolean encrypt;
   
   /**
    * A setting that tells the time restrictions the IdP puts on an Assertion concerning "not on or after".
    */
+  @Getter
+  @Setter
   private Duration notAfter;
   
   /**
    * A setting that tells the time restrictions the IdP puts on an Assertion concerning "not before".
    */
+  @Getter
+  @Setter
   private Duration notBefore;  
   
 }

@@ -26,7 +26,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import se.swedenconnect.spring.saml.idp.audit.repository.RedisListAuditEventRepository;
 
 /**
- * Auto configuration for auditing support where a Redis {@link AuditEventRepository} is created.
+ * Autoconfiguration for auditing support where a Redis {@link AuditEventRepository} is created.
  *
  * @author Martin Lindström
  */

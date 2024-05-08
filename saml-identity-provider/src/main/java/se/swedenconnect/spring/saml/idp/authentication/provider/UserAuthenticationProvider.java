@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ public interface UserAuthenticationProvider extends AuthenticationProvider {
   @Override
   default Authentication authenticate(final Authentication authentication) throws AuthenticationException {
     try {
-      return this.authenticateUser(Saml2UserAuthenticationInputToken.class.cast(authentication));
+      return this.authenticateUser((Saml2UserAuthenticationInputToken) authentication);
     }
     catch (final ClassCastException e) {
       return null;

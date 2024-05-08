@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
 
   /**
    * Constructor.
-   * 
+   *
    * @param idpEntityId the IdP entityID
    */
   public DefaultNameIDGeneratorFactory(final String idpEntityId) {
@@ -76,7 +76,7 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
       //
       return this.createNameIDGenerator(nameFormat, this.idpEntityId,
           Optional.ofNullable(authnRequest.getNameIDPolicy()).map(NameIDPolicy::getSPNameQualifier)
-              .orElseGet(() -> peerMetadata.getEntityID()));
+              .orElseGet(peerMetadata::getEntityID));
     }
 
     // Else, look up the preferred NameID in the SP metadata ...
@@ -91,7 +91,7 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
 
     return this.createNameIDGenerator(nameFormat, this.idpEntityId, peerMetadata.getEntityID());
   }
-  
+
   /** {@inheritDoc} */
   @Override
   public List<String> getSupportedFormats() {
@@ -103,7 +103,7 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
   /**
    * Assigns the default {@code NameID} format to use. If not assigned,
    * {@code urn:oasis:names:tc:SAML:2.0:nameid-format:persistent} will be used.
-   * 
+   *
    * @param format the {@code NameID} format
    */
   public void setDefaultFormat(final String format) {
@@ -116,7 +116,7 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
 
   /**
    * Creates a {@link NameIDGenerator} based on the supplied format.
-   * 
+   *
    * @param format the requested {@code NameID} format.
    * @param nameQualifier the IdP name qualifier
    * @param spNameQualifier the SP name qualifier
@@ -143,7 +143,7 @@ public class DefaultNameIDGeneratorFactory implements NameIDGeneratorFactory {
 
   /**
    * Predicate that tells whether the supplied {@code NameID} format is supported.
-   * 
+   *
    * @param format the format to test
    * @return {@code true} if the format is supported and {@code false} otherwise
    */

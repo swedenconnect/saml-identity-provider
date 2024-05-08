@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,7 @@ public class AssertionConsumerServiceValidator implements AuthnRequestValidator 
 
       authnRequestToken.setAssertionConsumerServiceUrl(acs.getLocation());
     }
-    for (AssertionConsumerService acs : ssoDesc.getAssertionConsumerServices()) {
+    for (final AssertionConsumerService acs : ssoDesc.getAssertionConsumerServices()) {
       if (acs.getLocation() == null) {
         continue;
       }
@@ -94,7 +94,7 @@ public class AssertionConsumerServiceValidator implements AuthnRequestValidator 
             break;
           }
         }
-        catch (final URIException e) {
+        catch (final URIException ignored) {
         }
       }
     }

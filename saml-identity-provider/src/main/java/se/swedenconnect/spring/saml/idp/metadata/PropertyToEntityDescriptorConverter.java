@@ -1,5 +1,5 @@
 /*
- * Copyright 2022-2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,9 @@
  */
 package se.swedenconnect.spring.saml.idp.metadata;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import javax.annotation.Nonnull;
-
+import jakarta.annotation.Nonnull;
+import net.shibboleth.shared.xml.ParserPool;
+import net.shibboleth.shared.xml.XMLParserException;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
@@ -32,7 +30,9 @@ import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.io.Resource;
 import org.w3c.dom.Element;
 
-import net.shibboleth.shared.xml.XMLParserException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
 
 /**
  * A {@link Converter} that gets the property value (e.g., {@code classpath:metadata.xml}) and instantiates an
@@ -74,8 +74,12 @@ public class PropertyToEntityDescriptorConverter
     final Resource resource = this.applicationContext.getResource(source);
 
     try (final InputStream is = resource.getInputStream()) {
-      final Element elm = XMLObjectProviderRegistrySupport.getParserPool().parse(is).getDocumentElement();
-      return EntityDescriptor.class.cast(XMLObjectSupport.getUnmarshaller(elm).unmarshall(elm));
+      final ParserPool pool = Optional.ofNullable(XMLObjectProviderRegistrySupport.getParserPool())
+          .orElseThrow(() -> new IOException("No parser pool available"));
+      final Element elm = pool.parse(is).getDocumentElement();
+      return (EntityDescriptor) Optional.ofNullable(XMLObjectSupport.getUnmarshaller(elm))
+          .orElseThrow(() -> new UnmarshallingException("No unmarshaller for EntityDescriptor"))
+          .unmarshall(elm);
     }
     catch (final IOException | UnmarshallingException | XMLParserException e) {
       throw new IllegalArgumentException("Failed to decode EntityDescriptor", e);

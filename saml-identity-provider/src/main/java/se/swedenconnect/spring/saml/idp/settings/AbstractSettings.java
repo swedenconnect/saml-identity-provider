@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,15 @@
  */
 package se.swedenconnect.spring.saml.idp.settings;
 
+import org.springframework.util.Assert;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
+import java.io.Serial;
 import java.io.Serializable;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
-
-import org.springframework.util.Assert;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Base implementation for configuration settings.
@@ -34,6 +33,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 public abstract class AbstractSettings implements Serializable {
 
   /** For serializing. */
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The settings. */
@@ -45,7 +45,7 @@ public abstract class AbstractSettings implements Serializable {
    * @param settings the settings
    */
   protected AbstractSettings(final Map<String, Object> settings) {
-    this.settings = Collections.unmodifiableMap(new HashMap<>(settings));
+    this.settings = Map.copyOf(settings);
   }
 
   /**

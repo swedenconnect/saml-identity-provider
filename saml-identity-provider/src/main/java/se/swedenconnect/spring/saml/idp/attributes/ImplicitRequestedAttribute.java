@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes;
 
+import java.io.Serial;
 import java.util.Objects;
 
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
@@ -26,35 +27,36 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  * meaning that it is not explicitly stated in an {@code AuthnRequest} or {@link EntityDescriptor}.
  * <p>
  * The Swedish eID framework defines "service entity categories", that when declared by a Service Provider, states
- * requirements regarding requested attributes. This is an implicit requirement about which attributes a SP wishes to
- * receive. The problem here is that attributes are grouped together in "attribute sets", and a SP may declare more than
- * one service entity category, and an IdP may deliver attributes according to one or more service entity category.
- * Therefore, if a SP declared more than one service entity category and the IdP supports both, we can not state that
- * all attributes are "required", even though the are required within its service entity category. It's poor design from
- * the beginning, and we have to handle it in the best way we can.
+ * requirements regarding requested attributes. This is an implicit requirement about which attributes an SP wishes to
+ * receive. The problem here is that attributes are grouped together in "attribute sets", and an SP may declare more
+ * than one service entity category, and an IdP may deliver attributes according to one or more service entity category.
+ * Therefore, if an SP declared more than one service entity category and the IdP supports both, we can not state that
+ * all attributes are "required", even though they are required within its service entity category. It's poor design
+ * from the beginning, and we have to handle it in the best way we can.
  * <p>
  * See <a href=
  * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
  * Categories for the Swedish eID Framework</a>.
  * </p>
- * 
+ *
  * @author Martin Lindström
  */
 public class ImplicitRequestedAttribute extends RequestedAttribute {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
-  /** The origin to the implicit "requested attribute requirement". Normally an URI. */
+  /** The origin to the implicit "requested attribute requirement". Normally a URI. */
   private final String origin;
 
   /**
    * Constructor.
-   * 
-   * @param origin the origin to the implicit "requested attribute requirement", normally an URI
+   *
+   * @param origin the origin to the implicit "requested attribute requirement", normally a URI
    * @param id the attribute ID (name)
    * @param friendlyName the attribute friendly name
-   * @param isRequired whether the attribute is "required", meaning that the requester requires it to be included in a
-   *          resulting assertion
+   * @param isRequired whether the attribute is "required", meaning that the requester requires it to be included in
+   *     a resulting assertion
    */
   public ImplicitRequestedAttribute(
       final String origin, final String id, final String friendlyName, final boolean isRequired) {
@@ -63,8 +65,8 @@ public class ImplicitRequestedAttribute extends RequestedAttribute {
   }
 
   /**
-   * Gets the origin to the implicit "requested attribute requirement". Normally an URI.
-   * 
+   * Gets the origin to the implicit "requested attribute requirement". Normally a URI.
+   *
    * @return the origin (URI)
    */
   public String getOrigin() {

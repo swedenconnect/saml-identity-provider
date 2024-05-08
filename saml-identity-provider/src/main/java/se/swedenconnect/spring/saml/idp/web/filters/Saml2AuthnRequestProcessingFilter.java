@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package se.swedenconnect.spring.saml.idp.web.filters;
 import java.io.IOException;
 import java.util.Objects;
 
+import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -74,8 +75,8 @@ public class Saml2AuthnRequestProcessingFilter extends OncePerRequestFilter {
 
   /** {@inheritDoc} */
   @Override
-  protected void doFilterInternal(
-      final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
+  protected void doFilterInternal(@NonNull final HttpServletRequest request,
+      @NonNull final HttpServletResponse response, @NonNull final FilterChain filterChain)
       throws ServletException, IOException {
 
     if (!this.requestMatcher.matches(request)) {
@@ -87,19 +88,19 @@ public class Saml2AuthnRequestProcessingFilter extends OncePerRequestFilter {
     //
     final Authentication authnRequest = this.authenticationConverter.convert(request);
 
-    if (authnRequest != null && Saml2AuthnRequestAuthenticationToken.class.isInstance(authnRequest)) {
+    if (authnRequest instanceof Saml2AuthnRequestAuthenticationToken) {
 
       // Verify the authentication request and produce an input token for user authentication ...
       // Also check for possible SSO ...
       //
       final Authentication token = this.authenticationManager.authenticate(authnRequest);
-      if (Saml2UserAuthenticationInputToken.class.isInstance(token)) {
+      if (token instanceof Saml2UserAuthenticationInputToken) {
 
         // Check for possible authentication token that may be used for SSO.
         //
         final Authentication userAuthentication = SecurityContextHolder.getContext().getAuthentication();
         if (userAuthentication != null && userAuthentication.isAuthenticated()) {
-          Saml2UserAuthenticationInputToken.class.cast(token).setUserAuthentication(userAuthentication);
+          ((Saml2UserAuthenticationInputToken) token).setUserAuthentication(userAuthentication);
         }
       }
       this.authenticationSuccessHandler.onAuthenticationSuccess(request, response, token);

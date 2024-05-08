@@ -149,7 +149,7 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
     try {
       if (settings.getMetadata().getTemplate() != null) {
         final EntityDescriptor template = (EntityDescriptor) XMLObjectSupport.unmarshallFromInputStream(
-            XMLObjectProviderRegistrySupport.getParserPool(), settings.getMetadata().getTemplate().getInputStream());
+            Objects.requireNonNull(XMLObjectProviderRegistrySupport.getParserPool()), settings.getMetadata().getTemplate().getInputStream());
         this.entityDescriptorBuilder = new EntityDescriptorBuilder(template);
       }
       else {
@@ -198,7 +198,7 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
           && !settings.getMetadata().getDigestMethodsUnderRole()) {
         extensions.getUnknownXMLObjects().removeIf(o -> DigestMethod.class.isAssignableFrom(o.getClass()));
         settings.getMetadata().getDigestMethods().stream()
-            .filter(d -> StringUtils.hasText(d))
+            .filter(StringUtils::hasText)
             .forEach(d -> extensions.getUnknownXMLObjects().add(DigestMethodBuilder.builder().algorithm(d).build()));
       }
       if (settings.getMetadata().getSigningMethods() != null
@@ -244,7 +244,7 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
           && settings.getMetadata().getDigestMethodsUnderRole()) {
         roleExtensions.getUnknownXMLObjects().removeIf(o -> DigestMethod.class.isAssignableFrom(o.getClass()));
         settings.getMetadata().getDigestMethods().stream()
-            .filter(d -> StringUtils.hasText(d))
+            .filter(StringUtils::hasText)
             .forEach(
                 d -> roleExtensions.getUnknownXMLObjects().add(DigestMethodBuilder.builder().algorithm(d).build()));
       }

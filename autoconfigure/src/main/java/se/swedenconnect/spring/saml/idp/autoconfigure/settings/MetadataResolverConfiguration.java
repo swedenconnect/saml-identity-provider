@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import lombok.Setter;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderUtils;
 
@@ -35,9 +33,12 @@ import se.swedenconnect.spring.saml.idp.settings.MetadataProviderUtils;
 @EnableConfigurationProperties(IdentityProviderConfigurationProperties.class)
 public class MetadataResolverConfiguration {
 
-  @Setter
-  @Autowired(required = false)
-  private IdentityProviderConfigurationProperties properties;
+  private final IdentityProviderConfigurationProperties properties;
+
+  public MetadataResolverConfiguration(
+      @Autowired(required = false) final IdentityProviderConfigurationProperties properties) {
+    this.properties = properties;
+  }
 
   @ConditionalOnMissingBean(name = "saml.idp.metadata.Provider")
   @Bean("saml.idp.metadata.Provider")

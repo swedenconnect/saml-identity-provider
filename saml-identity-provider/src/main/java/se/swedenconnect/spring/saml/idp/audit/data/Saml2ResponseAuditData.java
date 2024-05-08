@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.audit.data;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.Optional;
@@ -40,6 +41,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 @JsonInclude(Include.NON_EMPTY)
 public class Saml2ResponseAuditData extends Saml2AuditData {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /** The Response ID. */
@@ -131,6 +133,7 @@ public class Saml2ResponseAuditData extends Saml2AuditData {
   @JsonInclude(Include.NON_EMPTY)
   public static class SamlStatus implements Serializable {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /** The main status code. */
@@ -154,7 +157,7 @@ public class Saml2ResponseAuditData extends Saml2AuditData {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-      final StringBuffer sb = new StringBuffer("code='");
+      final StringBuilder sb = new StringBuilder("code='");
       sb.append(this.statusCode).append("'");
 
       if (this.subordinateStatusCode != null) {

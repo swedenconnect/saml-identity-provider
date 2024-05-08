@@ -16,6 +16,7 @@
 package se.swedenconnect.spring.saml.idp.audit.repository;
 
 import java.io.IOException;
+import java.io.Serial;
 import java.io.UncheckedIOException;
 import java.util.Map;
 import java.util.Objects;
@@ -64,8 +65,7 @@ public class JsonAuditEventMapper implements AuditEventMapper {
   @Override
   public AuditEvent read(final String event) {
     try {
-      final JsonAuditEvent auditEvent = this.mapper.readerFor(JsonAuditEvent.class).readValue(event);
-      return auditEvent;
+      return this.mapper.readerFor(JsonAuditEvent.class).<JsonAuditEvent> readValue(event);
     }
     catch (final IOException e) {
       throw new UncheckedIOException(e);
@@ -77,6 +77,7 @@ public class JsonAuditEventMapper implements AuditEventMapper {
    */
   private static class JsonAuditEvent extends AuditEvent {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /**

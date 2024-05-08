@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.settings;
 
+import java.io.Serial;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  */
 public class MetadataSettings extends AbstractSettings {
 
+  @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
   /**
@@ -419,6 +421,7 @@ public class MetadataSettings extends AbstractSettings {
    */
   public static class SigningMethodSettings extends AbstractSettings {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /**
@@ -554,6 +557,7 @@ public class MetadataSettings extends AbstractSettings {
    */
   public static class EncryptionMethodSettings extends AbstractSettings {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /**
@@ -713,6 +717,7 @@ public class MetadataSettings extends AbstractSettings {
    */
   public static class UIInfoSettings extends AbstractSettings {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /**
@@ -845,6 +850,7 @@ public class MetadataSettings extends AbstractSettings {
      */
     public static class LogoSettings extends AbstractSettings {
 
+      @Serial
       private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
       /**
@@ -1018,6 +1024,7 @@ public class MetadataSettings extends AbstractSettings {
    */
   public static class OrganizationSettings extends AbstractSettings {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /**
@@ -1167,6 +1174,7 @@ public class MetadataSettings extends AbstractSettings {
    */
   public static class ContactPersonSettings extends AbstractSettings {
 
+    @Serial
     private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
     /**

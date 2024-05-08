@@ -1,7 +1,7 @@
 /*
- * Copyright 2023 Sweden Connect
+ * Copyright 2023-2024 Sweden Connect
  *
- * Licensed under the Apache License, Version 2.0 (the "License").append(NEWLINE);
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -48,7 +48,7 @@ public class DefaultResponsePage implements ResponsePage {
   }
 
   /**
-   * Generates a HTML page for posting the SAML response message.
+   * Generates an HTML page for posting the SAML response message.
    *
    * @param destination the destination URL
    * @param samlResponse the Base64-encoded SAML response message
@@ -58,7 +58,7 @@ public class DefaultResponsePage implements ResponsePage {
   public static String generateResponsePage(
       final String destination, final String samlResponse, final String relayState) {
 
-    StringBuilder builder = new StringBuilder().append(NEWLINE);
+    final StringBuilder builder = new StringBuilder().append(NEWLINE);
 
     builder.append("<!DOCTYPE html>").append(NEWLINE);
     builder.append("<html lang=\"en\">").append(NEWLINE);
@@ -69,15 +69,16 @@ public class DefaultResponsePage implements ResponsePage {
     builder.append("  <title>SAML Response</title>").append(NEWLINE);
     builder.append("</head>").append(NEWLINE);
     builder.append("<body onload=\"document.forms[0].submit()\">").append(NEWLINE);
-    builder.append("  <form action=\"" + destination + "\" method=\"POST\">").append(NEWLINE);
-    builder.append("    <input type=\"hidden\" name=\"SAMLResponse\" value=\"" + samlResponse + "\" />")
+    builder.append("  <form action=\"").append(destination).append("\" method=\"POST\">").append(NEWLINE);
+    builder.append("    <input type=\"hidden\" name=\"SAMLResponse\" value=\"").append(samlResponse).append("\" />")
         .append(NEWLINE);
     if (StringUtils.hasText(relayState)) {
-      builder.append("    <input type=\"hidden\" name=\"RelayState\" value=\"" + relayState + "\" />").append(NEWLINE);
+      builder.append("    <input type=\"hidden\" name=\"RelayState\" value=\"").append(relayState).append("\" />")
+          .append(NEWLINE);
     }
     builder.append("    <noscript>").append(NEWLINE);
     builder.append(
-        "      <p>Your web browser does not have JavaScript enabled. Click the \"Continue\" button below to proceed.</p>")
+            "      <p>Your web browser does not have JavaScript enabled. Click the \"Continue\" button below to proceed.</p>")
         .append(NEWLINE);
     builder.append("      <p><input type=\"submit\" value=\"Continue\" /></p>").append(NEWLINE);
     builder.append("    </noscript>").append(NEWLINE);
