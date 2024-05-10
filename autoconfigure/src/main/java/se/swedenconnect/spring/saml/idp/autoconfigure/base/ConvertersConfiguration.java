@@ -21,6 +21,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.lang.NonNull;
 import se.swedenconnect.opensaml.common.utils.LocalizedString;
 import se.swedenconnect.security.credential.converters.PropertyToX509CertificateConverter;
 import se.swedenconnect.spring.saml.idp.metadata.PropertyToEntityDescriptorConverter;
@@ -68,7 +69,13 @@ public class ConvertersConfiguration {
   @Bean
   @ConfigurationPropertiesBinding
   Converter<String, LocalizedString> localizedStringConverter() {
-    return source -> new LocalizedString(source);
+    return new Converter<>() {
+
+      @Override
+      public LocalizedString convert(@NonNull final String source) {
+        return new LocalizedString(source);
+      }
+    };
   }
 
 }
