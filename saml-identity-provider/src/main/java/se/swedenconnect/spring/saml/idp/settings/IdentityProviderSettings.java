@@ -126,7 +126,7 @@ public class IdentityProviderSettings extends AbstractSettings {
 
   /**
    * Gets the clock skew adjustment (in both directions) to consider still acceptable messages.
-   * 
+   *
    * @return a {@link Duration}
    */
   public Duration getClockSkewAdjustment() {
@@ -145,7 +145,7 @@ public class IdentityProviderSettings extends AbstractSettings {
 
   /**
    * Gets the maximum allowed age of received messages.
-   * 
+   *
    * @return a {@link Duration}
    */
   public Duration getMaxMessageAge() {
@@ -164,11 +164,25 @@ public class IdentityProviderSettings extends AbstractSettings {
 
   /**
    * Based on a previous authentication, for how long may this authentication be re-used?
-   * 
+   *
    * @return a {@link Duration}
    */
   public Duration getSsoDurationLimit() {
     return this.getSetting(SSO_DURATION_LIMIT);
+  }
+
+  /**
+   * Does the IdP support the {@code UserMessage} authentication request extension? A {@link Boolean}.
+   */
+  public static final String SUPPORTS_USER_MESSAGE = SETTINGS_PREFIX.concat("supports-user-message");
+
+  /**
+   * Does the IdP support the {@code UserMessage} authentication request extension?
+   *
+   * @return a {@link Boolean}
+   */
+  public Boolean getSupportsUserMessage() {
+    return this.getSetting(SUPPORTS_USER_MESSAGE);
   }
 
   /**
@@ -206,7 +220,7 @@ public class IdentityProviderSettings extends AbstractSettings {
 
   /**
    * Gets the Identity Provider Assertion settings.
-   * 
+   *
    * @return the Identity Provider Assertion settings
    */
   public AssertionSettings getAssertionSettings() {
@@ -239,7 +253,7 @@ public class IdentityProviderSettings extends AbstractSettings {
    * <p>
    * A metadata provider may also be set up using {@link #IDP_METADATA_PROVIDER_CONFIGURATION}.
    * </p>
-   * 
+   *
    * @return the metadata resolver to use or {@code null}
    * @see #getMetadataProviderConfiguration()
    */
@@ -259,7 +273,7 @@ public class IdentityProviderSettings extends AbstractSettings {
    * <p>
    * A metadata provider may also be set up using {@link #IDP_METADATA_PROVIDER}.
    * </p>
-   * 
+   *
    * @return an array of metadata provider configuration settings
    * @see #getMetadataProvider()
    */
@@ -343,7 +357,7 @@ public class IdentityProviderSettings extends AbstractSettings {
 
     /**
      * Assigns the clock skew adjustment (in both directions) to consider still acceptable messages.
-     * 
+     *
      * @param clockSkewAdjustment a {@link Duration}
      * @return the builder
      */
@@ -353,7 +367,7 @@ public class IdentityProviderSettings extends AbstractSettings {
 
     /**
      * Assigns the maximum allowed age of received messages.
-     * 
+     *
      * @param maxMessageAge a {@link Duration}
      * @return the builder
      */
@@ -363,12 +377,22 @@ public class IdentityProviderSettings extends AbstractSettings {
 
     /**
      * Assigns for how long may this authentication be re-used.
-     * 
+     *
      * @param ssoDurationLimit a {@link Duration}
      * @return the builder
      */
     public Builder ssoDurationLimit(final Duration ssoDurationLimit) {
       return this.setting(SSO_DURATION_LIMIT, ssoDurationLimit);
+    }
+
+    /**
+     * Assigns whether the IdP supports the {@code UserMessage} extension.
+     *
+     * @param supportsUserMessage whether the {@code UserMessage} extension is supported
+     * @return the builder
+     */
+    public Builder supportsUserMessage(final Boolean supportsUserMessage) {
+      return this.setting(SUPPORTS_USER_MESSAGE, supportsUserMessage);
     }
 
     /**
@@ -393,7 +417,7 @@ public class IdentityProviderSettings extends AbstractSettings {
 
     /**
      * Assigns the Identity Provider Assertion settings.
-     * 
+     *
      * @param assertionSettings the Identity Provider Assertion settings
      * @return the builder
      */
@@ -414,9 +438,10 @@ public class IdentityProviderSettings extends AbstractSettings {
     /**
      * Assigns the Identity Provider metadata provider (resolver).
      * <p>
-     * A metadata provider may also be set up using {@link #metadataProviderConfiguration(MetadataProviderSettings...)}.
+     * A metadata provider may also be set up using
+     * {@link #metadataProviderConfiguration(MetadataProviderSettings...)}.
      * </p>
-     * 
+     *
      * @param metadataProvider the metadata resolver to use
      * @return the builder
      * @see #metadataProviderConfiguration(MetadataProviderSettings...)
@@ -430,7 +455,7 @@ public class IdentityProviderSettings extends AbstractSettings {
      * <p>
      * A metadata provider may also be set up using {@link #metadataProvider(MetadataResolver)}.
      * </p>
-     * 
+     *
      * @param metadataProviders an array of metadata provider configuration settings
      * @return the builder
      * @see #metadataProvider(MetadataResolver)
@@ -470,6 +495,9 @@ public class IdentityProviderSettings extends AbstractSettings {
       }
       if (this.getSettings().get(SSO_DURATION_LIMIT) == null) {
         this.ssoDurationLimit(SSO_DURATION_LIMIT_DEFAULT);
+      }
+      if (this.getSettings().get(SUPPORTS_USER_MESSAGE) == null) {
+        this.supportsUserMessage(Boolean.FALSE);
       }
       if (!this.getSettings().containsKey(IDP_CREDENTIALS)) {
         this.credentials(CredentialSettings.builder().build());

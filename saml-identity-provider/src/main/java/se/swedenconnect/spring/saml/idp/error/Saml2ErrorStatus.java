@@ -90,11 +90,17 @@ public enum Saml2ErrorStatus {
    * Missing key descriptor for encryption of assertions. 
    */
   ENCRYPT_NOT_POSSIBLE(StatusCode.REQUESTER, StatusCode.REQUEST_DENIED, "idp.error.status.no-encrypt-capabilities",
-      "Missing key descriptor for encryption");
+      "Missing key descriptor for encryption"),
+
+  /**
+   * Invalid UserMessage extension.
+   */
+  INVALID_USER_MESSAGE(StatusCode.REQUESTER, StatusCode.REQUEST_UNSUPPORTED, "idp.error.status.invalid-user-message",
+      "Invalid UserMessage extension");
 
   /**
    * Gets the main status code.
-   * 
+   *
    * @return the main status code
    */
   public String getStatusCode() {
@@ -103,7 +109,7 @@ public enum Saml2ErrorStatus {
 
   /**
    * Gets the subordinate status code
-   * 
+   *
    * @return the subordinate status code
    */
   public String getSubStatusCode() {
@@ -112,7 +118,7 @@ public enum Saml2ErrorStatus {
 
   /**
    * Gets the message code to use when resolving the status message against a {@link MessageSource}
-   * 
+   *
    * @return the message code
    */
   public String getStatusMessageCode() {
@@ -121,7 +127,7 @@ public enum Saml2ErrorStatus {
 
   /**
    * Gets the status message to use if no text can be resolved using the {@code statusMessageCode}
-   * 
+   *ß
    * @return the default status message
    */
   public String getDefaultStatusMessage() {

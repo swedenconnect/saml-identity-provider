@@ -15,11 +15,14 @@
  */
 package se.swedenconnect.spring.saml.idp.extensions;
 
-import se.swedenconnect.opensaml.sweid.saml2.signservice.dss.SignMessageMimeTypeEnum;
+import org.springframework.lang.NonNull;
+import org.springframework.util.MimeType;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
+import java.util.Map;
+
 /**
- * An interface that defines pre-processing of signature messages before they are displayed.
+ * An interface that defines pre-processing of user messages before they are displayed.
  * <p>
  * Typically an implementation will filter the input to avoid unwanted characters and to protect from XSS attacks and
  * such, and then translate the message into the format that is suitable for the service's UI.
@@ -27,17 +30,19 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
  *
  * @author Martin Lindström
  */
-public interface SignatureMessagePreprocessor {
+public interface UserMessagePreprocessor {
 
   /**
    * Applies processing of the supplied message where filtering, validation and transformation to the service's desired
    * display format can be done.
    *
-   * @param encodedMessage the cleartext sign message (in Base64 encoding)
-   * @param messageType the mime type
-   * @return the filtered (and transformed) message
+   * @param encodedMessages the user messages (in Base64 encoding) where the key holds the language tag
+   * @param mimeType the mime type
+   * @return the filtered (and transformed) messages
    * @throws Saml2ErrorStatusException for invalid input
    */
-  String processSignMessage(final String encodedMessage, final SignMessageMimeTypeEnum messageType)
-      throws Saml2ErrorStatusException;
+  @NonNull
+  Map<String, String> processUserMessage(@NonNull final Map<String, String> encodedMessages,
+      @NonNull final MimeType mimeType) throws Saml2ErrorStatusException;
+
 }
