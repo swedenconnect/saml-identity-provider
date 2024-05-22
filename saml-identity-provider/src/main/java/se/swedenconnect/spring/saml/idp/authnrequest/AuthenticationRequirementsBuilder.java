@@ -230,8 +230,9 @@ public class AuthenticationRequirementsBuilder {
 
   /**
    * Assigns the {@link UserMessageExtension} which is the representation of the {@code UserMessage} extension as
-   * specified in <a href="User Message Extension in SAML Authentication
-   * Requests">https://docs.swedenconnect.se/technical-framework/updates/18_-_User_Message_Extension_in_SAML_Authentication_Requests.html</a>.
+   * specified in <a
+   * href="https://docs.swedenconnect.se/technical-framework/updates/18_-_User_Message_Extension_in_SAML_Authentication_Requests.html">User
+   * Message Extension in SAML Authentication Requests</a>.
    *
    * @param userMessageExtension the user message extension
    * @return the builder

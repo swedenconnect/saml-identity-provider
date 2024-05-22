@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>spring-saml-testclient</artifactId>
@@ -9,7 +9,7 @@
   <parent>
     <groupId>se.swedenconnect.spring.saml.idp</groupId>
     <artifactId>spring-saml-idp-samples-parent</artifactId>
-    <version>2.1.2-SNAPSHOT</version>
+    <version>2.1.2</version>
   </parent>
 
   <name>Sweden Connect :: Spring SAML Identity Provider :: Samples :: Client Application</name>
@@ -45,13 +45,12 @@
   </developers>
 
   <properties>
-    <opensaml.version>5.0.0</opensaml.version>
   </properties>
-  
+
   <dependencyManagement>
-    
+
     <dependencies>
-    
+
       <!-- 
         Since spring-security-saml2-service-provider still uses OpenSAML 4,
         we need to use older dependencies ...
@@ -59,43 +58,43 @@
       <dependency>
         <groupId>se.swedenconnect.security</groupId>
         <artifactId>credentials-support</artifactId>
-        <version>1.2.6</version>      
+        <version>1.2.6</version>
       </dependency>
-      
+
       <dependency>
         <groupId>se.swedenconnect.opensaml</groupId>
         <artifactId>opensaml-security-ext</artifactId>
-        <version>3.1.2</version> 
+        <version>3.1.2</version>
       </dependency>
-      
+
       <dependency>
         <groupId>se.swedenconnect.opensaml</groupId>
         <artifactId>opensaml-addons</artifactId>
         <version>1.2.8</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.apache.santuario</groupId>
         <artifactId>xmlsec</artifactId>
         <version>2.3.4</version>
       </dependency>
-      
+
     </dependencies>
-    
+
   </dependencyManagement>
-  
+
   <dependencies>
-        
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>      
+      <artifactId>spring-boot-starter-thymeleaf</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-security</artifactId>
@@ -108,7 +107,7 @@
         <exclusion>
           <groupId>org.opensaml</groupId>
           <artifactId>opensaml-core</artifactId>
-        </exclusion>        
+        </exclusion>
         <exclusion>
           <groupId>org.opensaml</groupId>
           <artifactId>opensaml-saml-api</artifactId>
@@ -119,7 +118,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-        
+
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-actuator</artifactId>
@@ -130,17 +129,17 @@
       <artifactId>spring-boot-configuration-processor</artifactId>
       <optional>true</optional>
     </dependency>
-    
+
     <dependency>
       <groupId>se.swedenconnect.security</groupId>
       <artifactId>credentials-support</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>se.swedenconnect.opensaml</groupId>
-      <artifactId>opensaml-addons</artifactId> 
+      <artifactId>opensaml-addons</artifactId>
     </dependency>
-            
+
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
@@ -156,7 +155,7 @@
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-devtools</artifactId>
     </dependency>
-    
+
     <dependency>
       <groupId>org.webjars</groupId>
       <artifactId>bootstrap</artifactId>
@@ -183,7 +182,7 @@
       <groupId>org.webjars</groupId>
       <artifactId>jquery</artifactId>
       <version>3.6.1</version>
-    </dependency>    
+    </dependency>
 
   </dependencies>
 
