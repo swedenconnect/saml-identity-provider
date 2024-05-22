@@ -32,8 +32,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Representation of a {@code UserMessage}, see <a href="User Message Extension in SAML Authentication
- * Requests">https://docs.swedenconnect.se/technical-framework/updates/18_-_User_Message_Extension_in_SAML_Authentication_Requests.html</a>.
+ * Representation of a {@code UserMessage}, see <a
+ * href="https://docs.swedenconnect.se/technical-framework/updates/18_-_User_Message_Extension_in_SAML_Authentication_Requests.html">User
+ * Message Extension in SAML Authentication Requests</a>.
  *
  * @author Martin Lindström
  */

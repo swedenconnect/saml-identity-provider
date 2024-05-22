@@ -6,7 +6,7 @@
   <groupId>se.swedenconnect.spring.saml.idp</groupId>
   <artifactId>spring-saml-idp-parent</artifactId>
   <packaging>pom</packaging>
-  <version>2.1.2-SNAPSHOT</version>
+  <version>2.1.2</version>
 
   <name>Sweden Connect :: Spring SAML Identity Provider :: Parent POM</name>
   <description>Parent POM for Spring SAML Identity Provider libraries</description>
@@ -497,7 +497,7 @@
             <configuration>
               <serverId>ossrh</serverId>
               <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-              <autoReleaseAfterClose>false</autoReleaseAfterClose>
+              <autoReleaseAfterClose>true</autoReleaseAfterClose>
               <!--
                 Allows manual inspection of the staging repo before deploying it to the central repo.
                 Use 'mvn nexus-staging:release -Prelease' to release and 'mvn nexus-staging:drop' to abort.

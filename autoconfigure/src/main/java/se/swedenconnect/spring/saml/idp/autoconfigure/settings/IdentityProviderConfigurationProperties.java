@@ -92,8 +92,9 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
   private Duration ssoDurationLimit;
 
   /**
-   * Tells whether the IdP supports the <a href="User Message Extension in SAML Authentication
-   * Requests">https://docs.swedenconnect.se/technical-framework/updates/18_-_User_Message_Extension_in_SAML_Authentication_Requests.html</a>.
+   * Tells whether the IdP supports the <a
+   * href="https://docs.swedenconnect.se/technical-framework/updates/18_-_User_Message_Extension_in_SAML_Authentication_Requests.html">User
+   * Message Extension in SAML Authentication Requests"></a>.
    */
   @Getter
   @Setter
