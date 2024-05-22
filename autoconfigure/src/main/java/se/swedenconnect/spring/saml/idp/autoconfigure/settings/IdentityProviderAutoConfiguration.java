@@ -107,6 +107,7 @@ public class IdentityProviderAutoConfiguration {
         .clockSkewAdjustment(this.properties.getClockSkewAdjustment())
         .maxMessageAge(this.properties.getMaxMessageAge())
         .ssoDurationLimit(this.properties.getSsoDurationLimit())
+        .supportsUserMessage(this.properties.getSupportsUserMessage())
         .credentials(CredentialSettings.builder()
             .defaultCredential(this.defaultCredential)
             .signCredential(this.signCredential)

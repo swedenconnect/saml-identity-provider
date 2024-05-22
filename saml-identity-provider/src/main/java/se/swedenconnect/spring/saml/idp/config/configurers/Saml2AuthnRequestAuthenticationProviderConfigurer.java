@@ -51,6 +51,7 @@ import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestVali
 import se.swedenconnect.spring.saml.idp.extensions.DefaultSignatureMessageExtensionExtractor;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtensionExtractor;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessagePreprocessor;
+import se.swedenconnect.spring.saml.idp.extensions.UserMessagePreprocessor;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
 /**
@@ -89,6 +90,9 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
 
   /** Optional processor for preparing a SignMessage for display. */
   private SignatureMessagePreprocessor signatureMessagePreprocessor;
+
+  /** Optional processor for preparing a UserMessage for display. */
+  private UserMessagePreprocessor userMessagePreprocessor;
 
   /** Extracts the {@code PrincipalSelection} attribute values. */
   private Optional<PrincipalSelectionProcessor> principalSelectionProcessor;
@@ -194,6 +198,19 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
   }
 
   /**
+   * Assigns a {@link UserMessagePreprocessor} that is used to prepare received user messages for display. By default,
+   * no processor is installed.
+   *
+   * @param userMessagePreprocessor the processor
+   * @return the configurer
+   */
+  public Saml2AuthnRequestAuthenticationProviderConfigurer userMessagePreprocessor(
+      final UserMessagePreprocessor userMessagePreprocessor) {
+    this.userMessagePreprocessor = userMessagePreprocessor;
+    return this;
+  }
+
+  /**
    * Assigns a custom {@link PrincipalSelectionProcessor}. The default is {@link DefaultPrincipalSelectionProcessor}. It
    * is possible to disable support for the {@code PrincipalSelection} extension by assigning {@code null}.
    *
@@ -285,6 +302,9 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
 
     if (this.signatureMessagePreprocessor != null) {
       object.setSignatureMessagePreprocessor(this.signatureMessagePreprocessor);
+    }
+    if (this.userMessagePreprocessor != null) {
+      object.setUserMessagePreprocessor(this.userMessagePreprocessor);
     }
 
     return object;

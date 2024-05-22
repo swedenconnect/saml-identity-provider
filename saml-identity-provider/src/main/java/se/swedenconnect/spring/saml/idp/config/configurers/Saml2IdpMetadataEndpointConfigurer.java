@@ -73,6 +73,7 @@ import se.swedenconnect.opensaml.saml2.metadata.build.UIInfoBuilder;
 import se.swedenconnect.opensaml.sweid.saml2.authn.psc.RequestedPrincipalSelection;
 import se.swedenconnect.opensaml.sweid.saml2.authn.psc.build.MatchValueBuilder;
 import se.swedenconnect.opensaml.sweid.saml2.authn.psc.build.RequestedPrincipalSelectionBuilder;
+import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryConstants;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
@@ -149,7 +150,8 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
     try {
       if (settings.getMetadata().getTemplate() != null) {
         final EntityDescriptor template = (EntityDescriptor) XMLObjectSupport.unmarshallFromInputStream(
-            Objects.requireNonNull(XMLObjectProviderRegistrySupport.getParserPool()), settings.getMetadata().getTemplate().getInputStream());
+            Objects.requireNonNull(XMLObjectProviderRegistrySupport.getParserPool()),
+            settings.getMetadata().getTemplate().getInputStream());
         this.entityDescriptorBuilder = new EntityDescriptorBuilder(template);
       }
       else {
@@ -183,12 +185,17 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
       if (!authnContextUris.isEmpty()) {
         entityAttributesBuilder.assuranceCertificationAttribute(authnContextUris);
       }
-      final List<String> entityCategories = providers.stream()
+      final List<String> entityCategories = new ArrayList<>();
+      providers.stream()
           .map(UserAuthenticationProvider::getEntityCategories)
           .flatMap(Collection::stream)
           .distinct()
-          .collect(Collectors.toList());
+          .forEach(entityCategories::add);
       if (!entityCategories.isEmpty()) {
+        if (settings.getSupportsUserMessage() && !entityCategories.contains(
+            EntityCategoryConstants.GENERAL_CATEGORY_SUPPORTS_USER_MESSAGE.getUri())) {
+          entityCategories.add(EntityCategoryConstants.GENERAL_CATEGORY_SUPPORTS_USER_MESSAGE.getUri());
+        }
         entityAttributesBuilder.entityCategoriesAttribute(entityCategories);
       }
 

@@ -21,15 +21,18 @@ import java.util.Collection;
 import java.util.List;
 
 import lombok.Setter;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttribute;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.extensions.SadRequestExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
+import se.swedenconnect.spring.saml.idp.extensions.UserMessageExtension;
 
 /**
  * A builder for {@link AuthenticationRequirements}.
- * 
+ *
  * @author Martin Lindström
  */
 public class AuthenticationRequirementsBuilder {
@@ -45,7 +48,7 @@ public class AuthenticationRequirementsBuilder {
 
   /**
    * Constructor setting up a builder based on an existing {@link AuthenticationRequirements} object.
-   * 
+   *
    * @param requirements the template object
    */
   public AuthenticationRequirementsBuilder(final AuthenticationRequirements requirements) {
@@ -56,7 +59,7 @@ public class AuthenticationRequirementsBuilder {
 
   /**
    * Creates a {@link AuthenticationRequirementsBuilder}.
-   * 
+   *
    * @return a builder
    */
   public static AuthenticationRequirementsBuilder builder() {
@@ -64,8 +67,9 @@ public class AuthenticationRequirementsBuilder {
   }
 
   /**
-   * Creates a {@link AuthenticationRequirementsBuilder} based on an existing {@link AuthenticationRequirements} object.
-   * 
+   * Creates a {@link AuthenticationRequirementsBuilder} based on an existing {@link AuthenticationRequirements}
+   * object.
+   *
    * @param requirements the template object
    * @return a builder
    */
@@ -75,7 +79,7 @@ public class AuthenticationRequirementsBuilder {
 
   /**
    * Builds the {@link AuthenticationRequirements} object
-   * 
+   *
    * @return an {@link AuthenticationRequirements}
    */
   public AuthenticationRequirements build() {
@@ -85,7 +89,7 @@ public class AuthenticationRequirementsBuilder {
   /**
    * Tells whether "force authentication" has been set, i.e., whether to force user authentication even though a valid
    * user session exists.
-   * 
+   *
    * @param forceAuthn {@code true} if authentication should be forced, and {@code false} otherwise
    * @return the builder
    */
@@ -96,7 +100,7 @@ public class AuthenticationRequirementsBuilder {
 
   /**
    * Tells whether we should issue an assertion without requiring the user to authenticate again.
-   * 
+   *
    * @param passiveAuthn {@code true} if passive authentication is required, and {@code false} otherwise
    * @return the builder
    */
@@ -107,7 +111,7 @@ public class AuthenticationRequirementsBuilder {
 
   /**
    * Assigns the collection of declared SAML entity categories for the relying party.
-   * 
+   *
    * @param entityCategories a collection of URI:s representing declared entity categories
    * @return the builder
    */
@@ -119,7 +123,7 @@ public class AuthenticationRequirementsBuilder {
 
   /**
    * Adds an entity category.
-   * 
+   *
    * @param entityCategory an entity category URI
    * @return the builder
    */
@@ -135,7 +139,7 @@ public class AuthenticationRequirementsBuilder {
    * Note: Within the Swedish eID Framework the use of declared entity categories is the preferred way of informing the
    * IdP about which attributes a relying party requests, see {@link #entityCategories(Collection)}.
    * </p>
-   * 
+   *
    * @param requestedAttributes a collection of requested attributes
    * @return the builder
    */
@@ -148,7 +152,7 @@ public class AuthenticationRequirementsBuilder {
 
   /**
    * Adds a requested attribute.
-   * 
+   *
    * @param requestedAttribute the requested attribute
    * @return the builder
    */
@@ -159,7 +163,7 @@ public class AuthenticationRequirementsBuilder {
 
   /**
    * Assigns a collection of the requested authentication contexts ({@code AuthnContextClassRef}).
-   * 
+   *
    * @param authnContextRequirements a collection of URI:s
    * @return the builder
    */
@@ -171,7 +175,7 @@ public class AuthenticationRequirementsBuilder {
 
   /**
    * Adds a requested authentication contexts ({@code AuthnContextClassRef}).
-   * 
+   *
    * @param authnContextRequirement URI
    * @return the builder
    */
@@ -186,7 +190,7 @@ public class AuthenticationRequirementsBuilder {
    * extension defined in Sweden Connect technical framework enables a relying party to include one or more attributes
    * in the {@code AuthnRequest} to inform the IdP about the user that is being authenticated. This method assigns this
    * information.
-   * 
+   *
    * @param principalSelectionAttributes a collection of "principal selection" attributes
    * @return the builder
    */
@@ -199,7 +203,7 @@ public class AuthenticationRequirementsBuilder {
 
   /**
    * Adds a principal selection attribute.
-   * 
+   *
    * @param principalSelectionAttribute principal selection attribute
    * @return the builder
    */
@@ -214,7 +218,7 @@ public class AuthenticationRequirementsBuilder {
    * specified in section 3.1.2 of <a href=
    * "https://docs.swedenconnect.se/technical-framework/latest/09_-_DSS_Extension_for_Federated_Signing_Services.html">DSS
    * Extension for Federated Central Signing Services</a>.
-   * 
+   *
    * @param signatureMessageExtension the sign message extension
    * @return the builder
    */
@@ -225,11 +229,24 @@ public class AuthenticationRequirementsBuilder {
   }
 
   /**
+   * Assigns the {@link UserMessageExtension} which is the representation of the {@code UserMessage} extension as
+   * specified in <a href="User Message Extension in SAML Authentication
+   * Requests">https://docs.swedenconnect.se/technical-framework/updates/18_-_User_Message_Extension_in_SAML_Authentication_Requests.html</a>.
+   *
+   * @param userMessageExtension the user message extension
+   * @return the builder
+   */
+  public AuthenticationRequirementsBuilder userMessageExtension(final UserMessageExtension userMessageExtension) {
+    this.reqs.setUserMessageExtension(userMessageExtension);
+    return this;
+  }
+
+  /**
    * Assigns the {@link SadRequestExtension} which is the representation of the {@code SADRequest} extension as
    * specified in <a href=
    * "https://docs.swedenconnect.se/technical-framework/updates/13_-_Signature_Activation_Protocol.html">Signature
    * Activation Protocol for Federated Signing</a>.
-   * 
+   *
    * @param sadRequestExtension the extension
    * @return the builder
    */
@@ -263,6 +280,9 @@ public class AuthenticationRequirementsBuilder {
     private SignatureMessageExtension signatureMessageExtension;
 
     @Setter
+    private UserMessageExtension userMessageExtension;
+
+    @Setter
     private SadRequestExtension sadRequestExtension;
 
     public AuthenticationRequirementsImpl() {
@@ -281,6 +301,7 @@ public class AuthenticationRequirementsBuilder {
       this.authnContextRequirements.addAll(reqs.getAuthnContextRequirements());
       this.principalSelectionAttributes.addAll(reqs.getPrincipalSelectionAttributes());
       this.signatureMessageExtension = reqs.getSignatureMessageExtension();
+      this.userMessageExtension = reqs.getUserMessageExtension();
       this.sadRequestExtension = reqs.getSadRequestExtension();
     }
 
@@ -295,34 +316,46 @@ public class AuthenticationRequirementsBuilder {
     }
 
     // Returns the live list.
+    @NonNull
     @Override
     public List<String> getEntityCategories() {
       return this.entityCategories;
     }
 
     // Returns the live list.
+    @NonNull
     @Override
     public Collection<RequestedAttribute> getRequestedAttributes() {
       return this.requestedAttributes;
     }
 
     // Returns the live list.
+    @NonNull
     @Override
     public List<String> getAuthnContextRequirements() {
       return this.authnContextRequirements;
     }
 
     // Returns the live list.
+    @NonNull
     @Override
     public Collection<UserAttribute> getPrincipalSelectionAttributes() {
       return this.principalSelectionAttributes;
     }
 
+    @Nullable
     @Override
     public SignatureMessageExtension getSignatureMessageExtension() {
       return this.signatureMessageExtension;
     }
 
+    @Nullable
+    @Override
+    public UserMessageExtension getUserMessageExtension() {
+      return this.userMessageExtension;
+    }
+
+    @Nullable
     @Override
     public SadRequestExtension getSadRequestExtension() {
       return this.sadRequestExtension;

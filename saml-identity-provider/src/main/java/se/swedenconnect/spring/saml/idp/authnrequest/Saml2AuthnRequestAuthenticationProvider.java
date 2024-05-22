@@ -15,23 +15,16 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.core.xml.schema.XSURI;
 import org.opensaml.saml.saml2.core.RequestedAuthnContext;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.Assert;
-
-import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.InvalidMimeTypeException;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
+import se.swedenconnect.opensaml.sweid.saml2.authn.umsg.UserMessage;
 import se.swedenconnect.opensaml.sweid.saml2.signservice.sap.SADRequest;
 import se.swedenconnect.opensaml.sweid.saml2.signservice.sap.SADVersion;
 import se.swedenconnect.spring.saml.idp.attributes.PrincipalSelectionProcessor;
@@ -51,7 +44,18 @@ import se.swedenconnect.spring.saml.idp.extensions.SadRequestExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtensionExtractor;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessagePreprocessor;
+import se.swedenconnect.spring.saml.idp.extensions.UserMessageExtension;
+import se.swedenconnect.spring.saml.idp.extensions.UserMessagePreprocessor;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * An {@link AuthenticationProvider} that processes a {@link Saml2AuthnRequestAuthenticationToken} and if the processing
@@ -65,7 +69,7 @@ import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
  */
 @Slf4j
 public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationProvider {
-  
+
   /** The event publisher. */
   private final Saml2IdpEventPublisher eventPublisher;
 
@@ -78,7 +82,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
   /** Validator for protecting against replay attacks. */
   private final AuthnRequestValidator replayValidator;
 
-  /** Validator for asserting the we can encrypt assertions. */
+  /** Validator for asserting that we can encrypt assertions. */
   private final AuthnRequestValidator encryptCapabilitiesValidator;
 
   /** Extracts the requested attributes. */
@@ -90,9 +94,10 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
   /** Optional {@link SignatureMessagePreprocessor} for preparing sign messages for display. */
   private SignatureMessagePreprocessor signatureMessagePreprocessor;
 
-  /**
-   * Extracts the {@code PrincipalSelection} attribute values.
-   */
+  /** Optional {@link UserMessagePreprocessor} for preparing user messages for display. */
+  private UserMessagePreprocessor userMessagePreprocessor;
+
+  /** Extracts the {@code PrincipalSelection} attribute values. */
   private final PrincipalSelectionProcessor principalSelectionProcessor;
 
   /** The {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator} instance. */
@@ -108,7 +113,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
    * @param encryptCapabilitiesValidator validator asserting that we can encrypt assertions
    * @param requestedAttributesProcessors extracts the requested attributes
    * @param nameIDGeneratorFactory the {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator}
-   *          instance
+   *     instance
    */
   public Saml2AuthnRequestAuthenticationProvider(
       final Saml2IdpEventPublisher eventPublisher,
@@ -118,7 +123,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
       final AuthnRequestValidator encryptCapabilitiesValidator,
       final List<RequestedAttributeProcessor> requestedAttributesProcessors,
       final NameIDGeneratorFactory nameIDGeneratorFactory) {
-    this(eventPublisher, signatureValidator, assertionConsumerServiceValidator, replayValidator, 
+    this(eventPublisher, signatureValidator, assertionConsumerServiceValidator, replayValidator,
         encryptCapabilitiesValidator, requestedAttributesProcessors, nameIDGeneratorFactory, null, null);
   }
 
@@ -132,9 +137,10 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
    * @param encryptCapabilitiesValidator validator asserting that we can encrypt assertions
    * @param requestedAttributesProcessors extracts the requested attributes
    * @param nameIDGeneratorFactory the {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator}
-   *          instance
+   *     instance
    * @param signatureMessageExtensionExtractor extracts the {@code SignMessage} extension (may be {@code null})
-   * @param principalSelectionProcessor extracts the {@code PrincipalSelection} attribute values (may be {@code null})
+   * @param principalSelectionProcessor extracts the {@code PrincipalSelection} attribute values (may be
+   *     {@code null})
    */
   public Saml2AuthnRequestAuthenticationProvider(
       final Saml2IdpEventPublisher eventPublisher,
@@ -168,7 +174,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
 
     final Saml2AuthnRequestAuthenticationToken token =
         (Saml2AuthnRequestAuthenticationToken) authentication;
-    
+
     this.eventPublisher.publishAuthnRequestReceived(token);
 
     // Check message replay ...
@@ -228,7 +234,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
 
   /**
    * Assigns a {@link SignatureMessagePreprocessor} for preparing the sign message for display.
-   * 
+   *
    * @param signatureMessagePreprocessor a {@link SignatureMessagePreprocessor}
    */
   public void setSignatureMessagePreprocessor(final SignatureMessagePreprocessor signatureMessagePreprocessor) {
@@ -236,8 +242,17 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
   }
 
   /**
+   * Assigns a {@link UserMessagePreprocessor} for preparing the user messages for display.
+   *
+   * @param userMessagePreprocessor a {@link UserMessagePreprocessor}
+   */
+  public void setUserMessagePreprocessor(final UserMessagePreprocessor userMessagePreprocessor) {
+    this.userMessagePreprocessor = userMessagePreprocessor;
+  }
+
+  /**
    * Creates an {@link AuthenticationRequirements} object.
-   * 
+   *
    * @param token the input token
    * @return an {@link AuthenticationRequirements} object
    * @throws Saml2ErrorStatusException for errors that should be reported back
@@ -255,7 +270,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
       log.info("{} [{}]", msg, token.getLogString());
       throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_AUTHNREQUEST, msg);
     }
-    
+
     final SignatureMessageExtension signMessageExtension = Optional.ofNullable(this.signatureMessageExtensionExtractor)
         .map(e -> e.extract(token))
         .orElse(null);
@@ -264,7 +279,37 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
           signMessageExtension.getMessage(), signMessageExtension.getMimeType());
       signMessageExtension.setProcessedMessage(processedMessage);
     }
-    
+
+    UserMessageExtension userMessageExtension = null;
+    try {
+      userMessageExtension = Optional.ofNullable(token.getAuthnRequest().getExtensions())
+          .map(e -> e.getUnknownXMLObjects(UserMessage.DEFAULT_ELEMENT_NAME))
+          .filter(list -> !list.isEmpty())
+          .map(list -> list.get(0))
+          .map(UserMessage.class::cast)
+          .map(UserMessageExtension::new)
+          .orElse(null);
+
+      if (userMessageExtension != null) {
+        log.debug("UserMessage extension present for languages {} [{}]",
+            userMessageExtension.getMessages().keySet(), token.getLogString());
+
+        if (this.userMessagePreprocessor != null) {
+          final Map<String, String> processedMessages = this.userMessagePreprocessor.processUserMessage(
+              userMessageExtension.getMessages(), userMessageExtension.getMimeType());
+          userMessageExtension.setProcessedMessages(processedMessages);
+        }
+      }
+    }
+    catch (final InvalidMimeTypeException e) {
+      log.info("Invalid MIME type in UserMessage extension [{}]", token.getLogString(), e);
+
+      if (Saml2IdpContextHolder.getContext().getSettings().getSupportsUserMessage()) {
+        throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_USER_MESSAGE,
+            "Invalid MIME type for UserMessage extension", e);
+      }
+    }
+
     SADRequest sadRequest = Optional.ofNullable(token.getAuthnRequest().getExtensions())
         .map(e -> e.getUnknownXMLObjects(SADRequest.DEFAULT_ELEMENT_NAME))
         .filter(list -> !list.isEmpty())
@@ -296,18 +341,19 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
             .map(p -> p.extractPrincipalSelection(token))
             .orElseGet(Collections::emptyList))
         .signatureMessageExtension(signMessageExtension)
+        .userMessageExtension(userMessageExtension)
         .sadRequestExtension(sadRequest != null ? new SadRequestExtension(sadRequest) : null)
         .build();
   }
-  
+
   /**
    * Validates that a received {@link SADRequest} is correct.
-   * 
+   *
    * @param token the authentication request token
    * @param sadRequest the SAD request to check
    * @throws Saml2ErrorStatusException for errors
    */
-  private void validateSadRequest(final Saml2AuthnRequestAuthenticationToken token, final SADRequest sadRequest) 
+  private void validateSadRequest(final Saml2AuthnRequestAuthenticationToken token, final SADRequest sadRequest)
       throws Saml2ErrorStatusException {
     if (sadRequest.getID() == null) {
       final String msg = "Invalid AuthnRequest - Contains SADRequest extension that lacks ID field";
@@ -332,7 +378,8 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
       throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_AUTHNREQUEST, msg);
     }
     else if (!token.getEntityId().equals(sadRequest.getRequesterID())) {
-      final String msg = "Invalid AuthnRequest - Contains SADRequest extension that has RequesterID field that does not match SP entityID";
+      final String msg =
+          "Invalid AuthnRequest - Contains SADRequest extension that has RequesterID field that does not match SP entityID";
       log.info("{} [{}]", msg, token.getLogString());
       throw new Saml2ErrorStatusException(Saml2ErrorStatus.INVALID_AUTHNREQUEST, msg);
     }
@@ -345,7 +392,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
 
   /**
    * Extracts the requested attributes by invoking the configured {@link RequestedAttributeProcessor}s.
-   * 
+   *
    * @param authnRequestToken the input token
    * @return a {@link Collection} of {@link RequestedAttribute}s
    */
