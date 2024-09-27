@@ -24,7 +24,7 @@ public final class Saml2IdentityProviderVersion {
 
   private static final int MAJOR = 2;
   private static final int MINOR = 1;
-  private static final int PATCH = 3;
+  private static final int PATCH = 4;
 
   /**
    * Global serialization value for SAML Identity Provider classes.

@@ -37,7 +37,6 @@ import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedissonClusterPrope
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -108,7 +107,7 @@ public class RedissonExtensionsAutoConfiguration {
 
   private BaseConfig<?> getRedissonConfiguration(final Config config) {
     if (config.isSingleConfig()) {
-      return RedissonAddressCustomizers.singleServerSslCustomizer.apply(config.useSingleServer());
+      return config.useSingleServer();
     }
     if (config.isClusterConfig()) {
       return RedissonAddressCustomizers.clusterServerCustomizer.apply(
@@ -130,15 +129,6 @@ public class RedissonExtensionsAutoConfiguration {
 
     public static BiFunction<ClusterServersConfig, RedissonClusterProperties, ClusterServersConfig> clusterServerCustomizer =
         (config, clusterProperties) -> {
-          final List<String> addresses = new ArrayList<>();
-          config.getNodeAddresses().forEach(address -> {
-            String addr = address;
-            if (address.contains("redis://")) {
-              addr = address.replace("redis://", "rediss://");
-            }
-            addresses.add(addr);
-          });
-          config.setNodeAddresses(addresses);
           if (clusterProperties.getNatTranslation() != null) {
             final HostPortNatMapper mapper = new HostPortNatMapper();
             mapper.setHostsPortMap(clusterProperties.getNatTranslation().stream()
@@ -148,16 +138,6 @@ public class RedissonExtensionsAutoConfiguration {
           config.setReadMode(ReadMode.valueOf(clusterProperties.getReadMode()));
           return config;
         };
-
-    public static Function<SingleServerConfig, SingleServerConfig> singleServerSslCustomizer = (s) -> {
-      final String redisAddress = s.getAddress();
-      if (redisAddress.contains("redis://")) {
-        // The protocol part has not been configured by Spring even though we have enabled ssl
-        s.setAddress(redisAddress.replace("redis://", "rediss://"));
-      }
-      return s;
-    };
-
   }
 
 }
