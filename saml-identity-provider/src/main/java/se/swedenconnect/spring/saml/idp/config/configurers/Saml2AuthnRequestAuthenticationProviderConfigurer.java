@@ -15,19 +15,13 @@
  */
 package se.swedenconnect.spring.saml.idp.config.configurers;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
+import jakarta.annotation.Nonnull;
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.xmlsec.signature.support.SignatureTrustEngine;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.util.Assert;
-
 import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayChecker;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.spring.saml.idp.attributes.DefaultPrincipalSelectionProcessor;
@@ -43,6 +37,7 @@ import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
+import se.swedenconnect.spring.saml.idp.authnrequest.Saml2ServiceProviderFilter;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AssertionConsumerServiceValidator;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestEncryptCapabilitiesValidator;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestReplayValidator;
@@ -54,11 +49,20 @@ import se.swedenconnect.spring.saml.idp.extensions.SignatureMessagePreprocessor;
 import se.swedenconnect.spring.saml.idp.extensions.UserMessagePreprocessor;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
 /**
  * A configurer for configuring the {@link Saml2AuthnRequestAuthenticationProvider}.
  *
  * @author Martin Lindström
  */
+@Slf4j
 public class Saml2AuthnRequestAuthenticationProviderConfigurer
     extends AbstractObjectConfigurer<Saml2AuthnRequestAuthenticationProvider> {
 
@@ -99,6 +103,9 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
 
   /** The {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator} instance. */
   private NameIDGeneratorFactory nameIDGeneratorFactory;
+
+  /** Optional filter for allowing SP:s to send requests. */
+  private Saml2ServiceProviderFilter serviceProviderFilter;
 
   /**
    * Assigns a custom {@link AuthnRequestValidator} for validating the signatures of {@link AuthnRequest} messages.
@@ -236,6 +243,25 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
     return this;
   }
 
+  /**
+   * Assigns a {@link Saml2ServiceProviderFilter}.
+   *
+   * @param serviceProviderFilter the filter
+   * @return this configurer
+   */
+  public Saml2AuthnRequestAuthenticationProviderConfigurer serviceProviderFilter(
+      @Nonnull final Saml2ServiceProviderFilter serviceProviderFilter) {
+    Objects.requireNonNull(serviceProviderFilter, "serviceProviderFilter must not be null");
+
+    if (this.serviceProviderFilter == null) {
+      this.serviceProviderFilter = serviceProviderFilter;
+    }
+    else {
+      this.serviceProviderFilter = new MultipleServiceProviderFilter(this.serviceProviderFilter, serviceProviderFilter);
+    }
+    return this;
+  }
+
   /** {@inheritDoc} */
   @Override
   void init(final HttpSecurity httpSecurity) {
@@ -297,6 +323,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
         this.encryptCapabilitiesValidator,
         this.requestedAttributeProcessors,
         this.nameIDGeneratorFactory,
+        this.serviceProviderFilter != null ? this.serviceProviderFilter : entityDescriptor -> true,
         this.signatureMessageExtensionExtractor.orElse(null),
         this.principalSelectionProcessor.orElse(null));
 
@@ -338,6 +365,25 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
     }
 
     return processors;
+  }
+
+  // For handling the configuration of several service provider filters ...
+  private static class MultipleServiceProviderFilter implements Saml2ServiceProviderFilter {
+
+    private final Saml2ServiceProviderFilter existing;
+    private final Saml2ServiceProviderFilter newFilter;
+
+    public MultipleServiceProviderFilter(
+        final Saml2ServiceProviderFilter existing, final Saml2ServiceProviderFilter newFilter) {
+      this.existing = existing;
+      this.newFilter = newFilter;
+    }
+
+    @Override
+    public boolean test(final EntityDescriptor entityDescriptor) {
+      return this.existing.test(entityDescriptor) && this.newFilter.test(entityDescriptor);
+    }
+
   }
 
 }
