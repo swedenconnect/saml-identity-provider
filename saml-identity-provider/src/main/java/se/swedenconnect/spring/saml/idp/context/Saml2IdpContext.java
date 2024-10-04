@@ -15,10 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.context;
 
-import java.io.Serializable;
-
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+
+import java.io.Serializable;
 
 /**
  * A context that holds information of the Identity Provider runtime environment.
@@ -36,7 +36,7 @@ public interface Saml2IdpContext extends Serializable {
 
   /**
    * Gets the {@link Saml2ResponseAttributes}.
-   * 
+   *
    * @return the attributes needed to send response messages
    */
   Saml2ResponseAttributes getResponseAttributes();

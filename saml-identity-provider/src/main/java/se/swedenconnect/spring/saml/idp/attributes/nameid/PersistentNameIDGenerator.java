@@ -15,22 +15,21 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.nameid;
 
+import org.opensaml.saml.saml2.core.NameID;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
+import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
+import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+
 import java.io.Serial;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import java.util.Objects;
 
-import org.opensaml.saml.saml2.core.NameID;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
-import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
-import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
-import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
-
 /**
  * A {@link NameIDGenerator} for generaring persistent {@code NameID}s.
- * 
+ *
  * @author Martin Lindström
  */
 public class PersistentNameIDGenerator extends AbstractNameIDGenerator {
@@ -49,7 +48,7 @@ public class PersistentNameIDGenerator extends AbstractNameIDGenerator {
   public PersistentNameIDGenerator(final String nameQualifier) {
     this(nameQualifier, null);
   }
-  
+
   /**
    * Constructor.
    *
@@ -100,7 +99,7 @@ public class PersistentNameIDGenerator extends AbstractNameIDGenerator {
 
   /**
    * Assigns the JCE name for the hash algorithm to use. The default is {@code SHA-256}.
-   * 
+   *
    * @param hashAlgorithm the JCE name for the hash algorithm
    */
   public void setHashAlgorithm(final String hashAlgorithm) {

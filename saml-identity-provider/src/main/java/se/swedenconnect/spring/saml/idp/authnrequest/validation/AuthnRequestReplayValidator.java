@@ -15,8 +15,6 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest.validation;
 
-import java.util.Objects;
-
 import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.opensaml.saml2.response.replay.InMemoryReplayChecker;
 import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayChecker;
@@ -26,9 +24,11 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
+import java.util.Objects;
+
 /**
  * A {@link AuthnRequestValidator} for protecting against message replay attacks.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -49,7 +49,7 @@ public class AuthnRequestReplayValidator implements AuthnRequestValidator {
 
   /**
    * Constructor taking the {@link MessageReplayChecker} to use.
-   * 
+   *
    * @param replayChecker the message replay checker
    */
   public AuthnRequestReplayValidator(final MessageReplayChecker replayChecker) {

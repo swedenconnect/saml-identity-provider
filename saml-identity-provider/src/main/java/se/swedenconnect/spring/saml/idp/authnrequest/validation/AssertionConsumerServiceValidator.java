@@ -15,20 +15,19 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest.validation;
 
-import java.util.Objects;
-
-import org.opensaml.saml.common.xml.SAMLConstants;
-import org.opensaml.saml.saml2.core.AuthnRequest;
-import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
-import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
-
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.shared.net.URIComparator;
 import net.shibboleth.shared.net.URIException;
 import net.shibboleth.shared.net.impl.BasicURLComparator;
+import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.metadata.AssertionConsumerService;
+import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+
+import java.util.Objects;
 
 /**
  * Asserts that the AssertionConsumerService information given in the {@code AuthnRequest} is registered in the SAML
@@ -56,7 +55,8 @@ public class AssertionConsumerServiceValidator implements AuthnRequestValidator 
    * metadata. Updates the {@link Saml2AuthnRequestAuthenticationToken} with this information.
    */
   @Override
-  public void validate(final Saml2AuthnRequestAuthenticationToken authnRequestToken) throws UnrecoverableSaml2IdpException {
+  public void validate(final Saml2AuthnRequestAuthenticationToken authnRequestToken)
+      throws UnrecoverableSaml2IdpException {
     final AuthnRequest authnRequest = authnRequestToken.getAuthnRequest();
     final SPSSODescriptor ssoDesc = authnRequestToken.getPeerMetadata().getSPSSODescriptor(SAMLConstants.SAML20P_NS);
 

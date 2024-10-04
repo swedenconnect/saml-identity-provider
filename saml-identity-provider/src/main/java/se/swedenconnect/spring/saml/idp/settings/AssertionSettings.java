@@ -15,34 +15,33 @@
  */
 package se.swedenconnect.spring.saml.idp.settings;
 
+import org.springframework.util.Assert;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
 import java.io.Serial;
 import java.time.Duration;
 import java.util.Map;
 
-import org.springframework.util.Assert;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
-
 /**
  * Settings that controls how SAML Assertions are issued.
- * 
+ *
  * @author Martin Lindström
  */
 public class AssertionSettings extends AbstractSettings {
 
   @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
-  
+
   /**
    * Default value for the {@link #NOT_ON_OR_AFTER_DURATION} setting.
    */
   public static final Duration NOT_ON_OR_AFTER_DURATION_DEFAULT = Duration.ofMinutes(5);
-  
+
   /**
    * Default value for the {@link #NOT_BEFORE_DURATION} setting.
    */
   public static final Duration NOT_BEFORE_DURATION_DEFAULT = Duration.ofSeconds(10);
-  
+
   /**
    * Default value for the {@link #ENCRYPT_ASSERTIONS} setting.
    */
@@ -64,7 +63,7 @@ public class AssertionSettings extends AbstractSettings {
 
   /**
    * Tells whether the Identity Provider encrypts assertions.
-   * 
+   *
    * @return {@code true} if assertions should be encrypted and {@code false} otherwise.
    */
   public Boolean getEncryptAssertions() {
@@ -80,13 +79,13 @@ public class AssertionSettings extends AbstractSettings {
   /**
    * Gets the {@link Duration} that tells the time restrictions the IdP puts on an Assertion concerning "not on or
    * after".
-   * 
+   *
    * @return a {@link Duration}
    */
   public Duration getNotOnOrAfterDuration() {
     return this.getSetting(NOT_ON_OR_AFTER_DURATION);
   }
-  
+
   /**
    * A setting that tells the time restrictions the IdP puts on an Assertion concerning "not before". A
    * {@link Duration}.
@@ -95,12 +94,12 @@ public class AssertionSettings extends AbstractSettings {
 
   /**
    * Gets the {@link Duration} that tells the time restrictions the IdP puts on an Assertion concerning "not before".
-   * 
+   *
    * @return a {@link Duration}
    */
   public Duration getNotBeforeDuration() {
     return this.getSetting(NOT_BEFORE_DURATION);
-  }  
+  }
 
   /**
    * Constructs a new {@link Builder} with no settings.
@@ -133,27 +132,28 @@ public class AssertionSettings extends AbstractSettings {
     /**
      * Assigns the {@link Duration} that tells the time restrictions the IdP puts on an Assertion concerning "not on or
      * after".
-     * 
+     *
      * @param notOnOrAfter a {@link Duration}
      * @return the builder
      */
     public Builder notOnOrAfterDuration(final Duration notOnOrAfter) {
       return this.setting(NOT_ON_OR_AFTER_DURATION, notOnOrAfter);
     }
-    
+
     /**
-     * Assigns the {@link Duration} that tells the time restrictions the IdP puts on an Assertion concerning "not before".
-     * 
+     * Assigns the {@link Duration} that tells the time restrictions the IdP puts on an Assertion concerning "not
+     * before".
+     *
      * @param notBefore a {@link Duration}
      * @return the builder
      */
     public Builder notBeforeDuration(final Duration notBefore) {
       return this.setting(NOT_BEFORE_DURATION, notBefore);
-    }    
+    }
 
     /**
      * Assigns whether the Identity Provider encrypts assertions.
-     * 
+     *
      * @param encryptAssertions {@code true} if assertions should be encrypted and {@code false} otherwise
      * @return the builder
      */

@@ -15,11 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
-import java.security.cert.X509Certificate;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import lombok.Setter;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -30,10 +26,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
-
-import lombok.Setter;
 import se.swedenconnect.security.credential.PkiCredential;
+import se.swedenconnect.spring.saml.idp.authnrequest.Saml2ServiceProviderFilter;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurer;
+import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurerAdapter;
 import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.settings.AssertionSettings;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
@@ -42,6 +38,11 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.EncryptionMethodSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.SigningMethodSettings;
+
+import java.security.cert.X509Certificate;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Configuration class for Identity Provider general settings.
@@ -219,6 +220,16 @@ public class IdentityProviderAutoConfiguration {
   @Bean
   Saml2IdpEventPublisher saml2IdpEventPublisher(final ApplicationEventPublisher applicationEventPublisher) {
     return new Saml2IdpEventPublisher(applicationEventPublisher);
+  }
+
+  @Bean
+  Saml2IdpConfigurerAdapter defaultServiceProviderFilterConfiguration(
+      @Autowired(required = false) final Saml2ServiceProviderFilter serviceProviderFilter) {
+
+    return (h, c) -> c.authnRequestProcessor(a -> a.authenticationProvider(
+        f -> f.serviceProviderFilter(serviceProviderFilter != null
+            ? serviceProviderFilter
+            : entityDescriptor -> true)));
   }
 
 }

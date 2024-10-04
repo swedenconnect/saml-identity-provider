@@ -103,6 +103,9 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
   /** The {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator} instance. */
   private final NameIDGeneratorFactory nameIDGeneratorFactory;
 
+  /** Filter for checking whether an SP is acceptable. */
+  private final Saml2ServiceProviderFilter serviceProviderFilter;
+
   /**
    * Constructor. See {@link Saml2AuthnRequestAuthenticationProviderConfigurer} for how to configuration and setup.
    *
@@ -114,6 +117,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
    * @param requestedAttributesProcessors extracts the requested attributes
    * @param nameIDGeneratorFactory the {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator}
    *     instance
+   * @param serviceProviderFilter filter for checking whether an SP is acceptable
    */
   public Saml2AuthnRequestAuthenticationProvider(
       final Saml2IdpEventPublisher eventPublisher,
@@ -122,9 +126,11 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
       final AuthnRequestValidator replayValidator,
       final AuthnRequestValidator encryptCapabilitiesValidator,
       final List<RequestedAttributeProcessor> requestedAttributesProcessors,
-      final NameIDGeneratorFactory nameIDGeneratorFactory) {
+      final NameIDGeneratorFactory nameIDGeneratorFactory,
+      final Saml2ServiceProviderFilter serviceProviderFilter) {
     this(eventPublisher, signatureValidator, assertionConsumerServiceValidator, replayValidator,
-        encryptCapabilitiesValidator, requestedAttributesProcessors, nameIDGeneratorFactory, null, null);
+        encryptCapabilitiesValidator, requestedAttributesProcessors, nameIDGeneratorFactory, serviceProviderFilter,
+        null, null);
   }
 
   /**
@@ -138,6 +144,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
    * @param requestedAttributesProcessors extracts the requested attributes
    * @param nameIDGeneratorFactory the {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator}
    *     instance
+   * @param serviceProviderFilter filter for checking whether an SP is acceptable
    * @param signatureMessageExtensionExtractor extracts the {@code SignMessage} extension (may be {@code null})
    * @param principalSelectionProcessor extracts the {@code PrincipalSelection} attribute values (may be
    *     {@code null})
@@ -150,6 +157,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
       final AuthnRequestValidator encryptCapabilitiesValidator,
       final List<RequestedAttributeProcessor> requestedAttributesProcessors,
       final NameIDGeneratorFactory nameIDGeneratorFactory,
+      final Saml2ServiceProviderFilter serviceProviderFilter,
       final SignatureMessageExtensionExtractor signatureMessageExtensionExtractor,
       final PrincipalSelectionProcessor principalSelectionProcessor) {
 
@@ -164,6 +172,8 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
         .orElseThrow(() -> new IllegalArgumentException("At least one RequestedAttributeProcessor must be given"));
     this.nameIDGeneratorFactory =
         Objects.requireNonNull(nameIDGeneratorFactory, "nameIDGeneratorFactory must not be null");
+    this.serviceProviderFilter =
+        Objects.requireNonNull(serviceProviderFilter, "serviceProviderFilter must not be null");
     this.signatureMessageExtensionExtractor = signatureMessageExtensionExtractor;
     this.principalSelectionProcessor = principalSelectionProcessor;
   }
@@ -202,6 +212,13 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
     // If encrypted assertions are required. Make sure the peer has such a cert ...
     //
     this.encryptCapabilitiesValidator.validate(token);
+
+    // Apply the SP filter to see if this SP is acceptable ...
+    //
+    if (!this.serviceProviderFilter.test(token.getPeerMetadata())) {
+      log.info("SP '{}' is not allowed by configuration [{}]", token.getEntityId(), token.getLogString());
+      throw new Saml2ErrorStatusException(Saml2ErrorStatus.NOT_AUTHORIZED);
+    }
 
     // Check the requested NameIDPolicy, and if correct, set up a NameIDGenerator ...
     //

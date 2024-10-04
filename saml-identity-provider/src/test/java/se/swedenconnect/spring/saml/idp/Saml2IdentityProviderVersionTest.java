@@ -15,39 +15,41 @@
  */
 package se.swedenconnect.spring.saml.idp;
 
-import java.util.Properties;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.Properties;
+
 /**
  * Test cases for Saml2IdentityProviderVersion.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2IdentityProviderVersionTest {
-  
+
   private String version;
-  
+
   public Saml2IdentityProviderVersionTest() throws Exception {
     final Properties properties = new Properties();
     properties.load(this.getClass().getClassLoader().getResourceAsStream("version.properties"));
-    
-    this.version = properties.getProperty("saml.idp.version"); 
+
+    this.version = properties.getProperty("saml.idp.version");
     if (this.version.endsWith("-SNAPSHOT")) {
-      this.version = this.version.substring(0, version.length() - 9); 
+      this.version = this.version.substring(0, this.version.length() - 9);
     }
   }
-  
+
   @Test
   public void testUid() {
-    Assertions.assertEquals(this.version.hashCode(), Saml2IdentityProviderVersion.SERIAL_VERSION_UID); 
+    final String[] parts = this.version.split("\\.");
+    final String majorAndMinor = parts[0] + "." + parts[1];
+    Assertions.assertEquals(majorAndMinor.hashCode(), Saml2IdentityProviderVersion.SERIAL_VERSION_UID);
   }
-  
+
   @Test
-  public void testVersion() throws Exception {    
-    Assertions.assertEquals(this.version, Saml2IdentityProviderVersion.getVersion(), 
-        "Expected Saml2IdentityProviderVersion.getVersion() to return " + version);
+  public void testVersion() {
+    Assertions.assertEquals(this.version, Saml2IdentityProviderVersion.getVersion(),
+        "Expected Saml2IdentityProviderVersion.getVersion() to return " + this.version);
   }
 
 }

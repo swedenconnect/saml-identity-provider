@@ -15,20 +15,20 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes;
 
-import java.util.Collection;
-
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
+
+import java.util.Collection;
 
 /**
  * A processor for locating information about which user attributes that are requested.
- * 
+ *
  * @author Martin Lindström
  */
 public interface RequestedAttributeProcessor {
 
   /**
    * Given the {@link Saml2AuthnRequestAuthenticationToken} the method will locate {@link RequestedAttribute}s.
-   * 
+   *
    * @param authnRequestToken the authentication request token
    * @return a (possibly empty) collection of {@link RequestedAttribute}s
    */

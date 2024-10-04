@@ -15,19 +15,18 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.release;
 
+import org.opensaml.saml.saml2.core.Attribute;
+import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.opensaml.saml.saml2.core.Attribute;
-
-import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
-
 /**
  * Default implementation of the {@link AttributeReleaseManager} interface.
- * 
+ *
  * @author Martin Lindström
  */
 public class DefaultAttributeReleaseManager implements AttributeReleaseManager {
@@ -40,7 +39,7 @@ public class DefaultAttributeReleaseManager implements AttributeReleaseManager {
 
   /**
    * Constructor.
-   * 
+   *
    * @param producers the list of producers
    * @param voters the list of voters (if none is supplied, an "include-all" voter is used)
    */

@@ -15,17 +15,16 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider;
 
-import java.util.Collection;
-
 import org.springframework.security.core.Authentication;
-
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 
+import java.util.Collection;
+
 /**
- * An interface used by {@link AbstractUserAuthenticationProvider} to check if an {@link Authentication} object
- * from a previous authentication may be used for SSO.
- * 
+ * An interface used by {@link AbstractUserAuthenticationProvider} to check if an {@link Authentication} object from a
+ * previous authentication may be used for SSO.
+ *
  * @author Martin Lindström
  */
 @FunctionalInterface
@@ -38,12 +37,12 @@ public interface SsoVoter {
   /**
    * Predicate that tells whether the supplied {@link Authentication} object may be used in SSO (according to the
    * voter's logic).
-   * 
+   *
    * @param userAuthn the user authentication object
    * @param token the authentication input token (for the current authentication)
    * @param allowedAuthnContexts a collection of the allowed authentication contexts
    * @return {@link Vote#OK} if the voter is OK with re-using the authentication, {@link Vote#DENY} if the voter states
-   *           that the authentication may noy be re-used, and {@link Vote#DONT_KNOW} if the voter doesn't know
+   *     that the authentication may noy be re-used, and {@link Vote#DONT_KNOW} if the voter doesn't know
    */
   Vote mayReuse(final Saml2UserAuthentication userAuthn, final Saml2UserAuthenticationInputToken token,
       final Collection<String> allowedAuthnContexts);

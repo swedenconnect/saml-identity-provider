@@ -20,7 +20,6 @@ import jakarta.servlet.DispatcherType;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletConnection;
 import jakarta.servlet.ServletContext;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
@@ -37,7 +36,6 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.security.Principal;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -119,7 +117,7 @@ public class OpenSamlUtils {
     }
 
     @Override
-    public ServletInputStream getInputStream() throws IOException {
+    public ServletInputStream getInputStream() {
       return null;
     }
 
@@ -164,7 +162,7 @@ public class OpenSamlUtils {
     }
 
     @Override
-    public BufferedReader getReader() throws IOException {
+    public BufferedReader getReader() {
       return null;
     }
 
@@ -388,30 +386,30 @@ public class OpenSamlUtils {
     }
 
     @Override
-    public boolean authenticate(final HttpServletResponse response) throws IOException, ServletException {
+    public boolean authenticate(final HttpServletResponse response) {
       return false;
     }
 
     @Override
-    public void login(final String username, final String password) throws ServletException {
+    public void login(final String username, final String password) {
     }
 
     @Override
-    public void logout() throws ServletException {
+    public void logout() {
     }
 
     @Override
-    public Collection<Part> getParts() throws IOException, ServletException {
+    public Collection<Part> getParts() {
       return null;
     }
 
     @Override
-    public Part getPart(final String name) throws IOException, ServletException {
+    public Part getPart(final String name) {
       return null;
     }
 
     @Override
-    public <T extends HttpUpgradeHandler> T upgrade(final Class<T> handlerClass) throws IOException, ServletException {
+    public <T extends HttpUpgradeHandler> T upgrade(final Class<T> handlerClass) {
       return null;
     }
 

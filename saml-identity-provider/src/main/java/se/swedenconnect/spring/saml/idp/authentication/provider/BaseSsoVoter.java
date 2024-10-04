@@ -15,15 +15,15 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Collection;
-import java.util.Objects;
-
 import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Collection;
+import java.util.Objects;
 
 /**
  * A {@link SsoVoter} that checks basic conditions. It denies SSO for the following cases:
@@ -32,7 +32,7 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
  * <li>The authentication context used in the original authentication does not match the current request or the ones
  * supported by the IdP.</li>
  * </ul>
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -64,7 +64,7 @@ public class BaseSsoVoter implements SsoVoter {
     //
     if (!allowedAuthnContexts.contains(userAuthn.getSaml2UserDetails().getAuthnContextUri())) {
       log.info("Will not re-use authentication for '{}' - "
-          + "previous authentication was made according to '{}' - not matched by IdP or AuthnRequest [{}]",
+              + "previous authentication was made according to '{}' - not matched by IdP or AuthnRequest [{}]",
           userAuthn.getName(), userAuthn.getSaml2UserDetails().getAuthnContextUri(), token.getLogString());
       return Vote.DENY;
     }
@@ -75,7 +75,7 @@ public class BaseSsoVoter implements SsoVoter {
   /**
    * Assigns the limit for accepting an older authentication for SSO (compared from its original authentication
    * instant). The default is {@link IdentityProviderSettings#SSO_DURATION_LIMIT_DEFAULT}.
-   * 
+   *
    * @param ssoDurationLimit the duration
    */
   public void setSsoDurationLimit(final Duration ssoDurationLimit) {

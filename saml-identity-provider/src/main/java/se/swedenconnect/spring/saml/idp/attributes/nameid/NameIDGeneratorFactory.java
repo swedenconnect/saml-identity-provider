@@ -15,21 +15,20 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.nameid;
 
-import java.util.List;
-
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
-
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+
+import java.util.List;
 
 /**
  * A {@link NameIDGenerator} is assigned each {@link Saml2AuthnRequestAuthenticationToken} when an {@link AuthnRequest}
  * is being processed. When the user has been authenticated and an {@link Assertion} is created this generator will be
  * used to generate a {@code NameID}.
- * 
+ *
  * @author Martin Lindström
  */
 public interface NameIDGeneratorFactory {
@@ -37,7 +36,7 @@ public interface NameIDGeneratorFactory {
   /**
    * Given the requirements for a {@code NameID} in the {@link AuthnRequest} and {@link EntityDescriptor} along with the
    * IdP policy the method returns a {@link NameIDGenerator}.
-   * 
+   *
    * @param authnRequest the {@link AuthnRequest}
    * @param peerMetadata the peer metadata
    * @return a {@link NameIDGenerator}
@@ -50,7 +49,7 @@ public interface NameIDGeneratorFactory {
   /**
    * Gets a list of the {@code NameIDFormat}s that are supported by the factory. The most preferred should be added
    * first.
-   * 
+   *
    * @return a list of the supported formats
    */
   List<String> getSupportedFormats();

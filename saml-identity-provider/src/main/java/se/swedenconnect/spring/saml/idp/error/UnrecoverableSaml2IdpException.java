@@ -15,24 +15,23 @@
  */
 package se.swedenconnect.spring.saml.idp.error;
 
-import java.io.Serial;
-import java.util.Collections;
-import java.util.Optional;
-
+import lombok.Getter;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
-
-import lombok.Getter;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authentication.provider.external.ResumedAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 
+import java.io.Serial;
+import java.util.Collections;
+import java.util.Optional;
+
 /**
  * Base class for unrecoverable SAML errors, i.e., such errors that can not be signalled back to the SAML SP.
- * 
+ *
  * @author Martin Lindström
  */
 public class UnrecoverableSaml2IdpException extends RuntimeException {
@@ -51,7 +50,7 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param authn the current {@link Authentication} object - may be {@code null}
    * @param error the error
    */
@@ -61,7 +60,7 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param error the error
    * @param msg the message
    */
@@ -72,7 +71,7 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param error the error
    * @param cause the cause of the error
    */
@@ -83,7 +82,7 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param error the error
    * @param msg the message
    * @param cause the cause of the error
@@ -97,7 +96,7 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
 
   /**
    * Gets the specific error.
-   * 
+   *
    * @return the error
    */
   public UnrecoverableSaml2IdpError getError() {
@@ -106,7 +105,7 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
 
   /**
    * Gets the ID for the {@link AuthnRequest} message that was processed when the error occurred.
-   * 
+   *
    * @return the ID (or {@code null} if not available)
    */
   public String getAuthnRequestId() {
@@ -115,7 +114,7 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
 
   /**
    * Gets the SAML entityID for the Service Provider that sent the request that was processed when the error occurred.
-   * 
+   *
    * @return the entityID (or {@code null} if not available)
    */
   public String getSpEntityId() {
@@ -124,7 +123,7 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
 
   /**
    * Given the supplied {@link Authentication} object we save data useful for tracing and logging.
-   * 
+   *
    * @param authn the {@link Authentication} (may be {@code null})
    */
   private void setupTraceId(final Authentication authn) {
@@ -152,7 +151,7 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
   /**
    * Dummy {@link Authentication} class that can be used if no {@link Authentication} object is available but the
    * AuthnRequest ID and SP entityID are known.
-   * 
+   *
    * @author Martin Lindström
    */
   public static class TraceAuthentication extends AbstractAuthenticationToken {
@@ -168,7 +167,7 @@ public class UnrecoverableSaml2IdpException extends RuntimeException {
 
     /**
      * Constructor.
-     * 
+     *
      * @param authnRequestId the {@code AuthnRequest} ID
      * @param spEntityId the SP entityID
      */

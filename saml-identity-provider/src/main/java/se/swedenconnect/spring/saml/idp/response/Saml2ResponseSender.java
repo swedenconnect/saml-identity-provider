@@ -15,22 +15,21 @@
  */
 package se.swedenconnect.spring.saml.idp.response;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.util.Objects;
-
-import org.opensaml.core.xml.io.MarshallingException;
-import org.opensaml.core.xml.util.XMLObjectSupport;
-import org.opensaml.saml.saml2.core.Response;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.shared.codec.Base64Support;
 import net.shibboleth.shared.codec.EncodingException;
 import net.shibboleth.shared.xml.SerializeSupport;
+import org.opensaml.core.xml.io.MarshallingException;
+import org.opensaml.core.xml.util.XMLObjectSupport;
+import org.opensaml.saml.saml2.core.Response;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 /**
  * A class for posting back a SAML {@link Response} to the client (Service Provider).
@@ -98,7 +97,8 @@ public class Saml2ResponseSender {
       log.error("Failed to encode Response message - {} [destination: '{}', id: '{}', in-response-to: {}]",
           e.getMessage(), samlResponse.getDestination(), samlResponse.getID(), samlResponse.getInResponseTo(), e);
 
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to encode Response message", e,
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to encode Response message",
+          e,
           new UnrecoverableSaml2IdpException.TraceAuthentication(samlResponse.getInResponseTo(), null));
     }
   }

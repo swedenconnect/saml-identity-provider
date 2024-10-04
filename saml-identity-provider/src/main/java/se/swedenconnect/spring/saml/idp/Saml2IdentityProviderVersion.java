@@ -23,13 +23,13 @@ package se.swedenconnect.spring.saml.idp;
 public final class Saml2IdentityProviderVersion {
 
   private static final int MAJOR = 2;
-  private static final int MINOR = 1;
-  private static final int PATCH = 4;
+  private static final int MINOR = 2;
+  private static final int PATCH = 0;
 
   /**
    * Global serialization value for SAML Identity Provider classes.
    */
-  public static final long SERIAL_VERSION_UID = getVersion().hashCode();
+  public static final long SERIAL_VERSION_UID = (MAJOR + "." + MINOR).hashCode();
 
   /**
    * Gets the version string.

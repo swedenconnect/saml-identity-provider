@@ -24,7 +24,7 @@ import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
  * A {@link PostAuthenticationProcessor} that applies the rules of Sweden Connect, see
  * <a href="https://docs.swedenconnect.se/technical-framework/">Technical Specifications for the Swedish eID
  * Framework</a>.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -50,5 +50,5 @@ public class SwedenConnectPostAuthenticationProcessor implements PostAuthenticat
       }
     }
   }
-  
+
 }

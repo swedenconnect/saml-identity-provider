@@ -16,7 +16,6 @@
 package se.swedenconnect.spring.saml.idp.events;
 
 import org.opensaml.saml.saml2.core.AuthnRequest;
-
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 
@@ -25,7 +24,7 @@ import java.io.Serial;
 /**
  * Event that signals that a SAML2 {@link AuthnRequest} has been received. Note that the request has not been verified
  * at this point.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2AuthnRequestReceivedEvent extends AbstractSaml2IdpEvent {
@@ -35,7 +34,7 @@ public class Saml2AuthnRequestReceivedEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Constructor.
-   * 
+   *
    * @param token a {@link Saml2AuthnRequestAuthenticationToken}
    */
   public Saml2AuthnRequestReceivedEvent(final Saml2AuthnRequestAuthenticationToken token) {
@@ -44,7 +43,7 @@ public class Saml2AuthnRequestReceivedEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Gets the {@link Saml2AuthnRequestAuthenticationToken} for this event.
-   * 
+   *
    * @return a {@link Saml2AuthnRequestAuthenticationToken}
    * @see #getSource()
    */
@@ -54,7 +53,7 @@ public class Saml2AuthnRequestReceivedEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Gets the SAML entityID of the SP that sent the {@code AuthnRequest} message.
-   * 
+   *
    * @return the SP SAML entityID
    */
   public String getSpEntityId() {
@@ -63,7 +62,7 @@ public class Saml2AuthnRequestReceivedEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Gets the received {@link AuthnRequest} message.
-   * 
+   *
    * @return the {@link AuthnRequest}
    */
   public AuthnRequest getAuthnRequest() {

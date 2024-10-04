@@ -15,17 +15,17 @@
  */
 package se.swedenconnect.spring.saml.idp.extensions;
 
-import java.io.Serial;
-import java.io.Serializable;
-
 import org.springframework.util.Assert;
-
 import se.swedenconnect.opensaml.sweid.saml2.signservice.sap.SADRequest;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 /**
  * A representation of the {@code SADRequest} extension as defined in
- * <a href="https://docs.swedenconnect.se/technical-framework/updates/13_-_Signature_Activation_Protocol.html">Signature
+ * <a
+ * href="https://docs.swedenconnect.se/technical-framework/updates/13_-_Signature_Activation_Protocol.html">Signature
  * Activation Protocol for Federated Signing</a>.
  *
  * @author Martin Lindström
@@ -65,7 +65,7 @@ public class SadRequestExtension implements Serializable {
 
   /**
    * Gets the ID of the {@link SADRequest}.
-   * 
+   *
    * @return the ID of the {@link SADRequest}
    */
   public String getId() {
@@ -74,7 +74,7 @@ public class SadRequestExtension implements Serializable {
 
   /**
    * Gets the requester ID.
-   * 
+   *
    * @return the requester ID
    */
   public String getRequesterId() {
@@ -83,7 +83,7 @@ public class SadRequestExtension implements Serializable {
 
   /**
    * Gets the sign request ID.
-   * 
+   *
    * @return the sign request ID
    */
   public String getSignRequestId() {
@@ -92,7 +92,7 @@ public class SadRequestExtension implements Serializable {
 
   /**
    * Gets the document count.
-   * 
+   *
    * @return the document count
    */
   public Integer getDocumentCount() {

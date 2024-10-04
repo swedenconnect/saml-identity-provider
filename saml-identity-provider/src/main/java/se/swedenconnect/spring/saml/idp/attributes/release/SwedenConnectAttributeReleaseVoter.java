@@ -15,9 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.release;
 
-import org.opensaml.saml.saml2.core.Attribute;
-
 import lombok.extern.slf4j.Slf4j;
+import org.opensaml.saml.saml2.core.Attribute;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeUtils;
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
 import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryConstants;
@@ -27,7 +26,7 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
  * A voter functioning according to the rules specified in
  * <a href="https://docs.swedenconnect.se/technical-framework/">Technical Specifications for the Swedish eID
  * Framework</a>.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -61,21 +60,22 @@ public class SwedenConnectAttributeReleaseVoter implements AttributeReleaseVoter
         }
         else {
           log.info("Attribute '{}' will not be released since it is a coordination number and the SP has"
-              + " not opted-in ({} not declared) [{}]", attribute.getName(),
+                  + " not opted-in ({} not declared) [{}]", attribute.getName(),
               EntityCategoryConstants.GENERAL_CATEGORY_ACCEPTS_COORDINATION_NUMBER.getUri(),
               token.getAuthnRequestToken().getLogString());
 
           return AttributeReleaseVote.DONT_INCLUDE;
         }
-      }      
+      }
     }
 
     return AttributeReleaseVote.DONT_KNOW;
   }
 
   /**
-   * Predicate that tells if the supplied personal identity number is a Swedish coordination number (samordningsnummer).
-   * 
+   * Predicate that tells if the supplied personal identity number is a Swedish coordination number
+   * (samordningsnummer).
+   *
    * @param id the personal identity number
    * @return true if the number is a coordination number and false otherwise
    */

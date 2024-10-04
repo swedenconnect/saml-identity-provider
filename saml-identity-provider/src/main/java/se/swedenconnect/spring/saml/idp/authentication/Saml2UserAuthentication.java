@@ -15,6 +15,12 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.authnrequest.AuthenticationRequirements;
+import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.Instant;
@@ -23,17 +29,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.Authentication;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
-import se.swedenconnect.spring.saml.idp.authnrequest.AuthenticationRequirements;
-import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
-
 /**
  * An {@link Authentication} token that represents the authentication of a user. This will later be translated into a
  * SAML Assertion.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2UserAuthentication extends AbstractAuthenticationToken {
@@ -66,7 +65,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
   /**
    * Constructor.
-   * 
+   *
    * @param userDetails the user details
    */
   public Saml2UserAuthentication(final Saml2UserDetails userDetails) {
@@ -86,7 +85,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
   /**
    * Gets the {@link Saml2UserDetails}.
-   * 
+   *
    * @return the {@link Saml2UserDetails}
    */
   public Saml2UserDetails getSaml2UserDetails() {
@@ -101,7 +100,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
    * for future use. This may be dependent on other parameters. However, if the flag is {@code false} the authentication
    * will not be saved.
    * </p>
-   * 
+   *
    * @return whether the authentication object should be saved for future SSO
    */
   public boolean isReuseAuthentication() {
@@ -111,7 +110,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
   /**
    * Assigns the flag telling whether this {@link Authentication} object may be "re-used", i.e., whether it may be used
    * in SSO-scenarios.
-   * 
+   *
    * @param reuseAuthentication whether the authentication object should be saved for future SSO
    */
   public void setReuseAuthentication(final boolean reuseAuthentication) {
@@ -128,7 +127,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
   /**
    * Gets the authentication request token.
-   * 
+   *
    * @return the authentication request token
    */
   public Saml2AuthnRequestAuthenticationToken getAuthnRequestToken() {
@@ -137,7 +136,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
   /**
    * Assigns the authentication request token.
-   * 
+   *
    * @param authnRequestToken the authentication request token
    */
   public void setAuthnRequestToken(
@@ -146,7 +145,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
     if (this.authnRequestToken != null) {
       if (this.usage == null) {
-        this.usage = new AuthenticationInfoTrack(this.userDetails.getAuthnInstant(), 
+        this.usage = new AuthenticationInfoTrack(this.userDetails.getAuthnInstant(),
             this.authnRequestToken.getEntityId(), this.authnRequestToken.getAuthnRequest().getID());
       }
       else {
@@ -167,7 +166,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
   /**
    * Gets the authentication requirements.
-   * 
+   *
    * @return the authentication requirements
    */
   public AuthenticationRequirements getAuthnRequirements() {
@@ -176,7 +175,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
   /**
    * Assigns the authentication requirements.
-   * 
+   *
    * @param authnRequirements the authentication requirements
    */
   public void setAuthnRequirements(final AuthenticationRequirements authnRequirements) {
@@ -194,7 +193,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
   /**
    * Gets the tracking of all the times this user authentication object has been used.
-   * 
+   *
    * @return an {@link AuthenticationInfoTrack}
    */
   public AuthenticationInfoTrack getAuthenticationInfoTrack() {
@@ -203,7 +202,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
   /**
    * Predicate that tells whether the authentication object was issued based on a previous authentication.
-   * 
+   *
    * @return {@code true} if the authentication object is based on a previous authentication and {@code false} otherwise
    */
   public boolean isSsoApplied() {
@@ -223,7 +222,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
     /**
      * Constructor.
-     * 
+     *
      * @param authnInstant the instant for the original authentication
      * @param sp the entityID of the SP that requested the original authentication
      * @param authnRequestId the ID of the {@code AuthnRequest} that resulted in this authentication object
@@ -238,7 +237,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
     /**
      * Registers the use of the user authentication object.
-     * 
+     *
      * @param instant the instant when the authentication was used
      * @param sp the entityID of the SP that ordered the authentication
      * @param authnRequestId the ID of the {@code AuthnRequest} that resulted in this authentication object
@@ -252,7 +251,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
     /**
      * Gets information about the first time the user authentication object was used.
-     * 
+     *
      * @return the authentication instant and the SP that requested the original authentication
      */
     public AuthnUse getOriginalAuthn() {
@@ -261,7 +260,7 @@ public class Saml2UserAuthentication extends AbstractAuthenticationToken {
 
     /**
      * Gets a list of all usages of the user authentication object.
-     * 
+     *
      * @return a list of usage records
      */
     public List<AuthnUse> getAllAuthnUsages() {

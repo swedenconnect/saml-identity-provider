@@ -15,11 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest;
 
-import java.io.Serial;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Optional;
-
+import lombok.Getter;
+import lombok.Setter;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.saml.common.messaging.context.SAMLBindingContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
@@ -27,9 +24,6 @@ import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
-
-import lombok.Getter;
-import lombok.Setter;
 import se.swedenconnect.opensaml.common.utils.SerializableOpenSamlObject;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
 import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryConstants;
@@ -37,6 +31,11 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGenerator;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+
+import java.io.Serial;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * An {@link Authentication} object for a SAML authentication request. This token will act as the input for the user
@@ -168,7 +167,8 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
     return Optional.ofNullable(this.messageContext.getSubcontext(SAMLBindingContext.class))
         .map(SAMLBindingContext::getBindingUri)
         .orElseThrow(
-            () -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Invalid message context", this));
+            () -> new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Invalid message context",
+                this));
   }
 
   /**

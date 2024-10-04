@@ -17,7 +17,6 @@ package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
@@ -34,7 +33,7 @@ import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProce
  * The {@link #getResumeAuthnPath()} tells the path on where we expect the result ({@link ResumedAuthenticationToken})
  * to be delivered and this will lead to that the {@link #resumeAuthentication(ResumedAuthenticationToken)} is invoked.
  * </p>
- * 
+ *
  * @author Martin Lindström
  */
 public interface UserRedirectAuthenticationProvider extends UserAuthenticationProvider {
@@ -62,7 +61,7 @@ public interface UserRedirectAuthenticationProvider extends UserAuthenticationPr
   /**
    * Is invoked when the user has been authenticated outside the SAML IdP Spring Security flow and the user agent has
    * been re-directed back to the {@link #getResumeAuthnPath()}.
-   * 
+   *
    * @param token the {@link ResumedAuthenticationToken}
    * @return a {@link Saml2UserAuthentication}
    * @throws Saml2ErrorStatusException for authentication errors
@@ -83,7 +82,7 @@ public interface UserRedirectAuthenticationProvider extends UserAuthenticationPr
    * Predicate that tells whether this provider supports the supplied {@link Authentication} object. With "supports" in
    * this case we mean: Can the supplied object be interpreted and give the input in the creation of a
    * {@link Saml2UserAuthentication} token.
-   * 
+   *
    * @param authentication the {@link Authentication} object to test
    * @return {@code true} if the object is supported and {@code false} otherwise
    */
@@ -95,14 +94,14 @@ public interface UserRedirectAuthenticationProvider extends UserAuthenticationPr
    * repository to commit, or save, the result of an external authentication process (an {@link Authentication} object)
    * before the user agent is redirected back to the Spring Security flow. These method returns the
    * {@link ExternalAuthenticatorTokenRepository} that is used.
-   * 
+   *
    * @return an {@link ExternalAuthenticatorTokenRepository}
    */
   ExternalAuthenticatorTokenRepository getTokenRepository();
 
   /**
    * Gets the path that the user agent should be redirected to in order to start the "external authentication process".
-   * 
+   *
    * @return a path
    */
   String getAuthnPath();
@@ -110,7 +109,7 @@ public interface UserRedirectAuthenticationProvider extends UserAuthenticationPr
   /**
    * Gets the path that is used by the "external authentication process" when redirecting the user agent back to the
    * SAML IdP Spring Security flow.
-   * 
+   *
    * @return a path
    */
   String getResumeAuthnPath();

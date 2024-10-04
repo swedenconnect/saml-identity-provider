@@ -15,9 +15,11 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest;
 
-import java.util.Objects;
-import java.util.Optional;
-
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.resolver.CriteriaSet;
+import net.shibboleth.shared.resolver.ResolverException;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.messaging.context.MessageContext;
@@ -45,19 +47,16 @@ import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationConverter;
 import org.springframework.util.StringUtils;
-
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.shared.component.ComponentInitializationException;
-import net.shibboleth.shared.resolver.CriteriaSet;
-import net.shibboleth.shared.resolver.ResolverException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.utils.OpenSamlUtils;
 
+import java.util.Objects;
+import java.util.Optional;
+
 /**
- * An {@link AuthenticationConverter} responsible of decoding a SAML authentication request and checking that is is
+ * An {@link AuthenticationConverter} responsible for decoding a SAML authentication request and checking that it is
  * correct. It will produce an {@link Saml2AuthnRequestAuthenticationToken}.
  *
  * @author Martin Lindström
@@ -91,7 +90,8 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
    * @param metadataResolver the metadata resolver that we use when finding SP metadata
    * @param settings the IdP settings
    */
-  public Saml2AuthnRequestAuthenticationConverter(final MetadataResolver metadataResolver, final IdentityProviderSettings settings) {
+  public Saml2AuthnRequestAuthenticationConverter(final MetadataResolver metadataResolver,
+      final IdentityProviderSettings settings) {
     this.metadataResolver = Objects.requireNonNull(metadataResolver, "metadataResolver must not be null");
 
     // Initialize the decoders
@@ -223,7 +223,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
           new EntityRoleCriterion(SPSSODescriptor.DEFAULT_ELEMENT_NAME),
           new ProtocolCriterion(SAMLConstants.SAML20P_NS));
       try {
-        final EntityDescriptor spMetadata = metadataResolver.resolveSingle(criteria);
+        final EntityDescriptor spMetadata = this.metadataResolver.resolveSingle(criteria);
         if (spMetadata == null) {
           final String msg = String.format("Failed to lookup valid SAML metadata for SP %s", peerEntityId);
           log.info("{}", msg);
@@ -274,7 +274,8 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       return this.httpPostDecoder;
     }
     else {
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Illegal HTTP verb - " + method, null);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Illegal HTTP verb - " + method,
+          null);
     }
   }
 

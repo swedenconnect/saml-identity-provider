@@ -15,15 +15,14 @@
  */
 package se.swedenconnect.spring.saml.idp.settings;
 
+import lombok.extern.slf4j.Slf4j;
+import org.opensaml.saml.metadata.resolver.MetadataResolver;
+import org.springframework.util.Assert;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
 import java.io.Serial;
 import java.time.Duration;
 import java.util.Map;
-
-import org.opensaml.saml.metadata.resolver.MetadataResolver;
-import org.springframework.util.Assert;
-
-import lombok.extern.slf4j.Slf4j;
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Identity Provider configuration settings.

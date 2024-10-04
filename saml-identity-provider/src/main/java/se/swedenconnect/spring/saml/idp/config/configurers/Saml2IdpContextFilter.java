@@ -15,21 +15,21 @@
  */
 package se.swedenconnect.spring.saml.idp.config.configurers;
 
-import java.io.IOException;
-import java.io.Serial;
-import java.util.Objects;
-
-import org.springframework.web.filter.OncePerRequestFilter;
-
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.web.filter.OncePerRequestFilter;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContext;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+
+import java.io.IOException;
+import java.io.Serial;
+import java.util.Objects;
 
 /**
  * A {@code Filter} that associates the {@link Saml2IdpContext} to the {@link Saml2IdpContextHolder}.
@@ -52,8 +52,8 @@ class Saml2IdpContextFilter extends OncePerRequestFilter {
   /** {@inheritDoc} */
   @Override
   protected void doFilterInternal(
-      final HttpServletRequest request, final HttpServletResponse response, final FilterChain filterChain)
-      throws ServletException, IOException {
+      @Nonnull final HttpServletRequest request, @Nonnull final HttpServletResponse response,
+      final FilterChain filterChain) throws ServletException, IOException {
 
     try {
       Saml2IdpContextHolder.setContext(new DefaultIdentityProviderContext(this.settings));

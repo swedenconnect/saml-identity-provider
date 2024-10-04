@@ -16,14 +16,13 @@
 package se.swedenconnect.spring.saml.idp.events;
 
 import org.springframework.context.ApplicationEvent;
-
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 import java.io.Serial;
 
 /**
  * Abstract base class for all events published by the SAML IdP.
- * 
+ *
  * @author Martin Lindström
  */
 public abstract class AbstractSaml2IdpEvent extends ApplicationEvent {
@@ -33,7 +32,7 @@ public abstract class AbstractSaml2IdpEvent extends ApplicationEvent {
 
   /**
    * Constructor.
-   * 
+   *
    * @param source the object with which the event is associated (never {@code null})
    */
   public AbstractSaml2IdpEvent(final Object source) {

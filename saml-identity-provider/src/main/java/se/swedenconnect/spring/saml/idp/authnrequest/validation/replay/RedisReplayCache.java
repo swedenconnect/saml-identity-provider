@@ -15,14 +15,14 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest.validation.replay;
 
-import java.time.Instant;
-import java.util.Objects;
-
+import jakarta.annotation.Nonnull;
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.storage.ReplayCache;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ZSetOperations;
 
-import lombok.extern.slf4j.Slf4j;
+import java.time.Instant;
+import java.util.Objects;
 
 /**
  * A generic Redis {@link ReplayCache} implementation.
@@ -46,7 +46,7 @@ public class RedisReplayCache implements ReplayCache {
 
   /** {@inheritDoc} */
   @Override
-  public boolean check(final String context, final String key, final Instant expires) {
+  public boolean check(@Nonnull final String context, @Nonnull final String key, @Nonnull final Instant expires) {
 
     // Remove expired entries ...
     //

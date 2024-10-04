@@ -17,6 +17,8 @@ https://docs.swedenconnect.se/technical-framework).
 
 - [Example Application](example.md)
 
+- [Release Notes](release-notes.md)
+
 -----
 
 Copyright &copy; 2022-2024, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se). Licensed under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).

@@ -15,15 +15,9 @@
  */
 package se.swedenconnect.spring.saml.idp.audit.data;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +26,11 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.audit.data.Saml2AssertionAuditData.SamlAttribute;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserDetails;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.List;
 
 /**
  * Audit data including information about the user authentication.
@@ -99,7 +98,8 @@ public class Saml2UserAuthenticationInfoAuditData extends Saml2AuditData {
   }
 
   /**
-   * Creates a {@link Saml2UserAuthenticationInfoAuditData} based on the supplied {@link Saml2UserAuthentication} token.
+   * Creates a {@link Saml2UserAuthenticationInfoAuditData} based on the supplied {@link Saml2UserAuthentication}
+   * token.
    *
    * @param token a {@link Saml2UserAuthentication} object
    * @param signServicePeer if the peer is a sign service
@@ -141,7 +141,7 @@ public class Saml2UserAuthenticationInfoAuditData extends Saml2AuditData {
   @Override
   public String toString() {
     final String s = String.format("authn-instant='%s', subject-locality='%s', authn-context-class-ref='%s', "
-        + "authn-authority='%s', user-attributes=%s, sign-message-displayed='%s', allowed-to-reuse='%s'",
+            + "authn-authority='%s', user-attributes=%s, sign-message-displayed='%s', allowed-to-reuse='%s'",
         this.authnInstant, this.subjectLocality, this.authnContextClassRef, this.authnAuthority, this.userAttributes,
         this.signMessageDisplayed, this.allowedToReuse);
     if (this.ssoInformation != null) {
