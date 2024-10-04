@@ -15,6 +15,9 @@
  */
 package se.swedenconnect.spring.saml.idp.audit.repository;
 
+import org.apache.commons.io.FilenameUtils;
+import org.springframework.util.StringUtils;
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.nio.file.Files;
@@ -31,9 +34,6 @@ import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-
-import org.apache.commons.io.FilenameUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * A wrapper class to Java Util Logging's {@link FileHandler} that supports "rolling files" per date.
@@ -129,7 +129,7 @@ class DateRollingFileHandler extends Handler {
       final String extension = FilenameUtils.getExtension(path);
       final String backupPath = StringUtils.hasText(extension)
           ? String.format("%s-%s.%s",
-              path.substring(0, path.length() - extension.length() - 1), dateString, extension)
+          path.substring(0, path.length() - extension.length() - 1), dateString, extension)
           : String.format("%s-%s", path, dateString);
 
       Files.move(this.logFile, Path.of(backupPath), StandardCopyOption.REPLACE_EXISTING);

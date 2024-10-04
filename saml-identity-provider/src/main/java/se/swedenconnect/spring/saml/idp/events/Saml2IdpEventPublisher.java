@@ -15,21 +15,20 @@
  */
 package se.swedenconnect.spring.saml.idp.events;
 
-import java.util.Objects;
-
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.Response;
 import org.springframework.context.ApplicationEventPublisher;
-
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
+import java.util.Objects;
+
 /**
  * A publisher for SAML IdP events.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2IdpEventPublisher {
@@ -39,7 +38,7 @@ public class Saml2IdpEventPublisher {
 
   /**
    * Constructor.
-   * 
+   *
    * @param publisher the system's event publisher
    */
   public Saml2IdpEventPublisher(final ApplicationEventPublisher publisher) {
@@ -48,7 +47,7 @@ public class Saml2IdpEventPublisher {
 
   /**
    * Publishes a {@link Saml2AuthnRequestReceivedEvent} indicating that a SAML {@code AuthnRequest} was received.
-   * 
+   *
    * @param token the {@link Saml2AuthnRequestAuthenticationToken}
    */
   public void publishAuthnRequestReceived(final Saml2AuthnRequestAuthenticationToken token) {
@@ -57,7 +56,7 @@ public class Saml2IdpEventPublisher {
 
   /**
    * Publishes a {@link Saml2SuccessResponseEvent} indicating that a successful SAML response is about to be sent.
-   * 
+   *
    * @param response the SAML response
    * @param assertion the SAML Assertion (before being encrypted)
    * @param spEntityId the entityID of the SP that we are sending the response to
@@ -68,7 +67,7 @@ public class Saml2IdpEventPublisher {
 
   /**
    * Publishes a {@link Saml2ErrorResponseEvent} indicating that a SAML error response is about to be sent.
-   * 
+   *
    * @param response the SAML {@link Response}
    * @param entityId the SAML entityID of the recipient
    */
@@ -79,7 +78,7 @@ public class Saml2IdpEventPublisher {
   /**
    * Publishes a {@link Saml2PreUserAuthenticationEvent}. This is fired before the user is authenticated but after all
    * the input SAML processing has been performed.
-   * 
+   *
    * @param token a {@link Saml2UserAuthenticationInputToken} token
    */
   public void publishBeforeUserAuthenticated(final Saml2UserAuthenticationInputToken token) {
@@ -89,7 +88,7 @@ public class Saml2IdpEventPublisher {
   /**
    * Publishes a {@link Saml2PostUserAuthenticationEvent} indicating that an {@link UserAuthenticationProvider} has
    * authenticated the user.
-   * 
+   *
    * @param authn the {@link Saml2UserAuthentication}
    */
   public void publishUserAuthenticated(final Saml2UserAuthentication authn) {
@@ -99,7 +98,7 @@ public class Saml2IdpEventPublisher {
   /**
    * Publishes a {@link Saml2UnrecoverableErrorEvent} indicating that an {@link UnrecoverableSaml2IdpException} has been
    * thrown.
-   * 
+   *
    * @param error the {@link UnrecoverableSaml2IdpException} error
    */
   public void publishUnrecoverableSamlError(final UnrecoverableSaml2IdpException error) {

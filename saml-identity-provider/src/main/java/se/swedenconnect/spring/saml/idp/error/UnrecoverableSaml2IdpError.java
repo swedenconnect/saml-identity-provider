@@ -19,7 +19,7 @@ import org.springframework.context.MessageSource;
 
 /**
  * An enum representing unrecoverable SAML errors, i.e., such errors that can not be signalled back to the SAML SP.
- * 
+ *
  * @author Martin Lindström
  */
 public enum UnrecoverableSaml2IdpError {
@@ -39,7 +39,7 @@ public enum UnrecoverableSaml2IdpError {
    * For replay (attacks) of authentication requests.
    */
   REPLAY_DETECTED("idp.error.unrecoverable.replay", "Authentication request message has already been processed"),
-  
+
   /**
    * If timestamp checks fails.
    */
@@ -90,7 +90,7 @@ public enum UnrecoverableSaml2IdpError {
 
   /**
    * Gets the message code representing the error. This code may be used when mapping to a {@link MessageSource}.
-   * 
+   *
    * @return the message code
    */
   public String getMessageCode() {
@@ -99,7 +99,7 @@ public enum UnrecoverableSaml2IdpError {
 
   /**
    * Gets the textual representation of the error. May be used in logs.
-   * 
+   *
    * @return the textual representation of the error
    */
   public String getDescription() {
@@ -108,7 +108,7 @@ public enum UnrecoverableSaml2IdpError {
 
   /**
    * Constructor.
-   * 
+   *
    * @param messageCode the error message code
    * @param description a textual description
    */

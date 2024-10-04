@@ -15,11 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.config.configurers;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
+import lombok.extern.slf4j.Slf4j;
+import net.shibboleth.shared.component.ComponentInitializationException;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.opensaml.saml.metadata.resolver.impl.PredicateRoleDescriptorResolver;
 import org.opensaml.saml.security.impl.MetadataCredentialResolver;
@@ -36,9 +33,6 @@ import org.springframework.security.web.context.SecurityContextHolderFilter;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
-
-import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.shared.component.ComponentInitializationException;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 import se.swedenconnect.spring.saml.idp.settings.CredentialSettings;
@@ -46,6 +40,11 @@ import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderUtils;
 import se.swedenconnect.spring.saml.idp.web.filters.Saml2ErrorResponseProcessingFilter;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * An {@link AbstractHttpConfigurer} for SAML2 Identity Provider support.
@@ -140,7 +139,8 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
       httpSecurity.setSharedObject(MetadataResolver.class, metadataResolver);
     }
     else {
-      metadataResolver = MetadataProviderUtils.createMetadataResolver(identityProviderSettings.getMetadataProviderConfiguration());
+      metadataResolver =
+          MetadataProviderUtils.createMetadataResolver(identityProviderSettings.getMetadataProviderConfiguration());
       httpSecurity.setSharedObject(MetadataResolver.class, metadataResolver);
     }
 
@@ -237,7 +237,6 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
    * @param type the type
    * @return the configurer or {@code null}
    */
-  @SuppressWarnings("unchecked")
   private <T> T getConfigurer(final Class<T> type) {
     return (T) this.configurers.get(type);
   }

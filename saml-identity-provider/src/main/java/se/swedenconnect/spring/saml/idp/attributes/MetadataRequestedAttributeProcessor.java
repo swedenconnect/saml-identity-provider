@@ -15,21 +15,20 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes;
 
+import lombok.extern.slf4j.Slf4j;
+import org.opensaml.saml.common.xml.SAMLConstants;
+import org.opensaml.saml.saml2.metadata.AttributeConsumingService;
+import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
+import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
 
-import org.opensaml.saml.common.xml.SAMLConstants;
-import org.opensaml.saml.saml2.metadata.AttributeConsumingService;
-import org.opensaml.saml.saml2.metadata.SPSSODescriptor;
-
-import lombok.extern.slf4j.Slf4j;
-import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
-
 /**
  * A {@link RequestedAttributeProcessor} that will check if the SAML SP metadata entry contains any requested attributes
  * by locating them in the {@code AttributeConsumingService} element.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j

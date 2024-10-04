@@ -460,7 +460,7 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
 
     final Saml2IdpMetadataEndpointFilter filter =
         new Saml2IdpMetadataEndpointFilter(container, this.requestMatcher);
-    httpSecurity.addFilterBefore(postProcess(filter), AbstractPreAuthenticatedProcessingFilter.class);
+    httpSecurity.addFilterBefore(this.postProcess(filter), AbstractPreAuthenticatedProcessingFilter.class);
   }
 
   /** {@inheritDoc} */

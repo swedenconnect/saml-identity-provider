@@ -29,7 +29,7 @@ public final class Saml2IdentityProviderVersion {
   /**
    * Global serialization value for SAML Identity Provider classes.
    */
-  public static final long SERIAL_VERSION_UID = getVersion().hashCode();
+  public static final long SERIAL_VERSION_UID = (MAJOR + "." + MINOR).hashCode();
 
   /**
    * Gets the version string.

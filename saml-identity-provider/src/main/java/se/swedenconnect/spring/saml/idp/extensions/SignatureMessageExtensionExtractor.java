@@ -22,7 +22,7 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 /**
  * The contract for extracting, and possibly decrypting, a {@code SignMessage} extension. See
  * {@link SignatureMessageExtension}.
- * 
+ *
  * @author Martin Lindström
  */
 public interface SignatureMessageExtensionExtractor {
@@ -30,7 +30,7 @@ public interface SignatureMessageExtensionExtractor {
   /**
    * Given an authentication request, the method will extract the {@code SignMessage} extension, and if it is encrypted
    * also decrypt it.
-   * 
+   *
    * @param token the authentication request token
    * @return a {@link SignatureMessageExtension} or {@code null} if no {@code SignMessage} is available
    * @throws Saml2ErrorStatusException for decryption errors

@@ -18,7 +18,6 @@ package se.swedenconnect.spring.saml.idp.audit.data;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import lombok.Getter;
 import lombok.Setter;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
@@ -28,7 +27,7 @@ import java.io.Serial;
 
 /**
  * Audit data for unrecoverable errors that are reported in the UI.
- * 
+ *
  * @author Martin Lindström
  */
 @JsonInclude(Include.NON_EMPTY)
@@ -57,7 +56,7 @@ public class Saml2UnrecoverableErrorAuditData extends Saml2AuditData {
 
   /**
    * Creates a {@link Saml2UnrecoverableErrorAuditData} given a {@link UnrecoverableSaml2IdpException}.
-   * 
+   *
    * @param error the exception
    * @return a {@link Saml2UnrecoverableErrorAuditData}
    */

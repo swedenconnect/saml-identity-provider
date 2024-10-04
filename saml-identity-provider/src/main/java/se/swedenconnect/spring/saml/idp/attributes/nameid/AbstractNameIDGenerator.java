@@ -15,16 +15,15 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.nameid;
 
-import java.io.Serial;
-import java.util.Optional;
-
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.NameID;
-
-import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
+
+import java.io.Serial;
+import java.util.Optional;
 
 /**
  * Abstract base class for the {@link NameIDGenerator} interface.
@@ -45,7 +44,7 @@ public abstract class AbstractNameIDGenerator implements NameIDGenerator {
 
   /**
    * Constructor.
-   * 
+   *
    * @param nameQualifier the name qualifier, usually the IdP entityID
    */
   public AbstractNameIDGenerator(final String nameQualifier) {
@@ -103,7 +102,7 @@ public abstract class AbstractNameIDGenerator implements NameIDGenerator {
 
   /**
    * Gets the name qualifier, usually the IdP entityID.
-   * 
+   *
    * @return the name qualifier
    */
   protected String getNameQualifier() {
@@ -112,7 +111,7 @@ public abstract class AbstractNameIDGenerator implements NameIDGenerator {
 
   /**
    * Gets SP name qualifier.
-   * 
+   *
    * @return the SP name qualifier
    */
   protected String getSpNameQualifier() {

@@ -15,12 +15,11 @@
  */
 package se.swedenconnect.spring.saml.idp.settings;
 
+import org.springframework.util.Assert;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
 import java.io.Serial;
 import java.util.Map;
-
-import org.springframework.util.Assert;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Settings for the IdP endpoints.
@@ -40,7 +39,7 @@ public class EndpointSettings extends AbstractSettings {
   private EndpointSettings(final Map<String, Object> settings) {
     super(settings);
   }
-  
+
   /**
    * Default for the {@link #SAML_REDIRECT_AUTHN_ENDPOINT}.
    */
@@ -64,7 +63,7 @@ public class EndpointSettings extends AbstractSettings {
    * Default for the {@link #SAML_POST_AUTHN_ENDPOINT}.
    */
   public static final String SAML_POST_AUTHN_ENDPOINT_DEFAULT = "/saml2/post/authn";
-  
+
   /**
    * The endpoint where the Identity Provider receives authentication requests via HTTP POST.
    */
@@ -86,8 +85,8 @@ public class EndpointSettings extends AbstractSettings {
   public static final String SAML_HOK_REDIRECT_AUTHN_ENDPOINT = "hok-redirect-authn";
 
   /**
-   * Gets the endpoint where the Identity Provider receives authentication requests via HTTP redirect where Holder-of-key
-   * (HoK) is used.
+   * Gets the endpoint where the Identity Provider receives authentication requests via HTTP redirect where
+   * Holder-of-key (HoK) is used.
    *
    * @return the HoK redirect authentication endpoint
    */
@@ -96,8 +95,8 @@ public class EndpointSettings extends AbstractSettings {
   }
 
   /**
-   * The endpoint where the Identity Provider receives authentication requests via HTTP POST where Holder-of-key
-   * (HoK) is used.
+   * The endpoint where the Identity Provider receives authentication requests via HTTP POST where Holder-of-key (HoK)
+   * is used.
    */
   public static final String SAML_HOK_POST_AUTHN_ENDPOINT = "hok-post-authn";
 
@@ -110,7 +109,7 @@ public class EndpointSettings extends AbstractSettings {
   public String getHokPostAuthnEndpoint() {
     return this.getSetting(SAML_HOK_POST_AUTHN_ENDPOINT);
   }
-  
+
   /**
    * Default for the {@link #SAML_METADATA_PUBLISH_ENDPOINT} setting.
    */
@@ -179,8 +178,8 @@ public class EndpointSettings extends AbstractSettings {
     }
 
     /**
-     * Assigns the endpoint where the Identity Provider receives authentication requests via HTTP redirect
-     * where Holder-of-key (HoK) is used.
+     * Assigns the endpoint where the Identity Provider receives authentication requests via HTTP redirect where
+     * Holder-of-key (HoK) is used.
      *
      * @param hokRedirectAuthnEndpoint the HoK redirect authentication endpoint
      * @return the builder
@@ -190,8 +189,8 @@ public class EndpointSettings extends AbstractSettings {
     }
 
     /**
-     * Assigns the endpoint where the Identity Provider receives authentication requests via HTTP POST
-     * where Holder-of-key (HoK) is used.
+     * Assigns the endpoint where the Identity Provider receives authentication requests via HTTP POST where
+     * Holder-of-key (HoK) is used.
      *
      * @param hokPostAuthnEndpoint the HoK POST authentication endpoint
      * @return the builder

@@ -15,23 +15,23 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
-import java.util.List;
-
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
+
+import java.util.List;
 
 /**
  * A delegating {@link PostAuthenticationProcessor} that invokes
  * {@link PostAuthenticationProcessor#process(Saml2UserAuthentication)} on all configured processors (in order).
- * 
+ *
  * @author Martin Lindström
  */
 public class DelegatingPostAuthenticationProcessor implements PostAuthenticationProcessor {
-  
+
   private final List<PostAuthenticationProcessor> processors;
-  
+
   /**
    * Constructor.
-   * 
+   *
    * @param processors the processors (may be {@code null} or empty)
    */
   public DelegatingPostAuthenticationProcessor(final List<PostAuthenticationProcessor> processors) {

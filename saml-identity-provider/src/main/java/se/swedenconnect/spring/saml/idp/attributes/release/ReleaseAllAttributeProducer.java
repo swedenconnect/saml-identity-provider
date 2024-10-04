@@ -15,18 +15,17 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.release;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.opensaml.saml.saml2.core.Attribute;
-
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * An {@link AttributeProducer} that releases all attributes found in the supplied
  * {@link Saml2UserAuthentication} token.
- * 
+ *
  * @author Martin Lindström
  */
 public class ReleaseAllAttributeProducer implements AttributeProducer {

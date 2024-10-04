@@ -15,18 +15,17 @@
  */
 package se.swedenconnect.spring.saml.idp.audit.data;
 
-import java.io.Serial;
-import java.io.Serializable;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
+import java.io.Serial;
+import java.io.Serializable;
 
 /**
  * Base class for a SAML Audit data element.
- * 
+ *
  * @author Martin Lindström
  */
 @JsonInclude(Include.NON_EMPTY)
@@ -37,7 +36,7 @@ public abstract class Saml2AuditData implements Serializable {
 
   /**
    * Gets the name of this data element. The name should be in "kebab-case", i.e., "data-element".
-   * 
+   *
    * @return the audit data name
    */
   @JsonIgnore

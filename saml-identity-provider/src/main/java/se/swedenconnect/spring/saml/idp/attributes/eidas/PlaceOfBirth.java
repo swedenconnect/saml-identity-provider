@@ -15,12 +15,12 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.eidas;
 
-import java.io.Serial;
-import java.util.Objects;
-
 import se.swedenconnect.opensaml.eidas.ext.attributes.PlaceOfBirthType;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
+import java.io.Serial;
+import java.util.Objects;
 
 /**
  * Place of birth.
@@ -53,7 +53,8 @@ public class PlaceOfBirth implements EidasAttributeValue<PlaceOfBirthType> {
   /** {@inheritDoc} */
   @Override
   public PlaceOfBirthType createXmlObject() {
-    final PlaceOfBirthType xmlValue = AttributeBuilder.createValueObject(PlaceOfBirthType.TYPE_NAME, PlaceOfBirthType.class);
+    final PlaceOfBirthType xmlValue =
+        AttributeBuilder.createValueObject(PlaceOfBirthType.TYPE_NAME, PlaceOfBirthType.class);
     xmlValue.setValue(this.value);
     return xmlValue;
   }

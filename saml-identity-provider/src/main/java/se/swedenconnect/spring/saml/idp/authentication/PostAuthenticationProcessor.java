@@ -24,7 +24,7 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
  * <p>
  * Note: The processor may also modify the {@link Saml2UserAuthentication} token and not only check it.
  * </p>
- * 
+ *
  * @author Martin Lindström
  */
 @FunctionalInterface
@@ -32,7 +32,7 @@ public interface PostAuthenticationProcessor {
 
   /**
    * Applies post-processing of a {@link Saml2UserAuthentication} token.
-   * 
+   *
    * @param token the token to process
    * @throws Saml2ErrorStatusException if an error is detected
    */

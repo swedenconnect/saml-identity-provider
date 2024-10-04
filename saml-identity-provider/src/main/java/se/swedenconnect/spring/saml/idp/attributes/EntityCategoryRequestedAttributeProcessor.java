@@ -34,11 +34,11 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * A {@link RequestedAttributeProcessor} that extracts the requested attributes from declared entity categories. See
- * <a href=
+ * A {@link RequestedAttributeProcessor} that extracts the requested attributes from declared entity categories. See <a
+ * href=
  * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
  * Categories for the Swedish eID Framework</a>.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -56,7 +56,7 @@ public class EntityCategoryRequestedAttributeProcessor implements RequestedAttri
 
   /**
    * Constructor.
-   * 
+   *
    * @param idpDeclaredEntityCategories the entity categories declared by this IdP
    */
   public EntityCategoryRequestedAttributeProcessor(final Collection<String> idpDeclaredEntityCategories) {
@@ -69,7 +69,7 @@ public class EntityCategoryRequestedAttributeProcessor implements RequestedAttri
    * Assigns a custom {@link EntityCategoryRegistry}. Defaults to the categories defined in <a href=
    * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
    * Categories for the Swedish eID Framework</a>.
-   * 
+   *
    * @param entityCategoryRegistry the {@link EntityCategoryRegistry}
    */
   public void setEntityCategoryRegistry(final EntityCategoryRegistry entityCategoryRegistry) {

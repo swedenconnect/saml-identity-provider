@@ -15,12 +15,12 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.eidas;
 
-import java.io.Serial;
-import java.util.Objects;
-
 import se.swedenconnect.opensaml.eidas.ext.attributes.PersonIdentifierType;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
+import java.io.Serial;
+import java.util.Objects;
 
 /**
  * eIDAS person identifier.
@@ -53,7 +53,8 @@ public class PersonIdentifier implements EidasAttributeValue<PersonIdentifierTyp
   /** {@inheritDoc} */
   @Override
   public PersonIdentifierType createXmlObject() {
-    final PersonIdentifierType xmlValue = AttributeBuilder.createValueObject(PersonIdentifierType.TYPE_NAME, PersonIdentifierType.class);
+    final PersonIdentifierType xmlValue =
+        AttributeBuilder.createValueObject(PersonIdentifierType.TYPE_NAME, PersonIdentifierType.class);
     xmlValue.setValue(this.value);
     return xmlValue;
   }

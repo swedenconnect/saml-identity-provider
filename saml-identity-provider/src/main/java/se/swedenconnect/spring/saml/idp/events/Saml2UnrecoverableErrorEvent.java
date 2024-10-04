@@ -24,7 +24,7 @@ import java.io.Serial;
  * An event that is signalled if an {@link UnrecoverableSaml2IdpException} is thrown. These types of errors means that
  * the user can not be redirected back to the SP (i.e., no SAML response can be sent). Instead, an error view is
  * displayed.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2UnrecoverableErrorEvent extends AbstractSaml2IdpEvent {
@@ -34,7 +34,7 @@ public class Saml2UnrecoverableErrorEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Constructor.
-   * 
+   *
    * @param error the {@link UnrecoverableSaml2IdpException}
    */
   public Saml2UnrecoverableErrorEvent(final UnrecoverableSaml2IdpException error) {
@@ -43,7 +43,7 @@ public class Saml2UnrecoverableErrorEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Gets the error.
-   * 
+   *
    * @return the {@link UnrecoverableSaml2IdpException}
    */
   public UnrecoverableSaml2IdpException getError() {

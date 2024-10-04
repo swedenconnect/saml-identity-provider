@@ -15,21 +15,19 @@
  */
 package se.swedenconnect.spring.saml.idp.audit;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.util.StringUtils;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.audit.data.Saml2AuditData;
+
 import java.io.Serial;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-
-import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.util.StringUtils;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
-import se.swedenconnect.spring.saml.idp.audit.data.Saml2AuditData;
 
 /**
  * Audit event for creating event objects for the SAML IdP.
@@ -57,7 +55,8 @@ public class Saml2AuditEvent extends AuditEvent {
    * @param authnRequestId the ID of the {@code AuthnRequest}
    * @param data audit data
    */
-  public Saml2AuditEvent(final Saml2AuditEvents type, final long timestamp, final String spEntityId, final String authnRequestId,
+  public Saml2AuditEvent(final Saml2AuditEvents type, final long timestamp, final String spEntityId,
+      final String authnRequestId,
       final Saml2AuditData... data) {
     super(Instant.ofEpochMilli(timestamp), Optional.ofNullable(spEntityId).orElse(UNKNOWN_SP), type.getTypeName(),
         buildData(spEntityId, authnRequestId, data));

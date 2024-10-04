@@ -15,11 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest.validation;
 
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.saml.saml2.metadata.KeyDescriptor;
 import org.opensaml.saml.saml2.metadata.SSODescriptor;
 import org.opensaml.security.credential.UsageType;
-
-import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.opensaml.saml2.metadata.EntityDescriptorUtils;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
@@ -28,7 +27,7 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
 /**
  * An {@link AuthnRequestValidator} that asserts that the SP has capabilities to receive an encrypted assertion.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -39,7 +38,7 @@ public class AuthnRequestEncryptCapabilitiesValidator implements AuthnRequestVal
 
   /**
    * Constructor.
-   * 
+   *
    * @param encryptedAssertions whether assertions are encrypted
    */
   public AuthnRequestEncryptCapabilitiesValidator(final boolean encryptedAssertions) {
@@ -58,8 +57,7 @@ public class AuthnRequestEncryptCapabilitiesValidator implements AuthnRequestVal
     final SSODescriptor descriptor = EntityDescriptorUtils.getSSODescriptor(authnRequestToken.getPeerMetadata());
 
     for (final KeyDescriptor kd : descriptor.getKeyDescriptors()) {
-      if (UsageType.ENCRYPTION.equals(kd.getUse()) || kd.getUse() == null
-          || UsageType.UNSPECIFIED.equals(kd.getUse())) {
+      if (UsageType.ENCRYPTION == kd.getUse() || kd.getUse() == null || UsageType.UNSPECIFIED == kd.getUse()) {
         if (kd.getKeyInfo() == null) {
           continue;
         }

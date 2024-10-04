@@ -1,24 +1,19 @@
 ![Logo](images/sweden-connect.png)
 
-# Spring Security SAML Identity Provider
+# Release Notes
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp)
 
-The https://github.com/swedenconnect/saml-identity-provider repository comprises of a Spring Security
-module for setting up a SAML Identity Provider according to the [Swedish eID Framework specifications]( 
-https://docs.swedenconnect.se/technical-framework).
+--
 
+### Version 2.2.0
 
-- [Java Documentation](https://docs.swedenconnect.se/saml-identity-provider/apidoc/)
+Date: 2024-10-04
 
-- [Configuration and Deployment](configuration.md)
+- The [Saml2ServiceProviderFilter](https://github.com/swedenconnect/saml-identity-provider/blob/main/saml-identity-provider/src/main/java/se/swedenconnect/spring/saml/idp/authnrequest/Saml2ServiceProviderFilter.java) interface was introduced. By declaring a bean of this type, an implementation may add additional restrictions on which Service Provider that are allowed to send requests.
 
-- [Audit Logging](audit.md)
+- (embarrassing) We started publishing release notes ... 
 
-- [Example Application](example.md)
-
-- [Release Notes](release-notes.md)
-
------
+--
 
 Copyright &copy; 2022-2024, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se). Licensed under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).

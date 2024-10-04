@@ -15,22 +15,21 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider;
 
-import java.util.List;
-
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-
 import se.swedenconnect.spring.saml.idp.attributes.release.AttributeProducer;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
+import java.util.List;
+
 /**
  * Interface for an {@link AuthenticationProvider} that implements SAML2 Identity Provider user authentication. The
  * {@link #authenticate(org.springframework.security.core.Authentication)} method returns a
  * {@link Saml2UserAuthentication}.
- * 
+ *
  * <p>
  * Note: The authentication provider should release all possible attributes about an authentication (user). These will
  * be filtered by an {@link AttributeProducer} before adding attributes to an assertion. The reason for this is that in
@@ -42,14 +41,14 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
  * under one condition and that is when the requested authentication context(s) can not be met by the authentication
  * provider.
  * </p>
- * 
+ *
  * @author Martin Lindström
  */
 public interface UserAuthenticationProvider extends AuthenticationProvider {
 
   /**
    * Gets the name of the provider.
-   * 
+   *
    * @return the name of the provider
    */
   String getName();
@@ -69,10 +68,10 @@ public interface UserAuthenticationProvider extends AuthenticationProvider {
 
   /**
    * Performs the user authentication.
-   * 
+   *
    * @param token the input token
    * @return the authentication token or {@code null} if the requested authentication context(s) can not be met by the
-   *           authentication provider. 
+   *     authentication provider.
    * @throws Saml2ErrorStatusException for authentication errors
    */
   Authentication authenticateUser(final Saml2UserAuthenticationInputToken token) throws Saml2ErrorStatusException;
@@ -87,14 +86,14 @@ public interface UserAuthenticationProvider extends AuthenticationProvider {
 
   /**
    * Gets the supported authentication context URI:s for the provider.
-   * 
+   *
    * @return a list of the authenticator's supported authentication context URI:s
    */
   List<String> getSupportedAuthnContextUris();
 
   /**
    * Gets a list of all SAML entity categories that this {@link AuthenticationProvider} declares.
-   * 
+   *
    * @return a list of entity category URI:s
    */
   List<String> getEntityCategories();

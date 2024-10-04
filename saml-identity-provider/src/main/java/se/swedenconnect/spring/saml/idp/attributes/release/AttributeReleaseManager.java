@@ -29,21 +29,21 @@ import java.util.List;
  * <li>else, if at least of voter vote {@link AttributeReleaseVote#INCLUDE} the attribute will be released,</li>
  * <li>and finally, if all voters vote {@link AttributeReleaseVote#DONT_KNOW} the attribute will not be released.</li>
  * </ul>
- * 
+ *
  * @author Martin Lindström
  */
 public interface AttributeReleaseManager extends AttributeProducer {
 
   /**
    * Gets an immutable list of all {@link AttributeProducer}s.
-   * 
+   *
    * @return a list of {@link AttributeProducer}s
    */
   List<AttributeProducer> getAttributeProducers();
 
   /**
    * Gets an immutable list of all {@link AttributeReleaseVoter}s.
-   * 
+   *
    * @return a list of {@link AttributeReleaseVoter}s
    */
   List<AttributeReleaseVoter> getAttributeReleaseVoters();

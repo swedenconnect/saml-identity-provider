@@ -15,15 +15,15 @@
  */
 package se.swedenconnect.spring.saml.idp.metadata;
 
-import java.util.List;
-
 import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryConstants;
 import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryRegistry;
 import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryRegistryImpl;
 
+import java.util.List;
+
 /**
  * Support class for handling entity categories.
- * 
+ *
  * @author Martin Lindström
  */
 public class EntityCategoryHelper {
@@ -37,7 +37,7 @@ public class EntityCategoryHelper {
    * Gets all registered entity categories from the Swedish eID Framework, see <a href=
    * "https://docs.swedenconnect.se/technical-framework/latest/06_-_Entity_Categories_for_the_Swedish_eID_Framework.html">Entity
    * Categories for the Swedish eID Framework</a>.
-   * 
+   *
    * @return an {@link EntityCategoryRegistry}
    */
   public static EntityCategoryRegistry getDefaultEntityCategoryRegistry() {

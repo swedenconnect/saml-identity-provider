@@ -15,18 +15,17 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.nameid;
 
+import org.opensaml.saml.saml2.core.NameID;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
+
 import java.io.Serial;
 import java.util.Base64;
 import java.util.UUID;
 
-import org.opensaml.saml.saml2.core.NameID;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
-import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
-
 /**
  * A {@link NameIDGenerator} for generaring transient {@code NameID}s.
- * 
+ *
  * @author Martin Lindström
  */
 public class TransientNameIDGenerator extends AbstractNameIDGenerator {
@@ -42,7 +41,7 @@ public class TransientNameIDGenerator extends AbstractNameIDGenerator {
   public TransientNameIDGenerator(final String nameQualifier) {
     super(nameQualifier);
   }
-  
+
   /**
    * Constructor.
    *
@@ -55,7 +54,7 @@ public class TransientNameIDGenerator extends AbstractNameIDGenerator {
 
   /** {@inheritDoc} */
   @Override
-  protected String getIdentifier(final Saml2UserAuthentication authentication) {    
+  protected String getIdentifier(final Saml2UserAuthentication authentication) {
     return Base64.getEncoder().encodeToString(UUID.randomUUID().toString().getBytes());
   }
 
