@@ -15,13 +15,13 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest.validation.replay;
 
+import jakarta.annotation.Nonnull;
+import lombok.extern.slf4j.Slf4j;
+import org.opensaml.storage.ReplayCache;
+
 import java.time.Instant;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-
-import org.opensaml.storage.ReplayCache;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * An in-memory implementation of the {@link ReplayCache} interface.
@@ -43,7 +43,7 @@ public class InMemoryReplayCache implements ReplayCache {
 
   /** {@inheritDoc} */
   @Override
-  public boolean check(final String context, final String key, final Instant expires) {
+  public boolean check(@Nonnull final String context, @Nonnull final String key, @Nonnull final Instant expires) {
 
     // Remove expired entries ...
     //

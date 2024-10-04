@@ -15,10 +15,6 @@
  */
 package se.swedenconnect.spring.saml.idp.config.configurers;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-
 import org.opensaml.storage.ReplayCache;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -33,7 +29,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
-
 import se.swedenconnect.opensaml.saml2.response.replay.InMemoryReplayChecker;
 import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayChecker;
 import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayCheckerImpl;
@@ -47,6 +42,10 @@ import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
 
 /**
  * Utility methods for the SAML 2 configurers.
@@ -85,7 +84,7 @@ class Saml2IdpConfigurerUtils {
 
   /**
    * Gets the {@link Saml2IdpEventPublisher} to use.
-   * 
+   *
    * @param httpSecurity the HTTP security object
    * @return a {@link Saml2IdpEventPublisher}
    */
@@ -205,6 +204,7 @@ class Saml2IdpConfigurerUtils {
 
   /**
    * Gets the {@link MessageReplayChecker}.
+   *
    * @param httpSecurity the HTTP security object
    * @return a {@link MessageReplayChecker}
    */
@@ -254,7 +254,6 @@ class Saml2IdpConfigurerUtils {
     return sadFactory;
   }
 
-  @SuppressWarnings("unchecked")
   static <T> T getBean(final HttpSecurity httpSecurity, final ResolvableType type) {
     final ApplicationContext context = httpSecurity.getSharedObject(ApplicationContext.class);
     final String[] names = context.getBeanNamesForType(type);
@@ -284,7 +283,6 @@ class Saml2IdpConfigurerUtils {
     return beansMap.values();
   }
 
-  @SuppressWarnings("unchecked")
   static <T> T getOptionalBean(final HttpSecurity httpSecurity, final ResolvableType type) {
     final ApplicationContext context = httpSecurity.getSharedObject(ApplicationContext.class);
     final String[] names = context.getBeanNamesForType(type);

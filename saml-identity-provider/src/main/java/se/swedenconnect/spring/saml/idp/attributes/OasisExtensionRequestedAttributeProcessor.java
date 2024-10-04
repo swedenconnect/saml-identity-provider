@@ -15,22 +15,21 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes;
 
+import lombok.extern.slf4j.Slf4j;
+import org.opensaml.saml.ext.reqattr.RequestedAttributes;
+import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import org.opensaml.saml.ext.reqattr.RequestedAttributes;
-
-import lombok.extern.slf4j.Slf4j;
-import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 
 /**
  * A {@link RequestedAttributeProcessor} that finds requested attributes from the {@link RequestedAttributes} extension.
  * See
  * <a href="https://docs.oasis-open.org/security/saml-protoc-req-attr-req/v1.0/saml-protoc-req-attr-req-v1.0.html">SAML
  * V2.0 Protocol Extension for Requesting Attributes per Request Version 1.0</a>.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -40,7 +39,7 @@ public class OasisExtensionRequestedAttributeProcessor implements RequestedAttri
   @Override
   public Collection<RequestedAttribute> extractRequestedAttributes(
       final Saml2AuthnRequestAuthenticationToken authnRequestToken) {
-    
+
     final RequestedAttributes requestedAttributes =
         Optional.ofNullable(authnRequestToken.getAuthnRequest().getExtensions())
             .map(e -> e.getUnknownXMLObjects(RequestedAttributes.DEFAULT_ELEMENT_NAME))
@@ -59,7 +58,7 @@ public class OasisExtensionRequestedAttributeProcessor implements RequestedAttri
 
     log.debug("Extracted requested attributes from RequestedAttributes extension - {} [{}]",
         attributes, authnRequestToken.getLogString());
-    
+
     return attributes;
   }
 

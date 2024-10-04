@@ -24,7 +24,7 @@ import java.io.Serial;
 /**
  * An event that is signalled before the user is handed over to the {@link UserAuthenticationProvider} to be
  * authenticated.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2PreUserAuthenticationEvent extends AbstractSaml2IdpEvent {
@@ -34,7 +34,7 @@ public class Saml2PreUserAuthenticationEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Constructor.
-   * 
+   *
    * @param authn the {@link Saml2UserAuthenticationInputToken}
    */
   public Saml2PreUserAuthenticationEvent(final Saml2UserAuthenticationInputToken authn) {
@@ -43,7 +43,7 @@ public class Saml2PreUserAuthenticationEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Gets the {@link Saml2UserAuthenticationInputToken}.
-   * 
+   *
    * @return the {@link Saml2UserAuthenticationInputToken}
    */
   public Saml2UserAuthenticationInputToken getUserAuthenticationInput() {

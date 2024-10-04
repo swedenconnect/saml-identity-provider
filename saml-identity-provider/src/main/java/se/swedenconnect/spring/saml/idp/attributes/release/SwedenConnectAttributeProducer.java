@@ -15,15 +15,9 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.release;
 
-import java.io.IOException;
-import java.security.SignatureException;
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.Attribute;
-
-import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
 import se.swedenconnect.opensaml.sweid.saml2.signservice.SADFactory;
@@ -36,6 +30,11 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.extensions.SadRequestExtension;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 
+import java.io.IOException;
+import java.security.SignatureException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * An {@link AttributeProducer} that releases attributes according to the
  * <a href="https://docs.swedenconnect.se/technical-framework/">Technical Specifications for the Swedish eID
@@ -46,12 +45,12 @@ import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
  * <ul>
  * <li>All attributes that are explicitly, or implicitly (via entity categories), requested are included (by inheriting
  * from {@link DefaultAttributeProducer}).</li>
- * 
+ *
  * <li>The {@code signMessageDigest} attribute if a SignMessage was displayed. See section 3.2.4 of <a href=
  * "https://docs.swedenconnect.se/technical-framework/latest/04_-_Attribute_Specification_for_the_Swedish_eID_Framework.html">Attribute
  * Specification for the Swedish eID Framework</a>.</li>
  * </ul>
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -84,7 +83,7 @@ public class SwedenConnectAttributeProducer extends DefaultAttributeProducer {
 
   /**
    * Gets the {@code signMessageDigest} attribute or {@code null} if it shouldn't be released.
-   * 
+   *
    * @param userAuthentication the user authentication token
    * @return the {@code signMessageDigest} attribute or {@code null}
    */
@@ -118,7 +117,7 @@ public class SwedenConnectAttributeProducer extends DefaultAttributeProducer {
 
   /**
    * Constructs a SAD attribute.
-   * 
+   *
    * @param userAuthentication the user authentication token
    * @return an {@link Attribute} or {@code null}
    */
@@ -157,7 +156,7 @@ public class SwedenConnectAttributeProducer extends DefaultAttributeProducer {
 
   /**
    * Gets the {@link SADFactory}.
-   * 
+   *
    * @return {@link SADFactory} or {@code null} if none has been assigned
    */
   public SADFactory getSadFactory() {
@@ -166,7 +165,7 @@ public class SwedenConnectAttributeProducer extends DefaultAttributeProducer {
 
   /**
    * Assigns the {@link SADFactory}.
-   * 
+   *
    * @param sadFactory a {@link SADFactory}
    */
   public void setSadFactory(final SADFactory sadFactory) {

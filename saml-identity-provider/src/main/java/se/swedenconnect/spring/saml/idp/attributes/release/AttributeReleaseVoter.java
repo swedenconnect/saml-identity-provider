@@ -15,16 +15,15 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.release;
 
-import java.util.function.BiFunction;
-
 import org.opensaml.saml.saml2.core.Attribute;
-
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
+
+import java.util.function.BiFunction;
 
 /**
  * {@link AttributeReleaseVoter}s are used by the {@link AttributeReleaseManager} to check if attributes returned from
  * {@link AttributeProducer}s should be released or not.
- * 
+ *
  * @author Martin Lindström
  */
 @FunctionalInterface
@@ -41,7 +40,7 @@ public interface AttributeReleaseVoter
 
   /**
    * Tells whether this voter thinks that the supplied {@link Attribute} should be released or not.
-   * 
+   *
    * @param token the authentication token
    * @param attribute the attribute to vote on
    * @return an {@link AttributeReleaseVote}

@@ -16,12 +16,11 @@
 package se.swedenconnect.spring.saml.idp.attributes.release;
 
 import org.opensaml.saml.saml2.core.Attribute;
-
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 
 /**
  * A voter that always votes {@link AttributeReleaseVote#INCLUDE}.
- * 
+ *
  * @author Martin Lindström
  */
 public class IncludeAllAttributeReleaseVoter implements AttributeReleaseVoter {

@@ -15,10 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes;
 
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
 import java.io.Serial;
 import java.io.Serializable;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * A representation of a "requested attribute".
@@ -60,8 +60,8 @@ public class RequestedAttribute extends UserAttribute {
    *
    * @param id the attribute ID (name)
    * @param friendlyName the attribute friendly name
-   * @param isRequired whether the attribute is "required", meaning that the requester requires it to be included in a
-   *          resulting assertion
+   * @param isRequired whether the attribute is "required", meaning that the requester requires it to be included in
+   *     a resulting assertion
    */
   public RequestedAttribute(final String id, final String friendlyName, final boolean isRequired) {
     super(id, friendlyName, (Serializable) null);
@@ -113,11 +113,7 @@ public class RequestedAttribute extends UserAttribute {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    final StringBuffer sb = new StringBuffer(super.toString());
-    sb.append(", is-required=").append(this.isRequired);
-    return sb.toString();
+    return "%s, is-required=%s".formatted(super.toString(), this.isRequired);
   }
-
-
 
 }

@@ -40,14 +40,14 @@ package se.swedenconnect.spring.saml.idp.utils;
  * defining the {@code xs:ID} datatype. A pseudorandom generator MUST be seeded with unique material in order to ensure
  * the desired uniqueness properties between different systems.
  * </p>
- * 
+ *
  * @author Martin Lindström
  */
 public interface Saml2MessageIDGenerator {
 
   /**
    * Generates an identifier.
-   * 
+   *
    * @return an identifier
    */
   String generateIdentifier();

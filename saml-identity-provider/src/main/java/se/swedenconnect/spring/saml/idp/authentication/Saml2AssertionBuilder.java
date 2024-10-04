@@ -15,11 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.Objects;
-import java.util.Optional;
-
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.core.Assertion;
@@ -43,8 +39,6 @@ import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.springframework.security.config.Customizer;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
-import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.opensaml.common.utils.SamlLog;
 import se.swedenconnect.opensaml.xmlsec.signature.support.SAMLObjectSigner;
 import se.swedenconnect.security.credential.PkiCredential;
@@ -57,6 +51,11 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 import se.swedenconnect.spring.saml.idp.settings.AssertionSettings;
 import se.swedenconnect.spring.saml.idp.utils.DefaultSaml2MessageIDGenerator;
 import se.swedenconnect.spring.saml.idp.utils.Saml2MessageIDGenerator;
+
+import java.time.Duration;
+import java.time.Instant;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * The {@code Saml2AssertionBuilder} is responsible for building SAML {@link Assertion}s given
@@ -96,11 +95,11 @@ public class Saml2AssertionBuilder {
 
   /**
    * Constructor.
-   * 
+   *
    * @param idpEntityId the IdP entity ID
    * @param signatureCredential the signature credential (for signing the assertion)
    * @param attributeReleaseManager decides which attributes from the user token that should be released in the
-   *          assertion
+   *     assertion
    */
   public Saml2AssertionBuilder(final String idpEntityId, final PkiCredential signatureCredential,
       final AttributeReleaseManager attributeReleaseManager) {
@@ -114,7 +113,7 @@ public class Saml2AssertionBuilder {
 
   /**
    * Given a {@link Saml2UserAuthentication} object a SAML {@link Assertion} is built.
-   * 
+   *
    * @param userAuthentication the information about the user authentication
    * @return an {@link Assertion}
    * @throws Saml2ErrorStatusException for errors that should be reported back to the Service Provider
@@ -250,7 +249,7 @@ public class Saml2AssertionBuilder {
   /**
    * By assigning a {@link Customizer} the {@link Assertion} object that is built can be modified. The customizer is
    * invoked when the {@link Assertion} object has been completely built, but before it is signed.
-   * 
+   *
    * @param assertionCustomizer a {@link Customizer}
    */
   public void setAssertionCustomizer(final Customizer<Assertion> assertionCustomizer) {
@@ -260,7 +259,7 @@ public class Saml2AssertionBuilder {
   /**
    * Assigns the setting that tells the time restrictions the IdP puts on an Assertion concerning "not on or after".
    * Defaults to {@link AssertionSettings#NOT_ON_OR_AFTER_DURATION_DEFAULT}.
-   * 
+   *
    * @param notOnOrAfterDuration duration
    */
   public void setNotOnOrAfterDuration(final Duration notOnOrAfterDuration) {
@@ -270,7 +269,7 @@ public class Saml2AssertionBuilder {
   /**
    * Assigns the setting that tells the time restrictions the IdP puts on an Assertion concerning "not before". Defaults
    * to {@link AssertionSettings#NOT_BEFORE_DURATION_DEFAULT}.
-   * 
+   *
    * @param notBeforeDuration duration
    */
   public void setNotBeforeDuration(final Duration notBeforeDuration) {
@@ -279,7 +278,7 @@ public class Saml2AssertionBuilder {
 
   /**
    * Assigns a custom ID generator. The default is {@link DefaultSaml2MessageIDGenerator}.
-   * 
+   *
    * @param idGenerator the ID generator
    */
   public void setIdGenerator(final Saml2MessageIDGenerator idGenerator) {

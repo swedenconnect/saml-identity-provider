@@ -55,7 +55,6 @@ public abstract class AbstractSettings implements Serializable {
    * @param <T> the type of the setting
    * @return the setting value, or null if not available
    */
-  @SuppressWarnings("unchecked")
   public <T> T getSetting(final String name) {
     Assert.hasText(name, "name cannot be empty");
     return (T) this.getSettings().get(name);
@@ -153,7 +152,7 @@ public abstract class AbstractSettings implements Serializable {
 
     /**
      * Is invoked by {@link #build()} and builds the settings object.
-     * 
+     *
      * @return the settings object
      */
     protected abstract T buildObject();
@@ -172,7 +171,6 @@ public abstract class AbstractSettings implements Serializable {
      *
      * @return the builder
      */
-    @SuppressWarnings("unchecked")
     protected final B getThis() {
       return (B) this;
     }

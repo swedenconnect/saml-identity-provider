@@ -15,25 +15,24 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider.external;
 
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
+import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProcessingFilter;
+
 import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
-import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
-import se.swedenconnect.spring.saml.idp.web.filters.Saml2UserAuthenticationProcessingFilter;
-
 /**
  * A {@code RedirectForAuthenticationToken} is used in the cases where a SAML {@link AuthenticationProvider} wants to
  * inform the filter {@link Saml2UserAuthenticationProcessingFilter} that the user agent should be re-directed to a
  * given path to perform the user authentication.
- * 
+ *
  * @author Martin Lindström
  * @see AbstractUserRedirectAuthenticationProvider
  */
@@ -56,11 +55,11 @@ public class RedirectForAuthenticationToken implements Authentication {
 
   /**
    * Constructor.
-   * 
+   *
    * @param authnInputToken the authentication input token
    * @param authnPath the path to where we redirect the user for authentication
    * @param resumeAuthnPath the path that the authenticator uses to redirect the user back after a completed
-   *          authentication (may be null)
+   *     authentication (may be null)
    */
   public RedirectForAuthenticationToken(final Saml2UserAuthenticationInputToken authnInputToken,
       final String authnPath, final String resumeAuthnPath) {
@@ -77,7 +76,7 @@ public class RedirectForAuthenticationToken implements Authentication {
 
   /**
    * Gets the authentication input token.
-   * 
+   *
    * @return a {@link Saml2UserAuthenticationInputToken}
    */
   public Saml2UserAuthenticationInputToken getAuthnInputToken() {
@@ -86,7 +85,7 @@ public class RedirectForAuthenticationToken implements Authentication {
 
   /**
    * Gets the path to where we redirect the user for authentication.
-   * 
+   *
    * @return the path to where we redirect the user for authentication
    */
   public String getAuthnPath() {
@@ -95,7 +94,7 @@ public class RedirectForAuthenticationToken implements Authentication {
 
   /**
    * Gets the path that the authenticator uses to redirect the user back after a completed authentication.
-   * 
+   *
    * @return the return/resume path
    */
   public String getResumeAuthnPath() {

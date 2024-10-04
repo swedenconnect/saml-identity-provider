@@ -35,7 +35,7 @@ import java.util.Optional;
 
 /**
  * Default implementation of the {@link SignatureMessageExtensionExtractor} interface.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -49,7 +49,7 @@ public class DefaultSignatureMessageExtensionExtractor implements SignatureMessa
 
   /**
    * Constructor setting up the object for decrypting {@link SignMessage} objects.
-   * 
+   *
    * @param entityId the IdP entityID
    * @param credentials a list of decryption credentials (if {@code null} decryption will not be supported)
    */
@@ -70,7 +70,7 @@ public class DefaultSignatureMessageExtensionExtractor implements SignatureMessa
 
   /**
    * Constructor setting up the object for decrypting {@link SignMessage} objects.
-   * 
+   *
    * @param settings IdP settings
    */
   public DefaultSignatureMessageExtensionExtractor(final IdentityProviderSettings settings) {

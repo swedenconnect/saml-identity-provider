@@ -15,16 +15,12 @@
  */
 package se.swedenconnect.spring.saml.idp.audit;
 
-import java.util.Objects;
-import java.util.Optional;
-
+import lombok.extern.slf4j.Slf4j;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.Response;
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
-
-import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.spring.saml.idp.audit.data.Saml2AssertionAuditData;
 import se.swedenconnect.spring.saml.idp.audit.data.Saml2AuthnRequestAuditData;
 import se.swedenconnect.spring.saml.idp.audit.data.Saml2ResponseAuditData;
@@ -41,10 +37,13 @@ import se.swedenconnect.spring.saml.idp.events.Saml2PreUserAuthenticationEvent;
 import se.swedenconnect.spring.saml.idp.events.Saml2SuccessResponseEvent;
 import se.swedenconnect.spring.saml.idp.events.Saml2UnrecoverableErrorEvent;
 
+import java.util.Objects;
+import java.util.Optional;
+
 /**
  * An event listener that handles the events publishes by the SAML IdP, translates them to audit events and publishes
  * them.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
@@ -55,7 +54,7 @@ public class Saml2IdpAuditListener extends AbstractSaml2IdpEventListener {
 
   /**
    * Constructor.
-   * 
+   *
    * @param publisher the system event publisher
    */
   public Saml2IdpAuditListener(final ApplicationEventPublisher publisher) {
@@ -89,10 +88,10 @@ public class Saml2IdpAuditListener extends AbstractSaml2IdpEventListener {
         new Saml2AuditEvent(Saml2AuditEvents.SAML2_AUDIT_SUCCESSFUL_RESPONSE, event.getTimestamp(),
             event.getSpEntityId(), Optional.ofNullable(event.getResponse()).map(Response::getInResponseTo).orElse(null),
             Saml2ResponseAuditData.of(event.getResponse()), Saml2AssertionAuditData.of(event.getAssertion(),
-                Optional.ofNullable(event.getResponse())
-                    .map(Response::getEncryptedAssertions)
-                    .filter(l -> !l.isEmpty())
-                    .isPresent()));
+            Optional.ofNullable(event.getResponse())
+                .map(Response::getEncryptedAssertions)
+                .filter(l -> !l.isEmpty())
+                .isPresent()));
 
     log.info("Publishing audit event: {}", auditEvent.getLogString());
 
@@ -182,7 +181,7 @@ public class Saml2IdpAuditListener extends AbstractSaml2IdpEventListener {
 
   /**
    * Publishes the {@link Saml2AuditEvent}.
-   * 
+   *
    * @param auditEvent the event to publish
    */
   private void publish(final Saml2AuditEvent auditEvent) {

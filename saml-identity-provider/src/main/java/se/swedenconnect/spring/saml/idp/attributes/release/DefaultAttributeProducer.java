@@ -15,15 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.release;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-
 import org.opensaml.saml.saml2.core.Attribute;
-
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttribute;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
@@ -31,10 +23,17 @@ import se.swedenconnect.spring.saml.idp.authnrequest.AuthenticationRequirements;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
 /**
  * The default {@link AttributeProducer} that returns all attributes that are among the "requested list" (see
  * {@link Saml2UserAuthentication#getAuthnRequirements()}).
- * 
+ *
  * @author Martin Lindström
  */
 public class DefaultAttributeProducer implements AttributeProducer {

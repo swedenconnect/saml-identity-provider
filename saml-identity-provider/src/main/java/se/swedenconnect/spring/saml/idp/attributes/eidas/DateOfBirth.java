@@ -15,15 +15,15 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.eidas;
 
+import se.swedenconnect.opensaml.eidas.ext.attributes.DateOfBirthType;
+import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
 import java.io.Serial;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.Optional;
-
-import se.swedenconnect.opensaml.eidas.ext.attributes.DateOfBirthType;
-import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Date of birth.
@@ -61,7 +61,8 @@ public class DateOfBirth implements EidasAttributeValue<DateOfBirthType> {
   /** {@inheritDoc} */
   @Override
   public DateOfBirthType createXmlObject() {
-    final DateOfBirthType xmlValue = AttributeBuilder.createValueObject(DateOfBirthType.TYPE_NAME, DateOfBirthType.class);
+    final DateOfBirthType xmlValue =
+        AttributeBuilder.createValueObject(DateOfBirthType.TYPE_NAME, DateOfBirthType.class);
     xmlValue.setDate(this.value);
     return xmlValue;
   }

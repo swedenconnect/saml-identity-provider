@@ -15,15 +15,14 @@
  */
 package se.swedenconnect.spring.saml.idp.extensions;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.util.Optional;
-
 import org.springframework.util.StringUtils;
-
 import se.swedenconnect.opensaml.sweid.saml2.signservice.dss.SignMessage;
 import se.swedenconnect.opensaml.sweid.saml2.signservice.dss.SignMessageMimeTypeEnum;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Optional;
 
 /**
  * A representation of the {@code SignMessage} extension as specified in section 3.1.2 of <a href=
@@ -32,7 +31,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  * <p>
  * The {code SignatureMessageExtension} holds the decrypted version of a {@link SignMessage} object.
  * </p>
- * 
+ *
  * @author Martin Lindström
  */
 public class SignatureMessageExtension implements Serializable {
@@ -64,7 +63,7 @@ public class SignatureMessageExtension implements Serializable {
 
   /**
    * Constructor.
-   * 
+   *
    * @param message the unencrypted sign message (in base64)
    * @param mimeType the message MIME type - if {@code null}, {@link SignMessageMimeTypeEnum#TEXT} is assumed
    * @param mustShow whether the caller has indicated that the sign message MUST be displayed for the user
@@ -79,7 +78,7 @@ public class SignatureMessageExtension implements Serializable {
 
   /**
    * Gets the (base64 encoded) sign message.
-   * 
+   *
    * @return the sign message
    */
   public String getMessage() {
@@ -88,7 +87,7 @@ public class SignatureMessageExtension implements Serializable {
 
   /**
    * Gets the MIME type of the sign message. Defaults to {@link SignMessageMimeTypeEnum#TEXT}.
-   * 
+   *
    * @return the sign message MIME type
    */
   public SignMessageMimeTypeEnum getMimeType() {
@@ -97,7 +96,7 @@ public class SignatureMessageExtension implements Serializable {
 
   /**
    * Whether the caller has indicated that the sign message MUST be displayed for the user.
-   * 
+   *
    * @return {@code true} if the message must be displayed for the user and {@code false} otherwise
    */
   public boolean isMustShow() {
@@ -108,7 +107,7 @@ public class SignatureMessageExtension implements Serializable {
    * Gets the processed message. If a {@link SignatureMessagePreprocessor} is installed, the
    * {@code processedMessage} will contain the result from this processing, i.e., a string that is prepared for display
    * (on a web page, on a device, ...).
-   * 
+   *
    * @return a message prepared for display
    */
   public String getProcessedMessage() {
@@ -119,7 +118,7 @@ public class SignatureMessageExtension implements Serializable {
    * Assigns the processed message. If a {@link SignatureMessagePreprocessor} is installed, the
    * {@code processedMessage} will contain the result from this processing, i.e., a string that is prepared for display
    * (on a web page, on a device, ...).
-   * 
+   *
    * @param processedMessage a message prepared for display
    */
   public void setProcessedMessage(final String processedMessage) {

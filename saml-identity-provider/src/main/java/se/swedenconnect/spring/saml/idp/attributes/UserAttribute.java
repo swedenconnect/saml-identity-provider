@@ -15,20 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes;
 
-import java.io.ByteArrayInputStream;
-import java.io.Serial;
-import java.io.Serializable;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import net.shibboleth.shared.xml.SerializeSupport;
+import net.shibboleth.shared.xml.XMLParserException;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallingException;
@@ -44,14 +32,25 @@ import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.Attribute;
 import org.springframework.util.Assert;
 import org.w3c.dom.Element;
-
-import net.shibboleth.shared.xml.SerializeSupport;
-import net.shibboleth.shared.xml.XMLParserException;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeUtils;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 import se.swedenconnect.spring.saml.idp.attributes.eidas.EidasAttributeValue;
 import se.swedenconnect.spring.saml.idp.attributes.eidas.EidasAttributeValueConverter;
+
+import java.io.ByteArrayInputStream;
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Base64;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * A representation of a user (identity) attribute.

@@ -40,7 +40,6 @@ public enum Saml2AuditEvents {
   /** An error occurred, and we could not direct the user back to the SP. */
   SAML2_AUDIT_UNRECOVERABLE_ERROR("SAML2_UNRECOVERABLE_ERROR");
 
-
   /** The event type name. */
   private final String typeName;
 
@@ -55,6 +54,7 @@ public enum Saml2AuditEvents {
 
   /**
    * Gets the event type name.
+   *
    * @return the event type name
    */
   public String getTypeName() {

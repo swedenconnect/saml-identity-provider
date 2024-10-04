@@ -15,22 +15,21 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
+import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.authnrequest.AuthenticationRequirements;
+import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
+
 import java.io.Serial;
 import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.springframework.security.authentication.AbstractAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
-import se.swedenconnect.spring.saml.idp.authnrequest.AuthenticationRequirements;
-import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
-
 /**
  * An {@link Authentication} class that represents the input to a user authentication process for a SAML IdP.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationToken {
@@ -52,7 +51,7 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
 
   /**
    * Constructor.
-   * 
+   *
    * @param authnRequestToken the authentication request token
    * @param authnRequirements the authentication requirements
    */
@@ -68,7 +67,7 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
 
   /**
    * Gets the authentication request token.
-   * 
+   *
    * @return the authentication request token
    */
   public Saml2AuthnRequestAuthenticationToken getAuthnRequestToken() {
@@ -77,7 +76,7 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
 
   /**
    * Gets the authentication requirements.
-   * 
+   *
    * @return the authentication requirements
    */
   public AuthenticationRequirements getAuthnRequirements() {
@@ -88,7 +87,7 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
    * If an {@link Authentication} object is available (from the {@link SecurityContextHolder}) when entering the SAML
    * flow, this object is made available to the authentication process that will determine if this authentication object
    * may be used for SSO.
-   * 
+   *
    * @return the {@link Authentication} object from a previous authentication, or {@code null} if not available
    */
   public Authentication getUserAuthentication() {
@@ -97,7 +96,7 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
 
   /**
    * Assigns the user {@link Authentication} object from a previous authentication process.
-   * 
+   *
    * @param userAuthentication an {@link Authentication} object
    */
   public void setUserAuthentication(final Authentication userAuthentication) {
@@ -122,7 +121,7 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
 
   /**
    * Gets the UI info - may be useful for IdP UI.
-   * 
+   *
    * @return a {@link Saml2ServiceProviderUiInfo}
    */
   public Saml2ServiceProviderUiInfo getUiInfo() {
@@ -137,7 +136,7 @@ public class Saml2UserAuthenticationInputToken extends AbstractAuthenticationTok
 
   /**
    * Maps to {@link Saml2AuthnRequestAuthenticationToken#getLogString()}.
-   * 
+   *
    * @return a formatted log string
    */
   public String getLogString() {

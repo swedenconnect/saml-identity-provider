@@ -15,18 +15,18 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes;
 
+import lombok.extern.slf4j.Slf4j;
+import se.swedenconnect.opensaml.sweid.saml2.authn.psc.PrincipalSelection;
+import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import lombok.extern.slf4j.Slf4j;
-import se.swedenconnect.opensaml.sweid.saml2.authn.psc.PrincipalSelection;
-import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
-
 /**
  * Default implementation of the {@link PrincipalSelectionProcessor} interface.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j

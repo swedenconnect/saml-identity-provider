@@ -15,21 +15,21 @@
  */
 package se.swedenconnect.spring.saml.idp.config;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
-
+import jakarta.annotation.Nonnull;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.context.annotation.AnnotationBeanNameGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
 
 /**
  * Registers bean definitions on container initialization, if not already present.
@@ -40,7 +40,7 @@ final class RegisterMissingBeanPostProcessor implements BeanDefinitionRegistryPo
   private BeanFactory beanFactory;
 
   @Override
-  public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) throws BeansException {
+  public void postProcessBeanDefinitionRegistry(@Nonnull final BeanDefinitionRegistry registry) throws BeansException {
     for (final AbstractBeanDefinition beanDefinition : this.beanDefinitions) {
       final String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
           (ListableBeanFactory) this.beanFactory, beanDefinition.getBeanClass(), false, false);
@@ -51,16 +51,12 @@ final class RegisterMissingBeanPostProcessor implements BeanDefinitionRegistryPo
     }
   }
 
-  @Override
-  public void postProcessBeanFactory(final ConfigurableListableBeanFactory beanFactory) throws BeansException {
-  }
-
   <T> void addBeanDefinition(final Class<T> beanClass, final Supplier<T> beanSupplier) {
     this.beanDefinitions.add(new RootBeanDefinition(beanClass, beanSupplier));
   }
 
   @Override
-  public void setBeanFactory(final BeanFactory beanFactory) throws BeansException {
+  public void setBeanFactory(@Nonnull final BeanFactory beanFactory) throws BeansException {
     this.beanFactory = beanFactory;
   }
 

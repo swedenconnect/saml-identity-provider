@@ -16,14 +16,13 @@
 package se.swedenconnect.spring.saml.idp.authnrequest.validation;
 
 import org.opensaml.saml.saml2.core.AuthnRequest;
-
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
 /**
  * A genric interface for performing validation of an {@link AuthnRequest}.
- * 
+ *
  * @author Martin Lindström
  */
 public interface AuthnRequestValidator {
@@ -33,7 +32,7 @@ public interface AuthnRequestValidator {
    * <p>
    * The method may update the supplied token with information useful in later stages.
    * </p>
-   * 
+   *
    * @param authnRequestToken the authentication request token
    * @throws UnrecoverableSaml2IdpException for errors that can not be signalled back to the SAML SP
    * @throws Saml2ErrorStatusException for errors that should be sent as SAML error responses

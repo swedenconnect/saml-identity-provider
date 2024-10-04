@@ -15,21 +15,17 @@
  */
 package se.swedenconnect.spring.saml.idp.web.filters;
 
-import java.io.IOException;
-import java.util.Objects;
-
+import jakarta.servlet.Filter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.opensaml.saml.saml2.core.Response;
 import org.springframework.lang.NonNull;
 import org.springframework.security.web.util.ThrowableAnalyzer;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
-
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
@@ -37,6 +33,9 @@ import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseBuilder;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseSender;
+
+import java.io.IOException;
+import java.util.Objects;
 
 /**
  * A {@link Filter} responsible of sending SAML error response messages.
@@ -153,7 +152,7 @@ public class Saml2ErrorResponseProcessingFilter extends OncePerRequestFilter {
     @Override
     protected void initExtractorMap() {
       super.initExtractorMap();
-      registerExtractor(ServletException.class, (throwable) -> {
+      this.registerExtractor(ServletException.class, (throwable) -> {
         ThrowableAnalyzer.verifyThrowableHierarchy(throwable, ServletException.class);
         return ((ServletException) throwable).getRootCause();
       });

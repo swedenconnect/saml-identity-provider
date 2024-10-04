@@ -15,10 +15,6 @@
  */
 package se.swedenconnect.spring.saml.idp.error;
 
-import java.io.Serial;
-import java.util.Locale;
-import java.util.Objects;
-
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.Status;
 import org.opensaml.saml.saml2.core.StatusCode;
@@ -27,8 +23,11 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.util.StringUtils;
-
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
+import java.io.Serial;
+import java.util.Locale;
+import java.util.Objects;
 
 /**
  * Exception class that when thrown will lead to a SAML error status message being sent.
@@ -36,7 +35,7 @@ import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
  * A message source code, and optionally parameters, may be supplied. This message code is resolved into a text that is
  * used as the {@code Status} status message.
  * </p>
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2ErrorStatusException extends AuthenticationException {
@@ -59,7 +58,7 @@ public class Saml2ErrorStatusException extends AuthenticationException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param status the {@link Saml2ErrorStatus}
    */
   public Saml2ErrorStatusException(final Saml2ErrorStatus status) {
@@ -68,7 +67,7 @@ public class Saml2ErrorStatusException extends AuthenticationException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param status the {@link Saml2ErrorStatus}
    * @param msg the error message (will not be included in the resulting {@code Status} message)
    */
@@ -78,7 +77,7 @@ public class Saml2ErrorStatusException extends AuthenticationException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param status the {@link Saml2ErrorStatus}
    * @param cause the cause of the error
    */
@@ -88,7 +87,7 @@ public class Saml2ErrorStatusException extends AuthenticationException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param status the {@link Saml2ErrorStatus}
    * @param msg the error message (will not be included in the resulting {@code Status} message)
    * @param cause the cause of the error
@@ -100,12 +99,12 @@ public class Saml2ErrorStatusException extends AuthenticationException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param statusCode the main status code
    * @param subStatusCode the subordinate status code
    * @param statusMessageCode the status message code (will be resolved against a {@link MessageSource})
-   * @param defaultStatusMessage the status message to use if the {@code statusMessageCode} can not be resolved against
-   *          a {@link MessageSource}
+   * @param defaultStatusMessage the status message to use if the {@code statusMessageCode} can not be resolved
+   *     against a {@link MessageSource}
    */
   public Saml2ErrorStatusException(final String statusCode, final String subStatusCode,
       final String statusMessageCode, final String defaultStatusMessage) {
@@ -114,12 +113,12 @@ public class Saml2ErrorStatusException extends AuthenticationException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param statusCode the main status code
    * @param subStatusCode the subordinate status code
    * @param statusMessageCode the status message code (will be resolved against a {@link MessageSource}
-   * @param defaultStatusMessage the status message to use if the {@code statusMessageCode} can not be resolved against
-   *          a {@link MessageSource}
+   * @param defaultStatusMessage the status message to use if the {@code statusMessageCode} can not be resolved
+   *     against a {@link MessageSource}
    * @param msg the error message (will not be included in the resulting {@code Status} message)
    */
   public Saml2ErrorStatusException(final String statusCode, final String subStatusCode,
@@ -129,12 +128,12 @@ public class Saml2ErrorStatusException extends AuthenticationException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param statusCode the main status code
    * @param subStatusCode the subordinate status code
    * @param statusMessageCode the status message code (will be resolved against a {@link MessageSource}
-   * @param defaultStatusMessage the status message to use if the {@code statusMessageCode} can not be resolved against
-   *          a {@link MessageSource}
+   * @param defaultStatusMessage the status message to use if the {@code statusMessageCode} can not be resolved
+   *     against a {@link MessageSource}
    * @param cause the cause of the error
    */
   public Saml2ErrorStatusException(final String statusCode, final String subStatusCode,
@@ -144,12 +143,12 @@ public class Saml2ErrorStatusException extends AuthenticationException {
 
   /**
    * Constructor.
-   * 
+   *
    * @param statusCode the main status code
    * @param subStatusCode the subordinate status code
    * @param statusMessageCode the status message code (will be resolved against a {@link MessageSource}
-   * @param defaultStatusMessage the status message to use if the {@code statusMessageCode} can not be resolved against
-   *          a {@link MessageSource}
+   * @param defaultStatusMessage the status message to use if the {@code statusMessageCode} can not be resolved
+   *     against a {@link MessageSource}
    * @param msg the error message (will not be included in the resulting {@code Status} message)
    * @param cause the cause of the error
    */
@@ -165,7 +164,7 @@ public class Saml2ErrorStatusException extends AuthenticationException {
   /**
    * Assigns a custom status message. May be used if the exception object is initialized using a
    * {@link Saml2ErrorStatus} object.
-   * 
+   *
    * @param statusMessageCode the status message code (for resolving against a {@link MessageSource}
    * @param defaultStatusMessage the default status message (if resolving fails)
    */
@@ -177,7 +176,7 @@ public class Saml2ErrorStatusException extends AuthenticationException {
   /**
    * Assigns a custom status message. If a {@link MessageSource} is being used when obtaining the {@code Status} use
    * {@link #setCustomStatusMessage(String, String)} instead.
-   * 
+   *
    * @param statusMessage the status message
    */
   public void setCustomStatusMessage(final String statusMessage) {
@@ -195,9 +194,9 @@ public class Saml2ErrorStatusException extends AuthenticationException {
 
   /**
    * Gets a SAML v2 {@code Status} element given this exception.
-   * 
+   *
    * @param messageSource the message source to use when resolving the status message (if null, the
-   *          {@code defaultStatusMessage} will be used)
+   *     {@code defaultStatusMessage} will be used)
    * @param locale the locale to use when resolving the status message
    * @return a Status element
    */
@@ -236,7 +235,7 @@ public class Saml2ErrorStatusException extends AuthenticationException {
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return String.format("status-code='%s', sub-status-code='%s', msg='%s'", 
+    return String.format("status-code='%s', sub-status-code='%s', msg='%s'",
         this.statusCode, this.subStatusCode, this.getMessage());
   }
 

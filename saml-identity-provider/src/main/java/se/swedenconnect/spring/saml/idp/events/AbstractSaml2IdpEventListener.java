@@ -15,25 +15,24 @@
  */
 package se.swedenconnect.spring.saml.idp.events;
 
-import org.springframework.context.ApplicationListener;
-
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationListener;
 
 /**
  * Abstract base class for an {@link ApplicationListener} for SAML2 events.
- * 
+ *
  * @author Martin Lindström
  */
 @Slf4j
 public class AbstractSaml2IdpEventListener implements ApplicationListener<AbstractSaml2IdpEvent> {
-  
+
   /**
    * Routes the received event to the correct on-method.
    */
   @Override
   public void onApplicationEvent(final AbstractSaml2IdpEvent event) {
     log.debug("Received {} event", event.getClass().getSimpleName());
-    
+
     if (event instanceof final Saml2AuthnRequestReceivedEvent e) {
       this.onAuthnRequestReceivedEvent(e);
     }
@@ -56,7 +55,7 @@ public class AbstractSaml2IdpEventListener implements ApplicationListener<Abstra
 
   /**
    * Handles a {@link Saml2AuthnRequestReceivedEvent} event. The default implementation does nothing.
-   * 
+   *
    * @param event the event
    */
   protected void onAuthnRequestReceivedEvent(final Saml2AuthnRequestReceivedEvent event) {
@@ -64,42 +63,42 @@ public class AbstractSaml2IdpEventListener implements ApplicationListener<Abstra
 
   /**
    * Handles a {@link Saml2SuccessResponseEvent} event. The default implementation does nothing.
-   * 
+   *
    * @param event the event
-   */  
+   */
   protected void onSuccessResponseEvent(final Saml2SuccessResponseEvent event) {
   }
 
   /**
    * Handles a {@link Saml2ErrorResponseEvent} event. The default implementation does nothing.
-   * 
+   *
    * @param event the event
-   */  
+   */
   protected void onErrorResponseEvent(final Saml2ErrorResponseEvent event) {
   }
 
   /**
    * Handles a {@link Saml2PreUserAuthenticationEvent} event. The default implementation does nothing.
-   * 
+   *
    * @param event the event
-   */  
+   */
   protected void onPreUserAuthenticationEvent(final Saml2PreUserAuthenticationEvent event) {
   }
 
   /**
    * Handles a {@link Saml2PostUserAuthenticationEvent} event. The default implementation does nothing.
-   * 
-   * @param event the event
-   */  
-  protected void onPostUserAuthenticationEvent(final Saml2PostUserAuthenticationEvent event) {
-  }
-  
-  /**
-   * Handles a {@link Saml2UnrecoverableErrorEvent} event. The default implementation does nothing.
-   * 
+   *
    * @param event the event
    */
-  protected void onUnrecoverableErrorEvent(final Saml2UnrecoverableErrorEvent event) {    
+  protected void onPostUserAuthenticationEvent(final Saml2PostUserAuthenticationEvent event) {
+  }
+
+  /**
+   * Handles a {@link Saml2UnrecoverableErrorEvent} event. The default implementation does nothing.
+   *
+   * @param event the event
+   */
+  protected void onUnrecoverableErrorEvent(final Saml2UnrecoverableErrorEvent event) {
   }
 
 }

@@ -17,7 +17,6 @@ package se.swedenconnect.spring.saml.idp.events;
 
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.Status;
-
 import se.swedenconnect.opensaml.common.utils.SerializableOpenSamlObject;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
@@ -52,7 +51,6 @@ public class Saml2ErrorResponseEvent extends AbstractSaml2IdpEvent {
    *
    * @return the {@link Response}
    */
-  @SuppressWarnings("unchecked")
   public Response getResponse() {
     return ((SerializableOpenSamlObject<Response>) this.getSource()).get();
   }

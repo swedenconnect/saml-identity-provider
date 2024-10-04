@@ -17,17 +17,17 @@ package se.swedenconnect.spring.saml.idp.attributes.release;
 
 /**
  * An enumeration acting as the result for a {@link AttributeReleaseVoter}.
- * 
+ *
  * @author Martin Lindström
  */
 public enum AttributeReleaseVote {
-  
+
   /** The voter thinks that the attribute should be released. */
   INCLUDE,
-  
-  /** The voter thinks that the attribute must not be released. */ 
+
+  /** The voter thinks that the attribute must not be released. */
   DONT_INCLUDE,
-  
+
   /** The voter has no opinion whether the attribute should be released. */
   DONT_KNOW
 

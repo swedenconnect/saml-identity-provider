@@ -15,23 +15,21 @@
  */
 package se.swedenconnect.spring.saml.idp.audit.data;
 
-import java.io.Serial;
-import java.io.Serializable;
-import java.time.Instant;
-import java.util.Optional;
-
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.Setter;
 import org.opensaml.saml.saml2.core.Response;
 import org.opensaml.saml.saml2.core.Status;
 import org.opensaml.saml.saml2.core.StatusCode;
 import org.opensaml.saml.saml2.core.StatusMessage;
-
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.Getter;
-import lombok.Setter;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.time.Instant;
+import java.util.Optional;
 
 /**
  * Audit data representing a SAML response.
@@ -88,7 +86,7 @@ public class Saml2ResponseAuditData extends Saml2AuditData {
 
   /**
    * Creates a {@link Saml2ResponseAuditData} given a {@link Response} object.
-   * 
+   *
    * @param response the SAML response
    * @return a {@link Saml2ResponseAuditData}
    */
@@ -115,7 +113,7 @@ public class Saml2ResponseAuditData extends Saml2AuditData {
     data.setIssuedAt(response.getIssueInstant());
     data.setDestination(response.getDestination());
     data.setSigned(response.isSigned());
-    
+
     return data;
   }
 

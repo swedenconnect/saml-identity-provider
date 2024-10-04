@@ -103,7 +103,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
   /** The {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator} instance. */
   private final NameIDGeneratorFactory nameIDGeneratorFactory;
 
-  /** Filter for checking whether a SP is acceptable. */
+  /** Filter for checking whether an SP is acceptable. */
   private final Saml2ServiceProviderFilter serviceProviderFilter;
 
   /**
@@ -117,7 +117,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
    * @param requestedAttributesProcessors extracts the requested attributes
    * @param nameIDGeneratorFactory the {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator}
    *     instance
-   * @param serviceProviderFilter filter for checking whether a SP is acceptable
+   * @param serviceProviderFilter filter for checking whether an SP is acceptable
    */
   public Saml2AuthnRequestAuthenticationProvider(
       final Saml2IdpEventPublisher eventPublisher,
@@ -144,7 +144,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
    * @param requestedAttributesProcessors extracts the requested attributes
    * @param nameIDGeneratorFactory the {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator}
    *     instance
-   * @param serviceProviderFilter filter for checking whether a SP is acceptable
+   * @param serviceProviderFilter filter for checking whether an SP is acceptable
    * @param signatureMessageExtensionExtractor extracts the {@code SignMessage} extension (may be {@code null})
    * @param principalSelectionProcessor extracts the {@code PrincipalSelection} attribute values (may be
    *     {@code null})

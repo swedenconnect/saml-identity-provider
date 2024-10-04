@@ -17,7 +17,6 @@ package se.swedenconnect.spring.saml.idp.config.configurers;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
-
 import se.swedenconnect.spring.saml.idp.config.Saml2IdpConfiguration;
 
 /**
@@ -30,14 +29,14 @@ import se.swedenconnect.spring.saml.idp.config.Saml2IdpConfiguration;
  * Implement any number of {@link Saml2IdpConfigurerAdapter} instances and have them registered as beans. After that
  * {@code Import} the {@link Saml2IdpConfiguration} class and a SAML IdP {@link SecurityFilterChain} is created.
  * </p>
- * 
+ *
  * @author Martin Lindström
  */
 public interface Saml2IdpConfigurerAdapter {
 
   /**
    * Configures the settings of the {@link Saml2IdpConfigurer}.
-   * 
+   *
    * @param http the HTTP security object
    * @param configurer the {@link Saml2IdpConfigurer}
    */

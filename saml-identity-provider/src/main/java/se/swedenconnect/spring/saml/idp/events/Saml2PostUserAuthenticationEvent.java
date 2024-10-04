@@ -24,7 +24,7 @@ import java.io.Serial;
 /**
  * An event that is fired after the user has been authenticated by a {@link UserAuthenticationProvider} but before we
  * filter release attributes and compile the SAML assertion.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2PostUserAuthenticationEvent extends AbstractSaml2IdpEvent {
@@ -34,7 +34,7 @@ public class Saml2PostUserAuthenticationEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Constructor.
-   * 
+   *
    * @param auth the {@link Saml2UserAuthentication}
    */
   public Saml2PostUserAuthenticationEvent(final Saml2UserAuthentication auth) {
@@ -43,7 +43,7 @@ public class Saml2PostUserAuthenticationEvent extends AbstractSaml2IdpEvent {
 
   /**
    * Gets the {@link Saml2UserAuthentication} representing the user authentication.
-   * 
+   *
    * @return a {@link Saml2UserAuthentication}
    */
   public Saml2UserAuthentication getUserAuthentication() {

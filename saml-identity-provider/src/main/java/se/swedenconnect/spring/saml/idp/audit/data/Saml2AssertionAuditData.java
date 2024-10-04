@@ -174,7 +174,7 @@ public class Saml2AssertionAuditData extends Saml2AuditData {
           .orElse(null));
       data.setAuthnAuthority(Optional.ofNullable(authnStatement.getAuthnContext())
           .map(AuthnContext::getAuthenticatingAuthorities)
-          .map(a -> a.stream().map(AuthenticatingAuthority::getURI).findFirst().orElse(null))
+          .flatMap(a -> a.stream().map(AuthenticatingAuthority::getURI).findFirst())
           .orElse(null));
     }
     assertion.getAttributeStatements().stream().findFirst()

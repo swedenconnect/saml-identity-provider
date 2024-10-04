@@ -15,8 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest.validation;
 
-import java.util.Objects;
-
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
+import net.shibboleth.shared.component.ComponentInitializationException;
+import net.shibboleth.shared.primitive.NonnullSupplier;
 import org.opensaml.core.config.ConfigurationService;
 import org.opensaml.messaging.handler.MessageHandlerException;
 import org.opensaml.saml.common.binding.security.impl.SAMLProtocolMessageXMLSignatureSecurityHandler;
@@ -30,16 +32,13 @@ import org.opensaml.xmlsec.context.SecurityParametersContext;
 import org.opensaml.xmlsec.signature.support.SignatureTrustEngine;
 import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.util.StringUtils;
-
-import jakarta.servlet.http.HttpServletRequest;
-import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.shared.component.ComponentInitializationException;
-import net.shibboleth.shared.primitive.NonnullSupplier;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpError;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 import se.swedenconnect.spring.saml.idp.utils.OpenSamlUtils;
+
+import java.util.Objects;
 
 /**
  * Implementation of a {@link AuthnRequestValidator} using OpenSAML mechanisms to verify the signature of the
@@ -112,7 +111,8 @@ public class AuthnRequestSignatureValidator implements AuthnRequestValidator {
       log.info("{} [entity-id: {}, authn-request: {}]",
           msg, token.getPeerMetadata().getEntityID(), token.getAuthnRequest().getID());
       log.debug("", e);
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_SIGNATURE, msg, e, token);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INVALID_AUTHNREQUEST_SIGNATURE, msg, e,
+          token);
     }
 
     log.debug("Authentication request signature validation was successful [entity-id: {}, authn-request: {}]",
