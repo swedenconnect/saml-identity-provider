@@ -15,19 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.eidas;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
-
-import org.opensaml.core.xml.XMLObject;
-import org.opensaml.saml.saml2.core.Attribute;
-
 import lombok.extern.slf4j.Slf4j;
-import se.swedenconnect.opensaml.eidas.ext.attributes.BirthNameType;
+import org.opensaml.saml.saml2.core.Attribute;
+import se.swedenconnect.opensaml.eidas.ext.attributes.CountryStringType;
 import se.swedenconnect.opensaml.eidas.ext.attributes.CurrentAddressType;
-import se.swedenconnect.opensaml.eidas.ext.attributes.CurrentFamilyNameType;
-import se.swedenconnect.opensaml.eidas.ext.attributes.CurrentGivenNameType;
 import se.swedenconnect.opensaml.eidas.ext.attributes.DateOfBirthType;
 import se.swedenconnect.opensaml.eidas.ext.attributes.EidasAttributeValueType;
 import se.swedenconnect.opensaml.eidas.ext.attributes.GenderType;
@@ -35,6 +26,10 @@ import se.swedenconnect.opensaml.eidas.ext.attributes.PersonIdentifierType;
 import se.swedenconnect.opensaml.eidas.ext.attributes.PlaceOfBirthType;
 import se.swedenconnect.opensaml.eidas.ext.attributes.TransliterationStringType;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Helper class for convering eIDAS attribute values to and from {@link UserAttribute}s.
@@ -74,8 +69,8 @@ public class EidasAttributeValueConverter {
     }
     if (TransliterationStringType.class.isAssignableFrom(valueType)) {
       return attribute.getAttributeValues().stream()
-          .map(EidasAttributeValueConverter::toTransliterationString)
-          .filter(Objects::nonNull)
+          .map(TransliterationStringType.class::cast)
+          .map(TransliterationString::new)
           .collect(Collectors.toList());
     }
     if (DateOfBirthType.class.isAssignableFrom(valueType)) {
@@ -102,29 +97,17 @@ public class EidasAttributeValueConverter {
           .map(CurrentAddress::new)
           .collect(Collectors.toList());
     }
+    if (CountryStringType.class.isAssignableFrom(valueType)) {
+      return attribute.getAttributeValues().stream()
+          .map(CountryStringType.class::cast)
+          .map(CountryString::new)
+          .collect(Collectors.toList());
+    }
 
     log.warn("Unsupported eIDAS attribute - {}", attribute.getName());
     return attribute.getAttributeValues().stream()
         .map(UserAttribute.UnknownAttributeValue::new)
         .collect(Collectors.toList());
-  }
-
-  private static TransliterationString<?> toTransliterationString(final XMLObject value) {
-    if (value instanceof BirthNameType) {
-      return new TransliterationString<>((BirthNameType) value, BirthNameType.TYPE_NAME,
-          BirthNameType.class);
-    }
-    else if (value instanceof CurrentFamilyNameType) {
-      return new TransliterationString<>((CurrentFamilyNameType) value,
-          CurrentFamilyNameType.TYPE_NAME, CurrentFamilyNameType.class);
-    }
-    else if (value instanceof CurrentGivenNameType) {
-      return new TransliterationString<>((CurrentGivenNameType) value,
-          CurrentGivenNameType.TYPE_NAME, CurrentGivenNameType.class);
-    }
-
-    log.warn("Unknown eIDAS transliteration attribute value: {}", value.getElementQName());
-    return null;
   }
 
 }

@@ -4,6 +4,12 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp)
 
+### Version 2.2.1
+
+Date: ---
+
+- Support for the eIDAS (optional) attributes Nationality, CountryOfResidence, CountryOfBirth and TownOfBirth was added to attribute conversion logic. This fix only applies to IdP:s that proxy assertions from eIDAS.
+
 ### Version 2.2.0
 
 Date: 2024-10-04

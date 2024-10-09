@@ -15,31 +15,26 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.eidas;
 
-import org.opensaml.core.xml.schema.XSBooleanValue;
-import se.swedenconnect.opensaml.eidas.ext.attributes.TransliterationStringType;
+import se.swedenconnect.opensaml.eidas.ext.attributes.CountryStringType;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 import javax.xml.namespace.QName;
 import java.io.Serial;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
- * Base class for {@link TransliterationStringType} values.
+ * Supports the eIDAS attributes Nationality, CountryOfResidence and CountryOfBirth.
  *
  * @author Martin Lindström
  */
-public class TransliterationString implements EidasAttributeValue<TransliterationStringType> {
+public class CountryString implements EidasAttributeValue<CountryStringType> {
 
   @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
 
-  /** Whether the string is in latin script. */
-  private final Boolean latinScript;
-
-  /** The string value. */
-  private final String stringValue;
+  /** The contents of the attribute value. */
+  private final String value;
 
   /** The XML type. */
   private final QName type;
@@ -49,34 +44,29 @@ public class TransliterationString implements EidasAttributeValue<Transliteratio
    *
    * @param value the attribute value
    */
-  public TransliterationString(final TransliterationStringType value) {
-    this.stringValue = Objects.requireNonNull(value, "value must not be null").getValue();
-    this.latinScript = Optional.ofNullable(value.getLatinScriptXSBooleanValue())
-        .map(XSBooleanValue::getValue)
-        .orElse(null);
+  public CountryString(final CountryStringType value) {
+    this.value = Objects.requireNonNull(value, "value must not be null").getValue();
     this.type = value.getSchemaType();
   }
 
   /** {@inheritDoc} */
   @Override
   public String getValueAsString() {
-    return this.stringValue;
+    return this.value;
   }
 
   /** {@inheritDoc} */
   @Override
-  public TransliterationStringType createXmlObject() {
-    final TransliterationStringType xmlValue =
-        AttributeBuilder.createValueObject(this.type, TransliterationStringType.class);
-    xmlValue.setValue(this.stringValue);
-    xmlValue.setLatinScript(this.latinScript);
+  public CountryStringType createXmlObject() {
+    final CountryStringType xmlValue = AttributeBuilder.createValueObject(this.type, CountryStringType.class);
+    xmlValue.setValue(this.value);
     return xmlValue;
   }
 
   /** {@inheritDoc} */
   @Override
   public String toString() {
-    return this.getValueAsString();
+    return this.value;
   }
 
 }
