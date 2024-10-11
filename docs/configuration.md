@@ -115,6 +115,7 @@ See https://github.com/swedenconnect/credentials-support for details about the [
 | Property | Description | Type | Default value |
 | :--- | :--- | :--- | :--- |
 | `location` | The location of the metadata. Can be an URL, a file, or even a classpath resource. | [Resource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html) | - |
+| `https-trust-bundle` | If `location` is an HTTPS resource, this setting may be used to specify a [Spring SSL Bundle](https://spring.io/blog/2023/06/07/securing-spring-boot-applications-with-ssl) that specifies the trusted root certificates to be used for TLS server certificate verification. If no bundle is given, the Java trust defaults will be used. | String | - |
 | `backup-location` | If the `location` setting is an URL, a "backup location" may be assigned to store downloaded metadata. | [File](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/io/File.html) | - |
 | `mdq` | If the `location` setting is an URL, setting the MDQ-flag means that the metadata MDQ (https://www.ietf.org/id/draft-young-md-query-17.html) protocol is used. | Boolean | `false` |
 | `validation-certificate` | The certificate used to validate the metadata. | [Resource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html) pointing at the certificate resource. | - |

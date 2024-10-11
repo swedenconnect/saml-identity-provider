@@ -15,10 +15,13 @@
  */
 package se.swedenconnect.spring.saml.idp.config.configurers;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import org.opensaml.storage.ReplayCache;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
@@ -226,6 +229,25 @@ class Saml2IdpConfigurerUtils {
     httpSecurity.setSharedObject(MessageReplayChecker.class, checker);
 
     return checker;
+  }
+
+  /**
+   * Gets the {@link SslBundles} bean
+   *
+   * @param httpSecurity the HTTP security object
+   * @return a {@link SslBundles} bean or {@code null} if not available
+   */
+  @Nullable
+  static SslBundles getSslBundles(@Nonnull final HttpSecurity httpSecurity) {
+    SslBundles bundles = httpSecurity.getSharedObject(SslBundles.class);
+    if (bundles != null) {
+      return bundles;
+    }
+    bundles = getOptionalBean(httpSecurity, SslBundles.class);
+    if (bundles != null) {
+      httpSecurity.setSharedObject(SslBundles.class, bundles);
+    }
+    return bundles;
   }
 
   static <T> T getBean(final HttpSecurity httpSecurity, final Class<T> type) {
