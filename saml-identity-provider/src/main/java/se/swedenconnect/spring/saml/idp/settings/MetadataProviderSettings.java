@@ -15,15 +15,14 @@
  */
 package se.swedenconnect.spring.saml.idp.settings;
 
+import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
 import java.io.File;
 import java.io.Serial;
 import java.security.cert.X509Certificate;
 import java.util.Map;
-
-import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Settings for configuring SAML metadata providers (resolvers).
@@ -57,6 +56,28 @@ public class MetadataProviderSettings extends AbstractSettings {
    */
   public Resource getLocation() {
     return this.getSetting(SAML_METADATA_PROVIDER_LOCATION);
+  }
+
+  /**
+   * If the {@code location} is an HTTPS resource, this setting may be used to specify a
+   * <a href="https://spring.io/blog/2023/06/07/securing-spring-boot-applications-with-ssl">Spring SSL Bundle</a> that
+   * gives the {@link javax.net.ssl.TrustManager}s to use during TLS verification. If no bundle is given, the Java trust
+   * default will be used.
+   */
+  public static final String SAML_METADATA_PROVIDER_HTTPS_TRUST_BUNDLE = "https-trust-bundle";
+
+  /**
+   * Gives the <a href="https://spring.io/blog/2023/06/07/securing-spring-boot-applications-with-ssl">Spring SSL
+   * Bundle</a> that gives us the TLS trust settings to use during TLS verification. If {@code null}, the Java trust
+   * default will be used.
+   * <p>
+   * Only relevant if the {@code location} is an HTTPS resource.
+   * </p>
+   *
+   * @return a name for a trust SSL bundle, or {@code null} if not assigned
+   */
+  public String getHttpsTrustBundle() {
+    return this.getSetting(SAML_METADATA_PROVIDER_HTTPS_TRUST_BUNDLE);
   }
 
   /**
@@ -171,6 +192,21 @@ public class MetadataProviderSettings extends AbstractSettings {
      */
     public Builder location(final Resource location) {
       return this.setting(SAML_METADATA_PROVIDER_LOCATION, location);
+    }
+
+    /**
+     * Assigns the <a href="https://spring.io/blog/2023/06/07/securing-spring-boot-applications-with-ssl">Spring SSL
+     * Bundle</a> that gives us the TLS trust settings to use during TLS verification. If not specified, the Java trust
+     * default will be used.
+     * <p>
+     * Only relevant if the {@code location} is an HTTPS resource.
+     * </p>
+     *
+     * @param httpsTrustBundle name for a trust SSL bundle
+     * @return the builder
+     */
+    public Builder httpsTrustBundle(final String httpsTrustBundle) {
+      return this.setting(SAML_METADATA_PROVIDER_HTTPS_TRUST_BUNDLE, httpsTrustBundle);
     }
 
     /**

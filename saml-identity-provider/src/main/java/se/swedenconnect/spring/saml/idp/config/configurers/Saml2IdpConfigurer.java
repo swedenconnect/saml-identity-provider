@@ -139,8 +139,9 @@ public class Saml2IdpConfigurer extends AbstractHttpConfigurer<Saml2IdpConfigure
       httpSecurity.setSharedObject(MetadataResolver.class, metadataResolver);
     }
     else {
-      metadataResolver =
-          MetadataProviderUtils.createMetadataResolver(identityProviderSettings.getMetadataProviderConfiguration());
+      metadataResolver = MetadataProviderUtils.createMetadataResolver(
+          identityProviderSettings.getMetadataProviderConfiguration(),
+          Saml2IdpConfigurerUtils.getSslBundles(httpSecurity));
       httpSecurity.setSharedObject(MetadataResolver.class, metadataResolver);
     }
 

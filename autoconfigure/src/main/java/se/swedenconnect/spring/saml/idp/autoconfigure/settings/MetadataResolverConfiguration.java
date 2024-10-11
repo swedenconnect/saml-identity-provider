@@ -19,6 +19,8 @@ import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.ssl.SslBundles;
+import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
@@ -35,9 +37,13 @@ public class MetadataResolverConfiguration {
 
   private final IdentityProviderConfigurationProperties properties;
 
+  private final SslBundles sslBundles;
+
   public MetadataResolverConfiguration(
-      @Autowired(required = false) final IdentityProviderConfigurationProperties properties) {
+      @Autowired(required = false) final IdentityProviderConfigurationProperties properties,
+      final SslBundles sslBundles) {
     this.properties = properties;
+    this.sslBundles = sslBundles;
   }
 
   @ConditionalOnMissingBean(name = "saml.idp.metadata.Provider")
@@ -53,21 +59,22 @@ public class MetadataResolverConfiguration {
       for (final MetadataProviderConfigurationProperties p : this.properties.getMetadataProviders()) {
         settings[pos++] = MetadataProviderSettings.builder()
             .location(p.getLocation())
+            .httpsTrustBundle(p.getHttpsTrustBundle())
             .skipHostnameVerification(p.getSkipHostnameVerification())
             .backupLocation(p.getBackupLocation())
             .mdq(p.getMdq())
             .validationCertificate(p.getValidationCertificate())
             .httpProxy(p.getHttpProxy() != null
                 ? MetadataProviderSettings.HttpProxySettings.builder()
-                    .host(p.getHttpProxy().getHost())
-                    .port(p.getHttpProxy().getPort())
-                    .userName(p.getHttpProxy().getUserName())
-                    .password(p.getHttpProxy().getPassword())
-                    .build()
+                .host(p.getHttpProxy().getHost())
+                .port(p.getHttpProxy().getPort())
+                .userName(p.getHttpProxy().getUserName())
+                .password(p.getHttpProxy().getPassword())
+                .build()
                 : null)
             .build();
       }
-      return MetadataProviderUtils.createMetadataResolver(settings);
+      return MetadataProviderUtils.createMetadataResolver(settings, this.sslBundles);
     }
     else {
       return null;

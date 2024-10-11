@@ -37,6 +37,16 @@ public class MetadataProviderConfigurationProperties {
   private Resource location;
 
   /**
+   * If the {@code location} is an HTTPS resource, this setting may be used to specify a
+   * <a href="https://spring.io/blog/2023/06/07/securing-spring-boot-applications-with-ssl">Spring SSL Bundle</a> that
+   * gives the {@link javax.net.ssl.TrustManager}s to use during TLS verification. If no bundle is given, the Java trust
+   * default will be used.
+   */
+  @Setter
+  @Getter
+  private String httpsTrustBundle;
+
+  /**
    * If the {@code location} is an HTTPS resource, this setting tells whether to skip hostname verification in the TLS
    * connection (useful during testing).
    */
