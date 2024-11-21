@@ -15,6 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.settings;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.shared.component.ComponentInitializationException;
 import net.shibboleth.shared.httpclient.HttpClientBuilder;
@@ -27,6 +29,8 @@ import org.apache.hc.client5.http.ssl.DefaultHostnameVerifier;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
+import org.springframework.boot.ssl.NoSuchSslBundleException;
+import org.springframework.boot.ssl.SslBundles;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.util.StringUtils;
@@ -46,6 +50,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -64,7 +69,9 @@ public class MetadataProviderUtils {
    * @param config configuration
    * @return a {@link MetadataResolver}
    */
-  public static MetadataResolver createMetadataResolver(final MetadataProviderSettings[] config) {
+  @Nonnull
+  public static MetadataResolver createMetadataResolver(
+      @Nonnull final MetadataProviderSettings[] config, @Nullable final SslBundles sslBundles) {
     try {
       final List<MetadataProvider> providers = new ArrayList<>();
       for (final MetadataProviderSettings md : config) {
@@ -79,12 +86,12 @@ public class MetadataProviderUtils {
           }
 
           if (md.getMdq() != null && md.getMdq()) {
-            provider = new MDQMetadataProvider(md.getLocation().getURL().toString(), createHttpClient(md),
+            provider = new MDQMetadataProvider(md.getLocation().getURL().toString(), createHttpClient(md, sslBundles),
                 preProcessBackupDirectory(md.getBackupLocation()));
           }
           else {
             provider = new HTTPMetadataProvider(md.getLocation().getURL().toString(),
-                preProcessBackupFile(md.getBackupLocation()), createHttpClient(md));
+                preProcessBackupFile(md.getBackupLocation()), createHttpClient(md, sslBundles));
           }
           if (md.getValidationCertificate() != null) {
             provider.setSignatureVerificationCertificate(md.getValidationCertificate());
@@ -124,11 +131,28 @@ public class MetadataProviderUtils {
   /**
    * Creates an HTTP client to use for the {@link MetadataResolver}.
    *
+   * @param config the provider config
+   * @param sslBundles SSL trust bundle
    * @return a HttpClient
    */
-  private static HttpClient createHttpClient(final MetadataProviderSettings config) {
+  @Nonnull
+  private static HttpClient createHttpClient(
+      @Nonnull final MetadataProviderSettings config, @Nullable final SslBundles sslBundles) {
     try {
-      final List<TrustManager> managers = List.of(HttpClientSupport.buildNoTrustX509TrustManager());
+      final List<TrustManager> managers;
+
+      if (config.getHttpsTrustBundle() != null) {
+        try {
+          managers = Arrays.asList(sslBundles.getBundle(config.getHttpsTrustBundle()).getManagers().getTrustManagers());
+        }
+        catch (final NoSuchSslBundleException e) {
+          throw new IllegalArgumentException(
+              "SSL bundle %s could not be found".formatted(config.getHttpsTrustBundle()));
+        }
+      }
+      else {
+        managers = List.of(HttpClientSupport.buildNoTrustX509TrustManager());
+      }
       final HostnameVerifier hnv = Optional.ofNullable(config.getSkipHostnameVerification()).orElse(false)
           ? new NoopHostnameVerifier()
           : new DefaultHostnameVerifier();

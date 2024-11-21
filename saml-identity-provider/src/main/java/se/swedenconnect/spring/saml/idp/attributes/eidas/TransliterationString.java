@@ -15,24 +15,22 @@
  */
 package se.swedenconnect.spring.saml.idp.attributes.eidas;
 
-import java.io.Serial;
-import java.util.Objects;
-import java.util.Optional;
-
-import javax.xml.namespace.QName;
-
 import org.opensaml.core.xml.schema.XSBooleanValue;
-
 import se.swedenconnect.opensaml.eidas.ext.attributes.TransliterationStringType;
 import se.swedenconnect.opensaml.saml2.attribute.AttributeBuilder;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
+import javax.xml.namespace.QName;
+import java.io.Serial;
+import java.util.Objects;
+import java.util.Optional;
+
 /**
- * Base class for {@link TransliterationStringType} values.
+ * Base class for {@link TransliterationStringType} values.
  *
  * @author Martin Lindström
  */
-public class TransliterationString<T extends TransliterationStringType> implements EidasAttributeValue<T> {
+public class TransliterationString implements EidasAttributeValue<TransliterationStringType> {
 
   @Serial
   private static final long serialVersionUID = Saml2IdentityProviderVersion.SERIAL_VERSION_UID;
@@ -46,23 +44,17 @@ public class TransliterationString<T extends TransliterationStringType> implemen
   /** The XML type. */
   private final QName type;
 
-  /** The class. */
-  private final Class<T> clazz;
-
   /**
    * Constructor.
    *
    * @param value the attribute value
-   * @param type the XML type
-   * @param clazz the class
    */
-  public TransliterationString(final T value, final QName type, final Class<T> clazz) {
+  public TransliterationString(final TransliterationStringType value) {
     this.stringValue = Objects.requireNonNull(value, "value must not be null").getValue();
     this.latinScript = Optional.ofNullable(value.getLatinScriptXSBooleanValue())
         .map(XSBooleanValue::getValue)
         .orElse(null);
-    this.type = Objects.requireNonNull(type, "type must not be null");
-    this.clazz = Objects.requireNonNull(clazz, "clazz must not be null");
+    this.type = value.getSchemaType();
   }
 
   /** {@inheritDoc} */
@@ -73,8 +65,9 @@ public class TransliterationString<T extends TransliterationStringType> implemen
 
   /** {@inheritDoc} */
   @Override
-  public T createXmlObject() {
-    final T xmlValue = AttributeBuilder.createValueObject(this.type, this.clazz);
+  public TransliterationStringType createXmlObject() {
+    final TransliterationStringType xmlValue =
+        AttributeBuilder.createValueObject(this.type, TransliterationStringType.class);
     xmlValue.setValue(this.stringValue);
     xmlValue.setLatinScript(this.latinScript);
     return xmlValue;
