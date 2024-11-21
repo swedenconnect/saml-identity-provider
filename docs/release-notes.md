@@ -6,7 +6,7 @@
 
 ### Version 2.2.1
 
-Date: ---
+Date: 2024-11-21
 
 - Support for the eIDAS (optional) attributes Nationality, CountryOfResidence, CountryOfBirth and TownOfBirth was added to attribute conversion logic. This fix only applies to IdP:s that proxy assertions from eIDAS.
 
