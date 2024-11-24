@@ -15,17 +15,17 @@
  */
 package se.swedenconnect.spring.saml.idp.demo.user;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.provisioning.UserDetailsManager;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+
 /**
  * An {@link UserDetailsManager} implementation for simulated users.
- * 
+ *
  * @author Martin Lindström
  */
 public class SimulatedUserDetailsManager implements UserDetailsManager {
@@ -39,15 +39,15 @@ public class SimulatedUserDetailsManager implements UserDetailsManager {
   }
 
   @Override
-  public void createUser(UserDetails user) {
-    if (!SimulatedUser.class.isInstance(user)) {
+  public void createUser(final UserDetails user) {
+    if (!(user instanceof SimulatedUser)) {
       throw new IllegalArgumentException("Expected " + SimulatedUser.class.getSimpleName());
     }
-    this.users.put(user.getUsername(), SimulatedUser.class.cast(user));
+    this.users.put(user.getUsername(), (SimulatedUser) user);
   }
 
   @Override
-  public void updateUser(UserDetails user) {
+  public void updateUser(final UserDetails user) {
     if (!this.userExists(user.getUsername())) {
       throw new IllegalArgumentException("User does not exist");
     }
@@ -55,16 +55,16 @@ public class SimulatedUserDetailsManager implements UserDetailsManager {
   }
 
   @Override
-  public void deleteUser(String username) {
+  public void deleteUser(final String username) {
     this.users.remove(username);
   }
 
   @Override
-  public void changePassword(String oldPassword, String newPassword) {
+  public void changePassword(final String oldPassword, final String newPassword) {
   }
 
   @Override
-  public boolean userExists(String username) {
+  public boolean userExists(final String username) {
     return this.users.containsKey(username);
   }
 

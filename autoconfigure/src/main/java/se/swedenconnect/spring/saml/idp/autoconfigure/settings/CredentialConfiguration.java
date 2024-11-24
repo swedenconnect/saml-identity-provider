@@ -15,55 +15,65 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
-import java.security.cert.X509Certificate;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import lombok.Setter;
 import se.swedenconnect.security.credential.PkiCredential;
+import se.swedenconnect.security.credential.bundle.CredentialBundles;
+import se.swedenconnect.security.credential.config.ConfigurationResourceLoader;
 import se.swedenconnect.security.credential.factory.PkiCredentialConfigurationProperties;
-import se.swedenconnect.security.credential.factory.PkiCredentialFactoryBean;
+import se.swedenconnect.security.credential.factory.PkiCredentialFactory;
+
+import java.security.cert.X509Certificate;
 
 /**
  * Configuration class for IdP credentials.
- * 
+ *
  * @author Martin Lindström
  */
 @Configuration
 @EnableConfigurationProperties(IdentityProviderConfigurationProperties.class)
 public class CredentialConfiguration {
-  
+
   /** The properties. */
   private final IdentityProviderConfigurationProperties properties;
+
+  /** Credential bundles. */
+  private final CredentialBundles credentialBundles;
+
+  /** Resource loader. */
+  private final ConfigurationResourceLoader resourceLoader;
 
   /**
    * Constructor.
    *
-    * @param properties the IdP properties
+   * @param properties the IdP properties
    */
   public CredentialConfiguration(
-      @Autowired(required = false) final IdentityProviderConfigurationProperties properties) {
+      @Autowired(required = false) final IdentityProviderConfigurationProperties properties,
+      final CredentialBundles credentialBundles,
+      final ConfigurationResourceLoader resourceLoader) {
     this.properties = properties;
+    this.credentialBundles = credentialBundles;
+    this.resourceLoader = resourceLoader;
   }
-  
+
   @ConditionalOnMissingBean(name = "saml.idp.credentials.Default")
   @Bean("saml.idp.credentials.Default")
   PkiCredential defaultCredential() throws Exception {
     this.assertProperties();
     return this.loadCredential(this.properties.getCredentials().getDefaultCredential());
   }
-  
+
   @ConditionalOnMissingBean(name = "saml.idp.credentials.Sign")
   @Bean("saml.idp.credentials.Sign")
   PkiCredential signCredential() throws Exception {
     this.assertProperties();
     return this.loadCredential(this.properties.getCredentials().getSign());
   }
-  
+
   @ConditionalOnMissingBean(name = "saml.idp.credentials.FutureSign")
   @Bean("saml.idp.credentials.FutureSign")
   X509Certificate futureSignCertificate() {
@@ -72,28 +82,28 @@ public class CredentialConfiguration {
     }
     return null;
   }
-  
+
   @ConditionalOnMissingBean(name = "saml.idp.credentials.Encrypt")
   @Bean("saml.idp.credentials.Encrypt")
   PkiCredential encryptCredential() throws Exception {
     this.assertProperties();
     return this.loadCredential(this.properties.getCredentials().getEncrypt());
   }
-  
+
   @ConditionalOnMissingBean(name = "saml.idp.credentials.PreviousEncrypt")
   @Bean("saml.idp.credentials.PreviousEncrypt")
   PkiCredential previousEncryptCredential() throws Exception {
     this.assertProperties();
     return this.loadCredential(this.properties.getCredentials().getPreviousEncrypt());
   }
-  
+
   @ConditionalOnMissingBean(name = "saml.idp.credentials.MetadataSign")
   @Bean("saml.idp.credentials.MetadataSign")
   PkiCredential metadataSignCredential() throws Exception {
     this.assertProperties();
     return this.loadCredential(this.properties.getCredentials().getMetadataSign());
-  }  
-   
+  }
+
   private void assertProperties() {
     if (this.properties == null) {
       throw new IllegalArgumentException("Missing IdP configuration");
@@ -102,14 +112,13 @@ public class CredentialConfiguration {
       throw new IllegalArgumentException("Missing saml.idp.credentials.* configuration");
     }
   }
-  
+
   private PkiCredential loadCredential(final PkiCredentialConfigurationProperties props) throws Exception {
     if (props == null) {
       return null;
     }
-    final PkiCredentialFactoryBean factory = new PkiCredentialFactoryBean(props);
-    factory.afterPropertiesSet();
-    return factory.getObject();
+    return PkiCredentialFactory.createCredential(props, this.resourceLoader,
+        this.credentialBundles.getCredentialProvider(), this.credentialBundles.getKeyStoreProvider(), null);
   }
 
 }

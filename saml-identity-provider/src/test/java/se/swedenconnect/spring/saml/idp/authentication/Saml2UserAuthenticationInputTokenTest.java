@@ -34,23 +34,23 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthentica
 
 /**
  * Test cases for Saml2UserAuthenticationInputToken.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2UserAuthenticationInputTokenTest {
-  
+
   private static final String SP = "https://sp.example.com";
-  
+
   @Test
   public void test() {
-    
+
     final Saml2AuthnRequestAuthenticationToken authnRequestToken = Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
     Mockito.when(authnRequestToken.isAuthenticated()).thenReturn(true);
     Mockito.when(authnRequestToken.getCredentials()).thenReturn("CRED");
     Mockito.when(authnRequestToken.getPrincipal()).thenReturn(SP);
     Mockito.when(authnRequestToken.getLogString()).thenReturn("LOG");
-    
-    EntityDescriptor ed = EntityDescriptorBuilder.builder()
+
+    final EntityDescriptor ed = EntityDescriptorBuilder.builder()
         .entityID(SP)
         .roleDescriptors(SPSSODescriptorBuilder.builder()
             .extensions(ExtensionsBuilder.builder()
@@ -77,10 +77,10 @@ public class Saml2UserAuthenticationInputTokenTest {
             .build())
         .build();
     Mockito.when(authnRequestToken.getPeerMetadata()).thenReturn(ed);
-    
-    
+
+
     final AuthenticationRequirements authnReqs = Mockito.mock(AuthenticationRequirements.class);
-    
+
     final Saml2UserAuthenticationInputToken token = new Saml2UserAuthenticationInputToken(authnRequestToken, authnReqs);
     Assertions.assertTrue(token.isAuthenticated());
     Assertions.assertNotNull(token.getAuthnRequestToken());
@@ -89,10 +89,10 @@ public class Saml2UserAuthenticationInputTokenTest {
     Assertions.assertEquals("CRED", token.getCredentials());
     Assertions.assertEquals(SP, token.getPrincipal());
     Assertions.assertEquals("LOG", token.getLogString());
-    
+
     Assertions.assertEquals(SP, token.getUiInfo().getEntityId());
     Assertions.assertEquals(SP, token.getUiInfo().getEntityId());
-    
+
     token.setUserAuthentication(Mockito.mock(Authentication.class));
     Assertions.assertNotNull(token.getUserAuthentication());
   }

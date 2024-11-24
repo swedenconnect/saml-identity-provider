@@ -15,25 +15,26 @@
  */
 package se.swedenconnect.spring.saml.idp.demo.authn;
 
-import java.util.Collections;
-
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
-
 import se.swedenconnect.spring.saml.idp.demo.user.SimulatedUser;
+
+import java.io.Serial;
+import java.util.Collections;
 
 /**
  * An {@link Authentication} token for our simulated authentication process.
- * 
+ *
  * @author Martin Lindström
  */
 public class SimulatedAuthenticationToken extends AbstractAuthenticationToken {
 
+  @Serial
   private static final long serialVersionUID = -4646659410285834357L;
 
   /**
    * Constructor.
-   * 
+   *
    * @param user the simulated user (i.e., the user that was authenticated)
    */
   public SimulatedAuthenticationToken(final SimulatedUser user) {

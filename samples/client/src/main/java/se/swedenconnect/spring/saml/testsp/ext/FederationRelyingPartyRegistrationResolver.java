@@ -15,17 +15,16 @@
  */
 package se.swedenconnect.spring.saml.testsp.ext;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.web.RelyingPartyRegistrationResolver;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 public class FederationRelyingPartyRegistrationResolver implements RelyingPartyRegistrationResolver {
 
   @Override
   public RelyingPartyRegistration resolve(final HttpServletRequest request, final String relyingPartyRegistrationId) {
 
-      // OpenSaml4AuthenticationRequestResolver k;
+    // OpenSaml4AuthenticationRequestResolver k;
 
     return null;
   }

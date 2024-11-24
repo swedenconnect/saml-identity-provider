@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.testsp.ext;
 
+import jakarta.annotation.Nonnull;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.AuthenticatedPrincipal;
@@ -28,7 +29,7 @@ import org.springframework.util.CollectionUtils;
 public class ResponseAuthenticationConverter implements Converter<ResponseToken, Saml2Authentication> {
 
   @Override
-  public Saml2Authentication convert(final ResponseToken responseToken) {
+  public Saml2Authentication convert(@Nonnull final ResponseToken responseToken) {
 
     final Saml2Authentication token =
         OpenSaml4AuthenticationProvider.createDefaultResponseAuthenticationConverter().convert(responseToken);

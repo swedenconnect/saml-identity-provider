@@ -15,18 +15,17 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.audit;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.spring.saml.idp.audit.repository.MemoryBasedAuditEventRepository;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Configuration properties for auditing.
@@ -60,15 +59,14 @@ public class AuditRepositoryConfigurationProperties implements InitializingBean 
   private RedisRepository redis;
 
   /**
-   * A list of event ID:s for the events that will be logged to the repository. If not set, all events will
-   * be logged (except to excluded by the "exclude-events").
+   * A list of event ID:s for the events that will be logged to the repository. If not set, all events will be logged
+   * (except to excluded by the "exclude-events").
    */
   @Getter
   private final List<String> includeEvents = new ArrayList<>();
 
   /**
-   * A list of event ID:s to exclude from being logged to the repository. See also the "include-events"
-   * setting.
+   * A list of event ID:s to exclude from being logged to the repository. See also the "include-events" setting.
    */
   @Getter
   private final List<String> excludeEvents = new ArrayList<>();
@@ -107,7 +105,7 @@ public class AuditRepositoryConfigurationProperties implements InitializingBean 
 
     /** {@inheritDoc} */
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
       Assert.hasText(this.logFile, "saml.idp.audit.file.log-file must be assigned");
     }
 

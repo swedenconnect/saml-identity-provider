@@ -23,10 +23,10 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml4AuthenticationProvider;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
-
 import se.swedenconnect.spring.saml.testsp.ext.ExtendedSaml2AuthenticationTokenConverter;
 
 @Configuration
@@ -43,11 +43,11 @@ public class SamlSpSecurityConfiguration {
   @Bean
   SecurityFilterChain samlLoginFilterChain(final HttpSecurity http) throws Exception {
     http.authorizeHttpRequests(
-        (authorize) -> authorize
-            .requestMatchers(HttpMethod.GET, "/private/**").authenticated()
-            .requestMatchers(HttpMethod.POST, "/saml/**", "/private/**").authenticated()
-            .anyRequest().permitAll())
-        .rememberMe(rm -> rm.disable())
+            (authorize) -> authorize
+                .requestMatchers(HttpMethod.GET, "/private/**").authenticated()
+                .requestMatchers(HttpMethod.POST, "/saml/**", "/private/**").authenticated()
+                .anyRequest().permitAll())
+        .rememberMe(AbstractHttpConfigurer::disable)
         .authenticationProvider(this.openSaml4AuthenticationProvider)
         .saml2Login(login -> login.authenticationConverter(this.saml2AuthenticationTokenConverter))
         .saml2Logout(Customizer.withDefaults())

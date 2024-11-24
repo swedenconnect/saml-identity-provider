@@ -15,9 +15,6 @@
  */
 package se.swedenconnect.spring.saml.testsp.config;
 
-import java.util.Optional;
-import java.util.function.Consumer;
-
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.core.AuthnRequest;
@@ -46,14 +43,18 @@ import org.springframework.security.saml2.provider.service.web.authentication.Op
 import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml4AuthenticationRequestResolver.AuthnRequestContext;
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-
 import se.swedenconnect.opensaml.saml2.metadata.build.EntityAttributesBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.ExtensionsBuilder;
 import se.swedenconnect.security.credential.PkiCredential;
+import se.swedenconnect.security.credential.bundle.CredentialBundles;
+import se.swedenconnect.security.credential.config.ConfigurationResourceLoader;
 import se.swedenconnect.security.credential.factory.PkiCredentialConfigurationProperties;
-import se.swedenconnect.security.credential.factory.PkiCredentialFactoryBean;
+import se.swedenconnect.security.credential.factory.PkiCredentialFactory;
 import se.swedenconnect.spring.saml.testsp.ext.ExtendedSaml2AuthenticationTokenConverter;
 import se.swedenconnect.spring.saml.testsp.ext.ResponseAuthenticationConverter;
+
+import java.util.Optional;
+import java.util.function.Consumer;
 
 /**
  * Configuration class for the Spring Security SAML SP.
@@ -65,6 +66,14 @@ public class SamlSpConfiguration {
 
   @Autowired
   ResponseAuthenticationConverter responseAuthenticationConverter;
+
+  /** Credential bundles. */
+  @Autowired
+  CredentialBundles credentialBundles;
+
+  /** Resource loader. */
+  @Autowired
+  private ConfigurationResourceLoader resourceLoader;
 
   @Bean
   RelyingPartyRegistrationResolver relyingPartyRegistrationResolver(
@@ -127,9 +136,9 @@ public class SamlSpConfiguration {
   FilterRegistrationBean<Saml2MetadataFilter> metadata(
       final RelyingPartyRegistrationResolver registrations,
       final Saml2MetadataResolver saml2MetadataResolver) {
-    Saml2MetadataFilter metadata = new Saml2MetadataFilter(registrations, saml2MetadataResolver);
+    final Saml2MetadataFilter metadata = new Saml2MetadataFilter(registrations, saml2MetadataResolver);
     metadata.setRequestMatcher(new AntPathRequestMatcher("/saml2/metadata/{registrationId}", "GET"));
-    FilterRegistrationBean<Saml2MetadataFilter> filter = new FilterRegistrationBean<>(metadata);
+    final FilterRegistrationBean<Saml2MetadataFilter> filter = new FilterRegistrationBean<>(metadata);
     filter.setOrder(-101);
     return filter;
   }
@@ -148,7 +157,8 @@ public class SamlSpConfiguration {
       final AuthnRequest authnRequest = c.getAuthnRequest();
       authnRequest.setForceAuthn(true);
       authnRequest.getIssuer().setFormat(NameID.ENTITY);
-      NameIDPolicy nameIdPolicy = (NameIDPolicy) XMLObjectSupport.buildXMLObject(NameIDPolicy.DEFAULT_ELEMENT_NAME);
+      final NameIDPolicy nameIdPolicy =
+          (NameIDPolicy) XMLObjectSupport.buildXMLObject(NameIDPolicy.DEFAULT_ELEMENT_NAME);
       nameIdPolicy.setAllowCreate(true);
       nameIdPolicy.setFormat(NameID.PERSISTENT);
       authnRequest.setNameIDPolicy(nameIdPolicy);
@@ -160,12 +170,12 @@ public class SamlSpConfiguration {
   @Bean
   RelyingPartyRegistrationRepository relayingPartyRepository(final SamlSpConfigurationProperties properties)
       throws Exception {
-    final PkiCredential credential = loadCredential(properties.getCredential());
-    RelyingPartyRegistration relayingParty = RelyingPartyRegistrations
+    final PkiCredential credential = this.loadCredential(properties.getCredential());
+    final RelyingPartyRegistration relayingParty = RelyingPartyRegistrations
         //.fromMetadataLocation("https://idp.sandbox.swedenconnect.se/idp/metadata/idp.xml")
         .fromMetadata(properties.getIdpMetadataLocation().getInputStream())
         .entityId(properties.getEntityId())
-//        .assertionConsumerServiceLocation(properties.getAssertionConsumerUrl())
+        //        .assertionConsumerServiceLocation(properties.getAssertionConsumerUrl())
         .registrationId(properties.getRegistrationId())
         .assertingPartyDetails(b -> b.wantAuthnRequestsSigned(true))
         .signingX509Credentials(
@@ -176,10 +186,9 @@ public class SamlSpConfiguration {
     return new InMemoryRelyingPartyRegistrationRepository(relayingParty);
   }
 
-  private static PkiCredential loadCredential(final PkiCredentialConfigurationProperties props) throws Exception {
-    final PkiCredentialFactoryBean factory = new PkiCredentialFactoryBean(props);
-    factory.afterPropertiesSet();
-    return factory.getObject();
+  private PkiCredential loadCredential(final PkiCredentialConfigurationProperties props) throws Exception {
+    return PkiCredentialFactory.createCredential(props, this.resourceLoader,
+        this.credentialBundles.getCredentialProvider(), this.credentialBundles.getKeyStoreProvider(), null);
   }
 
   @Bean
@@ -194,6 +203,5 @@ public class SamlSpConfiguration {
     provider.setResponseAuthenticationConverter(this.responseAuthenticationConverter);
     return provider;
   }
-
 
 }

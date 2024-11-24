@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundles;
-import org.springframework.boot.ssl.SslManagerBundle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import se.swedenconnect.spring.saml.idp.settings.MetadataProviderSettings;
@@ -56,7 +55,7 @@ public class MetadataResolverConfiguration {
       final MetadataProviderSettings[] settings =
           new MetadataProviderSettings[this.properties.getMetadataProviders().size()];
       int pos = 0;
-      for (final MetadataProviderConfigurationProperties p : this.properties.getMetadataProviders()) {
+      for (final IdentityProviderConfigurationProperties.MetadataProviderConfigurationProperties p : this.properties.getMetadataProviders()) {
         settings[pos++] = MetadataProviderSettings.builder()
             .location(p.getLocation())
             .httpsTrustBundle(p.getHttpsTrustBundle())

@@ -28,7 +28,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.thymeleaf.spring6.SpringTemplateEngine;
-
 import se.swedenconnect.spring.saml.idp.attributes.nameid.DefaultNameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurerAdapter;
 import se.swedenconnect.spring.saml.idp.demo.authn.SimulatedAuthenticationController;
@@ -68,7 +67,7 @@ public class IdpConfiguration {
   @Bean
   UserDetailsService userDetailsService() {
     final SimulatedUserDetailsManager mgr = new SimulatedUserDetailsManager();
-    this.userProps.getUsers().stream().forEach(u -> mgr.createUser(u));
+    this.userProps.getUsers().forEach(mgr::createUser);
     return mgr;
   }
 
@@ -97,7 +96,7 @@ public class IdpConfiguration {
       // Example of how we change the NameID default from persistent to transient
       c.authnRequestProcessor(p -> p.authenticationProvider(
           a -> {
-            DefaultNameIDGeneratorFactory f = new DefaultNameIDGeneratorFactory(this.settings.getEntityId());
+            final DefaultNameIDGeneratorFactory f = new DefaultNameIDGeneratorFactory(this.settings.getEntityId());
             f.setDefaultFormat(NameID.TRANSIENT);
             a.nameIDGeneratorFactory(f);
           }));

@@ -15,32 +15,32 @@
  */
 package se.swedenconnect.spring.saml.testsp.ext;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.util.Objects;
-
+import net.shibboleth.shared.xml.SerializeSupport;
+import net.shibboleth.shared.xml.XMLParserException;
 import org.opensaml.core.xml.XMLObject;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
 import org.opensaml.core.xml.io.MarshallingException;
 import org.opensaml.core.xml.io.UnmarshallingException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 
-import net.shibboleth.utilities.java.support.xml.SerializeSupport;
-import net.shibboleth.utilities.java.support.xml.XMLParserException;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * Utility class for storing OpenSAML objects in a serializable manner.
  *
  * @param <T> the type of object being stored
- *
  * @author Martin Lindström
  */
 public class SerializableOpenSamlObject<T extends XMLObject> implements Serializable {
 
+  @Serial
   private static final long serialVersionUID = 2505230422941307872L;
 
   /** The object that we wrap. */
@@ -64,8 +64,9 @@ public class SerializableOpenSamlObject<T extends XMLObject> implements Serializ
     return this.object;
   }
 
+  @Serial
   private void writeObject(final ObjectOutputStream out) throws IOException {
-    try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+    try (final ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
       SerializeSupport.writeNode(XMLObjectSupport.marshall(this.object), bos);
       out.writeObject(bos.toByteArray());
     }
@@ -74,10 +75,10 @@ public class SerializableOpenSamlObject<T extends XMLObject> implements Serializ
     }
   }
 
-  @SuppressWarnings("unchecked")
+  @Serial
   private void readObject(final ObjectInputStream in) throws IOException, ClassNotFoundException {
     final byte[] bytes = (byte[]) in.readObject();
-    try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
+    try (final ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
       this.object =
           (T) XMLObjectSupport.unmarshallFromInputStream(XMLObjectProviderRegistrySupport.getParserPool(), bis);
     }

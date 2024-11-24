@@ -15,15 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.redis;
 
-import java.io.InputStream;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.util.Optional;
-import java.util.Spliterator;
-import java.util.Spliterators;
-import java.util.UUID;
-import java.util.stream.StreamSupport;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.ssl.SslBundle;
@@ -35,7 +27,14 @@ import org.springframework.boot.ssl.SslStoreBundle;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import lombok.extern.slf4j.Slf4j;
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.util.Optional;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 /**
  * Configuration class that transforms the deprecated {@link RedisTlsProperties} to a {@link SslBundle}.
@@ -114,7 +113,7 @@ public class RedisTlsExtensionsConfiguration {
           keyStore.load(is, keyStorePassword.toCharArray());
         }
         final String alias = StreamSupport.stream(
-            Spliterators.spliteratorUnknownSize(keyStore.aliases().asIterator(), Spliterator.ORDERED), false)
+                Spliterators.spliteratorUnknownSize(keyStore.aliases().asIterator(), Spliterator.ORDERED), false)
             .filter(a -> {
               try {
                 return keyStore.isKeyEntry(a);

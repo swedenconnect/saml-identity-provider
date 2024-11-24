@@ -89,7 +89,7 @@ public class Saml2AuthnRequestAuthenticationProviderTest {
 
     final AuthnRequestValidator assertionConsumerServiceValidator = Mockito.mock(AuthnRequestValidator.class);
     Mockito.doAnswer(invocation -> {
-      final Saml2AuthnRequestAuthenticationToken t = (Saml2AuthnRequestAuthenticationToken) invocation.getArgument(0);
+      final Saml2AuthnRequestAuthenticationToken t = invocation.getArgument(0);
       t.setAssertionConsumerServiceUrl(ACS);
       return null;
     }).when(assertionConsumerServiceValidator).validate(Mockito.any());
@@ -174,7 +174,7 @@ public class Saml2AuthnRequestAuthenticationProviderTest {
 
     final AuthnRequestValidator assertionConsumerServiceValidator = Mockito.mock(AuthnRequestValidator.class);
     Mockito.doAnswer(invocation -> {
-      final Saml2AuthnRequestAuthenticationToken t = (Saml2AuthnRequestAuthenticationToken) invocation.getArgument(0);
+      final Saml2AuthnRequestAuthenticationToken t = invocation.getArgument(0);
       t.setAssertionConsumerServiceUrl(ACS);
       return null;
     }).when(assertionConsumerServiceValidator).validate(Mockito.any());

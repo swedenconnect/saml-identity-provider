@@ -15,9 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.error;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Map;
-
+import jakarta.annotation.Nonnull;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
 import org.springframework.boot.autoconfigure.web.servlet.error.ErrorViewResolver;
@@ -29,11 +30,10 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 import org.springframework.web.util.HtmlUtils;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Map;
 
 /**
  * A SAML error view resolver for handling {@link UnrecoverableSaml2IdpException}.
@@ -106,8 +106,8 @@ public class Saml2IdpErrorViewResolver implements ErrorViewResolver, Ordered {
     private static final MediaType TEXT_HTML_UTF8 = new MediaType("text", "html", StandardCharsets.UTF_8);
 
     @Override
-    public void render(final Map<String, ?> model, final HttpServletRequest request, final HttpServletResponse response)
-        throws Exception {
+    public void render(final Map<String, ?> model, @Nonnull final HttpServletRequest request,
+        final HttpServletResponse response) throws Exception {
       if (response.isCommitted()) {
         final String message = this.getMessage(model);
         log.error(message);
@@ -125,7 +125,7 @@ public class Saml2IdpErrorViewResolver implements ErrorViewResolver, Ordered {
         response.setContentType(this.getContentType());
       }
       builder.append("<html><body><h1>IdP Error</h1>").append(
-          "<p>This application has no explicit mapping for IdP errors, so you are seeing this as a fallback.</p>")
+              "<p>This application has no explicit mapping for IdP errors, so you are seeing this as a fallback.</p>")
           .append("<div id='created'>").append(timestamp).append("</div>")
           .append("<div>There was an unexpected error (type=").append(this.htmlEscape(model.get("error")))
           .append(", status=").append(this.htmlEscape(model.get("status"))).append(").</div>");

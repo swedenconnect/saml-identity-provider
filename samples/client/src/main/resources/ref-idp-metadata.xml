@@ -1,44 +1,103 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" ID="_d8ca478df13379b543245772178fe23e362b2ac65ce5a7e1a874f801903575a0" cacheDuration="P0Y0M1DT0H0M0.000S" entityID="https://dev.swedenconnect.se/idp" validUntil="2023-03-23T12:59:57.289Z" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<md:EntityDescriptor xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"
+                     ID="_d8ca478df13379b543245772178fe23e362b2ac65ce5a7e1a874f801903575a0"
+                     cacheDuration="P0Y0M1DT0H0M0.000S" entityID="https://dev.swedenconnect.se/idp"
+                     validUntil="2023-03-23T12:59:57.289Z" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <md:Extensions>
     <mdattr:EntityAttributes xmlns:mdattr="urn:oasis:names:tc:SAML:metadata:attribute">
-      <saml2:Attribute xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Name="urn:oasis:names:tc:SAML:attribute:assurance-certification" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/loa/1.0/loa2</saml2:AttributeValue>
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/loa/1.0/loa3</saml2:AttributeValue>
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.swedenconnect.se/loa/1.0/uncertified-loa3</saml2:AttributeValue>
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/loa/1.0/eidas-nf-low</saml2:AttributeValue>
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/loa/1.0/eidas-nf-sub</saml2:AttributeValue>
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/loa/1.0/eidas-nf-high</saml2:AttributeValue>
+      <saml2:Attribute xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion"
+                       Name="urn:oasis:names:tc:SAML:attribute:assurance-certification"
+                       NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.elegnamnden.se/loa/1.0/loa2
+        </saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.elegnamnden.se/loa/1.0/loa3
+        </saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.swedenconnect.se/loa/1.0/uncertified-loa3
+        </saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.elegnamnden.se/loa/1.0/eidas-nf-low
+        </saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.elegnamnden.se/loa/1.0/eidas-nf-sub
+        </saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.elegnamnden.se/loa/1.0/eidas-nf-high
+        </saml2:AttributeValue>
       </saml2:Attribute>
-      <saml2:Attribute xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Name="http://macedir.org/entity-category" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/ec/1.0/loa2-pnr</saml2:AttributeValue>
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.swedenconnect.se/ec/1.0/loa2-name</saml2:AttributeValue>
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/ec/1.0/loa3-pnr</saml2:AttributeValue>
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.swedenconnect.se/ec/1.0/loa3-name</saml2:AttributeValue>
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/ec/1.0/eidas-pnr-delivery</saml2:AttributeValue>
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/sprop/1.0/scal2</saml2:AttributeValue>
-        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">http://id.elegnamnden.se/sprop/1.0/mobile-auth</saml2:AttributeValue>
+      <saml2:Attribute xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Name="http://macedir.org/entity-category"
+                       NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.elegnamnden.se/ec/1.0/loa2-pnr
+        </saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.swedenconnect.se/ec/1.0/loa2-name
+        </saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.elegnamnden.se/ec/1.0/loa3-pnr
+        </saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.swedenconnect.se/ec/1.0/loa3-name
+        </saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.elegnamnden.se/ec/1.0/eidas-pnr-delivery
+        </saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.elegnamnden.se/sprop/1.0/scal2
+        </saml2:AttributeValue>
+        <saml2:AttributeValue xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+                              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="xsd:string">
+          http://id.elegnamnden.se/sprop/1.0/mobile-auth
+        </saml2:AttributeValue>
       </saml2:Attribute>
     </mdattr:EntityAttributes>
   </md:Extensions>
-  <md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
+  <md:IDPSSODescriptor WantAuthnRequestsSigned="true" protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol"
+                       xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
     <md:Extensions>
       <mdui:UIInfo xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
-        <mdui:DisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Sweden Connect Reference IdP</mdui:DisplayName>
-        <mdui:DisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Sweden Connect Referens-IdP</mdui:DisplayName>
-        <mdui:Description xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Sweden Connect Reference Identity Provider</mdui:Description>
-        <mdui:Description xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Sweden Connect referens-legitimeringstjänst</mdui:Description>
-        <mdui:Logo height="256" width="256" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">https://local.dev.swedenconnect.se:8443/idp/images/logo-notext.svg</mdui:Logo>
-        <mdui:Logo height="56" width="280" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">https://local.dev.swedenconnect.se:8443/idp/images/logo.svg</mdui:Logo>
+        <mdui:DisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Sweden Connect Reference IdP
+        </mdui:DisplayName>
+        <mdui:DisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Sweden Connect Referens-IdP
+        </mdui:DisplayName>
+        <mdui:Description xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Sweden Connect Reference
+          Identity Provider
+        </mdui:Description>
+        <mdui:Description xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Sweden Connect
+          referens-legitimeringstjänst
+        </mdui:Description>
+        <mdui:Logo height="256" width="256" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+          https://local.dev.swedenconnect.se:8443/idp/images/logo-notext.svg
+        </mdui:Logo>
+        <mdui:Logo height="56" width="280" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui">
+          https://local.dev.swedenconnect.se:8443/idp/images/logo.svg
+        </mdui:Logo>
       </mdui:UIInfo>
       <psc:RequestedPrincipalSelection xmlns:psc="http://id.swedenconnect.se/authn/1.0/principal-selection/ns">
-        <psc:MatchValue Name="urn:oid:1.2.752.29.4.13" xmlns:psc="http://id.swedenconnect.se/authn/1.0/principal-selection/ns" />
+        <psc:MatchValue Name="urn:oid:1.2.752.29.4.13"
+                        xmlns:psc="http://id.swedenconnect.se/authn/1.0/principal-selection/ns"/>
       </psc:RequestedPrincipalSelection>
     </md:Extensions>
     <md:KeyDescriptor use="signing" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
       <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
         <ds:X509Data>
-          <ds:X509Certificate>MIIE7jCCAtagAwIBAgIEY8BSDzANBgkqhkiG9w0BAQsFADA5MQswCQYDVQQGEwJTRTEXMBUGA1UECgwOU3dlZGVuIENvbm5lY3QxETAPBgNVBAMMCERlbW8gSWRQMB4XDTIzMDExMjE4MzE0M1oXDTMzMDExMjE4MzE0M1owOTELMAkGA1UEBhMCU0UxFzAVBgNVBAoMDlN3ZWRlbiBDb25uZWN0MREwDwYDVQQDDAhEZW1vIElkUDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAMPjn9Xe3Eq6KOGPjjq9qFpnbpyOY8j0ofAGi6xTx9ia3T2bmLsSesk5CWZk84plkaKbaE316RlO/2jVcR1nMdX0iqJlfQ15XAFrfypAbIKFCGA4rtz+7c+4pditpcH25qFZiiJB6oYOAQgUi/+T64sY7PIsIQthIChCXLCmJv8jKumLW0wRzPqXyYOz9sEDoroVf3pN61bH55WIcGQkfQlklH+q1DVG6itNtEIJJbBSr2YxjhBkKRG8zBuh9T5HPG5B/oE8RG1btudz8Tw1zKuiJHW+vygKs+HlvC1gCxDUPXTSB0T+vbmlqjo4htUZdVuZNzLOGLVi+P0XTmtGDFWenrODNdaInqqScWwQgSyvlJBoOhcMS8NquYlgjgcuA4+WPV6jZxEhbNvNKmgG3F6vxKhuBrfLGlVaKEd6WZl8k/Y4QJy7qhbAzeUC573VXPiqIunhQUHlpyCw4F+zsXIrhrWVtTBwrtUVKM9Vo6GBYtAiy5gVmvDfR1dY3cgDZ/yfFdChzdh/3KrHYc0JafBjJWJsP6MM1PJiy5s4jZEthN6KNiFY5pKY+wR9ie/GSIQP4Mnjrdpn65ju8GHBIm49AA7xGvAtmnGlymOyivPTNToKlBPKk42MMqyHXHnGtDh9phf6nXMenWYHUGiBqS0BQ759FRL0pINyDQeWn98pAgMBAAEwDQYJKoZIhvcNAQELBQADggIBAGwSU+aALo04o5HUvD+jFxEhgLVWUMHJck4yo/OFRRwsx70d6JIsD86lP8a5hIjCCv4II60xSkwzy5vpP8dJD7esKFAXCt3AvBiDlOiPlemHU9BPl6/wKClSeXG43IbQmauA5BABPdaXkb/SxQyioKuqQ97PBpB/1glLgQ1xWpjflWhy9z1iEmvqNB4ZCctdn2l8VBJohJMWnH4aBKEu9pC3I8zFTGYmMYLtAGBU5lnes089jxsQcmW0M5blHpI94XsBnJFeC/ackhsYeql/4wSv3N5a67amFDYNTpwkHNdykY/SUc/NUZcEP+QPzIUvOAedZ7rJZC0dxy4jPFOhYaJ2OurFZoB+j8kCuUI0hejFd54JB7mwvzsy/Zu7S7wVQroLiSkncQeF2dqtXPBjQkT/gAt5YEvs8EVue4waDzWoT93iFxpkrncbcxG6ohyBiGu3LuxaasmptQjofy/j6qbzGjB0O3LGmUxyfMDU7AcvJNNoHRNV68a8oEIV2o4/j35ps3kUdCcgUKdeoHe3fL3erpmIkH/Ptu9bmrMfwaY3gwQfnNGasHfq79axckyeJpZw9FT1lY68YOeD6NUG17cEP2Z0LPhhtR72O8Pxe65s5VBK1c2wxIpE0yMh2+AXSi5s6W5EfsKFhQMPt2LEnFft7N08P+32ddlnHWxB/Ce0</ds:X509Certificate>
+          <ds:X509Certificate>
+            MIIE7jCCAtagAwIBAgIEY8BSDzANBgkqhkiG9w0BAQsFADA5MQswCQYDVQQGEwJTRTEXMBUGA1UECgwOU3dlZGVuIENvbm5lY3QxETAPBgNVBAMMCERlbW8gSWRQMB4XDTIzMDExMjE4MzE0M1oXDTMzMDExMjE4MzE0M1owOTELMAkGA1UEBhMCU0UxFzAVBgNVBAoMDlN3ZWRlbiBDb25uZWN0MREwDwYDVQQDDAhEZW1vIElkUDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAMPjn9Xe3Eq6KOGPjjq9qFpnbpyOY8j0ofAGi6xTx9ia3T2bmLsSesk5CWZk84plkaKbaE316RlO/2jVcR1nMdX0iqJlfQ15XAFrfypAbIKFCGA4rtz+7c+4pditpcH25qFZiiJB6oYOAQgUi/+T64sY7PIsIQthIChCXLCmJv8jKumLW0wRzPqXyYOz9sEDoroVf3pN61bH55WIcGQkfQlklH+q1DVG6itNtEIJJbBSr2YxjhBkKRG8zBuh9T5HPG5B/oE8RG1btudz8Tw1zKuiJHW+vygKs+HlvC1gCxDUPXTSB0T+vbmlqjo4htUZdVuZNzLOGLVi+P0XTmtGDFWenrODNdaInqqScWwQgSyvlJBoOhcMS8NquYlgjgcuA4+WPV6jZxEhbNvNKmgG3F6vxKhuBrfLGlVaKEd6WZl8k/Y4QJy7qhbAzeUC573VXPiqIunhQUHlpyCw4F+zsXIrhrWVtTBwrtUVKM9Vo6GBYtAiy5gVmvDfR1dY3cgDZ/yfFdChzdh/3KrHYc0JafBjJWJsP6MM1PJiy5s4jZEthN6KNiFY5pKY+wR9ie/GSIQP4Mnjrdpn65ju8GHBIm49AA7xGvAtmnGlymOyivPTNToKlBPKk42MMqyHXHnGtDh9phf6nXMenWYHUGiBqS0BQ759FRL0pINyDQeWn98pAgMBAAEwDQYJKoZIhvcNAQELBQADggIBAGwSU+aALo04o5HUvD+jFxEhgLVWUMHJck4yo/OFRRwsx70d6JIsD86lP8a5hIjCCv4II60xSkwzy5vpP8dJD7esKFAXCt3AvBiDlOiPlemHU9BPl6/wKClSeXG43IbQmauA5BABPdaXkb/SxQyioKuqQ97PBpB/1glLgQ1xWpjflWhy9z1iEmvqNB4ZCctdn2l8VBJohJMWnH4aBKEu9pC3I8zFTGYmMYLtAGBU5lnes089jxsQcmW0M5blHpI94XsBnJFeC/ackhsYeql/4wSv3N5a67amFDYNTpwkHNdykY/SUc/NUZcEP+QPzIUvOAedZ7rJZC0dxy4jPFOhYaJ2OurFZoB+j8kCuUI0hejFd54JB7mwvzsy/Zu7S7wVQroLiSkncQeF2dqtXPBjQkT/gAt5YEvs8EVue4waDzWoT93iFxpkrncbcxG6ohyBiGu3LuxaasmptQjofy/j6qbzGjB0O3LGmUxyfMDU7AcvJNNoHRNV68a8oEIV2o4/j35ps3kUdCcgUKdeoHe3fL3erpmIkH/Ptu9bmrMfwaY3gwQfnNGasHfq79axckyeJpZw9FT1lY68YOeD6NUG17cEP2Z0LPhhtR72O8Pxe65s5VBK1c2wxIpE0yMh2+AXSi5s6W5EfsKFhQMPt2LEnFft7N08P+32ddlnHWxB/Ce0
+          </ds:X509Certificate>
         </ds:X509Data>
         <ds:KeyName>sign</ds:KeyName>
       </ds:KeyInfo>
@@ -46,27 +105,39 @@
     <md:KeyDescriptor use="encryption" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
       <ds:KeyInfo xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
         <ds:X509Data>
-          <ds:X509Certificate>MIIE7jCCAtagAwIBAgIEY8BSQzANBgkqhkiG9w0BAQsFADA5MQswCQYDVQQGEwJTRTEXMBUGA1UECgwOU3dlZGVuIENvbm5lY3QxETAPBgNVBAMMCERlbW8gSWRQMB4XDTIzMDExMjE4MzIzNVoXDTMzMDExMjE4MzIzNVowOTELMAkGA1UEBhMCU0UxFzAVBgNVBAoMDlN3ZWRlbiBDb25uZWN0MREwDwYDVQQDDAhEZW1vIElkUDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAK4fe7q7AW60Mny2zQms/YQvRnuGy0HNrUJ22hLC6xNCie5EdqRT9ootDYUrKABFMLfgFYn4WSlqV+8Pz1vTwFyxgO+ocHEzRQoBRaoKkGrBf/yq6D52zbCOyCUpp5WmBdKB7Bl6x+aAbCL3F4nmnlv7T1JRT0u2wf5781iUkA2XdUBcH5FiPrWriq8Asxfcg+I7ydgFzup9FaAbmop/vxO2C8jNj7FiLGD6FTohfR4KxonbyGTGlslgfV1WoHwxWAKK2j9ltoz2T3cPv0obsFeVIlNUj8ou+UbZFl1KIrLWosZhfy/dCMZi0FrPfMvRiHmGdsUrT0FJ9s/DT6sF6x5RsHoUF6T5GyF69tUE1N+Tb2MEwVS9QPn9CQqIRvSBRH2jxASkqQiqVg9XNkgrN03CRl6dOjlZD44gooZdkdbX+ll+SRpILuzZaLPNIC3ByeXIRTGO5FeJDtThO6dKz4bMmodfV0rz0cKY/u2B6b8o1vDRS5z83KByKAurv8sx9eQp2f6pXL+Qq2cUr5UKZgN0myvdBMoWO1QGITNvpFKQhhOwu0sS4rorv7hHANapkUZoSaW0DDwKVLjP/raLhrpm13ANXUaGpkNpMUApJBzaRuLQIAMqt04RdmfCSc+DcmUeXdH4anDO89Vs2tt/7/cqkjCuJ5kAMY2zlQtAnZe1AgMBAAEwDQYJKoZIhvcNAQELBQADggIBAFTOhf2HCuKcNpqudJXCZi2YfhnPqLHBZBHHporOMnXkA0+6HLLfHjjPiFhTnc6B+t5pg20azB2w37AYB9ljkGnAkQP14xdvJmkbtiP/T8b7omtzKK3NcqUrEdUlrO5pqk3lQnRRWZ5VqOAMChOF7xXh9z18TSp9KRnt/Pp/zGEFws3qBiRuk0z0L+ooA0QqTFpe32jzvLBfhOYXvXa0B5v3asivKwciP1fKGXCRethgwIFuq7UxEpn/BtMs9MCtssLmh/SUPXZtCQkLupWEcmGE3HJwT+mWXUIylMmo1/HZuiwfY/ptVFx4fjR/2veaLvZIkrq5C8PjVAo2ww3FoYv0r37oLH2wNJNOiEsOqn/7yXoeyeDb2H6pXFe3+A1skhK7iU7f5cMZnyECLmrZNGDO30fZfVk1LwywrflAXQPvfkmHoNk/oF/Kv+22mv6tMsM+C4g3YHG/74/yEcoC+VmvRI45u9VPb5hbsxb4N3dpL/WxGi/PA8RIPAGZglzf7tIFnOrPPqZA0rpvgAffUS0LHYch/E6N2HOylGWnTkqTL4bLgm9H8TsE/HZLqmTUx+aqyFTXPoDw24F4FUNthf5MS1fsgWi5uN5EiZxpOKx64BeEhCXMi0jMkI64R5Owu+/dRq3jWvUZodY3OgEbbC7HyuFFuYRdoe5HmajKewdP</ds:X509Certificate>
+          <ds:X509Certificate>
+            MIIE7jCCAtagAwIBAgIEY8BSQzANBgkqhkiG9w0BAQsFADA5MQswCQYDVQQGEwJTRTEXMBUGA1UECgwOU3dlZGVuIENvbm5lY3QxETAPBgNVBAMMCERlbW8gSWRQMB4XDTIzMDExMjE4MzIzNVoXDTMzMDExMjE4MzIzNVowOTELMAkGA1UEBhMCU0UxFzAVBgNVBAoMDlN3ZWRlbiBDb25uZWN0MREwDwYDVQQDDAhEZW1vIElkUDCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAK4fe7q7AW60Mny2zQms/YQvRnuGy0HNrUJ22hLC6xNCie5EdqRT9ootDYUrKABFMLfgFYn4WSlqV+8Pz1vTwFyxgO+ocHEzRQoBRaoKkGrBf/yq6D52zbCOyCUpp5WmBdKB7Bl6x+aAbCL3F4nmnlv7T1JRT0u2wf5781iUkA2XdUBcH5FiPrWriq8Asxfcg+I7ydgFzup9FaAbmop/vxO2C8jNj7FiLGD6FTohfR4KxonbyGTGlslgfV1WoHwxWAKK2j9ltoz2T3cPv0obsFeVIlNUj8ou+UbZFl1KIrLWosZhfy/dCMZi0FrPfMvRiHmGdsUrT0FJ9s/DT6sF6x5RsHoUF6T5GyF69tUE1N+Tb2MEwVS9QPn9CQqIRvSBRH2jxASkqQiqVg9XNkgrN03CRl6dOjlZD44gooZdkdbX+ll+SRpILuzZaLPNIC3ByeXIRTGO5FeJDtThO6dKz4bMmodfV0rz0cKY/u2B6b8o1vDRS5z83KByKAurv8sx9eQp2f6pXL+Qq2cUr5UKZgN0myvdBMoWO1QGITNvpFKQhhOwu0sS4rorv7hHANapkUZoSaW0DDwKVLjP/raLhrpm13ANXUaGpkNpMUApJBzaRuLQIAMqt04RdmfCSc+DcmUeXdH4anDO89Vs2tt/7/cqkjCuJ5kAMY2zlQtAnZe1AgMBAAEwDQYJKoZIhvcNAQELBQADggIBAFTOhf2HCuKcNpqudJXCZi2YfhnPqLHBZBHHporOMnXkA0+6HLLfHjjPiFhTnc6B+t5pg20azB2w37AYB9ljkGnAkQP14xdvJmkbtiP/T8b7omtzKK3NcqUrEdUlrO5pqk3lQnRRWZ5VqOAMChOF7xXh9z18TSp9KRnt/Pp/zGEFws3qBiRuk0z0L+ooA0QqTFpe32jzvLBfhOYXvXa0B5v3asivKwciP1fKGXCRethgwIFuq7UxEpn/BtMs9MCtssLmh/SUPXZtCQkLupWEcmGE3HJwT+mWXUIylMmo1/HZuiwfY/ptVFx4fjR/2veaLvZIkrq5C8PjVAo2ww3FoYv0r37oLH2wNJNOiEsOqn/7yXoeyeDb2H6pXFe3+A1skhK7iU7f5cMZnyECLmrZNGDO30fZfVk1LwywrflAXQPvfkmHoNk/oF/Kv+22mv6tMsM+C4g3YHG/74/yEcoC+VmvRI45u9VPb5hbsxb4N3dpL/WxGi/PA8RIPAGZglzf7tIFnOrPPqZA0rpvgAffUS0LHYch/E6N2HOylGWnTkqTL4bLgm9H8TsE/HZLqmTUx+aqyFTXPoDw24F4FUNthf5MS1fsgWi5uN5EiZxpOKx64BeEhCXMi0jMkI64R5Owu+/dRq3jWvUZodY3OgEbbC7HyuFFuYRdoe5HmajKewdP
+          </ds:X509Certificate>
         </ds:X509Data>
         <ds:KeyName>encrypt</ds:KeyName>
       </ds:KeyInfo>
-      <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p" />
-      <md:EncryptionMethod Algorithm="http://www.w3.org/2009/xmlenc11#aes256-gcm" />
-      <md:EncryptionMethod Algorithm="http://www.w3.org/2009/xmlenc11#aes192-gcm" />
-      <md:EncryptionMethod Algorithm="http://www.w3.org/2009/xmlenc11#aes128-gcm" />
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p"/>
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2009/xmlenc11#aes256-gcm"/>
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2009/xmlenc11#aes192-gcm"/>
+      <md:EncryptionMethod Algorithm="http://www.w3.org/2009/xmlenc11#aes128-gcm"/>
     </md:KeyDescriptor>
     <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:persistent</md:NameIDFormat>
     <md:NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</md:NameIDFormat>
-    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://local.dev.swedenconnect.se:8443/idp/saml2/redirect/authn" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" />
-    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://local.dev.swedenconnect.se:8443/idp/saml2/post/authn" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata" />
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect"
+                            Location="https://local.dev.swedenconnect.se:8443/idp/saml2/redirect/authn"
+                            xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"/>
+    <md:SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+                            Location="https://local.dev.swedenconnect.se:8443/idp/saml2/post/authn"
+                            xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata"/>
   </md:IDPSSODescriptor>
   <md:Organization xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
-    <md:OrganizationName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Sweden Connect</md:OrganizationName>
-    <md:OrganizationName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Sweden Connect</md:OrganizationName>
-    <md:OrganizationDisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Sweden Connect</md:OrganizationDisplayName>
-    <md:OrganizationDisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Sweden Connect</md:OrganizationDisplayName>
-    <md:OrganizationURL xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">https://www.swedenconnect.se/en</md:OrganizationURL>
-    <md:OrganizationURL xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">https://www.swedenconnect.se</md:OrganizationURL>
+    <md:OrganizationName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Sweden Connect
+    </md:OrganizationName>
+    <md:OrganizationName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Sweden Connect
+    </md:OrganizationName>
+    <md:OrganizationDisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">Sweden Connect
+    </md:OrganizationDisplayName>
+    <md:OrganizationDisplayName xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">Sweden Connect
+    </md:OrganizationDisplayName>
+    <md:OrganizationURL xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="en">https://www.swedenconnect.se/en
+    </md:OrganizationURL>
+    <md:OrganizationURL xmlns:xml="http://www.w3.org/XML/1998/namespace" xml:lang="sv">https://www.swedenconnect.se
+    </md:OrganizationURL>
   </md:Organization>
   <md:ContactPerson contactType="technical" xmlns:md="urn:oasis:names:tc:SAML:2.0:metadata">
     <md:Company>Sweden Connect</md:Company>

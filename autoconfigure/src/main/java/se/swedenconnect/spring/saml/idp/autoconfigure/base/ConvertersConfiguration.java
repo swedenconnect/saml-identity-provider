@@ -21,32 +21,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;
-import org.springframework.lang.NonNull;
 import se.swedenconnect.opensaml.common.utils.LocalizedString;
-import se.swedenconnect.security.credential.converters.PropertyToX509CertificateConverter;
 import se.swedenconnect.spring.saml.idp.metadata.PropertyToEntityDescriptorConverter;
 
-import java.security.cert.X509Certificate;
-
 /**
- * Configuration class that registers converters for Spring converters needed to apply properties to
- * configuration properties classes.
+ * Configuration class that registers converters for Spring converters needed to apply properties to configuration
+ * properties classes.
  */
 @AutoConfiguration(after = OpenSAMLConfiguration.class)
 public class ConvertersConfiguration {
-
-  /**
-   * Creates the bean the allows us to use property values that are referencing certificate resources and get the
-   * {@link X509Certificate} injected.
-   *
-   * @return a PropertyToX509CertificateConverter bean
-   */
-  @ConditionalOnMissingBean
-  @Bean
-  @ConfigurationPropertiesBinding
-  PropertyToX509CertificateConverter propertyToX509CertificateConverter() {
-    return new PropertyToX509CertificateConverter();
-  }
 
   /**
    * Creates the bean the allows us to use property values that are referencing EntityDescriptor resources and get the
@@ -69,13 +52,7 @@ public class ConvertersConfiguration {
   @Bean
   @ConfigurationPropertiesBinding
   Converter<String, LocalizedString> localizedStringConverter() {
-    return new Converter<>() {
-
-      @Override
-      public LocalizedString convert(@NonNull final String source) {
-        return new LocalizedString(source);
-      }
-    };
+    return LocalizedString::new;
   }
 
 }

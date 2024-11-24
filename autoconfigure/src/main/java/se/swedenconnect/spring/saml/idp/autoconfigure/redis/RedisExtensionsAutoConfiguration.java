@@ -26,7 +26,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisOperations;
-
 import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsConfiguration.SslBundleRegistrationBean;
 
 /**
@@ -34,7 +33,7 @@ import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsCo
  *
  * @author Martin Lindström
  */
-@AutoConfiguration(before = RedisAutoConfiguration.class )
+@AutoConfiguration(before = RedisAutoConfiguration.class)
 @ConditionalOnClass(RedisOperations.class)
 @EnableConfigurationProperties({ RedisProperties.class, RedisTlsProperties.class })
 @Import(RedisTlsExtensionsConfiguration.class)

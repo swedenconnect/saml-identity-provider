@@ -15,23 +15,25 @@
  */
 package se.swedenconnect.spring.saml.testsp.ext;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.security.saml2.provider.service.authentication.AbstractSaml2AuthenticationRequest;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticationToken;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.io.Serial;
 
 public class ExtendedSaml2AuthenticationToken extends Saml2AuthenticationToken {
 
+  @Serial
   private static final long serialVersionUID = -3655430597897721039L;
 
   @Getter
   @Setter
   private String authnContextClassRef;
 
-  public ExtendedSaml2AuthenticationToken(RelyingPartyRegistration relyingPartyRegistration, String saml2Response,
-      AbstractSaml2AuthenticationRequest authenticationRequest) {
+  public ExtendedSaml2AuthenticationToken(final RelyingPartyRegistration relyingPartyRegistration, final String saml2Response,
+      final AbstractSaml2AuthenticationRequest authenticationRequest) {
     super(relyingPartyRegistration, saml2Response, authenticationRequest);
   }
 

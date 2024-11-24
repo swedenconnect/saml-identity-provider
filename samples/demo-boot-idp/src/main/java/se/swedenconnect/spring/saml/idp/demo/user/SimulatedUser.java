@@ -15,23 +15,24 @@
  */
 package se.swedenconnect.spring.saml.idp.demo.user;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.io.Serial;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Objects;
 
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-
-import lombok.Getter;
-import lombok.Setter;
-
 /**
  * A simulated user.
- * 
+ *
  * @author Martin Lindström
  */
 public class SimulatedUser implements UserDetails {
 
+  @Serial
   private static final long serialVersionUID = 6822029385234222613L;
 
   /**
@@ -84,26 +85,6 @@ public class SimulatedUser implements UserDetails {
     return this.personalNumber;
   }
 
-  @Override
-  public boolean isAccountNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isAccountNonLocked() {
-    return true;
-  }
-
-  @Override
-  public boolean isCredentialsNonExpired() {
-    return true;
-  }
-
-  @Override
-  public boolean isEnabled() {
-    return true;
-  }
-  
   public String toViewString() {
     return String.format("%s (%s)", this.displayName, this.personalNumber);
   }

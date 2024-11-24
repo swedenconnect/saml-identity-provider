@@ -1,53 +1,53 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:insert="~{fragments/base :: headerFragment}">
-<title id="pageTitle" th:inline="text">[[#{sp.msg.title}]]</title>
+  <title id="pageTitle" th:inline="text">[[#{sp.msg.title}]]</title>
 </head>
 <body>
 
-  <div th:replace="~{fragments/header :: logotype}"></div>
+<div th:replace="~{fragments/header :: logotype}"></div>
 
-  <div class="container main">
-  
-    <div th:replace="~{fragments/header :: language(languages = ${languages}, path='/private/mypage')}"></div>  
+<div class="container main">
 
-    <div class="row" id="mainDiv">
-      <div class="col-sm-12 content-container">
+  <div th:replace="~{fragments/header :: language(languages = ${languages}, path='/private/mypage')}"></div>
 
-        <div class="row">
-          <div class="col-sm-12 content-heading">
-            <h2 th:text="#{sp.msg.heading}">Heading</h2>
-          </div>
-          <div class="col-sm-12">
-            <p class="info" th:text="#{sp.msg.loggedin-intro}">Intro</p>
+  <div class="row" id="mainDiv">
+    <div class="col-sm-12 content-container">
+
+      <div class="row">
+        <div class="col-sm-12 content-heading">
+          <h2 th:text="#{sp.msg.heading}">Heading</h2>
+        </div>
+        <div class="col-sm-12">
+          <p class="info" th:text="#{sp.msg.loggedin-intro}">Intro</p>
+        </div>
+      </div>
+
+      <hr class="full-width"/>
+
+      <div class="authn-listing">
+
+        <div class="row attribute-row" th:each="attr: ${attributes}">
+          <div class="col-sm-6" th:text="${attr.key}">Attribute name</div>
+          <div class="col-sm-6">
+            <span class="attribute-value" th:text="${attr.value}">Attribute value</span>
           </div>
         </div>
-        
-        <hr class="full-width" />
-        
-        <div class="authn-listing">
-        
-          <div class="row attribute-row" th:each="attr: ${attributes}">
-            <div class="col-sm-6" th:text="${attr.key}">Attribute name</div>
-            <div class="col-sm-6">
-              <span class="attribute-value" th:text="${attr.value}">Attribute value</span>
-            </div>
+
+        <div class="row">
+          <div class="col-sm-6" th:text="#{sp.msg.authncontext}">Level of assurance</div>
+          <div class="col-sm-6">
+            <span class="attribute-value" th:text="${loa}">LoA URI</span>
           </div>
-          
-          <div class="row">
-            <div class="col-sm-6" th:text="#{sp.msg.authncontext}">Level of assurance</div>
-            <div class="col-sm-6">
-              <span class="attribute-value" th:text="${loa}">LoA URI</span>
-            </div>
-          </div>          
-                       
+        </div>
+
       </div> <!-- /.col-sm-12 content-container -->
-      
+
       <div class="row section" id="backDiv">
         <div class="col-sm-12 return">
           <a href="#" th:href="@{/}"><span th:text="#{sp.msg.back}">Tillbaka</span></a>
         </div>
-      </div> <!-- /#backDiv -->      
+      </div> <!-- /#backDiv -->
 
       <div th:replace="~{fragments/footer :: copyright}"></div>
 

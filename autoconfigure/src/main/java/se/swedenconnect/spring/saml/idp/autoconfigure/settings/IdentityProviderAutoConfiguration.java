@@ -20,6 +20,7 @@ import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,6 +28,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Import;
 import se.swedenconnect.security.credential.PkiCredential;
+import se.swedenconnect.security.credential.spring.autoconfigure.SpringCredentialBundlesAutoConfiguration;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2ServiceProviderFilter;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurer;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurerAdapter;
@@ -50,6 +52,7 @@ import java.util.stream.Collectors;
  * @author Martin Lindström
  */
 @AutoConfiguration
+@AutoConfigureAfter(SpringCredentialBundlesAutoConfiguration.class)
 @EnableConfigurationProperties(IdentityProviderConfigurationProperties.class)
 @Import({ CredentialConfiguration.class, MetadataResolverConfiguration.class })
 @DependsOn("openSAML")

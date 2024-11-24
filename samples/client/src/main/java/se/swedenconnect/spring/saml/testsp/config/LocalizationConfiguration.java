@@ -15,9 +15,6 @@
  */
 package se.swedenconnect.spring.saml.testsp.config;
 
-import java.time.Duration;
-import java.util.Locale;
-
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +25,9 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.CookieLocaleResolver;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
+
+import java.time.Duration;
+import java.util.Locale;
 
 @Configuration
 public class LocalizationConfiguration implements WebMvcConfigurer {
@@ -41,7 +41,7 @@ public class LocalizationConfiguration implements WebMvcConfigurer {
 
   @Override
   public void addInterceptors(final InterceptorRegistry registry) {
-    registry.addInterceptor(localeChangeInterceptor());
+    registry.addInterceptor(this.localeChangeInterceptor());
   }
 
   @Bean
@@ -54,7 +54,7 @@ public class LocalizationConfiguration implements WebMvcConfigurer {
 
   @Bean
   LocaleResolver localeResolver(@Value("${server.servlet.context-path}") final String contextPath) {
-    CookieLocaleResolver resolver = new CookieLocaleResolver();
+    final CookieLocaleResolver resolver = new CookieLocaleResolver();
     resolver.setDefaultLocale(new Locale("sv"));
     resolver.setCookiePath(contextPath);
     resolver.setCookieMaxAge(Duration.ofDays(365));

@@ -1,3 +1,26 @@
+server:
+  port: 8443
+  servlet:
+    context-path: /idp
+    session:
+      timeout: 30m
+  ssl:
+    enabled: true
+    bundle: server
+  error:
+    include-message: always
+    include-exception: true
+    include-stacktrace: always
+
+management:
+  server:
+    port: 8444
+  endpoints:
+    web:
+      exposure:
+        include: info, health, auditevents
+  auditevents:
+    enabled: true
 
 spring:
   messages:
@@ -13,77 +36,71 @@ spring:
             location: classpath:ssl.jks
             password: secret
             type: JKS
-                        
-server:
-  port: 8443
-  servlet:
-    context-path: /idp
-    session:
-      timeout: 30m
-  ssl:
-    enabled: true
-    bundle: server
-  error:
-    include-message: always
-    include-exception: true
-    include-stacktrace: always
- 
-management:
-  server:
-    port: 8444
-  endpoints:
-    web:
-      exposure:
-        include: info, health, auditevents
-  auditevents:
-    enabled: true          
 
 demo:
   users:
-  - personal-number: 188803099368
-    date-of-birth: 1888-03-09
-    given-name: Agda
-    surname: Andersson
-    display-name: Agda Andersson
-  - personal-number: 197609265819
-    date-of-birth: 1976-09-26
-    given-name: Alrik
-    surname: Lidén
-    display-name: Alrik Lidén
-  - personal-number: 197705232382
-    date-of-birth: 1977-05-23
-    given-name: Frida
-    surname: Kranstege
-    display-name: Frida Kranstege
-        
+    - personal-number: 188803099368
+      date-of-birth: 1888-03-09
+      given-name: Agda
+      surname: Andersson
+      display-name: Agda Andersson
+    - personal-number: 197609265819
+      date-of-birth: 1976-09-26
+      given-name: Alrik
+      surname: Lidén
+      display-name: Alrik Lidén
+    - personal-number: 197705232382
+      date-of-birth: 1977-05-23
+      given-name: Frida
+      surname: Kranstege
+      display-name: Frida Kranstege
+
+credential:
+  bundles:
+    key-store:
+      idp-store:
+        location: classpath:idp-credentials.jks
+        password: secret
+        type: JKS
+    jks:
+      sign:
+        name: "IdP Signature Credential"
+        store-reference: idp-store
+        key:
+          alias: sign
+          key-password: secret
+      encrypt:
+        name: "IdP Encrypt/decrypt Credential"
+        store-reference: idp-store
+        key:
+          alias: encrypt
+          key-password: secret
+      metadata:
+        name: "IdP Metadata Signing Credential"
+        store-reference: idp-store
+        key:
+          alias: metadata
+          key-password: secret
+
 saml:
   idp:
     session:
       module: memory
     entity-id: https://demo.swedenconnect.se/idp
-    base-url: https://local.dev.swedenconnect.se:8443/idp    
+    base-url: https://local.dev.swedenconnect.se:8443/idp
     credentials:
       sign:
-        resource: classpath:idp-credentials.jks
-        alias: sign
-        password: secret
-        type: JKS
+        bundle: sign
       encrypt:
-        resource: classpath:idp-credentials.jks
-        alias: encrypt
-        password: secret
-        type: JKS
+        bundle: encrypt
       metadata-sign:
-        resource: classpath:idp-credentials.jks
-        alias: metadata
-        password: secret
-        type: JKS
+        bundle: metadata
     endpoints:
       metadata: /saml2/metadata
     metadata-providers:
-    - location: https://eid.svelegtest.se/metadata/mdx/role/sp.xml
-      backup-location: target/metadata-backup.xml
-      validation-certificate: classpath:sandbox-metadata.crt
+      - location: https://eid.svelegtest.se/metadata/mdx/role/sp.xml
+        backup-location: target/metadata-backup.xml
+        validation-certificate: classpath:sandbox-metadata.crt
     replay:
       type: memory
       expiration: 10m
@@ -94,14 +111,10 @@ saml:
       in-memory:
         capacity: 10000
 
-        
+
 logging:
   level:
     se:
       swedenconnect:
         spring:
           saml: TRACE
-          
-
-        
-

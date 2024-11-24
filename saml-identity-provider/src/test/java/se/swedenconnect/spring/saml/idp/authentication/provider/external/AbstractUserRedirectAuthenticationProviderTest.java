@@ -33,7 +33,7 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
  * Test cases for AbstractUserRedirectAuthenticationProvider.
- * 
+ *
  * @author Martin Lindström
  */
 public class AbstractUserRedirectAuthenticationProviderTest {
@@ -60,35 +60,35 @@ public class AbstractUserRedirectAuthenticationProviderTest {
     Assertions.assertEquals("/authn", provider.getAuthnPath());
     Assertions.assertEquals("/resume", provider.getResumeAuthnPath());
   }
-  
+
   @Test
   public void testAuthenticate() {
     final Saml2UserAuthenticationInputToken input = Mockito.mock(Saml2UserAuthenticationInputToken.class);
     Mockito.when(input.getAuthnRequestToken()).thenReturn(Mockito.mock(Saml2AuthnRequestAuthenticationToken.class));
-    
+
     final AuthenticationRequirements reqs = AuthenticationRequirementsBuilder.builder()
         .authnContextRequirement(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA2)
         .authnContextRequirement(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3)
         .build();
     Mockito.when(input.getAuthnRequirements()).thenReturn(reqs);
-    
+
     final TestProvider provider = new TestProvider("/authn", "/resume");
     final Authentication auth = provider.authenticateTest(input, List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3));
     Assertions.assertTrue(auth instanceof RedirectForAuthenticationToken);
     final RedirectForAuthenticationToken token = (RedirectForAuthenticationToken) auth;
     Assertions.assertEquals("/authn", token.getAuthnPath());
     Assertions.assertEquals("/resume", token.getResumeAuthnPath());
-    Assertions.assertEquals(List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3), 
+    Assertions.assertEquals(List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3),
         token.getAuthnInputToken().getAuthnRequirements().getAuthnContextRequirements());
-    
+
   }
 
   private static class TestProvider extends AbstractUserRedirectAuthenticationProvider {
 
-    public TestProvider(String authnPath, String resumeAuthnPath) {
+    public TestProvider(final String authnPath, final String resumeAuthnPath) {
       super(authnPath, resumeAuthnPath);
     }
-    
+
     public Authentication authenticateTest(
         final Saml2UserAuthenticationInputToken token, final List<String> authnContextUris)
         throws Saml2ErrorStatusException {
@@ -102,7 +102,7 @@ public class AbstractUserRedirectAuthenticationProviderTest {
     }
 
     @Override
-    public boolean supportsUserAuthenticationToken(Authentication authentication) {
+    public boolean supportsUserAuthenticationToken(final Authentication authentication) {
       return true;
     }
 

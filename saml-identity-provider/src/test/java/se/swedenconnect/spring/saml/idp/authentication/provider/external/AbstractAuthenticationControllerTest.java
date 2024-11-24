@@ -123,18 +123,18 @@ public class AbstractAuthenticationControllerTest extends OpenSamlTestBase {
     }
 
     @Override
-    public RedirectForAuthenticationToken getExternalAuthenticationToken(HttpServletRequest request) {
-      return token;
+    public RedirectForAuthenticationToken getExternalAuthenticationToken(final HttpServletRequest request) {
+      return this.token;
     }
 
     @Override
-    public void completeExternalAuthentication(Authentication token, HttpServletRequest request)
+    public void completeExternalAuthentication(final Authentication token, final HttpServletRequest request)
         throws IllegalStateException {
       this.authentication = token;
     }
 
     @Override
-    public void completeExternalAuthentication(Saml2ErrorStatusException error, HttpServletRequest request)
+    public void completeExternalAuthentication(final Saml2ErrorStatusException error, final HttpServletRequest request)
         throws IllegalStateException {
       this.error = error;
     }
@@ -179,13 +179,13 @@ public class AbstractAuthenticationControllerTest extends OpenSamlTestBase {
     }
 
     @Override
-    public Saml2UserAuthentication resumeAuthentication(ResumedAuthenticationToken token)
+    public Saml2UserAuthentication resumeAuthentication(final ResumedAuthenticationToken token)
         throws Saml2ErrorStatusException {
       return null;
     }
 
     @Override
-    public boolean supportsUserAuthenticationToken(Authentication authentication) {
+    public boolean supportsUserAuthenticationToken(final Authentication authentication) {
       return false;
     }
 

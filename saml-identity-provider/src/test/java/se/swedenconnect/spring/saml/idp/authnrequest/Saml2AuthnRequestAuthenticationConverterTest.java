@@ -81,7 +81,7 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
       spMetadata = unmarshall((new ClassPathResource("sp-metadata.xml")).getInputStream(), EntityDescriptor.class);
       idpMetadata = unmarshall((new ClassPathResource("idp-metadata.xml")).getInputStream(), EntityDescriptor.class);
     }
-    catch (XMLParserException | UnmarshallingException | IOException e) {
+    catch (final XMLParserException | UnmarshallingException | IOException e) {
       throw new SecurityException(e);
     }
   }
@@ -93,7 +93,7 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
 
   @AfterEach
   public void closeStaticMock() {
-    if (rcHolder != null) {
+    if (this.rcHolder != null) {
       this.rcHolder.close();
     }
   }
@@ -124,7 +124,7 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     final ServletRequestAttributes servletRequestAttributes = Mockito.mock(ServletRequestAttributes.class);
     Mockito.when(servletRequestAttributes.getRequest()).thenReturn(request);
 
-    rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
+    this.rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
 
     final MetadataResolver metadataResolver = Mockito.mock(MetadataResolver.class);
     Mockito.when(metadataResolver.resolveSingle(Mockito.any())).thenReturn(spMetadata);
@@ -171,7 +171,7 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     final ServletRequestAttributes servletRequestAttributes = Mockito.mock(ServletRequestAttributes.class);
     Mockito.when(servletRequestAttributes.getRequest()).thenReturn(request);
 
-    rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
+    this.rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
 
     final MetadataResolver metadataResolver = Mockito.mock(MetadataResolver.class);
     Mockito.when(metadataResolver.resolveSingle(Mockito.any())).thenReturn(spMetadata);
@@ -221,7 +221,7 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     final ServletRequestAttributes servletRequestAttributes = Mockito.mock(ServletRequestAttributes.class);
     Mockito.when(servletRequestAttributes.getRequest()).thenReturn(request);
 
-    rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
+    this.rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
 
     final MetadataResolver metadataResolver = Mockito.mock(MetadataResolver.class);
     Mockito.when(metadataResolver.resolveSingle(Mockito.any())).thenReturn(spMetadata);
@@ -262,7 +262,7 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     final ServletRequestAttributes servletRequestAttributes = Mockito.mock(ServletRequestAttributes.class);
     Mockito.when(servletRequestAttributes.getRequest()).thenReturn(request);
 
-    rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
+    this.rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
 
     final MetadataResolver metadataResolver = Mockito.mock(MetadataResolver.class);
     Mockito.when(metadataResolver.resolveSingle(Mockito.any())).thenReturn(null);
@@ -302,7 +302,7 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     final ServletRequestAttributes servletRequestAttributes = Mockito.mock(ServletRequestAttributes.class);
     Mockito.when(servletRequestAttributes.getRequest()).thenReturn(request);
 
-    rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
+    this.rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
 
     final MetadataResolver metadataResolver = Mockito.mock(MetadataResolver.class);
     Mockito.when(metadataResolver.resolveSingle(Mockito.any())).thenThrow(ResolverException.class);
@@ -342,7 +342,7 @@ public class Saml2AuthnRequestAuthenticationConverterTest extends OpenSamlTestBa
     final ServletRequestAttributes servletRequestAttributes = Mockito.mock(ServletRequestAttributes.class);
     Mockito.when(servletRequestAttributes.getRequest()).thenReturn(request);
 
-    rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
+    this.rcHolder.when(RequestContextHolder::getRequestAttributes).thenReturn(servletRequestAttributes);
 
     final MetadataResolver metadataResolver = Mockito.mock(MetadataResolver.class);
     Mockito.when(metadataResolver.resolveSingle(Mockito.any())).thenReturn(spMetadata);

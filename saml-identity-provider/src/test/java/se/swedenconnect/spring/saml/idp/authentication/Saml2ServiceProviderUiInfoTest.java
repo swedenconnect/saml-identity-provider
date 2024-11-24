@@ -78,7 +78,7 @@ public class Saml2ServiceProviderUiInfoTest extends OpenSamlTestBase {
 
   @Test
   public void testUi() {
-    EntityDescriptor ed = EntityDescriptorBuilder.builder()
+    final EntityDescriptor ed = EntityDescriptorBuilder.builder()
         .entityID(SP)
         .roleDescriptors(SPSSODescriptorBuilder.builder()
             .extensions(ExtensionsBuilder.builder()
@@ -105,7 +105,7 @@ public class Saml2ServiceProviderUiInfoTest extends OpenSamlTestBase {
             .build())
         .build();
 
-    Saml2ServiceProviderUiInfo ui = new Saml2ServiceProviderUiInfo(ed);
+    final Saml2ServiceProviderUiInfo ui = new Saml2ServiceProviderUiInfo(ed);
 
     Assertions.assertEquals(SP, ui.getEntityId());
     Assertions.assertTrue(ui.getDisplayNames().size() == 2);
@@ -125,7 +125,7 @@ public class Saml2ServiceProviderUiInfoTest extends OpenSamlTestBase {
 
   @Test
   public void testUiAndOrganization() {
-    EntityDescriptor ed = EntityDescriptorBuilder.builder()
+    final EntityDescriptor ed = EntityDescriptorBuilder.builder()
         .entityID(SP)
         .roleDescriptors(SPSSODescriptorBuilder.builder()
             .extensions(ExtensionsBuilder.builder()
@@ -159,7 +159,7 @@ public class Saml2ServiceProviderUiInfoTest extends OpenSamlTestBase {
             .build())
         .build();
 
-    Saml2ServiceProviderUiInfo ui = new Saml2ServiceProviderUiInfo(ed);
+    final Saml2ServiceProviderUiInfo ui = new Saml2ServiceProviderUiInfo(ed);
 
     Assertions.assertEquals(SP, ui.getEntityId());
     Assertions.assertTrue(ui.getDisplayNames().size() == 4);

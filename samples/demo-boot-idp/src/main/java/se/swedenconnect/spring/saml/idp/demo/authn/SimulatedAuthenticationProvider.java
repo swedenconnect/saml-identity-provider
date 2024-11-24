@@ -15,11 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.demo.authn;
 
-import java.time.Instant;
-import java.util.List;
-
 import org.springframework.security.core.Authentication;
-
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
 import se.swedenconnect.opensaml.sweid.saml2.authn.LevelOfAssuranceUris;
 import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryConstants;
@@ -31,9 +27,12 @@ import se.swedenconnect.spring.saml.idp.authentication.provider.external.Resumed
 import se.swedenconnect.spring.saml.idp.demo.user.SimulatedUser;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
+import java.time.Instant;
+import java.util.List;
+
 /**
  * Simulated authentication provider.
- * 
+ *
  * @author Martin Lindström
  */
 public class SimulatedAuthenticationProvider extends AbstractUserRedirectAuthenticationProvider {
@@ -45,10 +44,10 @@ public class SimulatedAuthenticationProvider extends AbstractUserRedirectAuthent
 
   /**
    * Constructor.
-   * 
+   *
    * @param authnPath the path to where we redirect the user for authentication
-   * @param resumeAuthnPath the path that the authentication process uses to redirect the user back after a completed
-   *          authentication
+   * @param resumeAuthnPath the path that the authentication process uses to redirect the user back after a
+   *     completed authentication
    */
   public SimulatedAuthenticationProvider(final String authnPath, final String resumeAuthnPath) {
     super(authnPath, resumeAuthnPath);
@@ -79,7 +78,7 @@ public class SimulatedAuthenticationProvider extends AbstractUserRedirectAuthent
   public Saml2UserAuthentication resumeAuthentication(final ResumedAuthenticationToken token)
       throws Saml2ErrorStatusException {
 
-    final SimulatedAuthenticationToken simAuth = SimulatedAuthenticationToken.class.cast(token.getAuthnToken());
+    final SimulatedAuthenticationToken simAuth = (SimulatedAuthenticationToken) token.getAuthnToken();
     final SimulatedUser user = (SimulatedUser) simAuth.getDetails();
 
     final List<UserAttribute> attributes = List.of(
@@ -109,7 +108,7 @@ public class SimulatedAuthenticationProvider extends AbstractUserRedirectAuthent
   /** {@inheritDoc} */
   @Override
   public boolean supportsUserAuthenticationToken(final Authentication authentication) {
-    return SimulatedAuthenticationToken.class.isInstance(authentication);
+    return authentication instanceof SimulatedAuthenticationToken;
   }
 
 }
