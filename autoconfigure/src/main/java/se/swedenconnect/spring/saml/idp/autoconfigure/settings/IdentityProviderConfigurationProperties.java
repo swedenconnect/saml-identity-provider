@@ -185,6 +185,7 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
      */
     @Setter
     @Getter
+    @NestedConfigurationProperty
     private PkiCredentialConfigurationProperties defaultCredential;
 
     /**
@@ -192,6 +193,7 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
      */
     @Setter
     @Getter
+    @NestedConfigurationProperty
     private PkiCredentialConfigurationProperties sign;
 
     /**
@@ -206,6 +208,7 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
      */
     @Setter
     @Getter
+    @NestedConfigurationProperty
     private PkiCredentialConfigurationProperties encrypt;
 
     /**
@@ -213,6 +216,7 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
      */
     @Setter
     @Getter
+    @NestedConfigurationProperty
     private PkiCredentialConfigurationProperties previousEncrypt;
 
     /**
@@ -220,6 +224,7 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
      */
     @Setter
     @Getter
+    @NestedConfigurationProperty
     private PkiCredentialConfigurationProperties metadataSign;
 
   }

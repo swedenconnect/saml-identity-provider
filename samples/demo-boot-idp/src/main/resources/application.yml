@@ -57,7 +57,7 @@ demo:
 
 credential:
   bundles:
-    key-store:
+    keystore:
       idp-store:
         location: classpath:idp-credentials.jks
         password: secret
