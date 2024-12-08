@@ -6,7 +6,7 @@
 
 ### Version 2.3.0
 
-Date: 
+Date: 2024-12-08
 
 - The latest version of the [credentials-support](https://docs.swedenconnect.se/credentials-support/) is now used by the library. Using this library, the [Credentials Bundles](https://docs.swedenconnect.se/credentials-support/#the-bundles-concept) concept can by used for a better was of configuring credentials.
 
