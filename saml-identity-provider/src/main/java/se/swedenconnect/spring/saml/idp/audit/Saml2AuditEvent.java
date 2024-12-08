@@ -56,14 +56,13 @@ public class Saml2AuditEvent extends AuditEvent {
    * @param data audit data
    */
   public Saml2AuditEvent(final Saml2AuditEvents type, final long timestamp, final String spEntityId,
-      final String authnRequestId,
-      final Saml2AuditData... data) {
+      final String authnRequestId, final Saml2AuditData... data) {
     super(Instant.ofEpochMilli(timestamp), Optional.ofNullable(spEntityId).orElse(UNKNOWN_SP), type.getTypeName(),
         buildData(spEntityId, authnRequestId, data));
   }
 
   /**
-   * Builds a {@link Map} given the supplied audit data
+   * Builds a {@link Map} given the supplied audit data
    *
    * @param spEntityId the entityID of the requesting SP
    * @param authnRequestId the ID of the {@code AuthnRequest}

@@ -15,14 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.it;
 
-import java.io.UnsupportedEncodingException;
-import java.security.cert.X509Certificate;
-import java.time.Instant;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
+import lombok.Setter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -35,6 +28,7 @@ import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.opensaml.saml.saml2.metadata.Extensions;
 import org.opensaml.security.credential.UsageType;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
@@ -44,8 +38,6 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.util.MultiValueMapAdapter;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
-
-import lombok.Setter;
 import se.swedenconnect.opensaml.common.utils.LocalizedString;
 import se.swedenconnect.opensaml.saml2.metadata.build.AssertionConsumerServiceBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.AttributeConsumingServiceBuilder;
@@ -70,15 +62,26 @@ import se.swedenconnect.opensaml.xmlsec.encryption.support.SAMLObjectDecrypter;
 import se.swedenconnect.opensaml.xmlsec.encryption.support.SAMLObjectEncrypter;
 import se.swedenconnect.security.credential.KeyStoreCredential;
 import se.swedenconnect.security.credential.PkiCredential;
+import se.swedenconnect.security.credential.factory.KeyStoreFactory;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
+
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.security.KeyStore;
+import java.security.cert.X509Certificate;
+import java.time.Instant;
+import java.util.List;
+import java.util.Locale;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class TestSp {
 
   public static final String ENTITY_ID = "https://demo.swedenconnect.se/sp";
   public static final String ACS = "https://demo.swedenconnect.se/sp/sso";
 
-  private PkiCredential spSignCredential;
-  private PkiCredential spEncryptCredential;
+  private final PkiCredential spSignCredential;
+  private final PkiCredential spEncryptCredential;
 
   private ResponseProcessor responseProcessor;
 
@@ -98,16 +101,17 @@ public class TestSp {
 
   /**
    * Constructor.
-   * 
+   *
    * @throws Exception for errors
    */
   public TestSp() throws Exception {
-    this.spSignCredential = new KeyStoreCredential(
-        new ClassPathResource("test-sp.jks"), "JKS", "secret".toCharArray(), "sign", "secret".toCharArray());
-    this.spSignCredential.init();
-    this.spEncryptCredential = new KeyStoreCredential(
-        new ClassPathResource("test-sp.jks"), "JKS", "secret".toCharArray(), "encrypt", "secret".toCharArray());
-    this.spEncryptCredential.init();
+    final KeyStore keyStore;
+    final Resource keyStoreResource = new ClassPathResource("test-sp.jks");
+    try (final InputStream is = keyStoreResource.getInputStream()) {
+      keyStore = KeyStoreFactory.loadKeyStore(is, "secret".toCharArray(), null, null);
+    }
+    this.spSignCredential = new KeyStoreCredential(keyStore, "sign", "secret".toCharArray());
+    this.spEncryptCredential = new KeyStoreCredential(keyStore, "encrypt", "secret".toCharArray());
   }
 
   public void setupResponseProcessor(final MetadataResolver metadataResolver) throws Exception {
@@ -125,7 +129,7 @@ public class TestSp {
 
   /**
    * Gets the SAML metadata for the SP
-   * 
+   *
    * @return an {@link EntityDescriptor}
    */
   public EntityDescriptor getSpMetadata() {
@@ -133,8 +137,8 @@ public class TestSp {
     final EntityAttributes entityAttributes = this.getEntityAttributes();
     final Extensions extensions = entityAttributes != null
         ? ExtensionsBuilder.builder()
-            .extension(entityAttributes)
-            .build()
+        .extension(entityAttributes)
+        .build()
         : null;
 
     return EntityDescriptorBuilder.builder()
@@ -207,7 +211,7 @@ public class TestSp {
 
             @Override
             public String getRequestRelayState(final String id) {
-              return relayState;
+              return TestSp.this.relayState;
             }
 
             @Override
@@ -232,17 +236,18 @@ public class TestSp {
 
             @Override
             public AuthnRequest getAuthnRequest(final String id) {
-              return authnRequest;
+              return TestSp.this.authnRequest;
             }
           }, null);
     }
-    catch (UnsupportedEncodingException e) {
+    catch (final UnsupportedEncodingException e) {
       throw new RuntimeException(e);
     }
   }
 
   public RequestBuilder generateRequest(final String idpEntityId, final AuthnRequestGenerator generator,
-      final AuthnRequestGeneratorContext context, final String relayState, final MockHttpSession session) throws Exception {
+      final AuthnRequestGeneratorContext context, final String relayState, final MockHttpSession session)
+      throws Exception {
 
     final RequestHttpObject<AuthnRequest> requestObject =
         generator.generateAuthnRequest(idpEntityId, relayState, context);
@@ -252,7 +257,7 @@ public class TestSp {
 
     final UriComponents components = UriComponentsBuilder.fromUriString(requestObject.getSendUrl()).build();
 
-    MockHttpServletRequestBuilder builder;
+    final MockHttpServletRequestBuilder builder;
 
     if ("GET".equals(requestObject.getMethod())) {
       final MultiValueMap<String, String> params = new MultiValueMapAdapter<String, String>(
@@ -267,7 +272,7 @@ public class TestSp {
       requestObject.getRequestParameters().entrySet().stream()
           .forEach(e -> builder.param(e.getKey(), e.getValue()));
     }
-    
+
     if (session != null) {
       builder.session(session);
     }

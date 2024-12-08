@@ -15,16 +15,15 @@
  */
 package se.swedenconnect.spring.saml.testsp.controllers;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
-
 import se.swedenconnect.spring.saml.testsp.config.UiLanguage;
+
+import java.util.List;
+import java.util.Locale;
+import java.util.stream.Collectors;
 
 /**
  * Base controller.

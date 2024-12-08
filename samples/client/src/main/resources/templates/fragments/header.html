@@ -4,30 +4,31 @@
 </head>
 <body>
 
-  <div class="container-fluid header" th:fragment="logotype">
-    <div class="container">
-      <div class="row">
-        <div class="col-sm-12 top-logo">
-          <img class="top-logo-dim float-left" th:src="@{/images/logo.svg}" src="/images/logo.svg" alt="Logo" />
-        </div>
+<div class="container-fluid header" th:fragment="logotype">
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-12 top-logo">
+        <img class="top-logo-dim float-left" th:src="@{/images/logo.svg}" src="/images/logo.svg" alt="Logo"/>
       </div>
     </div>
   </div>
-  
-  <div class="row" id="languageDiv" th:fragment="language(languages, path)">
-    <div class="col-sm-12">
-      <div th:if="${languages != null && !languages.isEmpty()}">
-        <form action="#" th:action="@{${path}}" method="GET">
-          <button th:each="uiLang: ${languages}" class="lang float-right btn btn-link" type="submit" value="en" th:value="${uiLang.tag}" name="lang">
-            <span th:text="${uiLang.text}">Lang</span>                
-          </button>          
-        </form>
-      </div>
-      <div th:unless="${languages != null && !languages.isEmpty()}">
-        <span class="lang float-right">&nbsp;</span>
-      </div>
+</div>
+
+<div class="row" id="languageDiv" th:fragment="language(languages, path)">
+  <div class="col-sm-12">
+    <div th:if="${languages != null && !languages.isEmpty()}">
+      <form action="#" th:action="@{${path}}" method="GET">
+        <button th:each="uiLang: ${languages}" class="lang float-right btn btn-link" type="submit" value="en"
+                th:value="${uiLang.tag}" name="lang">
+          <span th:text="${uiLang.text}">Lang</span>
+        </button>
+      </form>
+    </div>
+    <div th:unless="${languages != null && !languages.isEmpty()}">
+      <span class="lang float-right">&nbsp;</span>
     </div>
   </div>
+</div>
 
 </body>
 </html>

@@ -1,0 +1,1461 @@
+{
+  "groups": [
+    {
+      "name": "saml.idp.credentials.sign.pem",
+      "type": "se.swedenconnect.security.credential.config.properties.PemCredentialConfigurationProperties",
+      "description": "Configuration for a PEM-based credential."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreCredentialConfigurationProperties",
+      "description": "Configuration for a JKS (Java KeyStore) based credential."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties",
+      "description": "Configuration for the KeyStore holding the key pair entry."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.key",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreCredentialConfigurationProperties$KeyConfigurationProperties",
+      "description": "Configuration for the key pair entry of the store."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store.pkcs11",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties$Pkcs11ConfigurationProperties",
+      "description": "If the type is \"PKCS11\" and a provider that is not statically configured for PKCS#11, additional PKCS#11 configuration needs to be supplied. Note that the security provider used must support PKCS#11 via the KeyStoreSpi interface. The \"SunPKCS11\" is such a provider."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store.pkcs11.settings",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties$Pkcs11ConfigurationProperties$Pkcs11SettingsProperties",
+      "description": "Custom PKCS#11 settings."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pem",
+      "type": "se.swedenconnect.security.credential.config.properties.PemCredentialConfigurationProperties",
+      "description": "Configuration for a PEM-based credential."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreCredentialConfigurationProperties",
+      "description": "Configuration for a JKS (Java KeyStore) based credential."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties",
+      "description": "Configuration for the KeyStore holding the key pair entry."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.key",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreCredentialConfigurationProperties$KeyConfigurationProperties",
+      "description": "Configuration for the key pair entry of the store."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store.pkcs11",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties$Pkcs11ConfigurationProperties",
+      "description": "If the type is \"PKCS11\" and a provider that is not statically configured for PKCS#11, additional PKCS#11 configuration needs to be supplied. Note that the security provider used must support PKCS#11 via the KeyStoreSpi interface. The \"SunPKCS11\" is such a provider."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store.pkcs11.settings",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties$Pkcs11ConfigurationProperties$Pkcs11SettingsProperties",
+      "description": "Custom PKCS#11 settings."
+    },
+    {
+      "name": "saml.idp.credentials.default-crededential.pem",
+      "type": "se.swedenconnect.security.credential.config.properties.PemCredentialConfigurationProperties",
+      "description": "Configuration for a PEM-based credential."
+    },
+    {
+      "name": "saml.idp.credentials.default-crededential.jks",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreCredentialConfigurationProperties",
+      "description": "Configuration for a JKS (Java KeyStore) based credential."
+    },
+    {
+      "name": "saml.idp.credentials.default-crededential.jks.store",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties",
+      "description": "Configuration for the KeyStore holding the key pair entry."
+    },
+    {
+      "name": "saml.idp.credentials.default-crededential.jks.key",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreCredentialConfigurationProperties$KeyConfigurationProperties",
+      "description": "Configuration for the key pair entry of the store."
+    },
+    {
+      "name": "saml.idp.credentials.default-crededential.jks.store.pkcs11",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties$Pkcs11ConfigurationProperties",
+      "description": "If the type is \"PKCS11\" and a provider that is not statically configured for PKCS#11, additional PKCS#11 configuration needs to be supplied. Note that the security provider used must support PKCS#11 via the KeyStoreSpi interface. The \"SunPKCS11\" is such a provider."
+    },
+    {
+      "name": "saml.idp.credentials.default-crededential.jks.store.pkcs11.settings",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties$Pkcs11ConfigurationProperties$Pkcs11SettingsProperties",
+      "description": "Custom PKCS#11 settings."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pem",
+      "type": "se.swedenconnect.security.credential.config.properties.PemCredentialConfigurationProperties",
+      "description": "Configuration for a PEM-based credential."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreCredentialConfigurationProperties",
+      "description": "Configuration for a JKS (Java KeyStore) based credential."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties",
+      "description": "Configuration for the KeyStore holding the key pair entry."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.key",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreCredentialConfigurationProperties$KeyConfigurationProperties",
+      "description": "Configuration for the key pair entry of the store."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store.pkcs11",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties$Pkcs11ConfigurationProperties",
+      "description": "If the type is \"PKCS11\" and a provider that is not statically configured for PKCS#11, additional PKCS#11 configuration needs to be supplied. Note that the security provider used must support PKCS#11 via the KeyStoreSpi interface. The \"SunPKCS11\" is such a provider."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store.pkcs11.settings",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties$Pkcs11ConfigurationProperties$Pkcs11SettingsProperties",
+      "description": "Custom PKCS#11 settings."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pem",
+      "type": "se.swedenconnect.security.credential.config.properties.PemCredentialConfigurationProperties",
+      "description": "Configuration for a PEM-based credential."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreCredentialConfigurationProperties",
+      "description": "Configuration for a JKS (Java KeyStore) based credential."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties",
+      "description": "Configuration for the KeyStore holding the key pair entry."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.key",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreCredentialConfigurationProperties$KeyConfigurationProperties",
+      "description": "Configuration for the key pair entry of the store."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store.pkcs11",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties$Pkcs11ConfigurationProperties",
+      "description": "If the type is \"PKCS11\" and a provider that is not statically configured for PKCS#11, additional PKCS#11 configuration needs to be supplied. Note that the security provider used must support PKCS#11 via the KeyStoreSpi interface. The \"SunPKCS11\" is such a provider."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store.pkcs11.settings",
+      "type": "se.swedenconnect.security.credential.config.properties.StoreConfigurationProperties$Pkcs11ConfigurationProperties$Pkcs11SettingsProperties",
+      "description": "Custom PKCS#11 settings."
+    }
+  ],
+  "properties": [
+    {
+      "name": "saml.idp.credentials.sign.bundle",
+      "type": "java.lang.String",
+      "description": "Pointer to a pre-registered credential."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.key-id",
+      "type": "java.lang.String",
+      "description": "Key identifier metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.issued-at",
+      "type": "java.time.Instant",
+      "description": "Issued-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.expires-at",
+      "type": "java.time.Instant",
+      "description": "Expires-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.metadata",
+      "type": "java.util.Map<java.lang.String, java.lang.String>",
+      "description": "Metadata properties."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store-reference",
+      "type": "java.lang.String",
+      "description": "A store reference. As an alternative to giving the key store configuration, a reference to a key store configuration may be given. This feature may be used when one key store holds several keys."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store.location",
+      "type": "java.lang.String",
+      "description": "Location of the resource containing the store content."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store.password",
+      "type": "java.lang.String",
+      "description": "Password used to access the store."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store.type",
+      "type": "java.lang.String",
+      "description": "Type of the store to create, e.g., JKS, PKCS12 or PKCS11."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store.provider",
+      "type": "java.lang.String",
+      "description": "Security provider for the store."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store.pkcs11.configuration-file",
+      "type": "java.lang.String",
+      "description": "The complete path of the PKCS#11 configuration file with which the PKCS#11 device is configured."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store.pkcs11.settings.library",
+      "type": "java.lang.String",
+      "description": "The PKCS#11 library path."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store.pkcs11.settings.name",
+      "type": "java.lang.String",
+      "description": "The name of the PKCS#11 slot."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store.pkcs11.settings.slot",
+      "type": "java.lang.String",
+      "description": "The slot number/id to use."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.store.pkcs11.settings.slot-list-index",
+      "type": "java.lang.Integer",
+      "description": "The slot index to use."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.monitor",
+      "type": "java.lang.Boolean",
+      "description": "Whether the credential should be prepared for monitoring. If set, a test function and a KeyStoreReloader will be assigned."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.key.alias",
+      "type": "java.lang.String",
+      "description": "The alias that identifies the key pair in the key store."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.key.certificates",
+      "type": "java.lang.String",
+      "description": "For some credentials where an underlying KeyStore is being used, an external certificate should be used. The most typical example would be a PKCS#11 key store where the certificate of the key pair resides outside the HSM device. This setting holds the location or content of the certificate or certificate chain in PEM format."
+    },
+    {
+      "name": "saml.idp.credentials.sign.jks.key.key-password",
+      "type": "java.lang.String",
+      "description": "The password to unlock the key entry identified by the given alias. If not given, the store password will be used\n     * (in these cases, using a store reference will not function)."
+    },
+    {
+      "name": "saml.idp.credentials.sign.pem.public-key",
+      "type": "java.lang.String",
+      "description": "Location or content of the public key in PEM format. This setting is mutually exclusive with the certificates setting."
+    },
+    {
+      "name": "saml.idp.credentials.sign.pem.certificates",
+      "type": "java.lang.String",
+      "description": "Location or content of the certificate or certificate chain in PEM format. If more than one certificate is supplied, the entity certificate, i.e., the certificate holding the public key of the key pair, must be placed first. This setting is mutually exclusive with the public-key setting."
+    },
+    {
+      "name": "saml.idp.credentials.sign.pem.private-key",
+      "type": "java.lang.String",
+      "description": "Location or content of the private key in PEM format."
+    },
+    {
+      "name": "saml.idp.credentials.sign.pem.key-password",
+      "type": "java.lang.String",
+      "description": "Password used to decrypt an encrypted private key."
+    },
+    {
+      "name": "saml.idp.credentials.sign.pem.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential."
+    },
+    {
+      "name": "saml.idp.credentials.sign.pem.key-id",
+      "type": "java.lang.String",
+      "description": "Key identifier metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.sign.pem.issued-at",
+      "type": "java.time.Instant",
+      "description": "Issued-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.sign.pem.expires-at",
+      "type": "java.time.Instant",
+      "description": "Expires-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.sign.pem.metadata",
+      "type": "java.util.Map<java.lang.String, java.lang.String>",
+      "description": "Metadata properties."
+    },
+    {
+      "name": "saml.idp.credentials.sign.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.jks.name or saml.idp.credentials.sign.pem.name instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.sign.alias",
+      "type": "java.lang.String",
+      "description": "The keystore alias to the entry holding the key pair.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.jks.key.alias instead.",
+        "replacement": "saml.idp.credentials.sign.jks.key.alias",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.sign.certificate",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource holding the certificate part of the credential (optional since the certificate may be part of a keystore).",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.pem.certificates or saml.idp.credentials.sign.jks.key.certificates instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.sign.certificates",
+      "type": "java.util.List<org.springframework.core.io.Resource>",
+      "description": "A list of resources holding the certificate chain that part of the credential (optional since the certificate may be part of a keystore). If used, the entity certificate must be the first element.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.pem.certificates or saml.idp.credentials.sign.jks.key.certificates instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.sign.key-password",
+      "type": "java.lang.Character[]",
+      "description": "The password to unlock the private key from the keystore or the encrypted private key.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.pem.key-password or saml.idp.credentials.sign.jks.key.key-password instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.sign.password",
+      "type": "java.lang.Character[]",
+      "description": "The keystore password.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.jks.store.password instead.",
+        "replacement": "saml.idp.credentials.sign.jks.store.password",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.sign.pin",
+      "type": "java.lang.Character[]",
+      "description": "The PIN (which is the same as key-password). Used mainly for PKCS#11.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.jks.store.password instead.",
+        "replacement": "saml.idp.credentials.sign.jks.store.password",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.sign.pkcs11-configuration",
+      "type": "java.lang.String",
+      "description": "The PKCS#11 configuration file to use.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.jks.store.pkcs11.configuration-file instead.",
+        "replacement": "saml.idp.credentials.sign.jks.store.pkcs11.configuration-file",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.sign.private-key",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource holding the private key part of the credential (optional since the key may be part of a keystore).",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.pem.private-key instead.",
+        "replacement": "saml.idp.credentials.sign.pem.private-key",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.sign.provider",
+      "type": "java.lang.String",
+      "description": "The name of the security provider to use when creating the KeyStore instance.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.jks.store.provider instead.",
+        "replacement": "saml.idp.credentials.sign.jks.store.provider",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.sign.resource",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource to the keystore containing the credential.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.jks.store.location instead.",
+        "replacement": "saml.idp.credentials.sign.jks.store.location",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.sign.type",
+      "type": "java.lang.String",
+      "description": "The type of keystore.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.sign.jks.store.type instead.",
+        "replacement": "saml.idp.credentials.sign.jks.store.type",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.bundle",
+      "type": "java.lang.String",
+      "description": "Pointer to a pre-registered credential."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.key-id",
+      "type": "java.lang.String",
+      "description": "Key identifier metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.issued-at",
+      "type": "java.time.Instant",
+      "description": "Issued-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.expires-at",
+      "type": "java.time.Instant",
+      "description": "Expires-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.metadata",
+      "type": "java.util.Map<java.lang.String, java.lang.String>",
+      "description": "Metadata properties."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store-reference",
+      "type": "java.lang.String",
+      "description": "A store reference. As an alternative to giving the key store configuration, a reference to a key store configuration may be given. This feature may be used when one key store holds several keys."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store.location",
+      "type": "java.lang.String",
+      "description": "Location of the resource containing the store content."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store.password",
+      "type": "java.lang.String",
+      "description": "Password used to access the store."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store.type",
+      "type": "java.lang.String",
+      "description": "Type of the store to create, e.g., JKS, PKCS12 or PKCS11."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store.provider",
+      "type": "java.lang.String",
+      "description": "Security provider for the store."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store.pkcs11.configuration-file",
+      "type": "java.lang.String",
+      "description": "The complete path of the PKCS#11 configuration file with which the PKCS#11 device is configured."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store.pkcs11.settings.library",
+      "type": "java.lang.String",
+      "description": "The PKCS#11 library path."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store.pkcs11.settings.name",
+      "type": "java.lang.String",
+      "description": "The name of the PKCS#11 slot."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store.pkcs11.settings.slot",
+      "type": "java.lang.String",
+      "description": "The slot number/id to use."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.store.pkcs11.settings.slot-list-index",
+      "type": "java.lang.Integer",
+      "description": "The slot index to use."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.monitor",
+      "type": "java.lang.Boolean",
+      "description": "Whether the credential should be prepared for monitoring. If set, a test function and a KeyStoreReloader will be assigned."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.key.alias",
+      "type": "java.lang.String",
+      "description": "The alias that identifies the key pair in the key store."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.key.certificates",
+      "type": "java.lang.String",
+      "description": "For some credentials where an underlying KeyStore is being used, an external certificate should be used. The most typical example would be a PKCS#11 key store where the certificate of the key pair resides outside the HSM device. This setting holds the location or content of the certificate or certificate chain in PEM format."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.jks.key.key-password",
+      "type": "java.lang.String",
+      "description": "The password to unlock the key entry identified by the given alias. If not given, the store password will be used\n     * (in these cases, using a store reference will not function)."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pem.public-key",
+      "type": "java.lang.String",
+      "description": "Location or content of the public key in PEM format. This setting is mutually exclusive with the certificates setting."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pem.certificates",
+      "type": "java.lang.String",
+      "description": "Location or content of the certificate or certificate chain in PEM format. If more than one certificate is supplied, the entity certificate, i.e., the certificate holding the public key of the key pair, must be placed first. This setting is mutually exclusive with the public-key setting."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pem.private-key",
+      "type": "java.lang.String",
+      "description": "Location or content of the private key in PEM format."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pem.key-password",
+      "type": "java.lang.String",
+      "description": "Password used to decrypt an encrypted private key."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pem.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pem.key-id",
+      "type": "java.lang.String",
+      "description": "Key identifier metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pem.issued-at",
+      "type": "java.time.Instant",
+      "description": "Issued-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pem.expires-at",
+      "type": "java.time.Instant",
+      "description": "Expires-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pem.metadata",
+      "type": "java.util.Map<java.lang.String, java.lang.String>",
+      "description": "Metadata properties."
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.jks.name or saml.idp.credentials.encrypt.pem.name instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.alias",
+      "type": "java.lang.String",
+      "description": "The keystore alias to the entry holding the key pair.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.jks.key.alias instead.",
+        "replacement": "saml.idp.credentials.encrypt.jks.key.alias",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.certificate",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource holding the certificate part of the credential (optional since the certificate may be part of a keystore).",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.pem.certificates or saml.idp.credentials.encrypt.jks.key.certificates instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.certificates",
+      "type": "java.util.List<org.springframework.core.io.Resource>",
+      "description": "A list of resources holding the certificate chain that part of the credential (optional since the certificate may be part of a keystore). If used, the entity certificate must be the first element.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.pem.certificates or saml.idp.credentials.encrypt.jks.key.certificates instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.key-password",
+      "type": "java.lang.Character[]",
+      "description": "The password to unlock the private key from the keystore or the encrypted private key.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.pem.key-password or saml.idp.credentials.encrypt.jks.key.key-password instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.password",
+      "type": "java.lang.Character[]",
+      "description": "The keystore password.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.jks.store.password instead.",
+        "replacement": "saml.idp.credentials.encrypt.jks.store.password",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pin",
+      "type": "java.lang.Character[]",
+      "description": "The PIN (which is the same as key-password). Used mainly for PKCS#11.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.jks.store.password instead.",
+        "replacement": "saml.idp.credentials.encrypt.jks.store.password",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.pkcs11-configuration",
+      "type": "java.lang.String",
+      "description": "The PKCS#11 configuration file to use.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.jks.store.pkcs11.configuration-file instead.",
+        "replacement": "saml.idp.credentials.encrypt.jks.store.pkcs11.configuration-file",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.private-key",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource holding the private key part of the credential (optional since the key may be part of a keystore).",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.pem.private-key instead.",
+        "replacement": "saml.idp.credentials.encrypt.pem.private-key",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.provider",
+      "type": "java.lang.String",
+      "description": "The name of the security provider to use when creating the KeyStore instance.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.jks.store.provider instead.",
+        "replacement": "saml.idp.credentials.encrypt.jks.store.provider",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.resource",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource to the keystore containing the credential.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.jks.store.location instead.",
+        "replacement": "saml.idp.credentials.encrypt.jks.store.location",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.encrypt.type",
+      "type": "java.lang.String",
+      "description": "The type of keystore.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.encrypt.jks.store.type instead.",
+        "replacement": "saml.idp.credentials.encrypt.jks.store.type",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.bundle",
+      "type": "java.lang.String",
+      "description": "Pointer to a pre-registered credential."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.key-id",
+      "type": "java.lang.String",
+      "description": "Key identifier metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.issued-at",
+      "type": "java.time.Instant",
+      "description": "Issued-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.expires-at",
+      "type": "java.time.Instant",
+      "description": "Expires-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.metadata",
+      "type": "java.util.Map<java.lang.String, java.lang.String>",
+      "description": "Metadata properties."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.store-reference",
+      "type": "java.lang.String",
+      "description": "A store reference. As an alternative to giving the key store configuration, a reference to a key store configuration may be given. This feature may be used when one key store holds several keys."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.store.location",
+      "type": "java.lang.String",
+      "description": "Location of the resource containing the store content."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.store.password",
+      "type": "java.lang.String",
+      "description": "Password used to access the store."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.store.type",
+      "type": "java.lang.String",
+      "description": "Type of the store to create, e.g., JKS, PKCS12 or PKCS11."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.store.provider",
+      "type": "java.lang.String",
+      "description": "Security provider for the store."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.store.pkcs11.configuration-file",
+      "type": "java.lang.String",
+      "description": "The complete path of the PKCS#11 configuration file with which the PKCS#11 device is configured."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.store.pkcs11.settings.library",
+      "type": "java.lang.String",
+      "description": "The PKCS#11 library path."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.store.pkcs11.settings.name",
+      "type": "java.lang.String",
+      "description": "The name of the PKCS#11 slot."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.store.pkcs11.settings.slot",
+      "type": "java.lang.String",
+      "description": "The slot number/id to use."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.store.pkcs11.settings.slot-list-index",
+      "type": "java.lang.Integer",
+      "description": "The slot index to use."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.monitor",
+      "type": "java.lang.Boolean",
+      "description": "Whether the credential should be prepared for monitoring. If set, a test function and a KeyStoreReloader will be assigned."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.key.alias",
+      "type": "java.lang.String",
+      "description": "The alias that identifies the key pair in the key store."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.key.certificates",
+      "type": "java.lang.String",
+      "description": "For some credentials where an underlying KeyStore is being used, an external certificate should be used. The most typical example would be a PKCS#11 key store where the certificate of the key pair resides outside the HSM device. This setting holds the location or content of the certificate or certificate chain in PEM format."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.jks.key.key-password",
+      "type": "java.lang.String",
+      "description": "The password to unlock the key entry identified by the given alias. If not given, the store password will be used\n     * (in these cases, using a store reference will not function)."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.pem.public-key",
+      "type": "java.lang.String",
+      "description": "Location or content of the public key in PEM format. This setting is mutually exclusive with the certificates setting."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.pem.certificates",
+      "type": "java.lang.String",
+      "description": "Location or content of the certificate or certificate chain in PEM format. If more than one certificate is supplied, the entity certificate, i.e., the certificate holding the public key of the key pair, must be placed first. This setting is mutually exclusive with the public-key setting."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.pem.private-key",
+      "type": "java.lang.String",
+      "description": "Location or content of the private key in PEM format."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.pem.key-password",
+      "type": "java.lang.String",
+      "description": "Password used to decrypt an encrypted private key."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.pem.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.pem.key-id",
+      "type": "java.lang.String",
+      "description": "Key identifier metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.pem.issued-at",
+      "type": "java.time.Instant",
+      "description": "Issued-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.pem.expires-at",
+      "type": "java.time.Instant",
+      "description": "Expires-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.pem.metadata",
+      "type": "java.util.Map<java.lang.String, java.lang.String>",
+      "description": "Metadata properties."
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.jks.name or saml.idp.credentials.default-credential.pem.name instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.alias",
+      "type": "java.lang.String",
+      "description": "The keystore alias to the entry holding the key pair.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.jks.key.alias instead.",
+        "replacement": "saml.idp.credentials.default-credential.jks.key.alias",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.certificate",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource holding the certificate part of the credential (optional since the certificate may be part of a keystore).",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.pem.certificates or saml.idp.credentials.default-credential.jks.key.certificates instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.certificates",
+      "type": "java.util.List<org.springframework.core.io.Resource>",
+      "description": "A list of resources holding the certificate chain that part of the credential (optional since the certificate may be part of a keystore). If used, the entity certificate must be the first element.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.pem.certificates or saml.idp.credentials.default-credential.jks.key.certificates instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.key-password",
+      "type": "java.lang.Character[]",
+      "description": "The password to unlock the private key from the keystore or the encrypted private key.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.pem.key-password or saml.idp.credentials.default-credential.jks.key.key-password instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.password",
+      "type": "java.lang.Character[]",
+      "description": "The keystore password.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.jks.store.password instead.",
+        "replacement": "saml.idp.credentials.default-credential.jks.store.password",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.pin",
+      "type": "java.lang.Character[]",
+      "description": "The PIN (which is the same as key-password). Used mainly for PKCS#11.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.jks.store.password instead.",
+        "replacement": "saml.idp.credentials.default-credential.jks.store.password",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.pkcs11-configuration",
+      "type": "java.lang.String",
+      "description": "The PKCS#11 configuration file to use.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.jks.store.pkcs11.configuration-file instead.",
+        "replacement": "saml.idp.credentials.default-credential.jks.store.pkcs11.configuration-file",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.private-key",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource holding the private key part of the credential (optional since the key may be part of a keystore).",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.pem.private-key instead.",
+        "replacement": "saml.idp.credentials.default-credential.pem.private-key",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.provider",
+      "type": "java.lang.String",
+      "description": "The name of the security provider to use when creating the KeyStore instance.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.jks.store.provider instead.",
+        "replacement": "saml.idp.credentials.default-credential.jks.store.provider",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.resource",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource to the keystore containing the credential.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.jks.store.location instead.",
+        "replacement": "saml.idp.credentials.default-credential.jks.store.location",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.default-credential.type",
+      "type": "java.lang.String",
+      "description": "The type of keystore.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.default-credential.jks.store.type instead.",
+        "replacement": "saml.idp.credentials.default-credential.jks.store.type",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.bundle",
+      "type": "java.lang.String",
+      "description": "Pointer to a pre-registered credential."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.key-id",
+      "type": "java.lang.String",
+      "description": "Key identifier metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.issued-at",
+      "type": "java.time.Instant",
+      "description": "Issued-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.expires-at",
+      "type": "java.time.Instant",
+      "description": "Expires-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.metadata",
+      "type": "java.util.Map<java.lang.String, java.lang.String>",
+      "description": "Metadata properties."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store-reference",
+      "type": "java.lang.String",
+      "description": "A store reference. As an alternative to giving the key store configuration, a reference to a key store configuration may be given. This feature may be used when one key store holds several keys."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store.location",
+      "type": "java.lang.String",
+      "description": "Location of the resource containing the store content."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store.password",
+      "type": "java.lang.String",
+      "description": "Password used to access the store."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store.type",
+      "type": "java.lang.String",
+      "description": "Type of the store to create, e.g., JKS, PKCS12 or PKCS11."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store.provider",
+      "type": "java.lang.String",
+      "description": "Security provider for the store."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store.pkcs11.configuration-file",
+      "type": "java.lang.String",
+      "description": "The complete path of the PKCS#11 configuration file with which the PKCS#11 device is configured."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store.pkcs11.settings.library",
+      "type": "java.lang.String",
+      "description": "The PKCS#11 library path."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store.pkcs11.settings.name",
+      "type": "java.lang.String",
+      "description": "The name of the PKCS#11 slot."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store.pkcs11.settings.slot",
+      "type": "java.lang.String",
+      "description": "The slot number/id to use."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.store.pkcs11.settings.slot-list-index",
+      "type": "java.lang.Integer",
+      "description": "The slot index to use."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.monitor",
+      "type": "java.lang.Boolean",
+      "description": "Whether the credential should be prepared for monitoring. If set, a test function and a KeyStoreReloader will be assigned."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.key.alias",
+      "type": "java.lang.String",
+      "description": "The alias that identifies the key pair in the key store."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.key.certificates",
+      "type": "java.lang.String",
+      "description": "For some credentials where an underlying KeyStore is being used, an external certificate should be used. The most typical example would be a PKCS#11 key store where the certificate of the key pair resides outside the HSM device. This setting holds the location or content of the certificate or certificate chain in PEM format."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.jks.key.key-password",
+      "type": "java.lang.String",
+      "description": "The password to unlock the key entry identified by the given alias. If not given, the store password will be used\n     * (in these cases, using a store reference will not function)."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pem.public-key",
+      "type": "java.lang.String",
+      "description": "Location or content of the public key in PEM format. This setting is mutually exclusive with the certificates setting."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pem.certificates",
+      "type": "java.lang.String",
+      "description": "Location or content of the certificate or certificate chain in PEM format. If more than one certificate is supplied, the entity certificate, i.e., the certificate holding the public key of the key pair, must be placed first. This setting is mutually exclusive with the public-key setting."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pem.private-key",
+      "type": "java.lang.String",
+      "description": "Location or content of the private key in PEM format."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pem.key-password",
+      "type": "java.lang.String",
+      "description": "Password used to decrypt an encrypted private key."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pem.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pem.key-id",
+      "type": "java.lang.String",
+      "description": "Key identifier metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pem.issued-at",
+      "type": "java.time.Instant",
+      "description": "Issued-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pem.expires-at",
+      "type": "java.time.Instant",
+      "description": "Expires-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pem.metadata",
+      "type": "java.util.Map<java.lang.String, java.lang.String>",
+      "description": "Metadata properties."
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.jks.name or saml.idp.credentials.previous-encrypt.pem.name instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.alias",
+      "type": "java.lang.String",
+      "description": "The keystore alias to the entry holding the key pair.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.jks.key.alias instead.",
+        "replacement": "saml.idp.credentials.previous-encrypt.jks.key.alias",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.certificate",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource holding the certificate part of the credential (optional since the certificate may be part of a keystore).",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.pem.certificates or saml.idp.credentials.previous-encrypt.jks.key.certificates instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.certificates",
+      "type": "java.util.List<org.springframework.core.io.Resource>",
+      "description": "A list of resources holding the certificate chain that part of the credential (optional since the certificate may be part of a keystore). If used, the entity certificate must be the first element.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.pem.certificates or saml.idp.credentials.previous-encrypt.jks.key.certificates instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.key-password",
+      "type": "java.lang.Character[]",
+      "description": "The password to unlock the private key from the keystore or the encrypted private key.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.pem.key-password or saml.idp.credentials.previous-encrypt.jks.key.key-password instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.password",
+      "type": "java.lang.Character[]",
+      "description": "The keystore password.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.jks.store.password instead.",
+        "replacement": "saml.idp.credentials.previous-encrypt.jks.store.password",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pin",
+      "type": "java.lang.Character[]",
+      "description": "The PIN (which is the same as key-password). Used mainly for PKCS#11.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.jks.store.password instead.",
+        "replacement": "saml.idp.credentials.previous-encrypt.jks.store.password",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.pkcs11-configuration",
+      "type": "java.lang.String",
+      "description": "The PKCS#11 configuration file to use.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.jks.store.pkcs11.configuration-file instead.",
+        "replacement": "saml.idp.credentials.previous-encrypt.jks.store.pkcs11.configuration-file",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.private-key",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource holding the private key part of the credential (optional since the key may be part of a keystore).",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.pem.private-key instead.",
+        "replacement": "saml.idp.credentials.previous-encrypt.pem.private-key",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.provider",
+      "type": "java.lang.String",
+      "description": "The name of the security provider to use when creating the KeyStore instance.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.jks.store.provider instead.",
+        "replacement": "saml.idp.credentials.previous-encrypt.jks.store.provider",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.resource",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource to the keystore containing the credential.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.jks.store.location instead.",
+        "replacement": "saml.idp.credentials.previous-encrypt.jks.store.location",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.previous-encrypt.type",
+      "type": "java.lang.String",
+      "description": "The type of keystore.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.previous-encrypt.jks.store.type instead.",
+        "replacement": "saml.idp.credentials.previous-encrypt.jks.store.type",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.bundle",
+      "type": "java.lang.String",
+      "description": "Pointer to a pre-registered credential."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.key-id",
+      "type": "java.lang.String",
+      "description": "Key identifier metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.issued-at",
+      "type": "java.time.Instant",
+      "description": "Issued-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.expires-at",
+      "type": "java.time.Instant",
+      "description": "Expires-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.metadata",
+      "type": "java.util.Map<java.lang.String, java.lang.String>",
+      "description": "Metadata properties."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store-reference",
+      "type": "java.lang.String",
+      "description": "A store reference. As an alternative to giving the key store configuration, a reference to a key store configuration may be given. This feature may be used when one key store holds several keys."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store.location",
+      "type": "java.lang.String",
+      "description": "Location of the resource containing the store content."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store.password",
+      "type": "java.lang.String",
+      "description": "Password used to access the store."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store.type",
+      "type": "java.lang.String",
+      "description": "Type of the store to create, e.g., JKS, PKCS12 or PKCS11."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store.provider",
+      "type": "java.lang.String",
+      "description": "Security provider for the store."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store.pkcs11.configuration-file",
+      "type": "java.lang.String",
+      "description": "The complete path of the PKCS#11 configuration file with which the PKCS#11 device is configured."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store.pkcs11.settings.library",
+      "type": "java.lang.String",
+      "description": "The PKCS#11 library path."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store.pkcs11.settings.name",
+      "type": "java.lang.String",
+      "description": "The name of the PKCS#11 slot."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store.pkcs11.settings.slot",
+      "type": "java.lang.String",
+      "description": "The slot number/id to use."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.store.pkcs11.settings.slot-list-index",
+      "type": "java.lang.Integer",
+      "description": "The slot index to use."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.monitor",
+      "type": "java.lang.Boolean",
+      "description": "Whether the credential should be prepared for monitoring. If set, a test function and a KeyStoreReloader will be assigned."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.key.alias",
+      "type": "java.lang.String",
+      "description": "The alias that identifies the key pair in the key store."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.key.certificates",
+      "type": "java.lang.String",
+      "description": "For some credentials where an underlying KeyStore is being used, an external certificate should be used. The most typical example would be a PKCS#11 key store where the certificate of the key pair resides outside the HSM device. This setting holds the location or content of the certificate or certificate chain in PEM format."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.jks.key.key-password",
+      "type": "java.lang.String",
+      "description": "The password to unlock the key entry identified by the given alias. If not given, the store password will be used\n     * (in these cases, using a store reference will not function)."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pem.public-key",
+      "type": "java.lang.String",
+      "description": "Location or content of the public key in PEM format. This setting is mutually exclusive with the certificates setting."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pem.certificates",
+      "type": "java.lang.String",
+      "description": "Location or content of the certificate or certificate chain in PEM format. If more than one certificate is supplied, the entity certificate, i.e., the certificate holding the public key of the key pair, must be placed first. This setting is mutually exclusive with the public-key setting."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pem.private-key",
+      "type": "java.lang.String",
+      "description": "Location or content of the private key in PEM format."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pem.key-password",
+      "type": "java.lang.String",
+      "description": "Password used to decrypt an encrypted private key."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pem.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pem.key-id",
+      "type": "java.lang.String",
+      "description": "Key identifier metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pem.issued-at",
+      "type": "java.time.Instant",
+      "description": "Issued-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pem.expires-at",
+      "type": "java.time.Instant",
+      "description": "Expires-at metadata property."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pem.metadata",
+      "type": "java.util.Map<java.lang.String, java.lang.String>",
+      "description": "Metadata properties."
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.name",
+      "type": "java.lang.String",
+      "description": "The name of the credential.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.jks.name or saml.idp.credentials.metadata-sign.pem.name instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.alias",
+      "type": "java.lang.String",
+      "description": "The keystore alias to the entry holding the key pair.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.jks.key.alias instead.",
+        "replacement": "saml.idp.credentials.metadata-sign.jks.key.alias",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.certificate",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource holding the certificate part of the credential (optional since the certificate may be part of a keystore).",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.pem.certificates or saml.idp.credentials.metadata-sign.jks.key.certificates instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.certificates",
+      "type": "java.util.List<org.springframework.core.io.Resource>",
+      "description": "A list of resources holding the certificate chain that part of the credential (optional since the certificate may be part of a keystore). If used, the entity certificate must be the first element.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.pem.certificates or saml.idp.credentials.metadata-sign.jks.key.certificates instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.key-password",
+      "type": "java.lang.Character[]",
+      "description": "The password to unlock the private key from the keystore or the encrypted private key.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.pem.key-password or saml.idp.credentials.metadata-sign.jks.key.key-password instead.",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.password",
+      "type": "java.lang.Character[]",
+      "description": "The keystore password.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.jks.store.password instead.",
+        "replacement": "saml.idp.credentials.metadata-sign.jks.store.password",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pin",
+      "type": "java.lang.Character[]",
+      "description": "The PIN (which is the same as key-password). Used mainly for PKCS#11.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.jks.store.password instead.",
+        "replacement": "saml.idp.credentials.metadata-sign.jks.store.password",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.pkcs11-configuration",
+      "type": "java.lang.String",
+      "description": "The PKCS#11 configuration file to use.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.jks.store.pkcs11.configuration-file instead.",
+        "replacement": "saml.idp.credentials.metadata-sign.jks.store.pkcs11.configuration-file",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.private-key",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource holding the private key part of the credential (optional since the key may be part of a keystore).",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.pem.private-key instead.",
+        "replacement": "saml.idp.credentials.metadata-sign.pem.private-key",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.provider",
+      "type": "java.lang.String",
+      "description": "The name of the security provider to use when creating the KeyStore instance.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.jks.store.provider instead.",
+        "replacement": "saml.idp.credentials.metadata-sign.jks.store.provider",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.resource",
+      "type": "org.springframework.core.io.Resource",
+      "description": "A resource to the keystore containing the credential.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.jks.store.location instead.",
+        "replacement": "saml.idp.credentials.metadata-sign.jks.store.location",
+        "since": "2.3.0"
+      }
+    },
+    {
+      "name": "saml.idp.credentials.metadata-sign.type",
+      "type": "java.lang.String",
+      "description": "The type of keystore.",
+      "deprecation": {
+        "reason": "Use saml.idp.credentials.metadata-sign.jks.store.type instead.",
+        "replacement": "saml.idp.credentials.metadata-sign.jks.store.type",
+        "since": "2.3.0"
+      }
+    }
+  ]
+}

@@ -1,60 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"> 
+<html xmlns:th="http://www.thymeleaf.org">
 <head th:insert="~{fragments/base :: headerFragment}">
   <title id="pageTitle" th:inline="text">[[#{idp.msg.title}]]</title>
 </head>
 <body>
-  
-  <div th:replace="~{fragments/header :: logotype}"></div>
-  
-  <div class="container main">    
-    <div class="row" id="mainDiv">
-      <div class="col-sm-12 content-container">
-        <div class="row">
-          <div class="col-sm-12 content-heading">
-            <h2 th:text="#{idp.msg.heading}">Heading</h2>
-          </div>
-          <div class="col-sm-12">
-            <p class="info" th:text="#{idp.msg.simulate-auth}">Select</p>
-          </div>
+
+<div th:replace="~{fragments/header :: logotype}"></div>
+
+<div class="container main">
+  <div class="row" id="mainDiv">
+    <div class="col-sm-12 content-container">
+      <div class="row">
+        <div class="col-sm-12 content-heading">
+          <h2 th:text="#{idp.msg.heading}">Heading</h2>
         </div>
-            
-        <hr class="full-width">
-            
-        <div class="col-sm-12 section">
-          <form method="POST" action="#" th:action="@{/authn/complete}">
-            
-            <select class="form-control" name="username">
-              <option value="NONE">--- Select user to authenticate as ---</option>
-              <option th:each="u : ${users}" th:value='${u.getPersonalNumber()}' th:text='${u.toViewString()}'>-</option>
-            </select>
-            
-            <div class="row section" id="submitDiv">
-              <div class="col-12">
-                <div class="box">
-                  <button id="submitButton" type="submit" class="btn btn-primary" name="action" value="ok">
-                    <span th:text="#{idp.msg.authenticate-button}">Simulate Authentication</span>
-                  </button>
-                </div>
-              </div>
-            </div> <!-- /#submitDiv -->            
-            
-            <div class="col-sm-12 return">
-              <button class="btn btn-link" type="submit" name="action" value="cancel">
-                <span th:text="#{idp.msg.cancel-link}">Cancel</span>
-              </button>
-            </div>            
-            
-          </form>
-              
-        </div>            
-            
+        <div class="col-sm-12">
+          <p class="info" th:text="#{idp.msg.simulate-auth}">Select</p>
+        </div>
       </div>
-          
-      <div th:replace="~{fragments/footer :: copyright}"></div>
-          
+
+      <hr class="full-width">
+
+      <div class="col-sm-12 section">
+        <form method="POST" action="#" th:action="@{/authn/complete}">
+
+          <select class="form-control" name="username">
+            <option value="NONE">--- Select user to authenticate as ---</option>
+            <option th:each="u : ${users}" th:value='${u.getPersonalNumber()}' th:text='${u.toViewString()}'>-</option>
+          </select>
+
+          <div class="row section" id="submitDiv">
+            <div class="col-12">
+              <div class="box">
+                <button id="submitButton" type="submit" class="btn btn-primary" name="action" value="ok">
+                  <span th:text="#{idp.msg.authenticate-button}">Simulate Authentication</span>
+                </button>
+              </div>
+            </div>
+          </div> <!-- /#submitDiv -->
+
+          <div class="col-sm-12 return">
+            <button class="btn btn-link" type="submit" name="action" value="cancel">
+              <span th:text="#{idp.msg.cancel-link}">Cancel</span>
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
     </div>
-  </div>  
+
+    <div th:replace="~{fragments/footer :: copyright}"></div>
+
+  </div>
+</div>
 
 </body>
 </html>

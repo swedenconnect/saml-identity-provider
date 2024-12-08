@@ -27,14 +27,16 @@ All audit events will contain the following fields:
 - `timestamp` - The timestamp of when the audit event entry was created.
 
 - `principal` - The "owner" of the entry. This will always the the SAML entityID of the Service 
-Provider that requested authentication.
+Provider that requested authentication, except in the cases where the event is a [Credential Monitoring Event](#credential-monitoring-events). In these cases the principal is set to `system`.
 
 - `data` - Auditing data that is specific to the type of audit event. However, the following fields
-will always be present:
+will always be present<sup>1</sup>:
 
-  - `sp-entity-id` - The "owner" of the entry. This will always the the SAML entityID of the Service Provider that requested authentication. If not available, `unknown` is used.
+  - `sp-entity-id` - The "owner" of the entry. This will always the SAML entityID of the Service Provider that requested authentication. If not available, `unknown` is used.
   
   - `authn-request-id` - The ID of the authentication request that is being processed (`AuthnRequest`). If not available, `unknown` is used.
+  
+> \[1\]: Except for a [Credential Monitoring Event](#credential-monitoring-events). In those cases the `credential-name` will always be present.
 
 <a name="SAML2_REQUEST_RECEIVED"></a>
 ### Authentication Request Received
@@ -161,6 +163,47 @@ a SAML error response back, this error is displayed in the user interface. In th
 | `error-code` | The error code. | String |
 | `error-message` | The error message. | String |
 
+
+<a name="credential-monitoring-events"></a>
+### Credential Monitoring Events
+
+If the application is configured to monitor credentials, see sections [Monitoring](https://docs.swedenconnect.se/credentials-support/#monitoring) and [CredentialBundlesConfigurationProperties](https://docs.swedenconnect.se/credentials-support/#credential-bundles-configuration-properties) in the documentation for the [credentials-support](https://docs.swedenconnect.se/credentials-support/) library, audit events concerning monitoring events will be published.
+
+FOr all credential monitoring events, the field `credential-name` will be present. This tells the configured name of the credential that was tested/reloaded.
+
+#### Credential Test Error
+
+**Type:** `CREDENTIAL_TEST_ERROR`
+
+**Description:** The monitoring process will periodically "test" each credential that has been configured to be monitored. If a test for a credential fails, this event will be published.
+
+| Parameter | Description | Type |
+| :--- | :--- | :--- |
+| `credential-name` | The name of the credential that was tested. | String |
+| `error.message` | The textual description of the error that was reported during the failed credential test. | String |
+| `error.exception` | The name of the exception that was thrown when the credential was tested. | String |
+
+#### Credential Reload Success
+
+**Type:** `CREDENTIAL_RELOAD_SUCCESS`
+
+**Description:** If a credential test fails (see above), the monitor process will attempt to "reload" the credential. If this reload succeeds, this event will be published.
+
+| Parameter | Description | Type |
+| :--- | :--- | :--- |
+| `credential-name` | The name of the credential that was reloaded. | String |
+
+#### Credential Reload Error
+
+**Type:** `CREDENTIAL_RELOAD_ERROR`
+
+**Description:** **Description:** If a credential test fails (see above), the monitor process will attempt to "reload" the credential. If this reloading fails, this event is published. Note that the credential will no longer be possible to use. This event should be acted upon as soon as possible.
+
+| Parameter | Description | Type |
+| :--- | :--- | :--- |
+| `credential-name` | The name of the credential that was reloaded. | String |
+| `error.message` | The textual description of the error that was reported during the failed credential reload. | String |
+| `error.exception` | The name of the exception that was thrown when the credential was reloaded. | String |
 
 ---
 

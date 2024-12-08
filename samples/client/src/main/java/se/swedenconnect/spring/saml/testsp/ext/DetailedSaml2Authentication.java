@@ -15,12 +15,13 @@
  */
 package se.swedenconnect.spring.saml.testsp.ext;
 
-import java.util.Collection;
-
 import org.opensaml.saml.saml2.core.Assertion;
 import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.saml2.provider.service.authentication.Saml2Authentication;
+
+import java.io.Serial;
+import java.util.Collection;
 
 /**
  * Extends {@link Saml2Authentication} with information about the issued assertion.
@@ -34,6 +35,7 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
  */
 public class DetailedSaml2Authentication extends Saml2Authentication {
 
+  @Serial
   private static final long serialVersionUID = -4895862417583908020L;
 
   private final SerializableOpenSamlObject<Assertion> assertion;
@@ -44,7 +46,7 @@ public class DetailedSaml2Authentication extends Saml2Authentication {
       final Assertion assertion,
       final Collection<? extends GrantedAuthority> authorities) {
     super(principal, saml2Response, authorities);
-    this.assertion = new SerializableOpenSamlObject<Assertion>(assertion);
+    this.assertion = new SerializableOpenSamlObject<>(assertion);
   }
 
   public Assertion getAssertion() {

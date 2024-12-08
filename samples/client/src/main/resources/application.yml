@@ -1,14 +1,25 @@
+spring:
+  ssl:
+    bundle:
+      jks:
+        localhost:
+          keystore:
+            type: JKS
+            location: classpath:keys.jks
+            password: secret
+          key:
+            alias: localhost
+            password: secret
+
 server:
   port: 8445
   servlet:
-    context-path: /client    
+    context-path: /client
   ssl:
     enabled: true
-    key-store: classpath:keys.jks
-    key-store-type: JKS
-    key-alias: localhost
-    key-store-password: secret
-    key-password: secret      
+    bundle: localhost
+
+
 
 #
 # App settings
@@ -16,10 +27,22 @@ server:
 demosp:
   ui:
     languages:
-    - tag: sv
-      text: Svenska
-    - tag: en
-      text: English
+      - tag: sv
+        text: Svenska
+      - tag: en
+        text: English
+
+credential:
+  bundles:
+    jks:
+      sp:
+        store:
+          location: classpath:keys.jks
+          type: JKS
+          password: secret
+        key:
+          alias: sp
+        name: "Demo SP"
 
 saml:
   sp:
@@ -27,22 +50,17 @@ saml:
     registration-id: demo
     idp-metadata-location: classpath:demo-idp-metadata.xml
     credential:
-      resource: classpath:keys.jks
-      type: JKS
-      alias: sp
-      password: secret
-      key-password: secret
-      name: "Demo SP"
+      bundle: sp
     assertion-consumer-url: https://localhost:${server.port}${server.servlet.context-path}/saml/${saml.sp.registration-id}
     metadata:
       entity-categories:
-      - http://id.elegnamnden.se/ec/1.0/loa3-pnr
-      - http://id.elegnamnden.se/ec/1.0/eidas-naturalperson
-      - http://id.elegnamnden.se/st/1.0/public-sector-sp
-      - http://id.swedenconnect.se/contract/sc/sweden-connect
-      - http://id.swedenconnect.se/general-ec/1.0/secure-authenticator-binding
-      - http://id.swedenconnect.se/general-ec/1.0/accepts-coordination-number
-      
+        - http://id.elegnamnden.se/ec/1.0/loa3-pnr
+        - http://id.elegnamnden.se/ec/1.0/eidas-naturalperson
+        - http://id.elegnamnden.se/st/1.0/public-sector-sp
+        - http://id.swedenconnect.se/contract/sc/sweden-connect
+        - http://id.swedenconnect.se/general-ec/1.0/secure-authenticator-binding
+        - http://id.swedenconnect.se/general-ec/1.0/accepts-coordination-number
+
 logging:
   level:
     org:
@@ -50,16 +68,14 @@ logging:
         context:
           support:
             ResourceBundleMessageSource: TRACE
-            
+
 ---
 
 spring:
   config:
     activate:
       on-profile: ref
-      
+
 saml:
   sp:
     idp-metadata-location: classpath:ref-idp-metadata.xml
-
-            

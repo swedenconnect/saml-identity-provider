@@ -31,53 +31,53 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
  * Test cases for UserRedirectAuthenticationProvider.
- * 
+ *
  * @author Martin Lindström
  */
 public class UserRedirectAuthenticationProviderTest {
-  
+
   @Test
   public void testAuthenticate() {
     final TestProvider provider = new TestProvider();
-    
+
     final Authentication a = provider.authenticate(Mockito.mock(Saml2UserAuthenticationInputToken.class));
     Assertions.assertTrue(a instanceof UsernamePasswordAuthenticationToken);
   }
-  
+
   @Test
   public void testAuthenticateResume() {
     final ResumedAuthenticationToken resume = Mockito.mock(ResumedAuthenticationToken.class);
     Mockito.when(resume.getAuthnToken()).thenReturn(Mockito.mock(UsernamePasswordAuthenticationToken.class));
-    
+
     final TestProvider provider = new TestProvider();
     final Authentication a = provider.authenticate(resume);
-    Assertions.assertTrue(a instanceof Saml2UserAuthentication);    
+    Assertions.assertTrue(a instanceof Saml2UserAuthentication);
   }
-  
+
   @Test
   public void testAuthenticateResumeNotSupportedAuthToken() {
     final ResumedAuthenticationToken resume = Mockito.mock(ResumedAuthenticationToken.class);
     Mockito.when(resume.getAuthnToken()).thenReturn(Mockito.mock(PreAuthenticatedAuthenticationToken.class));
-    
+
     final TestProvider provider = new TestProvider();
-    Assertions.assertNull(provider.authenticate(resume));    
-  }  
-  
+    Assertions.assertNull(provider.authenticate(resume));
+  }
+
   @Test
   public void testAuthenticateBadType() {
-    final TestProvider provider = new TestProvider();  
+    final TestProvider provider = new TestProvider();
     Assertions.assertNull(provider.authenticate(Mockito.mock(UsernamePasswordAuthenticationToken.class)));
   }
-  
+
   @Test
   public void testSupports() {
     final TestProvider provider = new TestProvider();
-    
+
     Assertions.assertTrue(provider.supports(Saml2UserAuthenticationInputToken.class));
     Assertions.assertTrue(provider.supports(ResumedAuthenticationToken.class));
     Assertions.assertFalse(provider.supports(Saml2AuthnRequestAuthenticationToken.class));
   }
-  
+
   private static class TestProvider implements UserRedirectAuthenticationProvider {
 
     @Override
@@ -86,7 +86,7 @@ public class UserRedirectAuthenticationProviderTest {
     }
 
     @Override
-    public Authentication authenticateUser(Saml2UserAuthenticationInputToken token) throws Saml2ErrorStatusException {
+    public Authentication authenticateUser(final Saml2UserAuthenticationInputToken token) throws Saml2ErrorStatusException {
       return Mockito.mock(UsernamePasswordAuthenticationToken.class);
     }
 
@@ -101,13 +101,13 @@ public class UserRedirectAuthenticationProviderTest {
     }
 
     @Override
-    public Saml2UserAuthentication resumeAuthentication(ResumedAuthenticationToken token)
+    public Saml2UserAuthentication resumeAuthentication(final ResumedAuthenticationToken token)
         throws Saml2ErrorStatusException {
       return Mockito.mock(Saml2UserAuthentication.class);
     }
 
     @Override
-    public boolean supportsUserAuthenticationToken(Authentication authentication) {
+    public boolean supportsUserAuthenticationToken(final Authentication authentication) {
       return authentication instanceof UsernamePasswordAuthenticationToken;
     }
 
@@ -125,7 +125,7 @@ public class UserRedirectAuthenticationProviderTest {
     public String getResumeAuthnPath() {
       return null;
     }
-    
+
   }
 
 }

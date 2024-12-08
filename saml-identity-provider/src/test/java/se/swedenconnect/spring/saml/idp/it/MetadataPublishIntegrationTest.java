@@ -74,7 +74,7 @@ import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.OrganizationSe
 
 /**
  * Test case for downloading IdP's metadata.
- * 
+ *
  * @author Martin Lindström
  */
 @SpringBootTest
@@ -98,7 +98,7 @@ public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
   @Test
   public void testDownload() throws Exception {
 
-    final MvcResult result = mvc.perform(
+    final MvcResult result = this.mvc.perform(
         MockMvcRequestBuilders.get(EndpointSettings.SAML_METADATA_PUBLISH_ENDPOINT_DEFAULT))
         // .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
@@ -115,11 +115,11 @@ public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
 
     // Do it again - verify that we get cached metadata
     //
-    final MediaType xmlType = new MediaType("application", "samlmetadata+xml"); 
-    final MvcResult result2 = mvc.perform(
+    final MediaType xmlType = new MediaType("application", "samlmetadata+xml");
+    final MvcResult result2 = this.mvc.perform(
         MockMvcRequestBuilders
             .get(EndpointSettings.SAML_METADATA_PUBLISH_ENDPOINT_DEFAULT)
-            .accept(xmlType))        
+            .accept(xmlType))
         .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(xmlType))
         .andReturn();
@@ -216,11 +216,11 @@ public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
 
         KeyDescriptor encryption = null;
         for (final KeyDescriptor kd : ssoDescriptor.getKeyDescriptors()) {
-          if (Objects.equals(UsageType.ENCRYPTION, kd.getUse())) {
+          if (UsageType.ENCRYPTION == kd.getUse()) {
             encryption = kd;
             break;
           }
-          if (kd.getUse() == null || Objects.equals(UsageType.UNSPECIFIED, kd.getUse())) {
+          if (kd.getUse() == null || UsageType.UNSPECIFIED == kd.getUse()) {
             encryption = kd;
           }
         }

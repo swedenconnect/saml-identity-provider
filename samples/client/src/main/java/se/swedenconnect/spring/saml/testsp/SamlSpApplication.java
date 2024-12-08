@@ -29,10 +29,9 @@ public class SamlSpApplication {
   /**
    * Program main.
    *
-   * @param args
-   *          program arguments
+   * @param args program arguments
    */
-  public static void main(String[] args) {
+  public static void main(final String[] args) {
     SpringApplication.run(SamlSpApplication.class, args);
   }
 

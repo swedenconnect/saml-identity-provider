@@ -15,10 +15,10 @@
  */
 package se.swedenconnect.spring.saml.testsp.config;
 
-import java.util.List;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 /**
  * Main configuration class for the Demo SP application.

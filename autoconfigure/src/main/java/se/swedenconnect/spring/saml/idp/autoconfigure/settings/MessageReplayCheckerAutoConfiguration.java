@@ -25,7 +25,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.StringRedisTemplate;
-
 import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayChecker;
 import se.swedenconnect.opensaml.saml2.response.replay.MessageReplayCheckerImpl;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.replay.InMemoryReplayCache;
@@ -91,7 +90,7 @@ public class MessageReplayCheckerAutoConfiguration {
     /**
      * If we are using Redis, we create a {@link RedisReplayCache}
      *
-     * @param connectionFactory the Redis connection factory
+     * @param redisTemplate the Redis template
      * @return a {@link RedisReplayCache}
      */
     @ConditionalOnMissingBean

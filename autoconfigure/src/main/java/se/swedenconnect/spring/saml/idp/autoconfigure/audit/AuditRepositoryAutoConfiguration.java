@@ -15,12 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.audit;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Predicate;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.audit.AuditEvent;
@@ -31,15 +26,18 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import se.swedenconnect.spring.saml.idp.audit.repository.AuditEventMapper;
 import se.swedenconnect.spring.saml.idp.audit.repository.DelegatingAuditEventRepository;
 import se.swedenconnect.spring.saml.idp.audit.repository.FileBasedAuditEventRepository;
 import se.swedenconnect.spring.saml.idp.audit.repository.FilteringAuditEventRepository;
 import se.swedenconnect.spring.saml.idp.audit.repository.JsonAuditEventMapper;
 import se.swedenconnect.spring.saml.idp.audit.repository.MemoryBasedAuditEventRepository;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Predicate;
 
 /**
  * Autoconfiguration for auditing support where an {@link AuditEventRepository} is created.
@@ -63,7 +61,8 @@ public class AuditRepositoryAutoConfiguration {
    * @param properties the audit properties
    * @param objectMapper the JSON object mapper
    */
-  public AuditRepositoryAutoConfiguration(final AuditRepositoryConfigurationProperties properties, final ObjectMapper objectMapper) {
+  public AuditRepositoryAutoConfiguration(final AuditRepositoryConfigurationProperties properties,
+      final ObjectMapper objectMapper) {
     this.properties = Objects.requireNonNull(properties, "properties must not be null");
     this.objectMapper = Objects.requireNonNull(objectMapper, "objectMapper must not be null");
   }

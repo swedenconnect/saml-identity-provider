@@ -22,31 +22,44 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 
+import org.springframework.core.io.ResourceLoader;
 import se.swedenconnect.security.credential.KeyStoreCredential;
 import se.swedenconnect.security.credential.PkiCredential;
-import se.swedenconnect.security.credential.factory.KeyStoreFactoryBean;
+import se.swedenconnect.security.credential.config.ConfigurationResourceLoader;
+import se.swedenconnect.security.credential.factory.KeyStoreBuilder;
+import se.swedenconnect.security.credential.spring.config.SpringConfigurationResourceLoader;
 
 @Configuration
 public class CredentialConfiguration {
 
+  private final ConfigurationResourceLoader resourceLoader;
+
+  public CredentialConfiguration(final ResourceLoader resourceLoader) {
+    this.resourceLoader = new SpringConfigurationResourceLoader(resourceLoader);
+  }
+
   @Bean("idp.credential.sign")
-  PkiCredential signatureCredential(@Qualifier("idp.keystore") final KeyStore keyStore) {
+  PkiCredential signatureCredential(@Qualifier("idp.keystore") final KeyStore keyStore) throws Exception {
     return new KeyStoreCredential(keyStore, "sign", "secret".toCharArray());
   }
-  
+
   @Bean("idp.credential.encrypt")
-  PkiCredential encryptionCredential(@Qualifier("idp.keystore") final KeyStore keyStore) {
+  PkiCredential encryptionCredential(@Qualifier("idp.keystore") final KeyStore keyStore) throws Exception {
     return new KeyStoreCredential(keyStore, "encrypt", "secret".toCharArray());
   }
-  
+
   @Bean("idp.credential.metadata")
-  PkiCredential metadataCredential(@Qualifier("idp.keystore") final KeyStore keyStore) {
+  PkiCredential metadataCredential(@Qualifier("idp.keystore") final KeyStore keyStore) throws Exception {
     return new KeyStoreCredential(keyStore, "metadata", "secret".toCharArray());
   }
-  
+
   @Bean("idp.keystore")
-  KeyStoreFactoryBean idpKeystore() {
-    return new KeyStoreFactoryBean(new ClassPathResource("idp-credentials.jks"), "secret".toCharArray(), "JKS"); 
+  KeyStore idpKeystore() throws Exception {
+    return KeyStoreBuilder.builder(this.resourceLoader)
+        .location("classpath:idp-credentials.jks")
+        .password("secret")
+        .type("JKS")
+        .build();
   }
-  
+
 }

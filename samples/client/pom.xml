@@ -9,7 +9,7 @@
   <parent>
     <groupId>se.swedenconnect.spring.saml.idp</groupId>
     <artifactId>spring-saml-idp-samples-parent</artifactId>
-    <version>2.2.1</version>
+    <version>2.3.0-SNAPSHOT</version>
   </parent>
 
   <name>Sweden Connect :: Spring SAML Identity Provider :: Samples :: Client Application</name>
@@ -19,7 +19,7 @@
   <licenses>
     <license>
       <name>The Apache Software License, Version 2.0</name>
-      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
       <distribution>repo</distribution>
     </license>
   </licenses>
@@ -51,32 +51,10 @@
 
     <dependencies>
 
-      <!--
-        Since spring-security-saml2-service-provider still uses OpenSAML 4,
-        we need to use older dependencies ...
-      -->
       <dependency>
-        <groupId>se.swedenconnect.security</groupId>
-        <artifactId>credentials-support</artifactId>
-        <version>1.2.6</version>
-      </dependency>
-
-      <dependency>
-        <groupId>se.swedenconnect.opensaml</groupId>
-        <artifactId>opensaml-security-ext</artifactId>
-        <version>3.1.2</version>
-      </dependency>
-
-      <dependency>
-        <groupId>se.swedenconnect.opensaml</groupId>
-        <artifactId>opensaml-addons</artifactId>
-        <version>1.2.8</version>
-      </dependency>
-
-      <dependency>
-        <groupId>org.apache.santuario</groupId>
-        <artifactId>xmlsec</artifactId>
-        <version>2.3.4</version>
+        <groupId>org.cryptacular</groupId>
+        <artifactId>cryptacular</artifactId>
+        <version>1.2.7</version>
       </dependency>
 
     </dependencies>
@@ -88,6 +66,12 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>se.swedenconnect.security</groupId>
+      <artifactId>credentials-support-spring-boot-starter</artifactId>
+      <version>${credentials-support.version}</version>
     </dependency>
 
     <dependency>
@@ -193,7 +177,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-resources-plugin</artifactId>
-        <version>3.1.0</version>
+        <version>3.3.1</version>
         <configuration>
           <delimiters>
             <delimiter>@</delimiter>

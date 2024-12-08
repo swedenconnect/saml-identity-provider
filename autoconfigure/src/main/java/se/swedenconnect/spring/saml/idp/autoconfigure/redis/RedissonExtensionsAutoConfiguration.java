@@ -20,7 +20,6 @@ import org.redisson.config.BaseConfig;
 import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
 import org.redisson.config.ReadMode;
-import org.redisson.config.SingleServerConfig;
 import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer;
 import org.redisson.spring.starter.RedissonAutoConfigurationV2;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -34,8 +33,6 @@ import org.springframework.context.annotation.Import;
 import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsConfiguration.SslBundleRegistrationBean;
 import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedissonClusterProperties.NatTranslationEntry;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -127,7 +124,8 @@ public class RedissonExtensionsAutoConfiguration {
    */
   private static class RedissonAddressCustomizers {
 
-    public static BiFunction<ClusterServersConfig, RedissonClusterProperties, ClusterServersConfig> clusterServerCustomizer =
+    public static BiFunction<ClusterServersConfig, RedissonClusterProperties, ClusterServersConfig>
+        clusterServerCustomizer =
         (config, clusterProperties) -> {
           if (clusterProperties.getNatTranslation() != null) {
             final HostPortNatMapper mapper = new HostPortNatMapper();

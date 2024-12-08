@@ -15,6 +15,8 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
+import java.io.InputStream;
+import java.security.KeyStore;
 import java.time.Instant;
 import java.util.List;
 
@@ -27,13 +29,16 @@ import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.config.Customizer;
 
 import lombok.Getter;
 import se.swedenconnect.opensaml.saml2.metadata.build.SPSSODescriptorBuilder;
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
 import se.swedenconnect.opensaml.sweid.saml2.authn.LevelOfAssuranceUris;
+import se.swedenconnect.security.credential.KeyStoreCredential;
 import se.swedenconnect.security.credential.PkiCredential;
+import se.swedenconnect.security.credential.factory.KeyStoreFactory;
 import se.swedenconnect.security.credential.factory.PkiCredentialFactoryBean;
 import se.swedenconnect.spring.saml.idp.OpenSamlTestBase;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
@@ -48,7 +53,7 @@ import se.swedenconnect.spring.saml.idp.utils.DefaultSaml2MessageIDGenerator;
 
 /**
  * Test cases for Saml2AssertionBuilder.
- * 
+ *
  * @author Martin Lindström
  */
 public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
@@ -63,23 +68,22 @@ public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
 
   @BeforeAll
   public static void init() throws Exception {
-    final PkiCredentialFactoryBean factory = new PkiCredentialFactoryBean();
-    factory.setResource(new ClassPathResource("idp-credentials.jks"));
-    factory.setAlias("sign");
-    factory.setType("JKS");
-    factory.setPassword("secret".toCharArray());
-    factory.afterPropertiesSet();
-    credential = factory.getObject();
+    final Resource keyStoreResource = new ClassPathResource("idp-credentials.jks");
+
+    try (final InputStream is = keyStoreResource.getInputStream()) {
+      final KeyStore keyStore = KeyStoreFactory.loadKeyStore(is, "secret".toCharArray(), null, null);
+      credential = new KeyStoreCredential(keyStore, "sign", "secret".toCharArray());
+    }
   }
-  
+
   @Test
   public void testBuild() throws Exception {
 
     final AttributeReleaseManager releaseManager =
         new DefaultAttributeReleaseManager(List.of(new ReleaseAllAttributeProducer()), null);
 
-    final TestCustomizer customizer = new TestCustomizer(); 
-    
+    final TestCustomizer customizer = new TestCustomizer();
+
     final Saml2AssertionBuilder builder = new Saml2AssertionBuilder(IDP, credential, releaseManager);
     builder.setAssertionCustomizer(customizer);
 
@@ -130,9 +134,9 @@ public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
     Assertions.assertTrue(assertion.getAttributeStatements().get(0).getAttributes().size() == 2);
     Assertions.assertTrue(customizer.isCalled());
   }
-  
+
   private static class TestCustomizer implements Customizer<Assertion> {
-    
+
     @Getter
     private boolean called = false;
 
@@ -140,9 +144,9 @@ public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
     public void customize(final Assertion t) {
       this.called = true;
     }
-    
+
   }
-  
+
   @Test
   public void testBuildNotSignedAndAuthenticatingAuth() throws Exception {
 
@@ -193,9 +197,9 @@ public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
     Assertions.assertFalse(assertion.isSigned());
     Assertions.assertEquals(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3,
         assertion.getAuthnStatements().get(0).getAuthnContext().getAuthnContextClassRef().getURI());
-    Assertions.assertEquals("https://otheridp.example.com", 
+    Assertions.assertEquals("https://otheridp.example.com",
         assertion.getAuthnStatements().get(0).getAuthnContext().getAuthenticatingAuthorities().get(0).getURI());
-    Assertions.assertTrue(assertion.getAttributeStatements().get(0).getAttributes().size() == 2);    
+    Assertions.assertTrue(assertion.getAttributeStatements().get(0).getAttributes().size() == 2);
   }
 
   @Test
@@ -204,14 +208,14 @@ public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
         new DefaultAttributeReleaseManager(List.of(new ReleaseAllAttributeProducer()), null);
 
     final Saml2AssertionBuilder builder = new Saml2AssertionBuilder(IDP, credential, releaseManager);
-    
+
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
     Mockito.when(token.getAuthnRequestToken()).thenReturn(null);
-    
+
     Assertions.assertThrows(UnrecoverableSaml2IdpException.class, () -> {
       builder.buildAssertion(token);
     });
-    
+
   }
 
 }

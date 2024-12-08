@@ -72,7 +72,7 @@ public class EidasRequestedAttributeProcessorTest extends OpenSamlTestBase {
     Mockito.when(token.getLogString()).thenReturn("logstring");
 
     final EidasRequestedAttributeProcessor processor = new EidasRequestedAttributeProcessor();
-    Collection<RequestedAttribute> attrs = processor.extractRequestedAttributes(token);
+    final Collection<RequestedAttribute> attrs = processor.extractRequestedAttributes(token);
 
     Assertions.assertTrue(attrs.size() == 1);
     Assertions.assertTrue(attrs.stream()

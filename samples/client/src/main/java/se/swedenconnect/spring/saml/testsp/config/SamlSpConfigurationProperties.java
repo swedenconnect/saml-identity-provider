@@ -15,14 +15,13 @@
  */
 package se.swedenconnect.spring.saml.testsp.config;
 
-import java.util.List;
-
+import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Component;
+import se.swedenconnect.security.credential.config.properties.PkiCredentialConfigurationProperties;
 
-import lombok.Data;
-import se.swedenconnect.security.credential.factory.PkiCredentialConfigurationProperties;
+import java.util.List;
 
 /**
  * Configuration properies for the SAML SP.
@@ -43,7 +42,7 @@ public class SamlSpConfigurationProperties {
    * The Spring Security SAML registration ID.
    */
   private String registrationId;
-  
+
   /**
    * Location to IdP's metadata.
    */

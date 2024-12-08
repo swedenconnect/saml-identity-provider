@@ -15,18 +15,24 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.settings;
 
-import java.time.Duration;
-import java.util.List;
-
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
-
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
+import se.swedenconnect.security.credential.factory.PkiCredentialConfigurationProperties;
+import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
+
+import java.io.File;
+import java.security.cert.X509Certificate;
+import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Main configuration properties class for the SAML Identity Provider.
@@ -170,6 +176,104 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
   }
 
   /**
+   * Configuration properties for the IdP credentials.
+   */
+  public static class CredentialConfigurationProperties {
+
+    /**
+     * The IdP default credential.
+     */
+    @Setter
+    @Getter
+    @NestedConfigurationProperty
+    private PkiCredentialConfigurationProperties defaultCredential;
+
+    /**
+     * The IdP signing credential.
+     */
+    @Setter
+    @Getter
+    @NestedConfigurationProperty
+    private PkiCredentialConfigurationProperties sign;
+
+    /**
+     * A certificate that will be the future signing certificate. Is set before a key-rollover is performed.
+     */
+    @Setter
+    @Getter
+    private X509Certificate futureSign;
+
+    /**
+     * The IdP encryption credential.
+     */
+    @Setter
+    @Getter
+    @NestedConfigurationProperty
+    private PkiCredentialConfigurationProperties encrypt;
+
+    /**
+     * The previous IdP encryption credential. Assigned after a key-rollover.
+     */
+    @Setter
+    @Getter
+    @NestedConfigurationProperty
+    private PkiCredentialConfigurationProperties previousEncrypt;
+
+    /**
+     * The SAML metadata signing credential.
+     */
+    @Setter
+    @Getter
+    @NestedConfigurationProperty
+    private PkiCredentialConfigurationProperties metadataSign;
+
+  }
+
+  /**
+   * Configuration properties for endpoint configuration.
+   */
+  public static class EndpointsConfigurationProperties {
+
+    /**
+     * The endpoint where the Identity Provider receives authentication requests via HTTP redirect.
+     */
+    @Setter
+    @Getter
+    private String redirectAuthn;
+
+    /**
+     * The endpoint where the Identity Provider receives authentication requests via HTTP POST.
+     */
+    @Setter
+    @Getter
+    private String postAuthn;
+
+    /**
+     * The endpoint where the Identity Provider receives authentication requests via HTTP redirect where Holder-of-key
+     * (HoK) is used.
+     */
+    @Setter
+    @Getter
+    private String hokRedirectAuthn;
+
+    /**
+     * The endpoint where the Identity Provider receives authentication requests via HTTP POST where Holder-of-key (HoK)
+     * is used.
+     */
+    @Setter
+    @Getter
+    private String hokPostAuthn;
+
+    /**
+     * The SAML metadata publishing endpoint.
+     */
+    @Setter
+    @Getter
+    private String metadata;
+
+  }
+
+  /**
    * Session handling configuration.
    */
   public static class SessionConfiguration implements InitializingBean {
@@ -230,6 +334,418 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
       if (!StringUtils.hasText(this.context)) {
         this.context = DEFAULT_CONTEXT_NAME;
       }
+    }
+
+  }
+
+  /**
+   * Configuration properties for assertion settings.
+   */
+  public static class AssertionSettingsConfigurationProperties {
+
+    /**
+     * Tells whether the Identity Provider encrypts assertions.
+     */
+    @Getter
+    @Setter
+    private Boolean encrypt;
+
+    /**
+     * A setting that tells the time restrictions the IdP puts on an Assertion concerning "not on or after".
+     */
+    @Getter
+    @Setter
+    private Duration notAfter;
+
+    /**
+     * A setting that tells the time restrictions the IdP puts on an Assertion concerning "not before".
+     */
+    @Getter
+    @Setter
+    private Duration notBefore;
+
+  }
+
+  /**
+   * Configuration properties for IdP metadata.
+   */
+  public static class MetadataConfigurationProperties {
+
+    /**
+     * A template for the IdP metadata.
+     */
+    @Setter
+    @Getter
+    private Resource template;
+
+    /**
+     * Tells how long the published IdP metadata can remain in a cache.
+     */
+    @Setter
+    @Getter
+    private Duration cacheDuration;
+
+    /**
+     * Tells for how long a published metadata entry should be valid.
+     */
+    @Setter
+    @Getter
+    private Duration validityPeriod;
+
+    /**
+     * The {@code alg:DigestMethod} elements to include in the metadata.
+     */
+    @Setter
+    @Getter
+    private List<String> digestMethods;
+
+    /**
+     * Whether {@code alg:DigestMethod} elements should be placed in an {@code Extensions} element under the role
+     * descriptor (i.e., the {@code IDPSSODescriptor}). If {@code false}, the {@code alg:DigestMethod} elements are
+     * included as elements in the {@code Extensions} element of the {@code EntityDescriptor}.
+     */
+    @Setter
+    @Getter
+    private boolean includeDigestMethodsUnderRole;
+
+    /**
+     * The {@code alg:SigningMethod} elements to include in the metadata.
+     */
+    @Setter
+    @Getter
+    private List<SigningMethod>
+        signingMethods;
+
+    /**
+     * Whether {@code alg:SigningMethod} elements should be placed in an {@code Extensions} element under the role
+     * descriptor (i.e., the {@code IDPSSODescriptor}). If {@code false}, the {@code alg:SigningMethod} elements are
+     * included as elements in the {@code Extensions} element of the {@code EntityDescriptor}.
+     */
+    @Setter
+    @Getter
+    private boolean includeSigningMethodsUnderRole;
+
+    /**
+     * The {@code md:EncryptionMethod} elements that should be included under the {@code md:KeyDescriptor} for the
+     * encryption key. Note that these algorithms must match the configured encryption key.
+     */
+    @Setter
+    @Getter
+    private List<EncryptionMethod> encryptionMethods;
+
+    /**
+     * The metadata {@code UIInfo} element.
+     */
+    @Setter
+    @Getter
+    private UIInfo uiInfo;
+
+    /**
+     * Attribute names that should be included under the {@code RequestedPrincipalSelection} metadata extension.
+     */
+    @Setter
+    @Getter
+    private List<String> requestedPrincipalSelection;
+
+    /**
+     * The metadata {@code Organization} element.
+     */
+    @Setter
+    @Getter
+    private Organization organization;
+
+    /**
+     * The metadata {@code ContactPerson} elements.
+     */
+    @Setter
+    @Getter
+    private Map<MetadataSettings.ContactPersonType, ContactPerson> contactPersons;
+
+    /**
+     * Settings for {@code alg:SigningMethod} elements.
+     *
+     * @author Martin Lindström
+     */
+    public static class SigningMethod {
+
+      /**
+       * Identifies the algorithm by means of the URL defined for its use with the XML Signature specification.
+       */
+      @Setter
+      @Getter
+      private String algorithm;
+
+      /**
+       * The smallest key size, in bits, that the entity supports in conjunction with the algorithm. If omitted, no
+       * minimum is implied.
+       */
+      @Setter
+      @Getter
+      private Integer minKeySize;
+
+      /**
+       * The largest key size, in bits, that the entity supports in conjunction with the algorithm. If omitted, no
+       * maximum is implied.
+       */
+      @Setter
+      @Getter
+      private Integer maxKeySize;
+    }
+
+    /**
+     * Settings for {@code md:EncryptionMethod} elements.
+     *
+     * @author Martin Lindström
+     */
+    public static class EncryptionMethod {
+
+      /**
+       * The algorithm URI of the encryption method.
+       */
+      @Setter
+      @Getter
+      private String algorithm;
+
+      /**
+       * The key size.
+       */
+      @Setter
+      @Getter
+      private Integer keySize;
+
+      /**
+       * The OAEP parameters (in Base64-encoding).
+       */
+      @Setter
+      @Getter
+      private String oaepParams;
+
+      /**
+       * If {@code algorithm} indicates a key transport algorithm where the digest algorithm needs to be given, this
+       * field should be set to this algorithm URI.
+       */
+      @Setter
+      @Getter
+      private String digestMethod;
+
+    }
+
+    /**
+     * Settings for the metadata {@code UIInfo} element.
+     */
+    public static class UIInfo {
+
+      /**
+       * UIInfo display names. The map key is the language tag and value is display name for that language.
+       */
+      @Setter
+      @Getter
+      private Map<String, String> displayNames;
+
+      /**
+       * UIInfo descriptions. The map key is the language tag and value is description for that language.
+       */
+      @Setter
+      @Getter
+      private Map<String, String> descriptions;
+
+      /**
+       * UIInfo logotypes.
+       */
+      @Setter
+      @Getter
+      private List<UIInfo.Logo> logotypes;
+
+      /**
+       * Representation of a {@code Logo} element.
+       */
+      public static class Logo {
+
+        /**
+         * Logotype URL. Mutually exclusive with path.
+         */
+        @Setter
+        @Getter
+        private String url;
+
+        /**
+         * Logotype path. Mutually exclusive with url.
+         */
+        @Setter
+        @Getter
+        private String path;
+
+        /**
+         * Logotype height in pixels.
+         */
+        @Setter
+        @Getter
+        private Integer height;
+
+        /**
+         * Logotype width in pixels.
+         */
+        @Setter
+        @Getter
+        private Integer width;
+
+        /**
+         * Logotype language tag.
+         */
+        @Setter
+        @Getter
+        private String languageTag;
+      }
+    }
+
+    /**
+     * Settings for the {@code Organization} metadata element.
+     */
+    @Data
+    public static class Organization {
+
+      /**
+       * The {@code OrganizationName}. The map key is the language tag and value is display name for that language.
+       */
+      private Map<String, String> names;
+
+      /**
+       * The {@code OrganizationDisplayName}. The map key is the language tag and value is display name for that
+       * language.
+       */
+      private Map<String, String> displayNames;
+
+      /**
+       * The {@code OrganizationURL}. The map key is the language tag and value is display name for that language.
+       */
+      private Map<String, String> urls;
+    }
+
+    /**
+     * Settings for the {@code ContactPerson} metadata element.
+     */
+    @Data
+    public static class ContactPerson {
+
+      /**
+       * The {@code Company} element.
+       */
+      private String company;
+
+      /**
+       * The {@code GivenName} element.
+       */
+      private String givenName;
+
+      /**
+       * The {@code SurName} element.
+       */
+      private String surname;
+
+      /**
+       * The {@code EmailAddress} elements.
+       */
+      private List<String> emailAddresses;
+
+      /**
+       * The {@code TelephoneNumber} elements.
+       */
+      private List<String> telephoneNumbers;
+    }
+
+  }
+
+  /**
+   * Configuration properties for metadata provider configuration.
+   */
+  public static class MetadataProviderConfigurationProperties {
+
+    /**
+     * The location of the metadata. Can be a URL, a file, or even a classpath resource.
+     */
+    @Setter
+    @Getter
+    private Resource location;
+
+    /**
+     * If the {@code location} is an HTTPS resource, this setting may be used to specify a
+     * <a href="https://spring.io/blog/2023/06/07/securing-spring-boot-applications-with-ssl">Spring SSL Bundle</a>
+     * that gives the {@link javax.net.ssl.TrustManager}s to use during TLS verification. If no bundle is given, the
+     * Java trust default will be used.
+     */
+    @Setter
+    @Getter
+    private String httpsTrustBundle;
+
+    /**
+     * If the {@code location} is an HTTPS resource, this setting tells whether to skip hostname verification in the TLS
+     * connection (useful during testing).
+     */
+    @Setter
+    @Getter
+    private Boolean skipHostnameVerification;
+
+    /**
+     * If the {@code location} setting is a URL, a "backup location" may be assigned to store downloaded metadata.
+     */
+    @Setter
+    @Getter
+    private File backupLocation;
+
+    /**
+     * If the {@code location} setting is a URL, setting the MDQ-flag means that the metadata MDQ
+     * (https://www.ietf.org/id/draft-young-md-query-17.html) protocol is used.
+     */
+    @Setter
+    @Getter
+    private Boolean mdq;
+
+    /**
+     * The certificate used to validate the metadata.
+     */
+    @Setter
+    @Getter
+    private X509Certificate validationCertificate;
+
+    /**
+     * If the {@code location} setting is a URL and an HTTP proxy is required this setting configures this proxy.
+     */
+    @Setter
+    @Getter
+    private HttpProxy httpProxy;
+
+    /**
+     * Configuration properties for an HTTP proxy.
+     */
+    public static class HttpProxy {
+
+      /**
+       * The proxy host.
+       */
+      @Setter
+      @Getter
+      private String host;
+
+      /**
+       * The proxy port.
+       */
+      @Setter
+      @Getter
+      private Integer port;
+
+      /**
+       * The proxy password (optional).
+       */
+      @Setter
+      @Getter
+      private String password;
+
+      /**
+       * The proxy username (optional).
+       */
+      @Setter
+      @Getter
+      private String userName;
     }
 
   }

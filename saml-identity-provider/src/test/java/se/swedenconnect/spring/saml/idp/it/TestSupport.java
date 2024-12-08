@@ -26,28 +26,28 @@ import se.swedenconnect.opensaml.saml2.metadata.provider.StaticMetadataProvider;
 
 /**
  * Constants used in integration tests.
- * 
+ *
  * @author Martin Lindström
  */
 public class TestSupport {
-  
+
   public static final String IDP_ENTITY_ID = "https://demo.swedenconnect.se/idp";
-  
+
   public static final String IDP_SERVER_NAME = "demo.swedenconnect.se";
   public static final String IDP_PATH = "/idp";
-  
+
   public static final String IDP_BASE_URL = "https://" + IDP_SERVER_NAME + IDP_PATH;
-  
+
   public static MetadataResolver createMetadataResolver(final EntityDescriptor... metadata) throws Exception {
-    
+
     final EntitiesDescriptor ed = (EntitiesDescriptor) XMLObjectSupport.buildXMLObject(EntitiesDescriptor.DEFAULT_ELEMENT_NAME);
     ed.setID("_simulatedmetadata");
-    
+
     Arrays.stream(metadata).forEach(m -> ed.getEntityDescriptors().add(m));
-    
-    StaticMetadataProvider provider = new StaticMetadataProvider(ed); 
+
+    final StaticMetadataProvider provider = new StaticMetadataProvider(ed);
     provider.initialize();
-    
+
     return provider.getMetadataResolver();
   }
 

@@ -34,7 +34,7 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthentica
 
 /**
  * Test cases for MetadataRequestedAttributeProcessor.
- * 
+ *
  * @author Martin Lindström
  */
 public class MetadataRequestedAttributeProcessorTest extends OpenSamlTestBase {
@@ -91,15 +91,15 @@ public class MetadataRequestedAttributeProcessorTest extends OpenSamlTestBase {
 
     final MetadataRequestedAttributeProcessor processor = new MetadataRequestedAttributeProcessor();
 
-    Collection<RequestedAttribute> attrs = processor.extractRequestedAttributes(token); 
-    
+    final Collection<RequestedAttribute> attrs = processor.extractRequestedAttributes(token);
+
     Assertions.assertEquals(1, attrs.size());
     Assertions.assertTrue(attrs.stream()
         .filter(r -> r.getId().equals(AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER))
         .findFirst()
         .isPresent());
   }
-  
+
   @Test
   public void testNoIndexNoDefault() {
     final AuthnRequest authnRequest = AuthnRequestBuilder.builder()
@@ -141,15 +141,15 @@ public class MetadataRequestedAttributeProcessorTest extends OpenSamlTestBase {
 
     final MetadataRequestedAttributeProcessor processor = new MetadataRequestedAttributeProcessor();
 
-    Collection<RequestedAttribute> attrs = processor.extractRequestedAttributes(token); 
-    
+    final Collection<RequestedAttribute> attrs = processor.extractRequestedAttributes(token);
+
     Assertions.assertEquals(1, attrs.size());
     Assertions.assertTrue(attrs.stream()
         .filter(r -> r.getId().equals(AttributeConstants.ATTRIBUTE_NAME_DATE_OF_BIRTH))
         .findFirst()
         .isPresent());
   }
-  
+
   @Test
   public void testWithIndex() {
     final AuthnRequest authnRequest = AuthnRequestBuilder.builder()
@@ -192,13 +192,13 @@ public class MetadataRequestedAttributeProcessorTest extends OpenSamlTestBase {
 
     final MetadataRequestedAttributeProcessor processor = new MetadataRequestedAttributeProcessor();
 
-    Collection<RequestedAttribute> attrs = processor.extractRequestedAttributes(token); 
-    
+    final Collection<RequestedAttribute> attrs = processor.extractRequestedAttributes(token);
+
     Assertions.assertEquals(1, attrs.size());
     Assertions.assertTrue(attrs.stream()
         .filter(r -> r.getId().equals(AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER))
         .findFirst()
         .isPresent());
-  }  
+  }
 
 }
