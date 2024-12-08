@@ -15,8 +15,15 @@
  */
 package se.swedenconnect.spring.saml.idp.events;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
+import se.swedenconnect.security.credential.spring.monitoring.events.AbstractCredentialMonitoringEvent;
+import se.swedenconnect.security.credential.spring.monitoring.events.FailedCredentialReloadEvent;
+import se.swedenconnect.security.credential.spring.monitoring.events.FailedCredentialTestEvent;
+import se.swedenconnect.security.credential.spring.monitoring.events.SuccessfulCredentialReloadEvent;
 
 /**
  * Abstract base class for an {@link ApplicationListener} for SAML2 events.
@@ -24,14 +31,19 @@ import org.springframework.context.ApplicationListener;
  * @author Martin Lindström
  */
 @Slf4j
-public class AbstractSaml2IdpEventListener implements ApplicationListener<AbstractSaml2IdpEvent> {
+public abstract class AbstractSaml2IdpEventListener implements ApplicationListener<ApplicationEvent> {
 
   /**
    * Routes the received event to the correct on-method.
    */
   @Override
-  public void onApplicationEvent(final AbstractSaml2IdpEvent event) {
-    log.debug("Received {} event", event.getClass().getSimpleName());
+  public void onApplicationEvent(@Nullable final ApplicationEvent event) {
+    if (event == null) {
+      return;
+    }
+    if (event instanceof AbstractSaml2IdpEvent || event instanceof AbstractCredentialMonitoringEvent) {
+      log.debug("Received {} event", event.getClass().getSimpleName());
+    }
 
     if (event instanceof final Saml2AuthnRequestReceivedEvent e) {
       this.onAuthnRequestReceivedEvent(e);
@@ -51,54 +63,87 @@ public class AbstractSaml2IdpEventListener implements ApplicationListener<Abstra
     else if (event instanceof final Saml2UnrecoverableErrorEvent e) {
       this.onUnrecoverableErrorEvent(e);
     }
+    else if (event instanceof final FailedCredentialTestEvent e) {
+      this.onFailedCredentialTestEvent(e);
+    }
+    else if (event instanceof final SuccessfulCredentialReloadEvent e) {
+      this.onSuccessfulCredentialReloadEvent(e);
+    }
+    else if (event instanceof final FailedCredentialReloadEvent e) {
+      this.onFailedCredentialReloadEvent(e);
+    }
   }
 
   /**
-   * Handles a {@link Saml2AuthnRequestReceivedEvent} event. The default implementation does nothing.
+   * Handles a {@link Saml2AuthnRequestReceivedEvent} event. The default implementation does nothing.
    *
    * @param event the event
    */
-  protected void onAuthnRequestReceivedEvent(final Saml2AuthnRequestReceivedEvent event) {
+  protected void onAuthnRequestReceivedEvent(@Nonnull final Saml2AuthnRequestReceivedEvent event) {
   }
 
   /**
-   * Handles a {@link Saml2SuccessResponseEvent} event. The default implementation does nothing.
+   * Handles a {@link Saml2SuccessResponseEvent} event. The default implementation does nothing.
    *
    * @param event the event
    */
-  protected void onSuccessResponseEvent(final Saml2SuccessResponseEvent event) {
+  protected void onSuccessResponseEvent(@Nonnull final Saml2SuccessResponseEvent event) {
   }
 
   /**
-   * Handles a {@link Saml2ErrorResponseEvent} event. The default implementation does nothing.
+   * Handles a {@link Saml2ErrorResponseEvent} event. The default implementation does nothing.
    *
    * @param event the event
    */
-  protected void onErrorResponseEvent(final Saml2ErrorResponseEvent event) {
+  protected void onErrorResponseEvent(@Nonnull final Saml2ErrorResponseEvent event) {
   }
 
   /**
-   * Handles a {@link Saml2PreUserAuthenticationEvent} event. The default implementation does nothing.
+   * Handles a {@link Saml2PreUserAuthenticationEvent} event. The default implementation does nothing.
    *
    * @param event the event
    */
-  protected void onPreUserAuthenticationEvent(final Saml2PreUserAuthenticationEvent event) {
+  protected void onPreUserAuthenticationEvent(@Nonnull final Saml2PreUserAuthenticationEvent event) {
   }
 
   /**
-   * Handles a {@link Saml2PostUserAuthenticationEvent} event. The default implementation does nothing.
+   * Handles a {@link Saml2PostUserAuthenticationEvent} event. The default implementation does nothing.
    *
    * @param event the event
    */
-  protected void onPostUserAuthenticationEvent(final Saml2PostUserAuthenticationEvent event) {
+  protected void onPostUserAuthenticationEvent(@Nonnull final Saml2PostUserAuthenticationEvent event) {
   }
 
   /**
-   * Handles a {@link Saml2UnrecoverableErrorEvent} event. The default implementation does nothing.
+   * Handles a {@link Saml2UnrecoverableErrorEvent} event. The default implementation does nothing.
    *
    * @param event the event
    */
-  protected void onUnrecoverableErrorEvent(final Saml2UnrecoverableErrorEvent event) {
+  protected void onUnrecoverableErrorEvent(@Nonnull final Saml2UnrecoverableErrorEvent event) {
+  }
+
+  /**
+   * Handles a {@link FailedCredentialTestEvent} event. The default implementation does nothing.
+   *
+   * @param event the event
+   */
+  protected void onFailedCredentialTestEvent(@Nonnull final FailedCredentialTestEvent event) {
+  }
+
+  /**
+   * Handles a {@link SuccessfulCredentialReloadEvent} event. The default implementation does nothing.
+   *
+   * @param event the event
+   */
+  protected void onSuccessfulCredentialReloadEvent(@Nonnull final SuccessfulCredentialReloadEvent event) {
+  }
+
+  /**
+   * Handles a {@link FailedCredentialReloadEvent} event. The default implementation does nothing.
+   *
+   * @param event the event
+   */
+  protected void onFailedCredentialReloadEvent(@Nonnull final FailedCredentialReloadEvent event) {
   }
 
 }

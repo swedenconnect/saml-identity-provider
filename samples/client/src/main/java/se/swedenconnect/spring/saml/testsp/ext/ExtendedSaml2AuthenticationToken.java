@@ -32,8 +32,8 @@ public class ExtendedSaml2AuthenticationToken extends Saml2AuthenticationToken {
   @Setter
   private String authnContextClassRef;
 
-  public ExtendedSaml2AuthenticationToken(final RelyingPartyRegistration relyingPartyRegistration, final String saml2Response,
-      final AbstractSaml2AuthenticationRequest authenticationRequest) {
+  public ExtendedSaml2AuthenticationToken(final RelyingPartyRegistration relyingPartyRegistration,
+      final String saml2Response, final AbstractSaml2AuthenticationRequest authenticationRequest) {
     super(relyingPartyRegistration, saml2Response, authenticationRequest);
   }
 

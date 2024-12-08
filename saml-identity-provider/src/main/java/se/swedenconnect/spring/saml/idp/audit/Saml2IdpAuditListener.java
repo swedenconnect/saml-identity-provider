@@ -15,12 +15,16 @@
  */
 package se.swedenconnect.spring.saml.idp.audit;
 
+import jakarta.annotation.Nonnull;
 import lombok.extern.slf4j.Slf4j;
 import org.opensaml.saml.saml2.core.AuthnRequest;
 import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.core.Response;
 import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;
+import se.swedenconnect.security.credential.spring.monitoring.events.FailedCredentialReloadEvent;
+import se.swedenconnect.security.credential.spring.monitoring.events.FailedCredentialTestEvent;
+import se.swedenconnect.security.credential.spring.monitoring.events.SuccessfulCredentialReloadEvent;
 import se.swedenconnect.spring.saml.idp.audit.data.Saml2AssertionAuditData;
 import se.swedenconnect.spring.saml.idp.audit.data.Saml2AuthnRequestAuditData;
 import se.swedenconnect.spring.saml.idp.audit.data.Saml2ResponseAuditData;
@@ -57,7 +61,7 @@ public class Saml2IdpAuditListener extends AbstractSaml2IdpEventListener {
    *
    * @param publisher the system event publisher
    */
-  public Saml2IdpAuditListener(final ApplicationEventPublisher publisher) {
+  public Saml2IdpAuditListener(@Nonnull final ApplicationEventPublisher publisher) {
     this.publisher = Objects.requireNonNull(publisher, "publisher must not be null");
   }
 
@@ -65,7 +69,7 @@ public class Saml2IdpAuditListener extends AbstractSaml2IdpEventListener {
    * An {@link AuthnRequest} has been received. Publishes an audit event containing {@link Saml2AuthnRequestAuditData}.
    */
   @Override
-  protected void onAuthnRequestReceivedEvent(final Saml2AuthnRequestReceivedEvent event) {
+  protected void onAuthnRequestReceivedEvent(@Nonnull final Saml2AuthnRequestReceivedEvent event) {
 
     final Saml2AuditEvent auditEvent =
         new Saml2AuditEvent(Saml2AuditEvents.SAML2_AUDIT_REQUEST_RECEIVED, event.getTimestamp(),
@@ -82,7 +86,7 @@ public class Saml2IdpAuditListener extends AbstractSaml2IdpEventListener {
    * {@link Saml2ResponseAuditData} and a {@link Saml2AssertionAuditData}.
    */
   @Override
-  protected void onSuccessResponseEvent(final Saml2SuccessResponseEvent event) {
+  protected void onSuccessResponseEvent(@Nonnull final Saml2SuccessResponseEvent event) {
 
     final Saml2AuditEvent auditEvent =
         new Saml2AuditEvent(Saml2AuditEvents.SAML2_AUDIT_SUCCESSFUL_RESPONSE, event.getTimestamp(),
@@ -102,7 +106,7 @@ public class Saml2IdpAuditListener extends AbstractSaml2IdpEventListener {
    * An error SAML status is about to be sent. Publishes an audit event containing {@link Saml2ResponseAuditData}.
    */
   @Override
-  protected void onErrorResponseEvent(final Saml2ErrorResponseEvent event) {
+  protected void onErrorResponseEvent(@Nonnull final Saml2ErrorResponseEvent event) {
 
     final Saml2AuditEvent auditEvent =
         new Saml2AuditEvent(Saml2AuditEvents.SAML2_AUDIT_ERROR_RESPONSE, event.getTimestamp(),
@@ -119,7 +123,7 @@ public class Saml2IdpAuditListener extends AbstractSaml2IdpEventListener {
    * authenticated.
    */
   @Override
-  protected void onPreUserAuthenticationEvent(final Saml2PreUserAuthenticationEvent event) {
+  protected void onPreUserAuthenticationEvent(@Nonnull final Saml2PreUserAuthenticationEvent event) {
 
     final AuthnRequest authnRequest = Optional.ofNullable(event.getUserAuthenticationInput())
         .map(Saml2UserAuthenticationInputToken::getAuthnRequestToken)
@@ -141,7 +145,7 @@ public class Saml2IdpAuditListener extends AbstractSaml2IdpEventListener {
    * event containing {@link Saml2UserAuthenticationInfoAuditData}.
    */
   @Override
-  protected void onPostUserAuthenticationEvent(final Saml2PostUserAuthenticationEvent event) {
+  protected void onPostUserAuthenticationEvent(@Nonnull final Saml2PostUserAuthenticationEvent event) {
 
     final Saml2UserAuthentication userAuthn = event.getUserAuthentication();
 
@@ -168,7 +172,7 @@ public class Saml2IdpAuditListener extends AbstractSaml2IdpEventListener {
    * An unrecoverable error has occurred. Publishes an audit event containing {@link Saml2UnrecoverableErrorAuditData}.
    */
   @Override
-  protected void onUnrecoverableErrorEvent(final Saml2UnrecoverableErrorEvent event) {
+  protected void onUnrecoverableErrorEvent(@Nonnull final Saml2UnrecoverableErrorEvent event) {
     final Saml2AuditEvent auditEvent =
         new Saml2AuditEvent(Saml2AuditEvents.SAML2_AUDIT_UNRECOVERABLE_ERROR, event.getTimestamp(),
             event.getError().getSpEntityId(), event.getError().getAuthnRequestId(),
@@ -180,11 +184,51 @@ public class Saml2IdpAuditListener extends AbstractSaml2IdpEventListener {
   }
 
   /**
+   * The credential monitoring reports that a credential test has failed. A successful or failed credential reload event
+   * will follow.
+   */
+  @Override
+  protected void onFailedCredentialTestEvent(@Nonnull final FailedCredentialTestEvent event) {
+    final CredentialAuditEvent auditEvent = CredentialAuditEvent.of(event);
+    log.info("Publishing audit event: {}", auditEvent.getLogString());
+    this.publish(auditEvent);
+  }
+
+  /**
+   * The credential monitoring reports that a credential was successfully reloaded (after a failed test).
+   */
+  @Override
+  protected void onSuccessfulCredentialReloadEvent(@Nonnull final SuccessfulCredentialReloadEvent event) {
+    final CredentialAuditEvent auditEvent = CredentialAuditEvent.of(event);
+    log.info("Publishing audit event: {}", auditEvent.getLogString());
+    this.publish(auditEvent);
+  }
+
+  /**
+   * The credential monitoring reports that a credential failed to be reloaded (after a failed test).
+   */
+  @Override
+  protected void onFailedCredentialReloadEvent(@Nonnull final FailedCredentialReloadEvent event) {
+    final CredentialAuditEvent auditEvent = CredentialAuditEvent.of(event);
+    log.info("Publishing audit event: {}", auditEvent.getLogString());
+    this.publish(auditEvent);
+  }
+
+  /**
    * Publishes the {@link Saml2AuditEvent}.
    *
    * @param auditEvent the event to publish
    */
   private void publish(final Saml2AuditEvent auditEvent) {
+    this.publisher.publishEvent(new AuditApplicationEvent(auditEvent));
+  }
+
+  /**
+   * Publishes the {@link CredentialAuditEvent}.
+   *
+   * @param auditEvent the event to publish
+   */
+  private void publish(final CredentialAuditEvent auditEvent) {
     this.publisher.publishEvent(new AuditApplicationEvent(auditEvent));
   }
 

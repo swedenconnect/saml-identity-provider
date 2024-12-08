@@ -4,6 +4,14 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp)
 
+### Version 2.3.0
+
+Date: 
+
+- The latest version of the [credentials-support](https://docs.swedenconnect.se/credentials-support/) is now used by the library. Using this library, the [Credentials Bundles](https://docs.swedenconnect.se/credentials-support/#the-bundles-concept) concept can by used for a better was of configuring credentials.
+
+- New audit entries for credential monitoring are published, if credential monitoring is being used.
+
 ### Version 2.2.1
 
 Date: 2024-11-21

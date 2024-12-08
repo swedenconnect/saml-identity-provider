@@ -15,16 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.it;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.ByteArrayInputStream;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-
+import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +32,7 @@ import org.springframework.boot.actuate.audit.listener.AuditApplicationEvent;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -58,8 +50,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import lombok.Getter;
 import se.swedenconnect.opensaml.saml2.request.AuthnRequestGenerator;
 import se.swedenconnect.opensaml.saml2.request.AuthnRequestGeneratorContext;
 import se.swedenconnect.opensaml.saml2.response.ResponseProcessingResult;
@@ -96,6 +86,16 @@ import se.swedenconnect.spring.saml.idp.settings.MetadataSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonSettings;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonType;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.OrganizationSettings;
+
+import java.io.ByteArrayInputStream;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(properties = { "management.auditevents.enabled=true" })
 @ContextConfiguration(classes = { ApplicationConfiguration.class })
@@ -178,10 +178,14 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
 
     // Auditing
     Assertions.assertEquals(4, this.auditListener.getEvents().size());
-    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_REQUEST_RECEIVED.getTypeName(), this.auditListener.getEvents().get(0).getType());
-    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_BEFORE_USER_AUTHN.getTypeName(), this.auditListener.getEvents().get(1).getType());
-    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_AFTER_USER_AUTHN.getTypeName(), this.auditListener.getEvents().get(2).getType());
-    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_SUCCESSFUL_RESPONSE.getTypeName(), this.auditListener.getEvents().get(3).getType());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_REQUEST_RECEIVED.getTypeName(),
+        this.auditListener.getEvents().get(0).getType());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_BEFORE_USER_AUTHN.getTypeName(),
+        this.auditListener.getEvents().get(1).getType());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_AFTER_USER_AUTHN.getTypeName(),
+        this.auditListener.getEvents().get(2).getType());
+    Assertions.assertEquals(Saml2AuditEvents.SAML2_AUDIT_SUCCESSFUL_RESPONSE.getTypeName(),
+        this.auditListener.getEvents().get(3).getType());
   }
 
   @Test
@@ -366,7 +370,7 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
 
   private EntityDescriptor getIdpMetadata() throws Exception {
     final MvcResult result = this.mvc.perform(
-        MockMvcRequestBuilders.get(EndpointSettings.SAML_METADATA_PUBLISH_ENDPOINT_DEFAULT))
+            MockMvcRequestBuilders.get(EndpointSettings.SAML_METADATA_PUBLISH_ENDPOINT_DEFAULT))
         .andExpect(status().isOk())
         .andReturn();
 
@@ -505,12 +509,14 @@ public class AuthenticationIntegrationTest extends OpenSamlTestBase {
   public static class Saml2EventListener extends AbstractSaml2IdpEventListener {
 
     @Getter
-    private final List<AbstractSaml2IdpEvent> events = new ArrayList<>();
+    private final List<ApplicationEvent> events = new ArrayList<>();
 
     @Override
-    public void onApplicationEvent(final AbstractSaml2IdpEvent event) {
+    public void onApplicationEvent(final ApplicationEvent event) {
       super.onApplicationEvent(event);
-      this.events.add(event);
+      if (event instanceof AbstractSaml2IdpEvent) {
+        this.events.add(event);
+      }
     }
 
     public void clear() {

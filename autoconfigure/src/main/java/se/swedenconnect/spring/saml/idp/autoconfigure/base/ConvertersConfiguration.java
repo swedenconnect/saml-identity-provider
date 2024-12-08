@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.base;
 
+import jakarta.annotation.Nonnull;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -52,7 +53,13 @@ public class ConvertersConfiguration {
   @Bean
   @ConfigurationPropertiesBinding
   Converter<String, LocalizedString> localizedStringConverter() {
-    return LocalizedString::new;
+    return new Converter<>() {
+
+      @Override
+      public LocalizedString convert(@Nonnull final String source) {
+        return new LocalizedString(source);
+      }
+    };
   }
 
 }

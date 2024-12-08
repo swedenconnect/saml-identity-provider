@@ -51,16 +51,62 @@ This section documents all properties that can be provided to configure the IdP.
 
 The IdP needs to be configured with at least one credential (private key and certificate). Each of the credential types below may be created by declared named beans instead of using the property configuration.
 
-See https://github.com/swedenconnect/credentials-support for details about the [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) type and how it is configured.
+See the [credentials-support](https://docs.swedenconnect.se/credentials-support/) library for details about the [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/credentials-support/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) type and how it is configured.
 
 | Property | Description | Type |
 | :--- | :--- | :--- |
-| `default-credential.*` | The IdP default credential. This will be used if no specific credential is defined for the usages sign, encrypt or metadata signing. <br />It is also possible to define the default credential by declaring a bean of type [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) and name it `saml.idp.credentials.Default`. | [PkiCredentialConfigurationProperties](https://github.com/swedenconnect/credentials-support/blob/main/src/main/java/se/swedenconnect/security/credential/factory/PkiCredentialConfigurationProperties.java) |
-| `sign.*` | The credential the IdP uses to sign (responses and assertions). <br />It is also possible to define the signing credential by declaring a bean of type [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) and name it `saml.idp.credentials.Sign`. | [PkiCredentialConfigurationProperties](https://github.com/swedenconnect/credentials-support/blob/main/src/main/java/se/swedenconnect/security/credential/factory/PkiCredentialConfigurationProperties.java) |
+| `default-credential.*` | The IdP default credential. This will be used if no specific credential is defined for the usages sign, encrypt or metadata signing. <br />It is also possible to define the default credential by declaring a bean of type [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/credentials-support/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) and name it `saml.idp.credentials.Default`. | [PkiCredentialConfigurationProperties](https://github.com/swedenconnect/credentials-support/blob/main/credentials-support/src/main/java/se/swedenconnect/security/credential/config/properties/PkiCredentialConfigurationProperties.java) |
+| `sign.*` | The credential the IdP uses to sign (responses and assertions). <br />It is also possible to define the signing credential by declaring a bean of type [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/credentials-support/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) and name it `saml.idp.credentials.Sign`. | [PkiCredentialConfigurationProperties](https://github.com/swedenconnect/credentials-support/blob/main/credentials-support/src/main/java/se/swedenconnect/security/credential/config/properties/PkiCredentialConfigurationProperties.java) |
 | `future-sign` | A certificate that will be the future signing certificate. Is set before a key-rollover is performed. <br />It is also possible to define the future signing certificate by declaring a bean of type `X509Certificate` and name it `saml.idp.credentials.FutureSign`. | [Resource](https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html) (pointing at a certificate resource) or a string that holds the PEM encoding of the certificate. |
-| `encrypt.*` | The IdP encryption credential. This will be used by SP:s to encrypt data (the certificate) for the IdP (for example sign messages), and by the IdP to decrypt these messages. If no Sweden Connect features are used, no encrypt-credential is needed.<br />It is also possible to define the encrypt credential by declaring a bean of type [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) and name it `saml.idp.credentials.Encrypt`. | [PkiCredentialConfigurationProperties](https://github.com/swedenconnect/credentials-support/blob/main/src/main/java/se/swedenconnect/security/credential/factory/PkiCredentialConfigurationProperties.java) |
-| `previous-encrypt.*` | The previous IdP encryption credential. Assigned after a key-rollover of the encrypt credential. <br />It is also possible to define the previous encrypt credential by declaring a bean of type [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) and name it `saml.idp.credentials.PreviousEncrypt`. | [PkiCredentialConfigurationProperties](https://github.com/swedenconnect/credentials-support/blob/main/src/main/java/se/swedenconnect/security/credential/factory/PkiCredentialConfigurationProperties.java) |
-| `metadata-sign.*` | The credential the IdP uses to sign its published metadata. <br />It is also possible to define the metadata signing credential by declaring a bean of type [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) and name it `saml.idp.credentials.MetadataSign`.<br /><br />If no metadata sign credential is configured, the default credential will be used. If no default credential exists, metadata published will not be signed. | [PkiCredentialConfigurationProperties](https://github.com/swedenconnect/credentials-support/blob/main/src/main/java/se/swedenconnect/security/credential/factory/PkiCredentialConfigurationProperties.java) | 
+| `encrypt.*` | The IdP encryption credential. This will be used by SP:s to encrypt data (the certificate) for the IdP (for example sign messages), and by the IdP to decrypt these messages. If no Sweden Connect features are used, no encrypt-credential is needed.<br />It is also possible to define the encrypt credential by declaring a bean of type [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/credentials-support/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) and name it `saml.idp.credentials.Encrypt`. | [PkiCredentialConfigurationProperties](https://github.com/swedenconnect/credentials-support/blob/main/credentials-support/src/main/java/se/swedenconnect/security/credential/config/properties/PkiCredentialConfigurationProperties.java) |
+| `previous-encrypt.*` | The previous IdP encryption credential. Assigned after a key-rollover of the encrypt credential. <br />It is also possible to define the previous encrypt credential by declaring a bean of type [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/credentials-support/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) and name it `saml.idp.credentials.PreviousEncrypt`. | [PkiCredentialConfigurationProperties](https://github.com/swedenconnect/credentials-support/blob/main/credentials-support/src/main/java/se/swedenconnect/security/credential/config/properties/PkiCredentialConfigurationProperties.java) |
+| `metadata-sign.*` | The credential the IdP uses to sign its published metadata. <br />It is also possible to define the metadata signing credential by declaring a bean of type [PkiCredential](https://github.com/swedenconnect/credentials-support/blob/main/credentials-support/src/main/java/se/swedenconnect/security/credential/PkiCredential.java) and name it `saml.idp.credentials.MetadataSign`.<br /><br />If no metadata sign credential is configured, the default credential will be used. If no default credential exists, metadata published will not be signed. | [PkiCredentialConfigurationProperties](https://github.com/swedenconnect/credentials-support/blob/main/credentials-support/src/main/java/se/swedenconnect/security/credential/config/properties/PkiCredentialConfigurationProperties.java) | 
+
+:raised_hand: It is recommended to use the Credential Bundles feature when configuring credentials. See the example below:
+
+```yaml
+credential:
+  bundles:
+    keystore:
+      idp-store:
+        location: file:/opt/config/idp-credentials.jks
+        password: secret
+        type: JKS
+    jks:
+      sign:
+        name: "IdP Signature Credential"
+        store-reference: idp-store
+        key:
+          alias: sign
+          key-password: secret
+      encrypt:
+        name: "IdP Encrypt/decrypt Credential"
+        store-reference: idp-store
+        key:
+          alias: encrypt
+          key-password: secret
+      metadata:
+        name: "IdP Metadata Signing Credential"
+        store-reference: idp-store
+        key:
+          alias: metadata
+          key-password: secret
+          
+saml:
+  idp:
+    ...
+    credentials:
+      sign:
+        bundle: sign
+      encrypt:
+        bundle: encrypt
+      metadata-sign:
+        bundle: metadata
+    endpoints:
+      ...
+```
+
+There are many benefits in configuring all credentials in the same place, and for future versions of this library, this may be the only way to configure credentials.
 
 <a name="endpoints-configuration"></a>
 #### Endpoints Configuration
@@ -164,6 +210,8 @@ How Redis is configured and setup for Spring Boot is described here:
 - [Spring Boot Reference Documentation - Common Application Properties](https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#appendix.application-properties)
 - [Spring Session Redis](https://docs.spring.io/spring-session/reference/configuration/redis.html)
 - [Spring Data Redis](https://spring.io/projects/spring-data-redis/)
+
+:raised_hand: If you are not using Redis, but have Redis on your classpath make sure to disable the Redis health check by setting the `management.health.redis.enabled` setting to `false`.
 
 The SAML IdP Spring Boot Starter defines a few extensions to the core Spring Redis configuration:
 
