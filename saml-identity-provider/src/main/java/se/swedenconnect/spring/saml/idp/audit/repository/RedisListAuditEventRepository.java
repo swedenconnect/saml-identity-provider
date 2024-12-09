@@ -79,6 +79,7 @@ public class RedisListAuditEventRepository extends FilteringAuditEventRepository
   @Override
   protected void addEvent(final AuditEvent event) {
     try {
+      log.debug("Audit logging event '{}' for principal '{}' ...", event.getType(), event.getPrincipal());
       this.listOps.rightPush(this.keyName, this.eventMapper.write(event));
     }
     catch (final Throwable e) {
