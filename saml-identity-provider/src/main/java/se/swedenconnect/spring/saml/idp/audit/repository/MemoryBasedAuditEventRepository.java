@@ -19,6 +19,7 @@ import java.time.Instant;
 import java.util.List;
 import java.util.function.Predicate;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
 import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
@@ -30,6 +31,7 @@ import org.springframework.util.Assert;
  *
  * @author Martin Lindström
  */
+@Slf4j
 public class MemoryBasedAuditEventRepository extends FilteringAuditEventRepository {
 
   public static final int DEFAULT_CAPACITY = 1000;
@@ -70,6 +72,7 @@ public class MemoryBasedAuditEventRepository extends FilteringAuditEventReposito
   /** {@inheritDoc} */
   @Override
   protected void addEvent(final AuditEvent event) {
+    log.debug("Audit logging event '{}' for principal '{}' ...", event.getType(), event.getPrincipal());
     this.repository.add(event);
   }
 

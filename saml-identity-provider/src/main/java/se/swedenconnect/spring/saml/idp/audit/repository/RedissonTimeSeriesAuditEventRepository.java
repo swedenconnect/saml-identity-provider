@@ -80,6 +80,7 @@ public class RedissonTimeSeriesAuditEventRepository extends FilteringAuditEventR
   @Override
   protected void addEvent(final AuditEvent event) {
     try {
+      log.debug("Audit logging event '{}' for principal '{}' ...", event.getType(), event.getPrincipal());
       this.client.getTimeSeries(this.tsName)
           .add(event.getTimestamp().toEpochMilli(), this.eventMapper.write(event));
     }

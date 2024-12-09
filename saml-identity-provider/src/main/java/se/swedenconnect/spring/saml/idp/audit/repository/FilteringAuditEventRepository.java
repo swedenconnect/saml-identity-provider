@@ -57,11 +57,10 @@ public abstract class FilteringAuditEventRepository implements AuditEventReposit
   public final void add(final AuditEvent event) {
     if (event != null) {
       if (this.filter.test(event)) {
-        log.debug("Audit logging event '{}' for principal '{}' ...", event.getType(), event.getPrincipal());
         this.addEvent(event);
       }
       else {
-        log.debug("Audit event {} not logged - filter rules excludes it", event.getType());
+        log.trace("Audit event {} not logged - filter rules excludes it", event.getType());
       }
     }
   }

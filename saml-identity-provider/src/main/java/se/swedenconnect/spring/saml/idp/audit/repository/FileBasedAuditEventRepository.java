@@ -15,6 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.audit.repository;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import org.springframework.boot.actuate.audit.AuditEventRepository;
+
 import java.io.IOException;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -24,11 +28,6 @@ import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.springframework.boot.actuate.audit.AuditEvent;
-import org.springframework.boot.actuate.audit.AuditEventRepository;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * A write-only {@link AuditEventRepository} that writes audit events to a file.
@@ -85,6 +84,7 @@ public class FileBasedAuditEventRepository extends FilteringAuditEventRepository
   @Override
   public void addEvent(final AuditEvent event) {
     try {
+      log.debug("Audit logging event '{}' for principal '{}' ...", event.getType(), event.getPrincipal());
       this.auditLogger.log(Level.INFO, this.eventMapper.write(event));
     }
     catch (final Throwable e) {
