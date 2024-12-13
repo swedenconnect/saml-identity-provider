@@ -18,6 +18,7 @@ package se.swedenconnect.spring.saml.idp.autoconfigure.audit;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.event.Level;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.Assert;
@@ -51,6 +52,13 @@ public class AuditRepositoryConfigurationProperties implements InitializingBean 
   private InMemoryRepository inMemory;
 
   /**
+   * For using the underlying logsystem for event logging.
+   */
+  @Getter
+  @Setter
+  private LogSystemRepository logSystem;
+
+  /**
    * For using Redis to store audit events. Note that a Redis client must also be configured in order for this setting
    * to be effective.
    */
@@ -80,12 +88,15 @@ public class AuditRepositoryConfigurationProperties implements InitializingBean 
     if (this.inMemory != null) {
       this.inMemory.afterPropertiesSet();
     }
+    if (this.logSystem != null) {
+      this.logSystem.afterPropertiesSet();
+    }
     if (this.redis != null) {
       this.redis.afterPropertiesSet();
     }
 
     // We need at least one repository
-    if (this.file == null && this.inMemory == null && this.redis == null) {
+    if (this.file == null && this.inMemory == null && this.logSystem == null && this.redis != null) {
       this.inMemory = new InMemoryRepository();
       log.info("No repository was configured for saml.idp.audit - using inMemory");
     }
@@ -128,6 +139,56 @@ public class AuditRepositoryConfigurationProperties implements InitializingBean 
     public void afterPropertiesSet() {
       if (this.capacity == null) {
         this.capacity = MemoryBasedAuditEventRepository.DEFAULT_CAPACITY;
+      }
+    }
+  }
+
+  /**
+   * For using the underlying log system to handle audit events.
+   */
+  public static class LogSystemRepository implements InitializingBean {
+
+    private static final List<String> levels = List.of("ERROR", "WARN", "INFO", "DEBUG", "TRACE");
+
+    /**
+     * The name of the logger. This name is used when configuring the log system appender, for example to use Syslog.
+     */
+    @Getter
+    @Setter
+    private String loggerName;
+
+    /**
+     * The log level to use. Possible values are "error", "warn", "info", "debug" and "trace". The default is "info".
+     */
+    @Getter
+    @Setter
+    private String logLevel;
+
+    public Level toLevel() {
+      if (this.logLevel == null) {
+        return null;
+      }
+      return switch (this.logLevel) {
+        case "ERROR" -> Level.ERROR;
+        case "WARN" -> Level.WARN;
+        case "INFO" -> Level.INFO;
+        case "DEBUG" -> Level.DEBUG;
+        case "TRACE" -> Level.TRACE;
+        default -> null;
+      };
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+      Assert.hasText(this.loggerName, "saml.idp.audit.log-system.logger-name must be assigned");
+      if (this.logLevel == null) {
+        this.logLevel = "INFO";
+      }
+      else {
+        this.logLevel = this.logLevel.toUpperCase();
+        if (!levels.contains(this.logLevel)) {
+          throw new IllegalArgumentException("saml.idp.audit.log-system.log-level is not valid: " + this.logLevel);
+        }
       }
     }
 

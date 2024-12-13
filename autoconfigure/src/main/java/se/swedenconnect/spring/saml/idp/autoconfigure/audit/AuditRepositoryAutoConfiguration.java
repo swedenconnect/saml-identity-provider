@@ -31,6 +31,7 @@ import se.swedenconnect.spring.saml.idp.audit.repository.DelegatingAuditEventRep
 import se.swedenconnect.spring.saml.idp.audit.repository.FileBasedAuditEventRepository;
 import se.swedenconnect.spring.saml.idp.audit.repository.FilteringAuditEventRepository;
 import se.swedenconnect.spring.saml.idp.audit.repository.JsonAuditEventMapper;
+import se.swedenconnect.spring.saml.idp.audit.repository.LoggerAuditEventRepository;
 import se.swedenconnect.spring.saml.idp.audit.repository.MemoryBasedAuditEventRepository;
 
 import java.io.IOException;
@@ -68,9 +69,9 @@ public class AuditRepositoryAutoConfiguration {
   }
 
   /**
-   * Creates an {@link AuditEventMapper} bean.
+   * Creates an {@link AuditEventMapper} bean.
    *
-   * @return the {@link AuditEventMapper} bean
+   * @return the {@link AuditEventMapper} bean
    */
   @ConditionalOnMissingBean
   @Bean
@@ -99,6 +100,10 @@ public class AuditRepositoryAutoConfiguration {
       repositories
           .add(new FileBasedAuditEventRepository(this.properties.getFile().getLogFile(), auditEventMapper, filter));
     }
+    if (this.properties.getLogSystem() != null) {
+      repositories.add(new LoggerAuditEventRepository(this.properties.getLogSystem().getLoggerName(),
+          this.properties.getLogSystem().toLevel(), auditEventMapper, filter));
+    }
     if (redisFactory != null) {
       repositories.add(redisFactory.create(this.properties.getRedis().getName(), auditEventMapper, filter));
     }
@@ -106,10 +111,13 @@ public class AuditRepositoryAutoConfiguration {
       repositories.add(new MemoryBasedAuditEventRepository(filter, this.properties.getInMemory().getCapacity()));
     }
 
-    // The file repository does not support reads, so if this is the only repository, install an in-memory
+    // The file and log system repositories do not support reads, so if this is the only repository, install an in-memory
     // repository as well.
     //
     if (repositories.size() == 1 && this.properties.getFile() != null) {
+      repositories.add(0, new MemoryBasedAuditEventRepository(filter));
+    }
+    if (repositories.size() == 1 && this.properties.getLogSystem() != null) {
       repositories.add(0, new MemoryBasedAuditEventRepository(filter));
     }
 

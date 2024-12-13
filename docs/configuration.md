@@ -176,6 +176,8 @@ based on the below settings. Also see the [Identity Provider Auditing](audit.htm
 | Property | Description | Type | Default value |
 | :--- | :--- | :--- | :--- |
 | `file.log-file` | For audit logging to a file. | String | - |
+| `log-system.logger-name` | For audit logging using the underlying logsystem. The `logger-name` property tells the name of the logger. This name is used when configuring the log system appender, for example to use Syslog. | String | - |
+| `log-system.log-level` | The log level to use. Possible values are "error", "warn", "info", "debug" and "trace". The default is "info". | String | "info" |
 | `in-memory.capacity` | For audit logging to an in-memory repository. Sets the capacity (number of stored events) of this repository. | Integer | - |
 | `redis.name` | For logging to Redis. The name of the Redis list/time series object that will hold the audit events. | String | - |
 | `redis.type` | For logging to Redis. The type of Redis storage - "list" or "timeseries". Note that Redisson is required for Redis Timeseries. | String | - |
