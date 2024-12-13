@@ -6,7 +6,7 @@
 
 ### Version 2.3.1
 
-Date:
+Date: 2024-12-13
 
 - A new audit logger repository was introduced. It is now possible to configure audit logging to be sent to the underlying logsystem. Using this feature, an appender for, for example, Syslog can be used.
 
