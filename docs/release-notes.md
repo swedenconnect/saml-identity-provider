@@ -8,17 +8,15 @@
 
 Date:
 
-- When using more than one audit logger, multiple log entries were produced from the same base class. This has been
-  fixed.
+- A new audit logger repository was introduced. It is now possible to configure audit logging to be sent to the underlying logsystem. Using this feature, an appender for, for example, Syslog can be used.
+
+- When using more than one audit logger, multiple log entries were produced from the same base class. This has been fixed.
 
 ### Version 2.3.0
 
 Date: 2024-12-08
 
-- The latest version of the [credentials-support](https://docs.swedenconnect.se/credentials-support/) is now used by the
-  library. Using this library,
-  the [Credentials Bundles](https://docs.swedenconnect.se/credentials-support/#the-bundles-concept) concept can by used
-  for a better was of configuring credentials.
+- The latest version of the [credentials-support](https://docs.swedenconnect.se/credentials-support/) is now used by the library. Using this library, the [Credentials Bundles](https://docs.swedenconnect.se/credentials-support/#the-bundles-concept) concept can by used for a better was of configuring credentials.
 
 - New audit entries for credential monitoring are published, if credential monitoring is being used.
 
@@ -26,12 +24,9 @@ Date: 2024-12-08
 
 Date: 2024-11-21
 
-- Support for the eIDAS (optional) attributes Nationality, CountryOfResidence, CountryOfBirth and TownOfBirth was added
-  to attribute conversion logic. This fix only applies to IdP:s that proxy assertions from eIDAS.
+- Support for the eIDAS (optional) attributes Nationality, CountryOfResidence, CountryOfBirth and TownOfBirth was added to attribute conversion logic. This fix only applies to IdP:s that proxy assertions from eIDAS.
 
-- When configuring an HTTPS Metadata Provider it is now possible to configure it with a `https-trust-bundle` to specify
-  which root certificates that are accepted during TLS server certificate validation.
-  See [Metadata Provider Configuration](https://docs.swedenconnect.se/saml-identity-provider/configuration.html#metadata-provider-configuration).
+- When configuring an HTTPS Metadata Provider it is now possible to configure it with a `https-trust-bundle` to specify which root certificates that are accepted during TLS server certificate validation. See [Metadata Provider Configuration](https://docs.swedenconnect.se/saml-identity-provider/configuration.html#metadata-provider-configuration).
 
 ### Version 2.2.0
 
@@ -39,9 +34,7 @@ Date: 2024-10-04
 
 -
 
-The [Saml2ServiceProviderFilter](https://github.com/swedenconnect/saml-identity-provider/blob/main/saml-identity-provider/src/main/java/se/swedenconnect/spring/saml/idp/authnrequest/Saml2ServiceProviderFilter.java)
-interface was introduced. By declaring a bean of this type, an implementation may add additional restrictions on which
-Service Provider that are allowed to send requests.
+The [Saml2ServiceProviderFilter](https://github.com/swedenconnect/saml-identity-provider/blob/main/saml-identity-provider/src/main/java/se/swedenconnect/spring/saml/idp/authnrequest/Saml2ServiceProviderFilter.java) interface was introduced. By declaring a bean of this type, an implementation may add additional restrictions on which Service Provider that are allowed to send requests.
 
 - (embarrassing) We started publishing release notes ...
 
