@@ -20,6 +20,7 @@ import org.redisson.config.BaseConfig;
 import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
 import org.redisson.config.ReadMode;
+import org.redisson.config.SslVerificationMode;
 import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer;
 import org.redisson.spring.starter.RedissonAutoConfigurationV2;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -41,7 +42,7 @@ import java.util.stream.Collectors;
  *
  * @author Martin Lindström
  */
-@AutoConfiguration(before = RedissonAutoConfigurationV2.class)
+@AutoConfiguration(before = RedissonActivationAutoConfiguration.class)
 @ConditionalOnClass(RedissonAutoConfigurationV2.class)
 @EnableConfigurationProperties({ RedisProperties.class, RedissonClusterProperties.class, RedisTlsProperties.class })
 @Import(RedisTlsExtensionsConfiguration.class)
@@ -88,7 +89,8 @@ public class RedissonExtensionsAutoConfiguration {
     return c -> {
       final BaseConfig<?> config = this.getRedissonConfiguration(c);
       if (this.redisProperties.getSsl().isEnabled()) {
-        config.setSslEnableEndpointIdentification(this.redisTlsProperties.isEnableHostnameVerification());
+        config.setSslVerificationMode(this.redisTlsProperties.isEnableHostnameVerification()
+            ? SslVerificationMode.STRICT : SslVerificationMode.NONE);
         final String bundle = this.redisProperties.getSsl().getBundle();
         if (bundle != null) {
           final SslBundle sslBundle = this.sslBundles.getBundle(bundle);

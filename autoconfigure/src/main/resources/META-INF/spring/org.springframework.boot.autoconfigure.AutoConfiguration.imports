@@ -8,6 +8,7 @@ se.swedenconnect.spring.saml.idp.autoconfigure.settings.MessageReplayCheckerAuto
 se.swedenconnect.spring.saml.idp.autoconfigure.web.security.IdentityProviderSecurityFilterChainAutoConfiguration
 se.swedenconnect.spring.saml.idp.autoconfigure.error.Saml2IdpErrorAutoConfiguration
 se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedissonExtensionsAutoConfiguration
+se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedissonActivationAutoConfiguration
 se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisExtensionsAutoConfiguration
 se.swedenconnect.spring.saml.idp.autoconfigure.session.RedisSessionAutoConfiguration
 se.swedenconnect.spring.saml.idp.autoconfigure.session.MemorySessionAutoConfiguration
