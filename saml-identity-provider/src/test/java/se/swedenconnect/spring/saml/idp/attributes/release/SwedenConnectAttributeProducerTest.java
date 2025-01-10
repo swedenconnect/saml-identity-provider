@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,14 +40,14 @@ import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 
 /**
  * Test cases for SwedenConnectAttributeProducer.
- * 
+ *
  * @author Martin Lindström
  */
 public class SwedenConnectAttributeProducerTest extends OpenSamlTestBase {
 
   @Test
   public void testRelease() {
-    
+
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
     final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
     Mockito.when(token.getSaml2UserDetails()).thenReturn(details);
@@ -55,46 +55,46 @@ public class SwedenConnectAttributeProducerTest extends OpenSamlTestBase {
         new UserAttribute("ID1", null, "value1"),
         new UserAttribute("ID2", null, "value2"),
         new UserAttribute("ID3", null, "value3")));
-    
+
     final AuthenticationRequirements reqs = Mockito.mock(AuthenticationRequirements.class);
     Mockito.when(reqs.getRequestedAttributes()).thenReturn(List.of(
         new RequestedAttribute("ID1"),
         new RequestedAttribute("ID3")));
     Mockito.when(reqs.getSignatureMessageExtension()).thenReturn(null);
-    
+
     Mockito.when(token.getAuthnRequirements()).thenReturn(reqs);
-    
+
     final SwedenConnectAttributeProducer p = new SwedenConnectAttributeProducer();
     final List<Attribute> result = p.releaseAttributes(token);
     Assertions.assertTrue(result.size() == 2);
     Assertions.assertEquals("ID1", result.get(0).getName());
     Assertions.assertEquals("ID3", result.get(1).getName());
   }
-  
+
   @Test
   public void testReleaseWithSignMessageDigest() {
-    
+
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
-    final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);    
+    final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
     Mockito.when(token.getSaml2UserDetails()).thenReturn(details);
     Mockito.when(details.getAttributes()).thenReturn(List.of(
         new UserAttribute("ID1", null, "value1"),
         new UserAttribute("ID2", null, "value2"),
         new UserAttribute("ID3", null, "value3")));
     Mockito.when(details.isSignMessageDisplayed()).thenReturn(true);
-    
+
     final AuthenticationRequirements reqs = Mockito.mock(AuthenticationRequirements.class);
     Mockito.when(reqs.getRequestedAttributes()).thenReturn(List.of(
         new RequestedAttribute("ID1"),
         new RequestedAttribute("ID3")));
-    
+
     final SignatureMessageExtension sm = new SignatureMessageExtension(Base64.getEncoder().encodeToString("Sign Message".getBytes()),
         SignMessageMimeTypeEnum.TEXT, true);
-    
+
     Mockito.when(reqs.getSignatureMessageExtension()).thenReturn(sm);
-    
+
     Mockito.when(token.getAuthnRequirements()).thenReturn(reqs);
-    
+
     final SwedenConnectAttributeProducer p = new SwedenConnectAttributeProducer();
     final List<Attribute> result = p.releaseAttributes(token);
     Assertions.assertTrue(result.size() == 3);
@@ -102,108 +102,108 @@ public class SwedenConnectAttributeProducerTest extends OpenSamlTestBase {
     Assertions.assertEquals("ID3", result.get(1).getName());
     Assertions.assertEquals(AttributeConstants.ATTRIBUTE_NAME_SIGNMESSAGE_DIGEST, result.get(2).getName());
   }
-  
+
   @Test
   public void testReleaseWithSignMessageDigestNotDisplayed() {
-    
+
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
-    final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);    
+    final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
     Mockito.when(token.getSaml2UserDetails()).thenReturn(details);
     Mockito.when(details.getAttributes()).thenReturn(List.of(
         new UserAttribute("ID1", null, "value1"),
         new UserAttribute("ID2", null, "value2"),
         new UserAttribute("ID3", null, "value3")));
     Mockito.when(details.isSignMessageDisplayed()).thenReturn(false);
-    
+
     final AuthenticationRequirements reqs = Mockito.mock(AuthenticationRequirements.class);
     Mockito.when(reqs.getRequestedAttributes()).thenReturn(List.of(
         new RequestedAttribute("ID1"),
         new RequestedAttribute("ID3")));
-    
+
     final SignatureMessageExtension sm = new SignatureMessageExtension(Base64.getEncoder().encodeToString("Sign Message".getBytes()),
         SignMessageMimeTypeEnum.TEXT, false);
-    
+
     Mockito.when(reqs.getSignatureMessageExtension()).thenReturn(sm);
-    
+
     Mockito.when(token.getAuthnRequirements()).thenReturn(reqs);
-    
+
     final SwedenConnectAttributeProducer p = new SwedenConnectAttributeProducer();
     final List<Attribute> result = p.releaseAttributes(token);
     Assertions.assertTrue(result.size() == 2);
   }
-  
+
   @Test
   public void testReleaseWithSignMessageFailureIgnored() {
-    
+
     final Saml2AuthnRequestAuthenticationToken reqToken = Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
     Mockito.when(reqToken.getLogString()).thenReturn("logstring");
-    
+
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
     Mockito.when(token.getAuthnRequestToken()).thenReturn(reqToken);
-    
-    final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);    
+
+    final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
     Mockito.when(token.getSaml2UserDetails()).thenReturn(details);
     Mockito.when(details.getAttributes()).thenReturn(List.of(
         new UserAttribute("ID1", null, "value1"),
         new UserAttribute("ID2", null, "value2"),
         new UserAttribute("ID3", null, "value3")));
     Mockito.when(details.isSignMessageDisplayed()).thenReturn(true);
-    
+
     final AuthenticationRequirements reqs = Mockito.mock(AuthenticationRequirements.class);
     Mockito.when(reqs.getRequestedAttributes()).thenReturn(List.of(
         new RequestedAttribute("ID1"),
         new RequestedAttribute("ID3")));
-    
+
     final SignatureMessageExtension sm = Mockito.mock(SignatureMessageExtension.class);
     Mockito.when(sm.getMessage()).thenReturn(null);
     Mockito.when(sm.isMustShow()).thenReturn(false);
-    
+
     Mockito.when(reqs.getSignatureMessageExtension()).thenReturn(sm);
-    
+
     Mockito.when(token.getAuthnRequirements()).thenReturn(reqs);
-    
+
     final SwedenConnectAttributeProducer p = new SwedenConnectAttributeProducer();
     final List<Attribute> result = p.releaseAttributes(token);
     Assertions.assertTrue(result.size() == 2);
   }
-  
+
   @Test
   public void testReleaseWithSignMessageFailure() {
-    
+
     final Saml2AuthnRequestAuthenticationToken reqToken = Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
     Mockito.when(reqToken.getLogString()).thenReturn("logstring");
-    
+
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
     Mockito.when(token.getAuthnRequestToken()).thenReturn(reqToken);
-    
-    final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);    
+
+    final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
     Mockito.when(token.getSaml2UserDetails()).thenReturn(details);
     Mockito.when(details.getAttributes()).thenReturn(List.of(
         new UserAttribute("ID1", null, "value1"),
         new UserAttribute("ID2", null, "value2"),
         new UserAttribute("ID3", null, "value3")));
     Mockito.when(details.isSignMessageDisplayed()).thenReturn(true);
-    
+
     final AuthenticationRequirements reqs = Mockito.mock(AuthenticationRequirements.class);
     Mockito.when(reqs.getRequestedAttributes()).thenReturn(List.of(
         new RequestedAttribute("ID1"),
         new RequestedAttribute("ID3")));
-    
+
     final SignatureMessageExtension sm = Mockito.mock(SignatureMessageExtension.class);
     Mockito.when(sm.getMessage()).thenReturn(null);
     Mockito.when(sm.isMustShow()).thenReturn(true);
-    
+
     Mockito.when(reqs.getSignatureMessageExtension()).thenReturn(sm);
-    
+
     Mockito.when(token.getAuthnRequirements()).thenReturn(reqs);
-    
+
     final SwedenConnectAttributeProducer p = new SwedenConnectAttributeProducer();
-    
+
     final Status status = Assertions.assertThrows(Saml2ErrorStatusException.class, () -> {
       p.releaseAttributes(token);
     }).getStatus();
     Assertions.assertEquals(StatusCode.REQUEST_UNSUPPORTED, status.getStatusCode().getStatusCode().getValue());
-    Assertions.assertEquals(Saml2ErrorStatus.SIGN_MESSAGE.getDefaultStatusMessage(), status.getStatusMessage().getValue()); 
-  }  
-  
+    Assertions.assertEquals(Saml2ErrorStatus.SIGN_MESSAGE.getDefaultStatusMessage(), status.getStatusMessage().getValue());
+  }
+
 }

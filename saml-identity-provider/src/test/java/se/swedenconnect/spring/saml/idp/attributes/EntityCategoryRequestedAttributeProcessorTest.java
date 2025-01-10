@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import se.swedenconnect.spring.saml.idp.metadata.EntityCategoryHelper;
 
 /**
  * Test cases for EntityCategoryRequestedAttributeProcessor.
- * 
+ *
  * @author Martin Lindström
  */
 public class EntityCategoryRequestedAttributeProcessorTest extends OpenSamlTestBase {
@@ -106,11 +106,11 @@ public class EntityCategoryRequestedAttributeProcessorTest extends OpenSamlTestB
       final RequestedAttribute ra =
           reqAttrs.stream().filter(a -> a.getId().equals(at.getName())).findFirst().orElse(null);
       Assertions.assertNotNull(ra, "Expected " + at.getFriendlyName());
-      
+
       Assertions.assertTrue(ra instanceof ImplicitRequestedAttribute);
       Assertions.assertEquals(EntityCategoryConstants.SERVICE_ENTITY_CATEGORY_LOA3_PNR.getUri(),
           ((ImplicitRequestedAttribute) ra).getOrigin());
-      
+
       Assertions.assertTrue(ra.isRequired(), "Expected " + at.getFriendlyName() + " to be required");
     }
     for (final AttributeTemplate at : as.getRecommendedAttributes()) {

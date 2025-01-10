@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthentica
 
 /**
  * Test cases for SignServiceSsoVoter.
- * 
+ *
  * @author Martin Lindström
  */
 public class SignServiceSsoVoterTest extends OpenSamlTestBase {
@@ -46,7 +46,7 @@ public class SignServiceSsoVoterTest extends OpenSamlTestBase {
 
     final Saml2UserAuthenticationInputToken input = Mockito.mock(Saml2UserAuthenticationInputToken.class);
     Mockito.when(input.getLogString()).thenReturn("LOG");
-    
+
     final EntityDescriptor ed = EntityDescriptorBuilder.builder()
         .extensions(ExtensionsBuilder.builder()
             .extension(EntityAttributesBuilder.builder()
@@ -54,7 +54,7 @@ public class SignServiceSsoVoterTest extends OpenSamlTestBase {
                 .build())
             .build())
         .build();
-    
+
     final Saml2AuthnRequestAuthenticationToken authnRequestToken = Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
     Mockito.when(authnRequestToken.getPeerMetadata()).thenReturn(ed);
     Mockito.when(input.getAuthnRequestToken()).thenReturn(authnRequestToken);
@@ -63,14 +63,14 @@ public class SignServiceSsoVoterTest extends OpenSamlTestBase {
     Assertions.assertEquals(Vote.DENY,
         voter.mayReuse(userAuthn, input, List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3)));
   }
-  
+
   @Test
   public void testDontKnow() {
     final Saml2UserAuthentication userAuthn = Mockito.mock(Saml2UserAuthentication.class);
 
     final Saml2UserAuthenticationInputToken input = Mockito.mock(Saml2UserAuthenticationInputToken.class);
     Mockito.when(input.getLogString()).thenReturn("LOG");
-    
+
     final EntityDescriptor ed = EntityDescriptorBuilder.builder()
         .extensions(ExtensionsBuilder.builder()
             .extension(EntityAttributesBuilder.builder()
@@ -78,7 +78,7 @@ public class SignServiceSsoVoterTest extends OpenSamlTestBase {
                 .build())
             .build())
         .build();
-    
+
     final Saml2AuthnRequestAuthenticationToken authnRequestToken = Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
     Mockito.when(authnRequestToken.getPeerMetadata()).thenReturn(ed);
     Mockito.when(input.getAuthnRequestToken()).thenReturn(authnRequestToken);
@@ -87,5 +87,5 @@ public class SignServiceSsoVoterTest extends OpenSamlTestBase {
     Assertions.assertEquals(Vote.DONT_KNOW,
         voter.mayReuse(userAuthn, input, List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3)));
   }
-  
+
 }

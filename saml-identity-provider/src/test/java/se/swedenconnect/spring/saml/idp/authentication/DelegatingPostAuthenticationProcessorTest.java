@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
  * Test cases for DelegatingPostAuthenticationProcessor.
- * 
+ *
  * @author Martin Lindström
  */
 public class DelegatingPostAuthenticationProcessorTest {
@@ -41,10 +41,10 @@ public class DelegatingPostAuthenticationProcessorTest {
   public void testInvokeAll() {
     final TestProcessor t1 = new TestProcessor();
     final TestProcessor t2 = new TestProcessor();
-    
+
     final DelegatingPostAuthenticationProcessor dp = new DelegatingPostAuthenticationProcessor(List.of(t1, t2));
     dp.process(Mockito.mock(Saml2UserAuthentication.class));
-    
+
     Assertions.assertTrue(t1.getInvoked() == 1);
     Assertions.assertTrue(t2.getInvoked() == 1);
   }

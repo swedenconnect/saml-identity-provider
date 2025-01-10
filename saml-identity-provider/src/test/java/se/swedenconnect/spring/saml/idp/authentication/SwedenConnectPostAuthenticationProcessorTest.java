@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtension;
 
 /**
  * Test cases for SwedenConnectPostAuthenticationProcessor.
- * 
+ *
  * @author Martin Lindström
  */
 public class SwedenConnectPostAuthenticationProcessorTest extends OpenSamlTestBase {
@@ -52,7 +52,7 @@ public class SwedenConnectPostAuthenticationProcessorTest extends OpenSamlTestBa
       p.process(token);
     });
   }
-  
+
   @Test
   public void testSignMessageDontHaveToDisplay() {
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
@@ -60,7 +60,7 @@ public class SwedenConnectPostAuthenticationProcessorTest extends OpenSamlTestBa
         Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
     Mockito.when(authnRequestToken.getLogString()).thenReturn("LOG");
     Mockito.when(token.getAuthnRequestToken()).thenReturn(authnRequestToken);
-    
+
     final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
     Mockito.when(details.isSignMessageDisplayed()).thenReturn(false);
     Mockito.when(token.getSaml2UserDetails()).thenReturn(details);
@@ -68,7 +68,7 @@ public class SwedenConnectPostAuthenticationProcessorTest extends OpenSamlTestBa
     final AuthenticationRequirements authnReq = Mockito.mock(AuthenticationRequirements.class);
     final SignatureMessageExtension sm = Mockito.mock(SignatureMessageExtension.class);
     Mockito.when(sm.isMustShow()).thenReturn(false);
-    
+
     Mockito.when(authnReq.getSignatureMessageExtension()).thenReturn(sm);
     Mockito.when(token.getAuthnRequirements()).thenReturn(authnReq);
 
@@ -78,7 +78,7 @@ public class SwedenConnectPostAuthenticationProcessorTest extends OpenSamlTestBa
       p.process(token);
     });
   }
-  
+
   @Test
   public void testSignMessageWasDisplayed() {
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
@@ -86,7 +86,7 @@ public class SwedenConnectPostAuthenticationProcessorTest extends OpenSamlTestBa
         Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
     Mockito.when(authnRequestToken.getLogString()).thenReturn("LOG");
     Mockito.when(token.getAuthnRequestToken()).thenReturn(authnRequestToken);
-    
+
     final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
     Mockito.when(details.isSignMessageDisplayed()).thenReturn(true);
     Mockito.when(token.getSaml2UserDetails()).thenReturn(details);
@@ -94,7 +94,7 @@ public class SwedenConnectPostAuthenticationProcessorTest extends OpenSamlTestBa
     final AuthenticationRequirements authnReq = Mockito.mock(AuthenticationRequirements.class);
     final SignatureMessageExtension sm = Mockito.mock(SignatureMessageExtension.class);
     Mockito.when(sm.isMustShow()).thenReturn(true);
-    
+
     Mockito.when(authnReq.getSignatureMessageExtension()).thenReturn(sm);
     Mockito.when(token.getAuthnRequirements()).thenReturn(authnReq);
 
@@ -104,7 +104,7 @@ public class SwedenConnectPostAuthenticationProcessorTest extends OpenSamlTestBa
       p.process(token);
     });
   }
-  
+
   @Test
   public void testSignMessageHaveToDisplay() {
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
@@ -112,7 +112,7 @@ public class SwedenConnectPostAuthenticationProcessorTest extends OpenSamlTestBa
         Mockito.mock(Saml2AuthnRequestAuthenticationToken.class);
     Mockito.when(authnRequestToken.getLogString()).thenReturn("LOG");
     Mockito.when(token.getAuthnRequestToken()).thenReturn(authnRequestToken);
-    
+
     final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
     Mockito.when(details.isSignMessageDisplayed()).thenReturn(false);
     Mockito.when(token.getSaml2UserDetails()).thenReturn(details);
@@ -120,7 +120,7 @@ public class SwedenConnectPostAuthenticationProcessorTest extends OpenSamlTestBa
     final AuthenticationRequirements authnReq = Mockito.mock(AuthenticationRequirements.class);
     final SignatureMessageExtension sm = Mockito.mock(SignatureMessageExtension.class);
     Mockito.when(sm.isMustShow()).thenReturn(true);
-    
+
     Mockito.when(authnReq.getSignatureMessageExtension()).thenReturn(sm);
     Mockito.when(token.getAuthnRequirements()).thenReturn(authnReq);
 

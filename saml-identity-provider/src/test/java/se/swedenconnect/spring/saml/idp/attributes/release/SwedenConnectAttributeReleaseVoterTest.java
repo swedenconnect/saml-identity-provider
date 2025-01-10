@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthentica
 
 /**
  * Test cases for SwedenConnectAttributeReleaseVoter.
- * 
+ *
  * @author Martin Lindström
  */
 public class SwedenConnectAttributeReleaseVoterTest extends OpenSamlTestBase {
@@ -68,7 +68,7 @@ public class SwedenConnectAttributeReleaseVoterTest extends OpenSamlTestBase {
     final SwedenConnectAttributeReleaseVoter voter = new SwedenConnectAttributeReleaseVoter();
     Assertions.assertEquals(AttributeReleaseVote.DONT_KNOW, voter.vote(authn, pnr));
   }
-  
+
   @Test
   public void testPnrValueBadFormat() {
 
@@ -80,7 +80,7 @@ public class SwedenConnectAttributeReleaseVoterTest extends OpenSamlTestBase {
     final Attribute pnr = AttributeBuilder.builder(AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER)
         .value("LLQQÅÅPPCBAB")
         .build();
-    
+
     final Attribute pnr2 = AttributeBuilder.builder(AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER)
         .value("123456789")
         .build();
@@ -89,7 +89,7 @@ public class SwedenConnectAttributeReleaseVoterTest extends OpenSamlTestBase {
     Assertions.assertEquals(AttributeReleaseVote.DONT_KNOW, voter.vote(authn, pnr));
     Assertions.assertEquals(AttributeReleaseVote.DONT_KNOW, voter.vote(authn, pnr2));
   }
-  
+
   @Test
   public void testOtherAttribute() {
 

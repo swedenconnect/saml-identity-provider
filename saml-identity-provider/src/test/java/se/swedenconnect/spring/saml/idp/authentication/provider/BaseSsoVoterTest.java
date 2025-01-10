@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import se.swedenconnect.spring.saml.idp.authentication.provider.SsoVoter.Vote;
 
 /**
  * Test cases for BaseSsoVoter.
- * 
+ *
  * @author Martin Lindström
  */
 public class BaseSsoVoterTest {
@@ -48,11 +48,11 @@ public class BaseSsoVoterTest {
     Assertions.assertEquals(Vote.DENY,
         voter.mayReuse(userAuthn, Mockito.mock(Saml2UserAuthenticationInputToken.class), Collections.emptyList()));
   }
-  
+
   @Test
-  public void testTooOld() {    
+  public void testTooOld() {
     final Instant now = Instant.now();
-    
+
     final Saml2UserAuthentication userAuthn = Mockito.mock(Saml2UserAuthentication.class);
     Mockito.when(userAuthn.getName()).thenReturn("USER");
     final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
@@ -61,17 +61,17 @@ public class BaseSsoVoterTest {
 
     final Saml2UserAuthenticationInputToken input = Mockito.mock(Saml2UserAuthenticationInputToken.class);
     Mockito.when(input.getLogString()).thenReturn("LOG");
-    
+
     final BaseSsoVoter voter = new BaseSsoVoter();
     voter.setSsoDurationLimit(Duration.ofHours(1));
     Assertions.assertEquals(Vote.DENY,
         voter.mayReuse(userAuthn, input, Collections.emptyList()));
   }
-  
+
   @Test
-  public void testWrongLoa() {    
+  public void testWrongLoa() {
     final Instant now = Instant.now();
-    
+
     final Saml2UserAuthentication userAuthn = Mockito.mock(Saml2UserAuthentication.class);
     Mockito.when(userAuthn.getName()).thenReturn("USER");
     final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
@@ -81,16 +81,16 @@ public class BaseSsoVoterTest {
 
     final Saml2UserAuthenticationInputToken input = Mockito.mock(Saml2UserAuthenticationInputToken.class);
     Mockito.when(input.getLogString()).thenReturn("LOG");
-    
+
     final BaseSsoVoter voter = new BaseSsoVoter();
     Assertions.assertEquals(Vote.DENY,
         voter.mayReuse(userAuthn, input, List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3)));
   }
-  
+
   @Test
-  public void testOk() {    
+  public void testOk() {
     final Instant now = Instant.now();
-    
+
     final Saml2UserAuthentication userAuthn = Mockito.mock(Saml2UserAuthentication.class);
     Mockito.when(userAuthn.getName()).thenReturn("USER");
     final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
@@ -100,7 +100,7 @@ public class BaseSsoVoterTest {
 
     final Saml2UserAuthenticationInputToken input = Mockito.mock(Saml2UserAuthenticationInputToken.class);
     Mockito.when(input.getLogString()).thenReturn("LOG");
-    
+
     final BaseSsoVoter voter = new BaseSsoVoter();
     Assertions.assertEquals(Vote.OK,
         voter.mayReuse(userAuthn, input, List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3)));
