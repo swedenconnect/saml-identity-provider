@@ -12,6 +12,7 @@ server:
     include-exception: true
     include-stacktrace: always
 
+
 management:
   server:
     port: 8444

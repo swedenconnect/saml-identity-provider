@@ -1,0 +1,1 @@
+org.springframework.boot.autoconfigure.AutoConfigurationImportFilter=se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedissonFilter
