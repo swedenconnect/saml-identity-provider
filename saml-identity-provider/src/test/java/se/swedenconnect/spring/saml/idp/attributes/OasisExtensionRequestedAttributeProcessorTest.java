@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,16 +32,16 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthentica
 
 /**
  * Test class for OasisExtensionRequestedAttributeProcessor.
- * 
+ *
  * @author Martin Lindström
  */
 public class OasisExtensionRequestedAttributeProcessorTest extends OpenSamlTestBase {
-  
+
   @Test
   public void testNoExtension() {
-    
+
     final AuthnRequest authnRequest = AuthnRequestBuilder.builder()
-        .extensions(ExtensionsBuilder.builder()            
+        .extensions(ExtensionsBuilder.builder()
             .build())
         .build();
 
@@ -53,12 +53,12 @@ public class OasisExtensionRequestedAttributeProcessorTest extends OpenSamlTestB
 
     Assertions.assertTrue(processor.extractRequestedAttributes(token).isEmpty());
   }
-  
+
   @Test
   public void testNoExtension2() {
-    
+
     final RequestedAttributes ra = (RequestedAttributes) XMLObjectSupport.buildXMLObject(RequestedAttributes.DEFAULT_ELEMENT_NAME);
-    
+
     final AuthnRequest authnRequest = AuthnRequestBuilder.builder()
         .extensions(ExtensionsBuilder.builder()
             .extension(ra)
@@ -73,11 +73,11 @@ public class OasisExtensionRequestedAttributeProcessorTest extends OpenSamlTestB
 
     Assertions.assertTrue(processor.extractRequestedAttributes(token).isEmpty());
   }
-  
+
   @Test
   public void testExtension() {
-    
-    final RequestedAttributes ra = (RequestedAttributes) XMLObjectSupport.buildXMLObject(RequestedAttributes.DEFAULT_ELEMENT_NAME);    
+
+    final RequestedAttributes ra = (RequestedAttributes) XMLObjectSupport.buildXMLObject(RequestedAttributes.DEFAULT_ELEMENT_NAME);
     final org.opensaml.saml.saml2.metadata.RequestedAttribute r1 = (org.opensaml.saml.saml2.metadata.RequestedAttribute)
         XMLObjectSupport.buildXMLObject(org.opensaml.saml.saml2.metadata.RequestedAttribute.DEFAULT_ELEMENT_NAME);
     r1.setIsRequired(true);
@@ -88,7 +88,7 @@ public class OasisExtensionRequestedAttributeProcessorTest extends OpenSamlTestB
     r2.setIsRequired(true);
     r2.setName(AttributeConstants.ATTRIBUTE_NAME_GIVEN_NAME);
     ra.getRequestedAttributes().add(r2);
-    
+
     final AuthnRequest authnRequest = AuthnRequestBuilder.builder()
         .extensions(ExtensionsBuilder.builder()
             .extension(ra)
@@ -100,10 +100,10 @@ public class OasisExtensionRequestedAttributeProcessorTest extends OpenSamlTestB
     Mockito.when(token.getLogString()).thenReturn("logstring");
 
     final OasisExtensionRequestedAttributeProcessor processor = new OasisExtensionRequestedAttributeProcessor();
-    final Collection<RequestedAttribute> attrs = processor.extractRequestedAttributes(token); 
-    
+    final Collection<RequestedAttribute> attrs = processor.extractRequestedAttributes(token);
+
     Assertions.assertEquals(2, attrs.size());
-    
+
   }
 
 }

@@ -4,6 +4,12 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp)
 
+### Version 2.3.2
+
+Date: 2025-01-10
+
+- If the `org.redisson:redisson-spring-boot-starter` is used by the application, but the application has not configured the application for Redis, the application would not start. This has been fixed.
+
 ### Version 2.3.1
 
 Date: 2024-12-13
@@ -41,5 +47,5 @@ The [Saml2ServiceProviderFilter](https://github.com/swedenconnect/saml-identity-
 ----
 
 Copyright &copy;
-2022-2024, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se).
+2022-2025, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se).
 Licensed under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).

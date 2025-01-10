@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,20 +23,20 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationIn
 
 /**
  * Test cases for RedirectForAuthenticationToken.
- * 
+ *
  * @author Martin Lindström
  */
 public class RedirectForAuthenticationTokenTest {
 
   @Test
   public void test() {
-    
+
     final Saml2UserAuthenticationInputToken input = Mockito.mock(Saml2UserAuthenticationInputToken.class);
     Mockito.when(input.getName()).thenReturn("TOKEN");
     Mockito.when(input.getCredentials()).thenReturn("CRED");
     Mockito.when(input.getDetails()).thenReturn("DETAILS");
     Mockito.when(input.getPrincipal()).thenReturn("USER");
-    
+
     Assertions.assertEquals("authnPath must be set and begin with a '/'",
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
           new RedirectForAuthenticationToken(input, null, null);
@@ -53,10 +53,10 @@ public class RedirectForAuthenticationTokenTest {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
           new RedirectForAuthenticationToken(input, "/authn", "resume");
         }).getMessage());
-    
+
     final RedirectForAuthenticationToken token =
         new RedirectForAuthenticationToken(input, "/authn", "/resume");
-    
+
     Assertions.assertNotNull(token.getAuthnInputToken());
     Assertions.assertEquals("/authn", token.getAuthnPath());
     Assertions.assertEquals("/resume", token.getResumeAuthnPath());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
 /**
  * Test cases for AbstractUserAuthenticationProvider.
- * 
+ *
  * @author Martin Lindström
  */
 public class AbstractUserAuthenticationProviderTest extends OpenSamlTestBase {
@@ -110,7 +110,7 @@ public class AbstractUserAuthenticationProviderTest extends OpenSamlTestBase {
 
     Assertions.assertTrue(provider.supports(Saml2UserAuthenticationInputToken.class));
     Assertions.assertFalse(provider.supports(Authentication.class));
-    
+
     final Saml2UserAuthenticationInputToken token = Mockito.mock(Saml2UserAuthenticationInputToken.class);
     final AuthenticationRequirements authnReqs = AuthenticationRequirementsBuilder.builder()
         .forceAuthn(false)
@@ -130,16 +130,16 @@ public class AbstractUserAuthenticationProviderTest extends OpenSamlTestBase {
     Assertions.assertTrue(result instanceof Saml2UserAuthentication);
     Assertions.assertEquals(PNR, result.getName());
   }
-  
+
   @Test
   public void testWrongType() {
-    
+
     final TestProvider provider = new TestProvider(List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3),
         List.of(EntityCategoryConstants.SERVICE_ENTITY_CATEGORY_LOA3_PNR.getUri()));
-    
+
     Assertions.assertNull(provider.authenticate(Mockito.mock(Saml2AuthnRequestAuthenticationToken.class)));
   }
-  
+
   @Test
   public void testAuthenticateNoAuthnContextSpecified() {
     final TestProvider provider = new TestProvider(List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3),
@@ -162,7 +162,7 @@ public class AbstractUserAuthenticationProviderTest extends OpenSamlTestBase {
     final Authentication result = provider.authenticate(token);
     Assertions.assertTrue(result instanceof Saml2UserAuthentication);
     Assertions.assertEquals(PNR, result.getName());
-  }  
+  }
 
   @Test
   public void testIsPassive() {
@@ -190,7 +190,7 @@ public class AbstractUserAuthenticationProviderTest extends OpenSamlTestBase {
     Assertions.assertEquals(Saml2ErrorStatus.PASSIVE_AUTHN.getSubStatusCode(),
         status.getStatusCode().getStatusCode().getValue());
   }
-  
+
   @Test
   public void testNoSsoForceAuthn() {
     final TestProvider provider = new TestProvider(List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3),
@@ -223,7 +223,7 @@ public class AbstractUserAuthenticationProviderTest extends OpenSamlTestBase {
     Assertions.assertTrue(result instanceof Saml2UserAuthentication);
     Assertions.assertEquals(PNR, result.getName());
   }
-  
+
   @Test
   public void testNoSsoNotSaml2UserAuthentication() {
     final TestProvider provider = new TestProvider(List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3),
@@ -241,7 +241,7 @@ public class AbstractUserAuthenticationProviderTest extends OpenSamlTestBase {
     Mockito.when(authnRequestToken.getLogString()).thenReturn("Log");
     Mockito.when(token.getAuthnRequestToken()).thenReturn(authnRequestToken);
 
-    final UsernamePasswordAuthenticationToken sso = Mockito.mock(UsernamePasswordAuthenticationToken.class); 
+    final UsernamePasswordAuthenticationToken sso = Mockito.mock(UsernamePasswordAuthenticationToken.class);
     Mockito.when(sso.getName()).thenReturn("SSO-USER");
 
     Mockito.when(token.getUserAuthentication()).thenReturn(sso);
@@ -249,8 +249,8 @@ public class AbstractUserAuthenticationProviderTest extends OpenSamlTestBase {
     final Authentication result = provider.authenticate(token);
     Assertions.assertTrue(result instanceof Saml2UserAuthentication);
     Assertions.assertEquals(PNR, result.getName());
-  }  
-  
+  }
+
   @Test
   public void testNoSsoDontReuse() {
     final TestProvider provider = new TestProvider(List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3),
@@ -283,15 +283,15 @@ public class AbstractUserAuthenticationProviderTest extends OpenSamlTestBase {
     Assertions.assertTrue(result instanceof Saml2UserAuthentication);
     Assertions.assertEquals(PNR, result.getName());
   }
-  
+
   @Test
   public void testNoSsoVoterSaysNo() {
     final TestProvider provider = new TestProvider(List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3),
         List.of(EntityCategoryConstants.SERVICE_ENTITY_CATEGORY_LOA3_PNR.getUri()));
-    
+
     provider.ssoVoters().clear();
     provider.ssoVoters().add((a, b, c) -> Vote.DENY);
-    
+
     final Saml2UserAuthenticationInputToken token = Mockito.mock(Saml2UserAuthenticationInputToken.class);
     final AuthenticationRequirements authnReqs = AuthenticationRequirementsBuilder.builder()
         .forceAuthn(false)
@@ -319,15 +319,15 @@ public class AbstractUserAuthenticationProviderTest extends OpenSamlTestBase {
     Assertions.assertTrue(result instanceof Saml2UserAuthentication);
     Assertions.assertEquals(PNR, result.getName());
   }
-  
+
   @Test
   public void testNoSsoVoterSaysDontKnow() {
     final TestProvider provider = new TestProvider(List.of(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3),
         List.of(EntityCategoryConstants.SERVICE_ENTITY_CATEGORY_LOA3_PNR.getUri()));
-    
+
     provider.ssoVoters().clear();
     provider.ssoVoters().add((a, b, c) -> Vote.DONT_KNOW);
-    
+
     final Saml2UserAuthenticationInputToken token = Mockito.mock(Saml2UserAuthenticationInputToken.class);
     final AuthenticationRequirements authnReqs = AuthenticationRequirementsBuilder.builder()
         .forceAuthn(false)
@@ -354,7 +354,7 @@ public class AbstractUserAuthenticationProviderTest extends OpenSamlTestBase {
     final Authentication result = provider.authenticate(token);
     Assertions.assertTrue(result instanceof Saml2UserAuthentication);
     Assertions.assertEquals(PNR, result.getName());
-  }  
+  }
 
   private static class TestProvider extends AbstractUserAuthenticationProvider {
 

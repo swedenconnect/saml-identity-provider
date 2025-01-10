@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,43 +33,43 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 
 /**
  * Test cases for DefaultAttributeProducer.
- * 
+ *
  * @author Martin Lindström
  */
 public class DefaultAttributeProducerTest extends OpenSamlTestBase {
 
   @Test
   public void testEmpty() {
-    
+
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
     final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
     Mockito.when(token.getSaml2UserDetails()).thenReturn(details);
     Mockito.when(details.getAttributes()).thenReturn(Collections.emptyList());
-    
+
     final DefaultAttributeProducer p = new DefaultAttributeProducer();
     final List<Attribute> result = p.releaseAttributes(token);
     Assertions.assertTrue(result.isEmpty());
   }
-  
+
   @Test
   public void testNoAuthnReqs() {
-    
+
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
     final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
     Mockito.when(token.getSaml2UserDetails()).thenReturn(details);
     Mockito.when(details.getAttributes()).thenReturn(List.of(new UserAttribute("ID", null, "value")));
-    
+
     Mockito.when(token.getAuthnRequirements()).thenReturn(null);
-    
+
     final DefaultAttributeProducer p = new DefaultAttributeProducer();
     Assertions.assertThrows(UnrecoverableSaml2IdpException.class, () -> {
       p.releaseAttributes(token);
     });
   }
-  
+
   @Test
   public void testRelease() {
-    
+
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
     final Saml2UserDetails details = Mockito.mock(Saml2UserDetails.class);
     Mockito.when(token.getSaml2UserDetails()).thenReturn(details);
@@ -77,18 +77,18 @@ public class DefaultAttributeProducerTest extends OpenSamlTestBase {
         new UserAttribute("ID1", null, "value1"),
         new UserAttribute("ID2", null, "value2"),
         new UserAttribute("ID3", null, "value3")));
-    
+
     final AuthenticationRequirements reqs = Mockito.mock(AuthenticationRequirements.class);
     Mockito.when(reqs.getRequestedAttributes()).thenReturn(List.of(
         new RequestedAttribute("ID1"),
         new RequestedAttribute("ID3")));
     Mockito.when(token.getAuthnRequirements()).thenReturn(reqs);
-    
+
     final DefaultAttributeProducer p = new DefaultAttributeProducer();
     final List<Attribute> result = p.releaseAttributes(token);
     Assertions.assertTrue(result.size() == 2);
     Assertions.assertEquals("ID1", result.get(0).getName());
     Assertions.assertEquals("ID3", result.get(1).getName());
   }
-  
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 /**
  * Test cases for RequestedAttribute.
- * 
+ *
  * @author Martin Lindström
  */
 public class RequestedAttributeTest {
@@ -33,7 +33,7 @@ public class RequestedAttributeTest {
     Assertions.assertNull(ra.getFriendlyName());
     Assertions.assertTrue(ra.getValues().isEmpty());
   }
-  
+
   @Test
   public void testCtor2() {
     final RequestedAttribute ra = new RequestedAttribute("ID", "Friendly");
@@ -42,7 +42,7 @@ public class RequestedAttributeTest {
     Assertions.assertEquals("Friendly", ra.getFriendlyName());
     Assertions.assertTrue(ra.getValues().isEmpty());
   }
-  
+
   // The rest of the ctors are covered by the processor tests
-  
+
 }

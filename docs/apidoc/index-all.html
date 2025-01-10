@@ -1,3 +1,18 @@
+<!--
+  ~ Copyright 2023-2025 Sweden Connect
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
 <!DOCTYPE HTML>
 <html lang>
 <head>
@@ -3185,7 +3200,7 @@ loadScripts(document, 'script');</script>
 <dt><a href="se/swedenconnect/spring/saml/idp/authentication/SwedenConnectPostAuthenticationProcessor.html#process(se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication)" class="member-name-link">process(Saml2UserAuthentication)</a> - Method in class se.swedenconnect.spring.saml.idp.authentication.<a href="se/swedenconnect/spring/saml/idp/authentication/SwedenConnectPostAuthenticationProcessor.html" title="class in se.swedenconnect.spring.saml.idp.authentication">SwedenConnectPostAuthenticationProcessor</a></dt>
 <dd>
 <div class="block">Applies the following checks:
- 
+
  If the request is from a Signature Service and the SignMessage has been flagged with "must show" the method
  asserts that a sign message has been displayed during authentication.
  TODO: more ...
@@ -4862,7 +4877,7 @@ the order they are declared.</div>
 <dt><a href="se/swedenconnect/spring/saml/idp/attributes/release/SwedenConnectAttributeReleaseVoter.html#vote(se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication,org.opensaml.saml.saml2.core.Attribute)" class="member-name-link">vote(Saml2UserAuthentication, Attribute)</a> - Method in class se.swedenconnect.spring.saml.idp.attributes.release.<a href="se/swedenconnect/spring/saml/idp/attributes/release/SwedenConnectAttributeReleaseVoter.html" title="class in se.swedenconnect.spring.saml.idp.attributes.release">SwedenConnectAttributeReleaseVoter</a></dt>
 <dd>
 <div class="block">Applies the following rules:
- 
+
  If the attribute is "urn:oid:1.2.752.29.4.13" (personalIdentityNumber) and the contents is a Swedish
  coordination number (as opposed to the civic registration number) we require that the SP has opted in to received
  coordination numbers.

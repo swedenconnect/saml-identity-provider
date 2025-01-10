@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2024 Sweden Connect
+ * Copyright 2023-2025 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import se.swedenconnect.spring.saml.idp.authentication.Saml2UserDetails;
 
 /**
  * Test cases for ReleaseAllAttributeProducer.
- * 
+ *
  * @author Martin Lindström
  */
 public class ReleaseAllAttributeProducerTest extends OpenSamlTestBase {
@@ -43,7 +43,7 @@ public class ReleaseAllAttributeProducerTest extends OpenSamlTestBase {
         new UserAttribute("ID1", null, "value1"),
         new UserAttribute("ID2", null, "value2"),
         new UserAttribute("ID3", null, "value3")));
-    
+
     final ReleaseAllAttributeProducer p = new ReleaseAllAttributeProducer();
     final List<Attribute> result = p.releaseAttributes(token);
     Assertions.assertTrue(result.size() == 3);
@@ -51,5 +51,5 @@ public class ReleaseAllAttributeProducerTest extends OpenSamlTestBase {
     Assertions.assertEquals("ID2", result.get(1).getName());
     Assertions.assertEquals("ID3", result.get(2).getName());
   }
-  
+
 }
