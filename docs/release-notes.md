@@ -4,6 +4,12 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp)
 
+### Version 2.3.3
+
+Date: -
+
+- The custom IdP error messages are now available in Swedish as well as English.
+
 ### Version 2.3.2
 
 Date: 2025-01-10
