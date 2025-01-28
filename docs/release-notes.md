@@ -6,7 +6,9 @@
 
 ### Version 2.3.3
 
-Date: -
+Date: 2025-01-28
+
+- The dependency opensaml-security-ext contained a bug concerning RSA-OAEP och PKCS#11. This has been fixed.
 
 - The custom IdP error messages are now available in Swedish as well as English.
 
