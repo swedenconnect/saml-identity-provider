@@ -388,6 +388,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
         <configuration>
+          <doctitle>Sweden Connect Spring SAML Identity Provider - ${project.version}</doctitle>
+          <windowtitle>Sweden Connect Spring SAML IdP - ${project.version}</windowtitle>
           <doclint>all,-missing</doclint>
           <links>
             <link>https://docs.spring.io/spring-framework/docs/current/javadoc-api/</link>
