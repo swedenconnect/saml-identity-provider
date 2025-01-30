@@ -38,7 +38,6 @@ import org.opensaml.xmlsec.SecurityConfigurationSupport;
 import org.opensaml.xmlsec.signature.support.SignatureException;
 import org.springframework.security.config.Customizer;
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 import se.swedenconnect.opensaml.common.utils.SamlLog;
 import se.swedenconnect.opensaml.xmlsec.signature.support.SAMLObjectSigner;
 import se.swedenconnect.security.credential.PkiCredential;
@@ -198,11 +197,13 @@ public class Saml2AssertionBuilder {
       authnContextClassRef.setURI(userAuthentication.getSaml2UserDetails().getAuthnContextUri());
       authnContext.setAuthnContextClassRef(authnContextClassRef);
 
-      if (StringUtils.hasText(userAuthentication.getSaml2UserDetails().getAuthenticatingAuthority())) {
-        final AuthenticatingAuthority authenticatingAuthority =
-            (AuthenticatingAuthority) XMLObjectSupport.buildXMLObject(AuthenticatingAuthority.DEFAULT_ELEMENT_NAME);
-        authenticatingAuthority.setURI(userAuthentication.getSaml2UserDetails().getAuthenticatingAuthority());
-        authnContext.getAuthenticatingAuthorities().add(authenticatingAuthority);
+      if (!userAuthentication.getSaml2UserDetails().getAuthenticatingAuthorities().isEmpty()) {
+        for (final String aa : userAuthentication.getSaml2UserDetails().getAuthenticatingAuthorities()) {
+          final AuthenticatingAuthority authenticatingAuthority =
+              (AuthenticatingAuthority) XMLObjectSupport.buildXMLObject(AuthenticatingAuthority.DEFAULT_ELEMENT_NAME);
+          authenticatingAuthority.setURI(aa);
+          authnContext.getAuthenticatingAuthorities().add(authenticatingAuthority);
+        }
       }
       authnStatement.setAuthnContext(authnContext);
 
