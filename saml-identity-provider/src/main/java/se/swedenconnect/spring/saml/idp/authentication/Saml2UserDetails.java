@@ -15,19 +15,19 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
+
 import java.io.Serial;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.util.StringUtils;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
-import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 
 /**
  * Representation of a user authenticated using SAML2.
@@ -56,9 +56,9 @@ public class Saml2UserDetails implements UserDetails {
 
   /**
    * If the authentication was performed by another provider and the current IdP acts as a proxy, this field holds the
-   * ID of the authenticating authority.
+   * ID of the authenticating authorities.
    */
-  private String authenticatingAuthority;
+  private List<String> authenticatingAuthorities;
 
   /** Whether the IdP displayed a SignMessage for the user. */
   private boolean signMessageDisplayed = false;
@@ -149,10 +149,25 @@ public class Saml2UserDetails implements UserDetails {
    * If the authentication was performed by another provider and the current IdP acts as a proxy, this field holds the
    * ID of the authenticating authority.
    *
-   * @return the authenticating authority, or {@code null} if not set
+   * @return the authenticating authority, or {@code null} if not set
+   * @deprecated use {@link #getAuthenticatingAuthorities()}
    */
+  @Deprecated
   public String getAuthenticatingAuthority() {
-    return this.authenticatingAuthority;
+    return Optional.ofNullable(this.authenticatingAuthorities)
+        .map(l -> l.get(0))
+        .orElse(null);
+  }
+
+  /**
+   * If the authentication was performed by another provider and the current IdP acts as a proxy, this field holds the
+   * ID of the authenticating authority or authorities that was/were used.
+   *
+   * @return a (potentially empty) list of authenticating authorities
+   */
+  public List<String> getAuthenticatingAuthorities() {
+    return Optional.ofNullable(this.authenticatingAuthorities)
+        .orElse(Collections.emptyList());
   }
 
   /**
@@ -160,9 +175,21 @@ public class Saml2UserDetails implements UserDetails {
    * acts as a proxy, this field holds the ID of the authenticating authority.
    *
    * @param authenticatingAuthority the authenticating authority
+   * @deprecated use {@link #setAuthenticatingAuthorities(List)}
    */
+  @Deprecated
   public void setAuthenticatingAuthority(final String authenticatingAuthority) {
-    this.authenticatingAuthority = authenticatingAuthority;
+    this.setAuthenticatingAuthorities(List.of(authenticatingAuthority));
+  }
+
+  /**
+   * Assigns the authenticating authority. If the authentication was performed by another provider and the current IdP
+   * acts as a proxy, this field holds the ID of the authenticating authority.
+   *
+   * @param authenticatingAuthorities the authenticating authorities
+   */
+  public void setAuthenticatingAuthorities(final List<String> authenticatingAuthorities) {
+    this.authenticatingAuthorities = authenticatingAuthorities;
   }
 
   /**

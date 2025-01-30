@@ -15,11 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
-import java.io.InputStream;
-import java.security.KeyStore;
-import java.time.Instant;
-import java.util.List;
-
+import lombok.Getter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -31,15 +27,12 @@ import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.config.Customizer;
-
-import lombok.Getter;
 import se.swedenconnect.opensaml.saml2.metadata.build.SPSSODescriptorBuilder;
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
 import se.swedenconnect.opensaml.sweid.saml2.authn.LevelOfAssuranceUris;
 import se.swedenconnect.security.credential.KeyStoreCredential;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.security.credential.factory.KeyStoreFactory;
-import se.swedenconnect.security.credential.factory.PkiCredentialFactoryBean;
 import se.swedenconnect.spring.saml.idp.OpenSamlTestBase;
 import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.PersistentNameIDGenerator;
@@ -50,6 +43,11 @@ import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthentica
 import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 import se.swedenconnect.spring.saml.idp.settings.AssertionSettings;
 import se.swedenconnect.spring.saml.idp.utils.DefaultSaml2MessageIDGenerator;
+
+import java.io.InputStream;
+import java.security.KeyStore;
+import java.time.Instant;
+import java.util.List;
 
 /**
  * Test cases for Saml2AssertionBuilder.
@@ -77,7 +75,7 @@ public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
   }
 
   @Test
-  public void testBuild() throws Exception {
+  public void testBuild() {
 
     final AttributeReleaseManager releaseManager =
         new DefaultAttributeReleaseManager(List.of(new ReleaseAllAttributeProducer()), null);
@@ -148,7 +146,7 @@ public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
   }
 
   @Test
-  public void testBuildNotSignedAndAuthenticatingAuth() throws Exception {
+  public void testBuildNotSignedAndAuthenticatingAuth() {
 
     final AttributeReleaseManager releaseManager =
         new DefaultAttributeReleaseManager(List.of(new ReleaseAllAttributeProducer()), null);
@@ -187,7 +185,7 @@ public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
             "Frida Kransstege")),
         AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER, LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3,
         Instant.now().minusSeconds(10), "235.87.12.4");
-    userDetails.setAuthenticatingAuthority("https://otheridp.example.com");
+    userDetails.setAuthenticatingAuthorities(List.of("https://otheridp.example.com"));
 
     final Saml2UserAuthentication token = new Saml2UserAuthentication(userDetails);
     token.setAuthnRequestToken(authnRequestToken);
@@ -212,9 +210,7 @@ public class Saml2AssertionBuilderTest extends OpenSamlTestBase {
     final Saml2UserAuthentication token = Mockito.mock(Saml2UserAuthentication.class);
     Mockito.when(token.getAuthnRequestToken()).thenReturn(null);
 
-    Assertions.assertThrows(UnrecoverableSaml2IdpException.class, () -> {
-      builder.buildAssertion(token);
-    });
+    Assertions.assertThrows(UnrecoverableSaml2IdpException.class, () -> builder.buildAssertion(token));
 
   }
 

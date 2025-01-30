@@ -15,17 +15,16 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
+import se.swedenconnect.opensaml.sweid.saml2.authn.LevelOfAssuranceUris;
+import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
+
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Test;
-
-import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
-import se.swedenconnect.opensaml.sweid.saml2.authn.LevelOfAssuranceUris;
-import se.swedenconnect.spring.saml.idp.attributes.UserAttribute;
 
 /**
  * Test cases for Saml2UserDetails.
@@ -47,49 +46,42 @@ public class Saml2UserDetailsTest {
   public void testNoAttributes() {
 
     Assertions.assertEquals("attributes must be set and not empty",
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-          new Saml2UserDetails(Collections.emptyList(), AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER,
-              LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3, Instant.now(), "127.0.0.1");
-        }).getMessage());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Saml2UserDetails(Collections.emptyList(),
+            AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER,
+            LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3, Instant.now(), "127.0.0.1")).getMessage());
   }
 
   @Test
   public void testMissingPrimaryAttribute() {
     Assertions.assertEquals("primaryAttribute must be set and appear among the attributes",
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-          new Saml2UserDetails(List.of(PNR, GIVEN_NAME, SN), null,
-              LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3, Instant.now(), "127.0.0.1");
-        }).getMessage());
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> new Saml2UserDetails(List.of(PNR, GIVEN_NAME, SN), null,
+                LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3, Instant.now(), "127.0.0.1")).getMessage());
 
     Assertions.assertEquals("primaryAttribute must be set and appear among the attributes",
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-          new Saml2UserDetails(List.of(PNR, GIVEN_NAME, SN), AttributeConstants.ATTRIBUTE_NAME_PRID,
-              LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3, Instant.now(), "127.0.0.1");
-        }).getMessage());
+        Assertions.assertThrows(IllegalArgumentException.class,
+            () -> new Saml2UserDetails(List.of(PNR, GIVEN_NAME, SN), AttributeConstants.ATTRIBUTE_NAME_PRID,
+                LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3, Instant.now(), "127.0.0.1")).getMessage());
 
     Assertions.assertEquals("primaryAttribute must be set and appear among the attributes",
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-          new Saml2UserDetails(
-              List.of(GIVEN_NAME, SN,
-                  new UserAttribute(AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER, null)),
-              AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER,
-              LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3, Instant.now(), "127.0.0.1");
-        }).getMessage());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Saml2UserDetails(
+            List.of(GIVEN_NAME, SN,
+                new UserAttribute(AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER, null)),
+            AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER,
+            LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3, Instant.now(), "127.0.0.1")).getMessage());
   }
 
   @Test
   public void testMissingLoa() {
     Assertions.assertEquals("authnContextUri must be set and not empty",
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-          new Saml2UserDetails(List.of(PNR, GIVEN_NAME, SN), AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER,
-              null, Instant.now(), "127.0.0.1");
-        }).getMessage());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Saml2UserDetails(List.of(PNR, GIVEN_NAME, SN),
+            AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER,
+            null, Instant.now(), "127.0.0.1")).getMessage());
 
     Assertions.assertEquals("authnContextUri must be set and not empty",
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
-          new Saml2UserDetails(List.of(PNR, GIVEN_NAME, SN), AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER,
-              "", Instant.now(), "127.0.0.1");
-        }).getMessage());
+        Assertions.assertThrows(IllegalArgumentException.class, () -> new Saml2UserDetails(List.of(PNR, GIVEN_NAME, SN),
+            AttributeConstants.ATTRIBUTE_NAME_PERSONAL_IDENTITY_NUMBER,
+            "", Instant.now(), "127.0.0.1")).getMessage());
   }
 
   @SuppressWarnings("unlikely-arg-type")
@@ -107,10 +99,10 @@ public class Saml2UserDetailsTest {
     Assertions.assertEquals(LevelOfAssuranceUris.AUTHN_CONTEXT_URI_LOA3, d.getAuthnContextUri());
     Assertions.assertEquals(now, d.getAuthnInstant());
     Assertions.assertEquals("127.0.0.1", d.getSubjectIpAddress());
-    Assertions.assertNull(d.getAuthenticatingAuthority());
+    Assertions.assertTrue(d.getAuthenticatingAuthorities().isEmpty());
 
-    d.setAuthenticatingAuthority("https://idp.example.com");
-    Assertions.assertEquals("https://idp.example.com", d.getAuthenticatingAuthority());
+    d.setAuthenticatingAuthorities(List.of("https://idp.example.com"));
+    Assertions.assertEquals(List.of("https://idp.example.com"), d.getAuthenticatingAuthorities());
 
     Assertions.assertFalse(d.isSignMessageDisplayed());
     d.setSignMessageDisplayed(true);

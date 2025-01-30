@@ -82,7 +82,7 @@ audit data.
 | `authn-instant` | The instant when the user authenticated. | String |
 | `subject-locality` | The subject's locality (IP address). | String |
 | `authn-context-class-ref` | The URI for the Authentication Context Class (LoA) under which the authentication was made. | String |
-| `authn-authority` | Optional identity of an "authenticating authority", used for proxy IdP:s. | String |
+| `authn-authority` | Optional identity of an "authenticating authority", used for proxy IdP:s. If more than one authority is present, the ID:s are semicolon separated.  | String |
 | `user-attributes` | A list of elements listing the user attributes that was issued.<br/>**Note:** This will be a complete list of user attributes as seen be the authenticator. It is not sure that all of them are released in the resulting SAML assertion. This depends on the release policy used. | List of attributes with fields `name` and `value`. |
 | `sign-message-displayed` | If the request was sent by a "signature service" SP this field will indicate whether a "sign message" was displayed for the user or not. | Boolean |
 | `allowed-to-reuse` | Tells whether the IdP will allow this particular authentication to be re-used in forthcoming operations (i.e., can it be used for SSO?). | Boolean |

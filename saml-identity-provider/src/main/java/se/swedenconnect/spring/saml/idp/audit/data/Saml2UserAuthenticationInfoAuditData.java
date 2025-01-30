@@ -61,7 +61,7 @@ public class Saml2UserAuthenticationInfoAuditData extends Saml2AuditData {
   @JsonProperty(value = "authn-context-class-ref")
   private String authnContextClassRef;
 
-  /** Optional ID for authenticating authority. */
+  /** Optional ID for authenticating authority. If more than one, the ID:s are semicolon separated. */
   @Getter
   @Setter
   @JsonProperty(value = "authn-authority")
@@ -118,7 +118,9 @@ public class Saml2UserAuthenticationInfoAuditData extends Saml2AuditData {
     data.setAuthnInstant(details.getAuthnInstant());
     data.setSubjectLocality(details.getSubjectIpAddress());
     data.setAuthnContextClassRef(details.getAuthnContextUri());
-    data.setAuthnAuthority(details.getAuthenticatingAuthority());
+    if (!details.getAuthenticatingAuthorities().isEmpty()) {
+      data.setAuthnAuthority(String.join(";", details.getAuthenticatingAuthorities()));
+    }
     if (details.getAttributes() != null) {
       data.setUserAttributes(details.getAttributes().stream()
           .map(ua -> new SamlAttribute(ua.getId(), ua.valuesToString()))
