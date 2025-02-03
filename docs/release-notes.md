@@ -6,7 +6,11 @@
 
 ### Version 2.3.4
 
+Date: 2025-02-03
+
 - Support for populating several `AuthnContext/AuthenticatingAuthorities` in an assertion was added.
+
+- Resolved logback issue for unit tests.
 
 ### Version 2.3.3
 
