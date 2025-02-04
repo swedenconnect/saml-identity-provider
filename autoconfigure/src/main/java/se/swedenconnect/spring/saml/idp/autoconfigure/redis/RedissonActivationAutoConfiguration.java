@@ -25,6 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.data.redis.core.RedisOperations;
 
 /**
@@ -34,7 +35,8 @@ import org.springframework.data.redis.core.RedisOperations;
  */
 @AutoConfiguration
 @AutoConfigureBefore(RedisAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.data.redis", name = "host")
+//@ConditionalOnProperty(prefix = "spring.data.redis", name = "host")
+@Conditional(RedissonCondition.class)
 @ConditionalOnClass({ Redisson.class, RedisOperations.class, RedissonAutoConfigurationV2.class })
 @EnableConfigurationProperties({ RedissonProperties.class, RedisProperties.class })
 public class RedissonActivationAutoConfiguration extends RedissonAutoConfigurationV2 {

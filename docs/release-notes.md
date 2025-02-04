@@ -4,6 +4,12 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp)
 
+### Version 2.3.5
+
+Date: 2025-02-04
+
+- A bug where Redis was not initialized if the `spring.data.redis.cluster` was used was fixed.
+
 ### Version 2.3.4
 
 Date: 2025-02-03
