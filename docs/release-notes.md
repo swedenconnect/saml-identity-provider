@@ -4,6 +4,12 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![Maven Central](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp/badge.svg)](https://maven-badges.herokuapp.com/maven-central/se.swedenconnect.spring.saml.idp/spring-saml-idp)
 
+### Version 2.3.6
+
+Date: -
+
+- Error messages used for non-recoverable errors was not HTML-encoded when the locale is Swedish. This has been fixed.
+
 ### Version 2.3.5
 
 Date: 2025-02-04
