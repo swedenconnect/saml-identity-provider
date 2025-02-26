@@ -21,8 +21,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import se.swedenconnect.security.credential.PkiCredential;
-import se.swedenconnect.security.credential.bundle.CredentialBundles;
-import se.swedenconnect.security.credential.config.ConfigurationResourceLoader;
 import se.swedenconnect.security.credential.factory.PkiCredentialConfigurationProperties;
 import se.swedenconnect.security.credential.factory.PkiCredentialFactory;
 
@@ -40,24 +38,20 @@ public class CredentialConfiguration {
   /** The properties. */
   private final IdentityProviderConfigurationProperties properties;
 
-  /** Credential bundles. */
-  private final CredentialBundles credentialBundles;
-
-  /** Resource loader. */
-  private final ConfigurationResourceLoader resourceLoader;
+  /** The credential factory bean. */
+  private final PkiCredentialFactory credentialFactory;
 
   /**
    * Constructor.
    *
    * @param properties the IdP properties
+   * @param credentialFactory the credential factory bean
    */
   public CredentialConfiguration(
       @Autowired(required = false) final IdentityProviderConfigurationProperties properties,
-      final CredentialBundles credentialBundles,
-      final ConfigurationResourceLoader resourceLoader) {
+      final PkiCredentialFactory credentialFactory) {
     this.properties = properties;
-    this.credentialBundles = credentialBundles;
-    this.resourceLoader = resourceLoader;
+    this.credentialFactory = credentialFactory;
   }
 
   @ConditionalOnMissingBean(name = "saml.idp.credentials.Default")
@@ -117,8 +111,7 @@ public class CredentialConfiguration {
     if (props == null) {
       return null;
     }
-    return PkiCredentialFactory.createCredential(props, this.resourceLoader,
-        this.credentialBundles.getCredentialProvider(), this.credentialBundles.getKeyStoreProvider(), null);
+    return this.credentialFactory.createCredential(props);
   }
 
 }
