@@ -111,6 +111,7 @@ public class CredentialConfiguration {
     if (props == null) {
       return null;
     }
+    props.afterPropertiesSet();
     return this.credentialFactory.createCredential(props);
   }
 
