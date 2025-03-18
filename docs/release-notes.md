@@ -6,7 +6,7 @@
 
 ### Version 2.3.7
 
-Date: -
+Date: 2025-03-18
 
 - An error concerning the usage of the "old" way of configuring credentials was fixed.
 
