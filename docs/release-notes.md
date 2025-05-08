@@ -4,6 +4,12 @@
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/se.swedenconnect.spring.saml.idp/spring-saml-idp.svg)
 
+### Version 2.3.9
+
+Date: 2025-05-08
+
+- Dependency updates only.
+
 ### Version 2.3.8
 
 Date: 2025-03-16
