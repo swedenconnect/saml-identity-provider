@@ -4,6 +4,13 @@
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/se.swedenconnect.spring.saml.idp/spring-saml-idp.svg)
 
+#### Version 2.3.11
+
+Date: 2025-12-
+
+- Fixed bug in `Saml2AuthnRequestAuthenticationConverter` where the decoder was not
+thread safe.
+
 #### Version 2.3.10
 
 Date: 2025-11-18
