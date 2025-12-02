@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest;
 
+import jakarta.annotation.Nonnull;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import net.shibboleth.shared.component.ComponentInitializationException;
@@ -64,11 +65,11 @@ import java.util.Optional;
 @Slf4j
 public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationConverter {
 
-  /** A decoder for messages sent using the redirect binding. */
-  private final HTTPRedirectDeflateDecoder httpRedirectDeflateDecoder;
+  /** Binding descriptor for redirect. */
+  private final BindingDescriptor redirectBindingDescriptor;
 
-  /** A decoder for messages sent using the POST binding. */
-  private final HTTPPostDecoder httpPostDecoder;
+  /** Binding descriptor for POST. */
+  private final BindingDescriptor postBindingDescriptor;
 
   /**
    * Message handler which checks the validity of the SAML protocol message receiver endpoint against requirements
@@ -94,33 +95,22 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
       final IdentityProviderSettings settings) {
     this.metadataResolver = Objects.requireNonNull(metadataResolver, "metadataResolver must not be null");
 
-    // Initialize the decoders
+    // Initialize the binding descriptors ...
     //
     try {
-      final BindingDescriptor redirectBindingDescriptor = new BindingDescriptor();
-      redirectBindingDescriptor.setId(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
-      redirectBindingDescriptor.setShortName("Redirect");
-      redirectBindingDescriptor.setSignatureCapable(true);
-      redirectBindingDescriptor.initialize();
-      this.httpRedirectDeflateDecoder = new HTTPRedirectDeflateDecoder();
-      this.httpRedirectDeflateDecoder.setBindingDescriptor(redirectBindingDescriptor);
-      this.httpRedirectDeflateDecoder.setHttpServletRequestSupplier(OpenSamlUtils.getHttpServletRequestSupplier());
-      this.httpRedirectDeflateDecoder.setParserPool(
-          Objects.requireNonNull(XMLObjectProviderRegistrySupport.getParserPool()));
-      this.httpRedirectDeflateDecoder.initialize();
+      this.redirectBindingDescriptor = new BindingDescriptor();
+      this.redirectBindingDescriptor.setId(SAMLConstants.SAML2_REDIRECT_BINDING_URI);
+      this.redirectBindingDescriptor.setShortName("Redirect");
+      this.redirectBindingDescriptor.setSignatureCapable(true);
+      this.redirectBindingDescriptor.initialize();
 
-      final BindingDescriptor postBindingDescriptor = new BindingDescriptor();
-      postBindingDescriptor.setId(SAMLConstants.SAML2_POST_BINDING_URI);
-      postBindingDescriptor.setShortName("POST");
-      postBindingDescriptor.initialize();
-      this.httpPostDecoder = new HTTPPostDecoder();
-      this.httpPostDecoder.setBindingDescriptor(postBindingDescriptor);
-      this.httpPostDecoder.setHttpServletRequestSupplier(OpenSamlUtils.getHttpServletRequestSupplier());
-      this.httpPostDecoder.setParserPool(XMLObjectProviderRegistrySupport.getParserPool());
-      this.httpPostDecoder.initialize();
+      this.postBindingDescriptor = new BindingDescriptor();
+      this.postBindingDescriptor.setId(SAMLConstants.SAML2_POST_BINDING_URI);
+      this.postBindingDescriptor.setShortName("POST");
+      this.postBindingDescriptor.initialize();
     }
     catch (final ComponentInitializationException e) {
-      throw new IllegalArgumentException("Failed to initialize OpenSAML message decoders", e);
+      throw new IllegalArgumentException("Failed to initialize OpenSAML binding descriptors", e);
     }
 
     // Initialize the security handlers.
@@ -265,17 +255,35 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
    *
    * @return a SAMLMessageDecoder bean
    */
-  protected SAMLMessageDecoder getDecoder(final HttpServletRequest request) {
+  @Nonnull
+  protected SAMLMessageDecoder getDecoder(@Nonnull final HttpServletRequest request) {
     final String method = request.getMethod();
-    if ("GET".equals(method)) {
-      return this.httpRedirectDeflateDecoder;
+    try {
+      if ("GET".equals(method)) {
+        final HTTPRedirectDeflateDecoder httpRedirectDeflateDecoder = new HTTPRedirectDeflateDecoder();
+        httpRedirectDeflateDecoder.setBindingDescriptor(this.redirectBindingDescriptor);
+        httpRedirectDeflateDecoder.setHttpServletRequestSupplier(OpenSamlUtils.getHttpServletRequestSupplier());
+        httpRedirectDeflateDecoder.setParserPool(
+            Objects.requireNonNull(XMLObjectProviderRegistrySupport.getParserPool()));
+        httpRedirectDeflateDecoder.initialize();
+        return httpRedirectDeflateDecoder;
+      }
+      else if ("POST".equals(method)) {
+        final HTTPPostDecoder httpPostDecoder = new HTTPPostDecoder();
+        httpPostDecoder.setBindingDescriptor(this.postBindingDescriptor);
+        httpPostDecoder.setHttpServletRequestSupplier(OpenSamlUtils.getHttpServletRequestSupplier());
+        httpPostDecoder.setParserPool(XMLObjectProviderRegistrySupport.getParserPool());
+        httpPostDecoder.initialize();
+        return httpPostDecoder;
+      }
+      else {
+        throw new UnrecoverableSaml2IdpException(
+            UnrecoverableSaml2IdpError.INTERNAL, "Illegal HTTP verb - " + method, null);
+      }
     }
-    else if ("POST".equals(method)) {
-      return this.httpPostDecoder;
-    }
-    else {
-      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Illegal HTTP verb - " + method,
-          null);
+    catch (final ComponentInitializationException e) {
+      log.error("Failed to initialize decoder", e);
+      throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.INTERNAL, "Failed to create decoder", null);
     }
   }
 
