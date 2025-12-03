@@ -74,6 +74,7 @@ import se.swedenconnect.opensaml.sweid.saml2.authn.psc.RequestedPrincipalSelecti
 import se.swedenconnect.opensaml.sweid.saml2.authn.psc.build.MatchValueBuilder;
 import se.swedenconnect.opensaml.sweid.saml2.authn.psc.build.RequestedPrincipalSelectionBuilder;
 import se.swedenconnect.opensaml.sweid.saml2.metadata.entitycategory.EntityCategoryConstants;
+import se.swedenconnect.opensaml.sweid.saml2.metadata.ext.OrganizationNumber;
 import se.swedenconnect.security.credential.opensaml.OpenSamlCredential;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticationProvider;
@@ -423,6 +424,17 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
                 .map(e -> new LocalizedString(e.getValue(), e.getKey()))
                 .collect(Collectors.toList()))
             .orElse(null));
+
+        if (StringUtils.hasText(settings.getMetadata().getOrganization().getNumber())) {
+          final OrganizationNumber number =
+              (OrganizationNumber) XMLObjectSupport.buildXMLObject(OrganizationNumber.DEFAULT_ELEMENT_NAME);
+          number.setValue(settings.getMetadata().getOrganization().getNumber());
+
+          final Extensions orgext = (Extensions) XMLObjectSupport.buildXMLObject(Extensions.DEFAULT_ELEMENT_NAME);
+          orgext.getUnknownXMLObjects().add(number);
+
+          b.object().setExtensions(orgext);
+        }
 
         this.entityDescriptorBuilder.organization(b.build());
       }

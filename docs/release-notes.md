@@ -14,6 +14,9 @@ thread safe. See https://github.com/swedenconnect/saml-identity-provider/issues/
 - Fixed bad error message when AuthnRequest does not contain an Issuer. See
   https://github.com/swedenconnect/saml-identity-provider/issues/125.
 
+- Added support for configuring the `mdorgext:OrganizationNumber` metadata extension.
+See https://docs.swedenconnect.se/schemas/authn/1.0/OrganizationNumber-1.0.xsd.
+
 - Dependency updates.
 
 #### Version 2.3.10

@@ -402,7 +402,7 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
     /**
      * Whether {@code alg:DigestMethod} elements should be placed in an {@code Extensions} element under the role
      * descriptor (i.e., the {@code IDPSSODescriptor}). If {@code false}, the {@code alg:DigestMethod} elements are
-     * included as elements in the {@code Extensions} element of the {@code EntityDescriptor}.
+     * included as elements in the {@code Extensions} element of the {@code EntityDescriptor}.
      */
     @Setter
     @Getter
@@ -413,20 +413,19 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
      */
     @Setter
     @Getter
-    private List<SigningMethod>
-        signingMethods;
+    private List<SigningMethod> signingMethods;
 
     /**
      * Whether {@code alg:SigningMethod} elements should be placed in an {@code Extensions} element under the role
      * descriptor (i.e., the {@code IDPSSODescriptor}). If {@code false}, the {@code alg:SigningMethod} elements are
-     * included as elements in the {@code Extensions} element of the {@code EntityDescriptor}.
+     * included as elements in the {@code Extensions} element of the {@code EntityDescriptor}.
      */
     @Setter
     @Getter
     private boolean includeSigningMethodsUnderRole;
 
     /**
-     * The {@code md:EncryptionMethod} elements that should be included under the {@code md:KeyDescriptor} for the
+     * The {@code md:EncryptionMethod} elements that should be included under the {@code md:KeyDescriptor} for the
      * encryption key. Note that these algorithms must match the configured encryption key.
      */
     @Setter
@@ -619,6 +618,11 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
        * The {@code OrganizationURL}. The map key is the language tag and value is display name for that language.
        */
       private Map<String, String> urls;
+
+      /**
+       * The mdorgext:OrganizationNumber holding an organization number.
+       */
+      private String number;
     }
 
     /**

@@ -191,6 +191,7 @@ public class IdentityProviderAutoConfiguration {
             .names(this.properties.getMetadata().getOrganization().getNames())
             .displayNames(this.properties.getMetadata().getOrganization().getDisplayNames())
             .urls(this.properties.getMetadata().getOrganization().getUrls())
+            .number(this.properties.getMetadata().getOrganization().getNumber())
             .build());
       }
 

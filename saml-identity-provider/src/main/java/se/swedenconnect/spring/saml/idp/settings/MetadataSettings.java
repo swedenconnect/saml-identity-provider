@@ -15,15 +15,14 @@
  */
 package se.swedenconnect.spring.saml.idp.settings;
 
+import org.springframework.core.io.Resource;
+import org.springframework.util.Assert;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+
 import java.io.Serial;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.core.io.Resource;
-import org.springframework.util.Assert;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * Settings for the IdP metadata.
@@ -1072,12 +1071,26 @@ public class MetadataSettings extends AbstractSettings {
     public static final String URLS = "urls";
 
     /**
-     * Gets the Organization URL:s as a map where the key is the language tag and the URL the value.
+     * Gets the Organization URL:s as a map where the key is the language tag and the URL the value.
      *
      * @return a map of Organization URLs
      */
     public Map<String, String> getUrls() {
       return this.getSetting(URLS);
+    }
+
+    /**
+     * The organization number, see https://docs.swedenconnect.se/schemas/authn/1.0/OrganizationNumber-1.0.xsd.
+     */
+    public static final String NUMBER = "number";
+
+    /**
+     * Gets the organization name extension.
+     *
+     * @return a string
+     */
+    public String getNumber() {
+      return this.getSetting(NUMBER);
     }
 
     /**
@@ -1131,13 +1144,23 @@ public class MetadataSettings extends AbstractSettings {
       }
 
       /**
-       * Assigns the Organization URL:s as a map where the key is the language tag and the URL the value.
+       * Assigns the Organization URL:s as a map where the key is the language tag and the URL the value.
        *
        * @param urls a map of Organization URLs
        * @return the builder
        */
       public Builder urls(final Map<String, String> urls) {
         return this.setting(URLS, urls);
+      }
+
+      /**
+       * Assigns the organization number.
+       *
+       * @param number the organization number
+       * @return the builder
+       */
+      public Builder number(final String number) {
+        return this.setting(NUMBER, number);
       }
 
       /** {@inheritDoc} */
@@ -1159,8 +1182,8 @@ public class MetadataSettings extends AbstractSettings {
    * ContactPerson types.
    * <p>
    * Note: The {@code security} type is non-standard and defined by
-   * <a href="https://wiki.refeds.org/display/STAN/Security+Contact+Metadata+Extension+Schema">REFEDS - Security Contact
-   * Metadata Extension Schema</a>
+   * <a href="https://wiki.refeds.org/display/STAN/Security+Contact+Metadata+Extension+Schema">REFEDS - Security
+   * Contact Metadata Extension Schema</a>
    * </p>
    */
   public enum ContactPersonType {
