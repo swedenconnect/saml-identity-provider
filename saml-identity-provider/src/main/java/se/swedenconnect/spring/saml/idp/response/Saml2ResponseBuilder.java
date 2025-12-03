@@ -15,11 +15,10 @@
  */
 package se.swedenconnect.spring.saml.idp.response;
 
-import java.time.Instant;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Optional;
-
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
+import lombok.extern.slf4j.Slf4j;
+import net.shibboleth.shared.component.ComponentInitializationException;
 import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.opensaml.saml.saml2.core.EncryptedAssertion;
@@ -36,9 +35,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.security.config.Customizer;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
-
-import lombok.extern.slf4j.Slf4j;
-import net.shibboleth.shared.component.ComponentInitializationException;
 import se.swedenconnect.opensaml.xmlsec.encryption.support.SAMLObjectEncrypter;
 import se.swedenconnect.opensaml.xmlsec.signature.support.SAMLObjectSigner;
 import se.swedenconnect.security.credential.PkiCredential;
@@ -49,6 +45,11 @@ import se.swedenconnect.spring.saml.idp.error.UnrecoverableSaml2IdpException;
 import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.utils.DefaultSaml2MessageIDGenerator;
 import se.swedenconnect.spring.saml.idp.utils.Saml2MessageIDGenerator;
+
+import java.time.Instant;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Builds a SAML {@link Response} message.
@@ -61,7 +62,7 @@ public class Saml2ResponseBuilder {
   /** Event publisher. */
   private final Saml2IdpEventPublisher eventPublisher;
 
-  /** The issuer entityID for the {@link Response} objects being created. */
+  /** The issuer entityID for the {@link Response} objects being created. */
   private final String responseIssuer;
 
   /** The IdP signing credential. */
@@ -89,8 +90,8 @@ public class Saml2ResponseBuilder {
    * @param signingCredential the IdP signing credential (for signing of {@link Response} objects)
    * @param eventPublisher the event publisher
    */
-  public Saml2ResponseBuilder(final String idpEntityId, final PkiCredential signingCredential,
-      final Saml2IdpEventPublisher eventPublisher) {
+  public Saml2ResponseBuilder(@Nonnull final String idpEntityId, @Nonnull final PkiCredential signingCredential,
+      @Nonnull final Saml2IdpEventPublisher eventPublisher) {
     this.responseIssuer = Optional.ofNullable(idpEntityId).filter(StringUtils::hasText)
         .orElseThrow(() -> new IllegalArgumentException("idpEntityId must be set"));
     Assert.notNull(signingCredential, "signingCredential must not be null");
@@ -107,7 +108,9 @@ public class Saml2ResponseBuilder {
    * @return a {@link Response} object
    * @throws UnrecoverableSaml2IdpException for errors
    */
-  public Response buildErrorResponse(final Saml2ResponseAttributes responseAttributes, final Status errorStatus) {
+  @Nonnull
+  public Response buildErrorResponse(
+      @Nonnull final Saml2ResponseAttributes responseAttributes, @Nonnull final Status errorStatus) {
     Assert.notNull(errorStatus, "errorStatus must not be null");
     final String code = Optional.ofNullable(errorStatus.getStatusCode())
         .map(StatusCode::getValue)
@@ -134,8 +137,9 @@ public class Saml2ResponseBuilder {
    * @return a {@link Response} object
    * @throws UnrecoverableSaml2IdpException for errors
    */
-  public Response buildErrorResponse(final Saml2ResponseAttributes responseAttributes,
-      final Saml2ErrorStatusException error) throws UnrecoverableSaml2IdpException {
+  @Nonnull
+  public Response buildErrorResponse(@Nonnull final Saml2ResponseAttributes responseAttributes,
+      @Nonnull final Saml2ErrorStatusException error) throws UnrecoverableSaml2IdpException {
 
     final Status status = this.messageSource != null
         ? error.getStatus(this.messageSource, Locale.ENGLISH)
@@ -153,7 +157,9 @@ public class Saml2ResponseBuilder {
    * @return a {@link Response} object
    * @throws UnrecoverableSaml2IdpException for errors
    */
-  public Response buildResponse(final Saml2ResponseAttributes responseAttributes, final Assertion assertion)
+  @Nonnull
+  public Response buildResponse(
+      @Nonnull final Saml2ResponseAttributes responseAttributes, @Nonnull final Assertion assertion)
       throws UnrecoverableSaml2IdpException {
 
     final Status status = (Status) XMLObjectSupport.buildXMLObject(Status.DEFAULT_ELEMENT_NAME);
@@ -188,7 +194,9 @@ public class Saml2ResponseBuilder {
    * @return a {@link Response} object
    * @throws UnrecoverableSaml2IdpException for errors
    */
-  protected Response createResponse(final Saml2ResponseAttributes responseAttributes, final Status status)
+  @Nonnull
+  protected Response createResponse(
+      @Nonnull final Saml2ResponseAttributes responseAttributes, @Nonnull final Status status)
       throws UnrecoverableSaml2IdpException {
 
     if (responseAttributes.getDestination() == null || responseAttributes.getInResponseTo() == null || status == null) {
@@ -216,7 +224,7 @@ public class Saml2ResponseBuilder {
    * @param peerMetadata the peer metadata (may be used to select signing algorithm)
    * @throws UnrecoverableSaml2IdpException for signing errors
    */
-  protected void signResponse(final Response samlResponse, final EntityDescriptor peerMetadata)
+  protected void signResponse(@Nonnull final Response samlResponse, @Nonnull final EntityDescriptor peerMetadata)
       throws UnrecoverableSaml2IdpException {
     try {
       SAMLObjectSigner.sign(samlResponse, this.signingCredential,
@@ -244,7 +252,9 @@ public class Saml2ResponseBuilder {
    * @return an {@link EncryptedAssertion}
    * @throws UnrecoverableSaml2IdpException for unrecoverable errors
    */
-  protected EncryptedAssertion encryptAssertion(final Assertion assertion, final EntityDescriptor peerMetadata)
+  @Nonnull
+  protected synchronized EncryptedAssertion encryptAssertion(
+      @Nonnull final Assertion assertion, @Nonnull final EntityDescriptor peerMetadata)
       throws UnrecoverableSaml2IdpException {
 
     if (peerMetadata == null) {
@@ -302,7 +312,7 @@ public class Saml2ResponseBuilder {
    *
    * @param idGenerator the ID generator
    */
-  public void setIdGenerator(final Saml2MessageIDGenerator idGenerator) {
+  public void setIdGenerator(@Nonnull final Saml2MessageIDGenerator idGenerator) {
     this.idGenerator = idGenerator;
   }
 
@@ -312,7 +322,7 @@ public class Saml2ResponseBuilder {
    *
    * @param responseCustomizer a {@link Customizer}
    */
-  public void setResponseCustomizer(final Customizer<Response> responseCustomizer) {
+  public void setResponseCustomizer(@Nonnull final Customizer<Response> responseCustomizer) {
     this.responseCustomizer = Objects.requireNonNull(responseCustomizer, "responseCustomizer must not be null");
   }
 
@@ -321,7 +331,7 @@ public class Saml2ResponseBuilder {
    *
    * @param messageSource the {@link MessageSource}
    */
-  public void setMessageSource(final MessageSource messageSource) {
+  public void setMessageSource(@Nullable final MessageSource messageSource) {
     this.messageSource = messageSource;
   }
 
