@@ -9,7 +9,7 @@
 Date: 2025-12-
 
 - Fixed bug in `Saml2AuthnRequestAuthenticationConverter` where the decoder was not
-thread safe.
+thread safe. See https://github.com/swedenconnect/saml-identity-provider/issues/127.
 
 #### Version 2.3.10
 
