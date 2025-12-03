@@ -11,6 +11,11 @@ Date: 2025-12-
 - Fixed bug in `Saml2AuthnRequestAuthenticationConverter` where the decoder was not
 thread safe. See https://github.com/swedenconnect/saml-identity-provider/issues/127.
 
+- Fixed bad error message when AuthnRequest does not contain an Issuer. See
+  https://github.com/swedenconnect/saml-identity-provider/issues/125.
+
+- Dependency updates.
+
 #### Version 2.3.10
 
 Date: 2025-11-18
