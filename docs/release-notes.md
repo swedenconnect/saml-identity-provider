@@ -4,22 +4,22 @@
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/se.swedenconnect.spring.saml.idp/spring-saml-idp.svg)
 
-#### Version 2.3.11
+### Version 2.3.11
 
 Date: 2025-12-03
 
 - Fixed bug in `Saml2AuthnRequestAuthenticationConverter` where the decoder was not
-thread safe. See https://github.com/swedenconnect/saml-identity-provider/issues/127.
+thread safe. See <https://github.com/swedenconnect/saml-identity-provider/issues/127>.
 
-- Fixed bad error message when AuthnRequest does not contain an Issuer. See
-  https://github.com/swedenconnect/saml-identity-provider/issues/125.
+- Fixed bad error message when AuthnRequest does not contain an Issuer.
+- See <https://github.com/swedenconnect/saml-identity-provider/issues/125>.
 
 - Added support for configuring the `mdorgext:OrganizationNumber` metadata extension.
-See https://docs.swedenconnect.se/schemas/authn/1.0/OrganizationNumber-1.0.xsd.
+See <https://docs.swedenconnect.se/schemas/authn/1.0/OrganizationNumber-1.0.xsd>.
 
 - Dependency updates.
 
-#### Version 2.3.10
+### Version 2.3.10
 
 Date: 2025-11-18
 
