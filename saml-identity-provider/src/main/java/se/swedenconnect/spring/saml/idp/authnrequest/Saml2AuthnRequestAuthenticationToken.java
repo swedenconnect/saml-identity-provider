@@ -17,10 +17,12 @@ package se.swedenconnect.spring.saml.idp.authnrequest;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.opensaml.core.xml.schema.XSString;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.saml.common.messaging.context.SAMLBindingContext;
 import org.opensaml.saml.common.xml.SAMLConstants;
 import org.opensaml.saml.saml2.core.AuthnRequest;
+import org.opensaml.saml.saml2.core.RequestAbstractType;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -106,7 +108,10 @@ public class Saml2AuthnRequestAuthenticationToken extends AbstractAuthentication
    * @return the entityID of the requesting entity
    */
   public String getEntityId() {
-    return this.authnRequest.get().getIssuer().getValue();
+    return Optional.ofNullable(this.authnRequest.get())
+        .map(RequestAbstractType::getIssuer)
+        .map(XSString::getValue)
+        .orElse(null);
   }
 
   /**
