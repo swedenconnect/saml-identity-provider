@@ -6,7 +6,7 @@
 
 #### Version 2.3.11
 
-Date: 2025-12-
+Date: 2025-12-03
 
 - Fixed bug in `Saml2AuthnRequestAuthenticationConverter` where the decoder was not
 thread safe. See https://github.com/swedenconnect/saml-identity-provider/issues/127.

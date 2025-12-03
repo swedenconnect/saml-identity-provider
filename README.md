@@ -31,7 +31,7 @@ The repository comprises of the following modules:
 
 See [https://docs.swedenconnect.se/saml-identity-provider](https://docs.swedenconnect.se/saml-identity-provider/) for documentation about Java classes, configuration, audit logging and examples.
 
-Also, see the [Release Notes](docs/release-notes.md).
+Also, see the [Release Notes](https://docs.swedenconnect.se/saml-identity-provider/release-notes.html).
 
 
 
