@@ -71,9 +71,6 @@ public class Saml2ResponseBuilder {
   /** Whether assertions should be encrypted. */
   private boolean encryptAssertions = false;
 
-  /** For encrypting assertions. */
-  private SAMLObjectEncrypter samlEncrypter;
-
   /** For customizing the {@link Response}. */
   private Customizer<Response> responseCustomizer = Customizer.withDefaults();
 
@@ -253,7 +250,7 @@ public class Saml2ResponseBuilder {
    * @throws UnrecoverableSaml2IdpException for unrecoverable errors
    */
   @Nonnull
-  protected synchronized EncryptedAssertion encryptAssertion(
+  protected EncryptedAssertion encryptAssertion(
       @Nonnull final Assertion assertion, @Nonnull final EntityDescriptor peerMetadata)
       throws UnrecoverableSaml2IdpException {
 
@@ -266,7 +263,7 @@ public class Saml2ResponseBuilder {
           (EncryptedAssertion) XMLObjectSupport.buildXMLObject(EncryptedAssertion.DEFAULT_ELEMENT_NAME);
 
       final EncryptedData encryptedData =
-          this.samlEncrypter.encrypt(assertion, new SAMLObjectEncrypter.Peer(peerMetadata));
+          this.getSamlEncrypter().encrypt(assertion, new SAMLObjectEncrypter.Peer(peerMetadata));
       encryptedAssertion.setEncryptedData(encryptedData);
 
       return encryptedAssertion;
@@ -293,18 +290,6 @@ public class Saml2ResponseBuilder {
    */
   public void setEncryptAssertions(final boolean encryptAssertions) {
     this.encryptAssertions = encryptAssertions;
-
-    if (this.encryptAssertions) {
-      try {
-        this.samlEncrypter = new SAMLObjectEncrypter();
-      }
-      catch (final ComponentInitializationException e) {
-        throw new SecurityException("Failed to initialize encrypter", e);
-      }
-    }
-    else {
-      this.samlEncrypter = null;
-    }
   }
 
   /**
@@ -333,6 +318,20 @@ public class Saml2ResponseBuilder {
    */
   public void setMessageSource(@Nullable final MessageSource messageSource) {
     this.messageSource = messageSource;
+  }
+
+  /**
+   * Gets the encrypter.
+   *
+   * @return the encrypter
+   */
+  private SAMLObjectEncrypter getSamlEncrypter() {
+    try {
+      return new SAMLObjectEncrypter();
+    }
+    catch (final ComponentInitializationException e) {
+      throw new SecurityException("Failed to initialize encrypter", e);
+    }
   }
 
 }

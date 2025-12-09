@@ -12,9 +12,19 @@ se.swedenconnect.spring.saml.idp.authentication.provider.external
 se.swedenconnect.spring.saml.idp.authnrequest
 se.swedenconnect.spring.saml.idp.authnrequest.validation
 se.swedenconnect.spring.saml.idp.authnrequest.validation.replay
+se.swedenconnect.spring.saml.idp.autoconfigure.audit
+se.swedenconnect.spring.saml.idp.autoconfigure.base
+se.swedenconnect.spring.saml.idp.autoconfigure.error
+se.swedenconnect.spring.saml.idp.autoconfigure.redis
+se.swedenconnect.spring.saml.idp.autoconfigure.session
+se.swedenconnect.spring.saml.idp.autoconfigure.settings
+se.swedenconnect.spring.saml.idp.autoconfigure.web.security
 se.swedenconnect.spring.saml.idp.config
 se.swedenconnect.spring.saml.idp.config.configurers
 se.swedenconnect.spring.saml.idp.context
+se.swedenconnect.spring.saml.idp.demo
+se.swedenconnect.spring.saml.idp.demo.authn
+se.swedenconnect.spring.saml.idp.demo.user
 se.swedenconnect.spring.saml.idp.error
 se.swedenconnect.spring.saml.idp.events
 se.swedenconnect.spring.saml.idp.extensions
@@ -23,3 +33,7 @@ se.swedenconnect.spring.saml.idp.response
 se.swedenconnect.spring.saml.idp.settings
 se.swedenconnect.spring.saml.idp.utils
 se.swedenconnect.spring.saml.idp.web.filters
+se.swedenconnect.spring.saml.testsp
+se.swedenconnect.spring.saml.testsp.config
+se.swedenconnect.spring.saml.testsp.controllers
+se.swedenconnect.spring.saml.testsp.ext

@@ -6,6 +6,8 @@
 
 ### Version 2.3.12
 
+Date: 2025-12-09
+
 - If the Redisson starter (`org.redisson:redisson-spring-boot-starter`)
 was missing from the classpath, the application would not start correctly.
 This has been fixed.
@@ -113,9 +115,7 @@ Date: 2024-11-21
 
 Date: 2024-10-04
 
--
-
-The [Saml2ServiceProviderFilter](https://github.com/swedenconnect/saml-identity-provider/blob/main/saml-identity-provider/src/main/java/se/swedenconnect/spring/saml/idp/authnrequest/Saml2ServiceProviderFilter.java) interface was introduced. By declaring a bean of this type, an implementation may add additional restrictions on which Service Provider that are allowed to send requests.
+- The [Saml2ServiceProviderFilter](https://github.com/swedenconnect/saml-identity-provider/blob/main/saml-identity-provider/src/main/java/se/swedenconnect/spring/saml/idp/authnrequest/Saml2ServiceProviderFilter.java) interface was introduced. By declaring a bean of this type, an implementation may add additional restrictions on which Service Provider that are allowed to send requests.
 
 - (embarrassing) We started publishing release notes ...
 

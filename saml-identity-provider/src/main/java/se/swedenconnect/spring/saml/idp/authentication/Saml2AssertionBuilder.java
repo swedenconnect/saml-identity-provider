@@ -222,7 +222,9 @@ public class Saml2AssertionBuilder {
     //
     this.assertionCustomizer.customize(assertion);
 
-    log.trace("Issuing Assertion: {}", SamlLog.toStringSafe(assertion));
+    if (log.isTraceEnabled()) {
+      log.trace("Issuing Assertion: {}", SamlLog.toStringSafe(assertion));
+    }
 
     // Sign
     {
