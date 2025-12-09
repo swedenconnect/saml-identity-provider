@@ -4,6 +4,12 @@
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/se.swedenconnect.spring.saml.idp/spring-saml-idp.svg)
 
+### Version 2.3.12
+
+- If the Redisson starter (`org.redisson:redisson-spring-boot-starter`)
+was missing from the classpath, the application would not start correctly.
+This has been fixed.
+
 ### Version 2.3.11
 
 Date: 2025-12-03
