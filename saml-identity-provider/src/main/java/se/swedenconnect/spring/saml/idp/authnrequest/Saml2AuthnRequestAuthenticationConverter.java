@@ -23,6 +23,9 @@ import net.shibboleth.shared.resolver.CriteriaSet;
 import net.shibboleth.shared.resolver.ResolverException;
 import org.opensaml.core.criterion.EntityIdCriterion;
 import org.opensaml.core.xml.config.XMLObjectProviderRegistrySupport;
+import org.opensaml.core.xml.io.MarshallingException;
+import org.opensaml.core.xml.io.UnmarshallingException;
+import org.opensaml.core.xml.util.XMLObjectSupport;
 import org.opensaml.messaging.context.MessageContext;
 import org.opensaml.messaging.decoder.MessageDecodingException;
 import org.opensaml.messaging.handler.MessageHandlerException;
@@ -220,7 +223,13 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
           throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.UNKNOWN_PEER, msg, token);
         }
         log.debug("SAML metadata for SP {} successfully found", peerEntityId);
-        token.setPeerMetadata(spMetadata);
+        // In order to avoid several threads working with the same DOM, we clone the descriptor ...
+        try {
+          token.setPeerMetadata(XMLObjectSupport.cloneXMLObject(spMetadata));
+        }
+        catch (final MarshallingException | UnmarshallingException e) {
+          throw new MessageDecodingException("Failed to clone EntityDescriptor", e);
+        }
 
         // Add a context for future OpenSAML operations ...
         //
@@ -240,7 +249,6 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
         log.info("{}", msg, e);
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.UNKNOWN_PEER, msg, e, token);
       }
-
       return token;
     }
     catch (final MessageDecodingException e) {
