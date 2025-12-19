@@ -6,6 +6,8 @@
 
 ### Version 2.3.13
 
+Date: 2025-12-19
+
 - Access to the private key for `KeyStoreCredential` objects were synchronized, which led to long waits when many
   threads tried to access the same key. This has been changed and no synchronization is needed anymore.
   See <https://github.com/swedenconnect/credentials-support/issues/102>.
