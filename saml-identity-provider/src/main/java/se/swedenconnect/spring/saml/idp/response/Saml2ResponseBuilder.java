@@ -71,6 +71,9 @@ public class Saml2ResponseBuilder {
   /** Whether assertions should be encrypted. */
   private boolean encryptAssertions = false;
 
+  /** Encrypter for assertions. */
+  private SAMLObjectEncrypter samlObjectEncrypter;
+
   /** For customizing the {@link Response}. */
   private Customizer<Response> responseCustomizer = Customizer.withDefaults();
 
@@ -290,6 +293,14 @@ public class Saml2ResponseBuilder {
    */
   public void setEncryptAssertions(final boolean encryptAssertions) {
     this.encryptAssertions = encryptAssertions;
+    if (this.encryptAssertions) {
+      try {
+        this.samlObjectEncrypter = new SAMLObjectEncrypter();
+      }
+      catch (final ComponentInitializationException e) {
+        throw new SecurityException("Failed to initialize encrypter", e);
+      }
+    }
   }
 
   /**
@@ -326,6 +337,9 @@ public class Saml2ResponseBuilder {
    * @return the encrypter
    */
   private SAMLObjectEncrypter getSamlEncrypter() {
+    if (this.samlObjectEncrypter != null) {
+      return this.samlObjectEncrypter;
+    }
     try {
       return new SAMLObjectEncrypter();
     }
