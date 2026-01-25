@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Sweden Connect
+ * Copyright 2023-2026 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,7 @@ public final class Saml2IdentityProviderVersion {
 
   private static final int MAJOR = 2;
   private static final int MINOR = 3;
-  private static final int PATCH = 13;
+  private static final int PATCH = 14;
 
   /**
    * Global serialization value for SAML Identity Provider classes.

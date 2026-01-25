@@ -4,6 +4,12 @@
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/se.swedenconnect.spring.saml.idp/spring-saml-idp.svg)
 
+### Version 2.3.14
+
+Date: 
+
+- Handling of received `RequestedAuthnContext` elements in an authentication request has been improved.
+
 ### Version 2.3.13
 
 Date: 2025-12-19
@@ -145,6 +151,5 @@ Service Provider that are allowed to send requests.
 
 ----
 
-Copyright &copy;
-2022-2025, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se).
+Copyright &copy; 2022-2026, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se).
 Licensed under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
