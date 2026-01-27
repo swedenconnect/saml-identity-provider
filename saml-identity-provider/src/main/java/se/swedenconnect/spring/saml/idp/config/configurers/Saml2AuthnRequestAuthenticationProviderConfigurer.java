@@ -38,6 +38,7 @@ import se.swedenconnect.spring.saml.idp.authentication.provider.UserAuthenticati
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationProvider;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2AuthnRequestAuthenticationToken;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2ServiceProviderFilter;
+import se.swedenconnect.spring.saml.idp.authnrequest.authncontext.AuthnContextResolver;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AssertionConsumerServiceValidator;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestEncryptCapabilitiesValidator;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestReplayValidator;
@@ -106,6 +107,9 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
 
   /** Optional filter for allowing SP:s to send requests. */
   private Saml2ServiceProviderFilter serviceProviderFilter;
+
+  /** Resolves authentication context class references based on the requested authentication context. */
+  private AuthnContextResolver authnContextResolver;
 
   /**
    * Assigns a custom {@link AuthnRequestValidator} for validating the signatures of {@link AuthnRequest} messages.
@@ -262,6 +266,19 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
     return this;
   }
 
+  /**
+   * Assigns an {@link AuthnContextResolver} that is used to resolve authentication context class references.
+   *
+   * @param authnContextResolver the resolver
+   * @return this configurer
+   */
+  public Saml2AuthnRequestAuthenticationProviderConfigurer authnContextResolver(
+      @Nonnull final AuthnContextResolver authnContextResolver) {
+    Objects.requireNonNull(authnContextResolver, "authnContextResolver must not be null");
+    this.authnContextResolver = authnContextResolver;
+    return this;
+  }
+
   /** {@inheritDoc} */
   @Override
   void init(final HttpSecurity httpSecurity) {
@@ -274,6 +291,8 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
     if (this.assertionConsumerServiceValidator == null) {
       this.assertionConsumerServiceValidator = new AssertionConsumerServiceValidator();
     }
+
+    Optional.ofNullable(settings.getAuthnContextResolver()).ifPresent(this::authnContextResolver);
 
     if (this.replayValidator == null) {
       this.replayValidator = new AuthnRequestReplayValidator(
@@ -324,6 +343,7 @@ public class Saml2AuthnRequestAuthenticationProviderConfigurer
         this.requestedAttributeProcessors,
         this.nameIDGeneratorFactory,
         this.serviceProviderFilter != null ? this.serviceProviderFilter : entityDescriptor -> true,
+        this.authnContextResolver != null ? this.authnContextResolver : new AuthnContextResolver(),
         this.signatureMessageExtensionExtractor.orElse(null),
         this.principalSelectionProcessor.orElse(null));
 

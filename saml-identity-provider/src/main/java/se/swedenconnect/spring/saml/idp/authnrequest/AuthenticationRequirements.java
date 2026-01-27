@@ -77,7 +77,7 @@ public interface AuthenticationRequirements extends Serializable {
   /**
    * Gets a list of the requested authentication contexts ({@code AuthnContextClassRef}).
    * <p>
-   * The returned list is exhaustive, meaning that all possible URI:s are sent. For example if {@code minimum}
+   * The returned list is exhaustive, meaning that all possible URI:s are sent. For example, if {@code minimum}
    * comparison is declared, the list is filled with all possible URI:s.
    * </p>
    *
