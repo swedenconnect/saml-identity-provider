@@ -6,7 +6,7 @@
 
 ### Version 2.4.0
 
-Date: 
+Date: 2026-01-27
 
 - Handling of received `RequestedAuthnContext` elements in an authentication request has been improved. See [Handling of Requested Authentication Context Class References](configuration.html#handling-of-requested-authentication-context-class-references).
 
