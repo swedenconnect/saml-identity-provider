@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Sweden Connect
+ * Copyright 2023-2026 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Import;
 import se.swedenconnect.security.credential.PkiCredential;
 import se.swedenconnect.security.credential.spring.autoconfigure.SpringCredentialBundlesAutoConfiguration;
 import se.swedenconnect.spring.saml.idp.authnrequest.Saml2ServiceProviderFilter;
+import se.swedenconnect.spring.saml.idp.authnrequest.authncontext.AuthnContextResolver;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurer;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2IdpConfigurerAdapter;
 import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
@@ -103,6 +104,15 @@ public class IdentityProviderAutoConfiguration {
     if (this.properties == null) {
       return IdentityProviderSettings.builder().build();
     }
+
+    final AuthnContextResolver authnContextResolver = new AuthnContextResolver();
+    Optional.ofNullable(this.properties.getAuthnContext().getMinimumMappings())
+        .ifPresent(authnContextResolver::setMinimumMapping);
+    Optional.ofNullable(this.properties.getAuthnContext().getBetterMappings())
+        .ifPresent(authnContextResolver::setBetterMapping);
+    Optional.ofNullable(this.properties.getAuthnContext().getMaximumMappings())
+        .ifPresent(authnContextResolver::setMaximumMapping);
+
     final IdentityProviderSettings.Builder builder = IdentityProviderSettings.builder()
         .entityId(this.properties.getEntityId())
         .baseUrl(this.properties.getBaseUrl())
@@ -112,6 +122,7 @@ public class IdentityProviderAutoConfiguration {
         .maxMessageAge(this.properties.getMaxMessageAge())
         .ssoDurationLimit(this.properties.getSsoDurationLimit())
         .supportsUserMessage(this.properties.getSupportsUserMessage())
+        .authnContextResolver(authnContextResolver)
         .credentials(CredentialSettings.builder()
             .defaultCredential(this.defaultCredential)
             .signCredential(this.signCredential)

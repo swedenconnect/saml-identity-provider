@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Sweden Connect
+ * Copyright 2023-2026 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,6 +107,13 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
   private Boolean supportsUserMessage;
 
   /**
+   * Configuration for how to process RequestedAuthnContext values when the comparison method is other than exact.
+   */
+  @Getter
+  @NestedConfigurationProperty
+  private final AuthnContextConfigurationProperties authnContext = new AuthnContextConfigurationProperties();
+
+  /**
    * The Identity Provider credentials.
    */
   @Getter
@@ -173,6 +180,36 @@ public class IdentityProviderConfigurationProperties implements InitializingBean
     }
     this.replay.afterPropertiesSet();
     this.session.afterPropertiesSet();
+  }
+
+  /**
+   * Configuration properties for how to process RequestedAuthnContext values.
+   */
+  public static class AuthnContextConfigurationProperties {
+
+    /**
+     * A map where each URI key is mapped to a list of minimum authentication context classes, i.e., if X is given with
+     * minimum comparison, this may be resolved to X, Y, and Z.
+     */
+    @Setter
+    @Getter
+    private Map<String, List<String>> minimumMappings;
+
+    /**
+     * A map where each URI key is mapped to a list of "better" authentication context classes, i.e., if X is given with
+     * better comparison, this may be resolved to Y and Z.
+     */
+    @Setter
+    @Getter
+    private Map<String, List<String>> betterMappings;
+
+    /**
+     * A map where each URI key is mapped to a list of "maximum" authentication context classes, i.e., if Y is given
+     * with maximum comparison, this may be resolved to X and Y.
+     */
+    @Setter
+    @Getter
+    private Map<String, List<String>> maximumMappings;
   }
 
   /**

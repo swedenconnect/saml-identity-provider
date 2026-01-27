@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Sweden Connect
+ * Copyright 2023-2026 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.opensaml.saml.metadata.resolver.MetadataResolver;
 import org.springframework.util.Assert;
 import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+import se.swedenconnect.spring.saml.idp.authnrequest.authncontext.AuthnContextResolver;
 
 import java.io.Serial;
 import java.time.Duration;
@@ -182,6 +183,20 @@ public class IdentityProviderSettings extends AbstractSettings {
    */
   public Boolean getSupportsUserMessage() {
     return this.getSetting(SUPPORTS_USER_MESSAGE);
+  }
+
+  /**
+   * The {@link AuthnContextResolver} to use.
+   */
+  public static final String IDP_AUTHN_CONTEXT_RESOLVER = SETTINGS_PREFIX.concat("authn-context-resolver");
+
+  /**
+   * Gets the {@link AuthnContextResolver} to use, or {@code null} if none is configured.
+   *
+   * @return the {@link AuthnContextResolver} to use, or {@code null} if none is configured
+   */
+  public AuthnContextResolver getAuthnContextResolver() {
+    return this.getSetting(IDP_AUTHN_CONTEXT_RESOLVER);
   }
 
   /**
@@ -392,6 +407,16 @@ public class IdentityProviderSettings extends AbstractSettings {
      */
     public Builder supportsUserMessage(final Boolean supportsUserMessage) {
       return this.setting(SUPPORTS_USER_MESSAGE, supportsUserMessage);
+    }
+
+    /**
+     * Assigns the {@link AuthnContextResolver} to use.
+     *
+     * @param authnContextResolver the {@link AuthnContextResolver} to use}
+     * @return the builder
+     */
+    public Builder authnContextResolver(final AuthnContextResolver authnContextResolver) {
+      return this.setting(IDP_AUTHN_CONTEXT_RESOLVER, authnContextResolver);
     }
 
     /**

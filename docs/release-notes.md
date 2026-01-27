@@ -4,6 +4,12 @@
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/se.swedenconnect.spring.saml.idp/spring-saml-idp.svg)
 
+### Version 2.4.0
+
+Date: 
+
+- Handling of received `RequestedAuthnContext` elements in an authentication request has been improved. See [Handling of Requested Authentication Context Class References](configuration.html#handling-of-requested-authentication-context-class-references).
+
 ### Version 2.3.13
 
 Date: 2025-12-19
@@ -12,7 +18,7 @@ Date: 2025-12-19
   threads tried to access the same key. This has been changed and no synchronization is needed anymore.
   See <https://github.com/swedenconnect/credentials-support/issues/102>.
 
-- When may threads attempted to perform encryption at the same time, for the same SP, threading issues could occur. A
+- When many threads attempted to perform encryption at the same time, for the same SP, threading issues could occur. A
   more stable solution is now in place.
 
 ### Version 2.3.12
@@ -145,6 +151,5 @@ Service Provider that are allowed to send requests.
 
 ----
 
-Copyright &copy;
-2022-2025, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se).
+Copyright &copy; 2022-2026, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se).
 Licensed under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).

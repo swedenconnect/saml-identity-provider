@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Sweden Connect
+ * Copyright 2023-2026 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,7 +77,7 @@ public interface AuthenticationRequirements extends Serializable {
   /**
    * Gets a list of the requested authentication contexts ({@code AuthnContextClassRef}).
    * <p>
-   * The returned list is exhaustive, meaning that all possible URI:s are sent. For example if {@code minimum}
+   * The returned list is exhaustive, meaning that all possible URI:s are sent. For example, if {@code minimum}
    * comparison is declared, the list is filled with all possible URI:s.
    * </p>
    *

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Sweden Connect
+ * Copyright 2023-2026 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,9 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest;
 
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
-import org.opensaml.core.xml.schema.XSURI;
-import org.opensaml.saml.saml2.core.RequestedAuthnContext;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -33,6 +33,7 @@ import se.swedenconnect.spring.saml.idp.attributes.RequestedAttributeProcessor;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGenerator;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
+import se.swedenconnect.spring.saml.idp.authnrequest.authncontext.AuthnContextResolver;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestValidator;
 import se.swedenconnect.spring.saml.idp.config.configurers.Saml2AuthnRequestAuthenticationProviderConfigurer;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
@@ -55,7 +56,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * An {@link AuthenticationProvider} that processes a {@link Saml2AuthnRequestAuthenticationToken} and if the processing
@@ -106,32 +106,8 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
   /** Filter for checking whether an SP is acceptable. */
   private final Saml2ServiceProviderFilter serviceProviderFilter;
 
-  /**
-   * Constructor. See {@link Saml2AuthnRequestAuthenticationProviderConfigurer} for how to configuration and setup.
-   *
-   * @param eventPublisher the event publisher
-   * @param signatureValidator the signature validator to use
-   * @param assertionConsumerServiceValidator validator checking the AssertionConsumerService
-   * @param replayValidator for protecting against replay attacks
-   * @param encryptCapabilitiesValidator validator asserting that we can encrypt assertions
-   * @param requestedAttributesProcessors extracts the requested attributes
-   * @param nameIDGeneratorFactory the {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator}
-   *     instance
-   * @param serviceProviderFilter filter for checking whether an SP is acceptable
-   */
-  public Saml2AuthnRequestAuthenticationProvider(
-      final Saml2IdpEventPublisher eventPublisher,
-      final AuthnRequestValidator signatureValidator,
-      final AuthnRequestValidator assertionConsumerServiceValidator,
-      final AuthnRequestValidator replayValidator,
-      final AuthnRequestValidator encryptCapabilitiesValidator,
-      final List<RequestedAttributeProcessor> requestedAttributesProcessors,
-      final NameIDGeneratorFactory nameIDGeneratorFactory,
-      final Saml2ServiceProviderFilter serviceProviderFilter) {
-    this(eventPublisher, signatureValidator, assertionConsumerServiceValidator, replayValidator,
-        encryptCapabilitiesValidator, requestedAttributesProcessors, nameIDGeneratorFactory, serviceProviderFilter,
-        null, null);
-  }
+  /** Resolves authentication context class references based on the requested authentication context. */
+  private final AuthnContextResolver authnContextResolver;
 
   /**
    * Constructor. See {@link Saml2AuthnRequestAuthenticationProviderConfigurer} for how to configuration and setup.
@@ -145,21 +121,24 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
    * @param nameIDGeneratorFactory the {@link NameIDGeneratorFactory} to use when creating a {@link NameIDGenerator}
    *     instance
    * @param serviceProviderFilter filter for checking whether an SP is acceptable
+   * @param authnContextResolver resolves authentication context class references based on the requested
+   *     authentication
    * @param signatureMessageExtensionExtractor extracts the {@code SignMessage} extension (may be {@code null})
    * @param principalSelectionProcessor extracts the {@code PrincipalSelection} attribute values (may be
    *     {@code null})
    */
   public Saml2AuthnRequestAuthenticationProvider(
-      final Saml2IdpEventPublisher eventPublisher,
-      final AuthnRequestValidator signatureValidator,
-      final AuthnRequestValidator assertionConsumerServiceValidator,
-      final AuthnRequestValidator replayValidator,
-      final AuthnRequestValidator encryptCapabilitiesValidator,
-      final List<RequestedAttributeProcessor> requestedAttributesProcessors,
-      final NameIDGeneratorFactory nameIDGeneratorFactory,
-      final Saml2ServiceProviderFilter serviceProviderFilter,
-      final SignatureMessageExtensionExtractor signatureMessageExtensionExtractor,
-      final PrincipalSelectionProcessor principalSelectionProcessor) {
+      @Nonnull final Saml2IdpEventPublisher eventPublisher,
+      @Nonnull final AuthnRequestValidator signatureValidator,
+      @Nonnull final AuthnRequestValidator assertionConsumerServiceValidator,
+      @Nonnull final AuthnRequestValidator replayValidator,
+      @Nonnull final AuthnRequestValidator encryptCapabilitiesValidator,
+      @Nonnull final List<RequestedAttributeProcessor> requestedAttributesProcessors,
+      @Nonnull final NameIDGeneratorFactory nameIDGeneratorFactory,
+      @Nonnull final Saml2ServiceProviderFilter serviceProviderFilter,
+      @Nonnull final AuthnContextResolver authnContextResolver,
+      @Nullable final SignatureMessageExtensionExtractor signatureMessageExtensionExtractor,
+      @Nullable final PrincipalSelectionProcessor principalSelectionProcessor) {
 
     this.eventPublisher = Objects.requireNonNull(eventPublisher, "eventPublisher must not be null");
     this.signatureValidator = Objects.requireNonNull(signatureValidator, "signatureValidator must not be null");
@@ -174,6 +153,7 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
         Objects.requireNonNull(nameIDGeneratorFactory, "nameIDGeneratorFactory must not be null");
     this.serviceProviderFilter =
         Objects.requireNonNull(serviceProviderFilter, "serviceProviderFilter must not be null");
+    this.authnContextResolver = Objects.requireNonNull(authnContextResolver, "authnContextResolver must not be null");
     this.signatureMessageExtensionExtractor = signatureMessageExtensionExtractor;
     this.principalSelectionProcessor = principalSelectionProcessor;
   }
@@ -348,12 +328,8 @@ public class Saml2AuthnRequestAuthenticationProvider implements AuthenticationPr
         .passiveAuthn(isPassive)
         .entityCategories(EntityDescriptorUtils.getEntityCategories(token.getPeerMetadata()))
         .requestedAttributes(this.extractRequestedAttributes(token))
-        .authnContextRequirements(Optional.ofNullable(token.getAuthnRequest().getRequestedAuthnContext())
-            .map(RequestedAuthnContext::getAuthnContextClassRefs)
-            .map(refs -> refs.stream()
-                .map(XSURI::getURI)
-                .collect(Collectors.toList()))
-            .orElseGet(Collections::emptyList))
+        .authnContextRequirements(this.authnContextResolver.resolve(
+            token.getAuthnRequest().getRequestedAuthnContext(), token.getLogString()))
         .principalSelectionAttributes(Optional.ofNullable(this.principalSelectionProcessor)
             .map(p -> p.extractPrincipalSelection(token))
             .orElseGet(Collections::emptyList))

@@ -37,6 +37,7 @@ This section documents all properties that can be provided to configure the IdP.
 | `saml.idp.clock-skew-adjustment` | Clock skew adjustment (in both directions) to consider for accepting messages based on their age. | Duration | 30 seconds |
 | `saml.idp.max-message-age` | Maximum allowed age of received messages. | Duration | 3 minutes |
 | `saml.idp.sso-duration-limit` | Based on a previous authentication, for how long may this authentication be re-used? Set to 0 seconds to disable SSO. | Duration | 1 hour |
+| `saml.idp.authn-context.*` | Settings for how to handle requested authentication context classes, see [Handling of Requested Authentication Context Class References](#handling-of-requested-authentication-context-class-references). | [AuthnContextConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/IdentityProviderConfigurationProperties.java) | - |
 | `saml.idp.credentials.*` | Configuration for IdP credentials, see [Credentials Configuration](#credentials-configuration) below. | [CredentialConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/CredentialConfigurationProperties.java) | No default value, but named beans may be provided (see below). |
 | `saml.idp.endpoints.*` | Configuration for the endpoints that the IdP exposes, see [Endpoints Configuration](#endpoints-configuration) below. | [EndpointsConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/EndpointsConfigurationProperties.java) | See below. |
 | `saml.idp.assertions.*` | Configuration for IdP Assertion issuance, see [Assertion Settings Configuration](#assertion-settings-configuration) below. | [AssertionSettingsConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/AssertionSettingsConfigurationProperties.java) | See below. |
@@ -45,6 +46,55 @@ This section documents all properties that can be provided to configure the IdP.
 | `saml.idp.audit.*` | Audit logging configuration. See [Audit Configuration](#audit-configuration) below. | [AuditRepositoryConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/audit/AuditRepositoryConfigurationProperties.java) | See below. |
 | `saml.idp.replay.*` | Configuration for message replay checking. See [Replay Checker Configuration](#replay-checker-configuration) below. | [ReplayCheckerConfigurationProperties](https://github.com/swedenconnect/saml-identity-provider/blob/main/autoconfigure/src/main/java/se/swedenconnect/spring/saml/idp/autoconfigure/settings/IdentityProviderConfigurationProperties.java) | See below. |
 | `saml.idp.session.module` | The session module to use. Supported values are "memory" and "redis". Set to other value if you extend the IdP with your own session handling. | String | - |
+
+<a name="handling-of-requested-authentication-context-class-references"></a>
+#### Handling of Requested Authentication Context Class References
+
+The requested authentication contexts that a Service Provider wishes the authentication to be performed under is sent in the `RequestedAuthnContext` of an `AuthnRequest`. Only `AuthnContextClassRef` elements, and not `AuthnContextDeclRef`, is supported.
+
+Section 3.3.2.2.1 of [Assertions and Protocols for the OASIS
+Security Assertion Markup Language
+(SAML) V2.0](https://docs.oasis-open.org/security/saml/v2.0/saml-core-2.0-os.pdf) defines the `RequestedAuthnContext` element. Study this resource to understand the different comparison methods.
+
+The `exact` comparison method is supported by default, but in order to handle requests with other comparison methods provided, this needs to be configured.
+
+| Property | Description | Type |
+| :--- | :--- | :--- |
+| `minimum-mappings` | A map of AuthnContext URI:s to a list of URI:s that is used for minimum comparison. | `Map<String, List<String>>` |
+| `better-mappings` | A map of AuthnContext URI:s to a list of URI:s that is used for better comparison. | `Map<String, List<String>>` |
+| `maximum-mappings` | A map of AuthnContext URI:s to a list of URI:s that is used for maximum comparison. | `Map<String, List<String>>` |
+
+Common for all maps are that they map an incoming URI to what it means given a specific comparison method. This is illustrated with the example below:
+
+```yaml
+saml:
+  idp:
+    authn-context:
+      minimum-mappings:
+        "http://id.elegnamnden.se/loa/1.0/loa2":
+          - "http://id.elegnamnden.se/loa/1.0/loa2"
+          - "http://id.elegnamnden.se/loa/1.0/loa3"
+          - "http://id.elegnamnden.se/loa/1.0/loa4"
+        "http://id.elegnamnden.se/loa/1.0/loa3":
+          - "http://id.elegnamnden.se/loa/1.0/loa3"
+          - "http://id.elegnamnden.se/loa/1.0/loa4"
+        "http://id.elegnamnden.se/loa/1.0/loa4":
+          - "http://id.elegnamnden.se/loa/1.0/loa4"
+```
+
+What this configuration says is:
+
+- If an `AuthnRequest` is received containing a `RequestedAuthnContext` where `http://id.elegnamnden.se/loa/1.0/loa2` is given using `minimum` comparison, this maps to the fact that the SP accepts any of:
+    - `http://id.elegnamnden.se/loa/1.0/loa2`
+    - `http://id.elegnamnden.se/loa/1.0/loa3`
+    - `http://id.elegnamnden.se/loa/1.0/loa4`
+
+- If an `AuthnRequest` is received containing a `RequestedAuthnContext` where `http://id.elegnamnden.se/loa/1.0/loa3` is given using `minimum` comparison, this maps to the fact that the SP accepts any of:
+    - `http://id.elegnamnden.se/loa/1.0/loa3`
+    - `http://id.elegnamnden.se/loa/1.0/loa4`
+    
+- If an `AuthnRequest` is received containing a `RequestedAuthnContext` where `http://id.elegnamnden.se/loa/1.0/loa4` is given using `minimum` comparison, this maps to the fact that the SP accepts: 
+    - `http://id.elegnamnden.se/loa/1.0/loa4`
 
 <a name="credentials-configuration"></a>
 #### Credentials Configuration
@@ -284,4 +334,4 @@ spring:
 
 ---
 
-Copyright &copy; 2022-2025, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se). Licensed under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).
+Copyright &copy; 2022-2026, [Myndigheten för digital förvaltning - Swedish Agency for Digital Government (DIGG)](http://www.digg.se). Licensed under version 2.0 of the [Apache License](http://www.apache.org/licenses/LICENSE-2.0).

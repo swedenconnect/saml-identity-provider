@@ -1,5 +1,5 @@
 /*
- * Copyright 2023-2025 Sweden Connect
+ * Copyright 2023-2026 Sweden Connect
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,6 @@
  */
 package se.swedenconnect.spring.saml.idp.authnrequest;
 
-import java.io.Serial;
-import java.util.List;
-
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,7 +25,6 @@ import org.opensaml.saml.saml2.core.Issuer;
 import org.opensaml.saml.saml2.metadata.EntityDescriptor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.core.Authentication;
-
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
 import se.swedenconnect.spring.saml.idp.attributes.PrincipalSelectionProcessor;
 import se.swedenconnect.spring.saml.idp.attributes.RequestedAttribute;
@@ -36,6 +32,7 @@ import se.swedenconnect.spring.saml.idp.attributes.RequestedAttributeProcessor;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGenerator;
 import se.swedenconnect.spring.saml.idp.attributes.nameid.NameIDGeneratorFactory;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
+import se.swedenconnect.spring.saml.idp.authnrequest.authncontext.AuthnContextResolver;
 import se.swedenconnect.spring.saml.idp.authnrequest.validation.AuthnRequestValidator;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContext;
 import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
@@ -45,6 +42,9 @@ import se.swedenconnect.spring.saml.idp.events.Saml2IdpEventPublisher;
 import se.swedenconnect.spring.saml.idp.extensions.SignatureMessageExtensionExtractor;
 import se.swedenconnect.spring.saml.idp.response.Saml2ResponseAttributes;
 import se.swedenconnect.spring.saml.idp.settings.IdentityProviderSettings;
+
+import java.io.Serial;
+import java.util.List;
 
 /**
  * Test cases for Saml2AuthnRequestAuthenticationProvider.
@@ -127,6 +127,7 @@ public class Saml2AuthnRequestAuthenticationProviderTest {
         publisher, signatureValidator, assertionConsumerServiceValidator, replayValidator,
         encryptCapabilitiesValidator, List.of(requestedAttributeProcessor), nameIDGeneratorFactory,
         entityDescriptor -> true,
+        new AuthnContextResolver(),
         signatureMessageExtensionExtractor, principalSelectionProcessor);
 
     Assertions.assertTrue(provider.supports(Saml2AuthnRequestAuthenticationToken.class));
@@ -207,7 +208,7 @@ public class Saml2AuthnRequestAuthenticationProviderTest {
     final Saml2AuthnRequestAuthenticationProvider provider = new Saml2AuthnRequestAuthenticationProvider(
         publisher, signatureValidator, assertionConsumerServiceValidator, replayValidator,
         encryptCapabilitiesValidator, List.of(requestedAttributeProcessor), nameIDGeneratorFactory,
-        entityDescriptor -> false, null, null);
+        entityDescriptor -> false, new AuthnContextResolver(), null, null);
 
     final AuthnRequest authnRequest = Mockito.mock(AuthnRequest.class);
     Mockito.when(authnRequest.getID()).thenReturn("ID");

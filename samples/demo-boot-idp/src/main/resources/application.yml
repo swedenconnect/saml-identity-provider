@@ -93,6 +93,17 @@ saml:
       module: memory
     entity-id: https://demo.swedenconnect.se/idp
     base-url: https://local.dev.swedenconnect.se:8443/idp
+    authn-context:
+      minimum-mappings:
+        "http://id.elegnamnden.se/loa/1.0/loa2":
+          - "http://id.elegnamnden.se/loa/1.0/loa2"
+          - "http://id.elegnamnden.se/loa/1.0/loa3"
+          - "http://id.elegnamnden.se/loa/1.0/loa4"
+        "http://id.elegnamnden.se/loa/1.0/loa3":
+          - "http://id.elegnamnden.se/loa/1.0/loa3"
+          - "http://id.elegnamnden.se/loa/1.0/loa4"
+        "http://id.elegnamnden.se/loa/1.0/loa4":
+          - "http://id.elegnamnden.se/loa/1.0/loa4"
     credentials:
       sign:
         bundle: sign
