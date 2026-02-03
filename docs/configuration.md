@@ -64,6 +64,8 @@ The `exact` comparison method is supported by default, but in order to handle re
 | `better-mappings` | A map of AuthnContext URI:s to a list of URI:s that is used for better comparison. | `Map<String, List<String>>` |
 | `maximum-mappings` | A map of AuthnContext URI:s to a list of URI:s that is used for maximum comparison. | `Map<String, List<String>>` |
 
+**Note**: All keys must be given within brackets, otherwise Spring Boot will normalize URLs. See example below.
+
 Common for all maps are that they map an incoming URI to what it means given a specific comparison method. This is illustrated with the example below:
 
 ```yaml
@@ -71,14 +73,14 @@ saml:
   idp:
     authn-context:
       minimum-mappings:
-        "http://id.elegnamnden.se/loa/1.0/loa2":
+        "[http://id.elegnamnden.se/loa/1.0/loa2]":
           - "http://id.elegnamnden.se/loa/1.0/loa2"
           - "http://id.elegnamnden.se/loa/1.0/loa3"
           - "http://id.elegnamnden.se/loa/1.0/loa4"
-        "http://id.elegnamnden.se/loa/1.0/loa3":
+        "[http://id.elegnamnden.se/loa/1.0/loa3]":
           - "http://id.elegnamnden.se/loa/1.0/loa3"
           - "http://id.elegnamnden.se/loa/1.0/loa4"
-        "http://id.elegnamnden.se/loa/1.0/loa4":
+        "[http://id.elegnamnden.se/loa/1.0/loa4]":
           - "http://id.elegnamnden.se/loa/1.0/loa4"
 ```
 
