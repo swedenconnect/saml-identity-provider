@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.authentication.OpenSaml5AuthenticationProvider;
 import org.springframework.security.saml2.provider.service.metadata.OpenSaml5MetadataResolver;
@@ -42,7 +43,7 @@ import org.springframework.security.saml2.provider.service.web.Saml2MetadataFilt
 import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml5AuthenticationRequestResolver;
 import org.springframework.security.saml2.provider.service.web.authentication.OpenSaml5AuthenticationRequestResolver.AuthnRequestContext;
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2AuthenticationRequestResolver;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import se.swedenconnect.opensaml.saml2.metadata.build.EntityAttributesBuilder;
 import se.swedenconnect.opensaml.saml2.metadata.build.ExtensionsBuilder;
 import se.swedenconnect.security.credential.PkiCredential;
@@ -137,7 +138,7 @@ public class SamlSpConfiguration {
       final RelyingPartyRegistrationResolver registrations,
       final Saml2MetadataResolver saml2MetadataResolver) {
     final Saml2MetadataFilter metadata = new Saml2MetadataFilter(registrations, saml2MetadataResolver);
-    metadata.setRequestMatcher(new AntPathRequestMatcher("/saml2/metadata/{registrationId}", "GET"));
+    metadata.setRequestMatcher(PathPatternRequestMatcher.pathPattern(HttpMethod.GET, "/saml2/metadata/{registrationId}"));
     final FilterRegistrationBean<Saml2MetadataFilter> filter = new FilterRegistrationBean<>(metadata);
     filter.setOrder(-101);
     return filter;
@@ -177,7 +178,7 @@ public class SamlSpConfiguration {
         .entityId(properties.getEntityId())
         //        .assertionConsumerServiceLocation(properties.getAssertionConsumerUrl())
         .registrationId(properties.getRegistrationId())
-        .assertingPartyDetails(b -> b.wantAuthnRequestsSigned(true))
+        .assertingPartyMetadata(b -> b.wantAuthnRequestsSigned(true))
         .signingX509Credentials(
             (c) -> c.add(Saml2X509Credential.signing(credential.getPrivateKey(), credential.getCertificate())))
         .decryptionX509Credentials(

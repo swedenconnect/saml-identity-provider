@@ -24,7 +24,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServletServerHttpResponse;
 import org.springframework.lang.NonNull;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -77,8 +77,8 @@ public class Saml2IdpMetadataEndpointFilter extends OncePerRequestFilter {
    */
   public Saml2IdpMetadataEndpointFilter(
       final EntityDescriptorContainer entityDescriptorContainer, final String endpoint) {
-    this(entityDescriptorContainer, new AntPathRequestMatcher(
-        Objects.requireNonNull(endpoint, "endpoint must be set"), HttpMethod.GET.name()));
+    this(entityDescriptorContainer, PathPatternRequestMatcher.pathPattern(
+        HttpMethod.GET, Objects.requireNonNull(endpoint, "endpoint must be set")));
   }
 
   /**

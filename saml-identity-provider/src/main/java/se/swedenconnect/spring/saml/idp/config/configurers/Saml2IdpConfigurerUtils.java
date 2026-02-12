@@ -28,7 +28,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
@@ -79,8 +79,8 @@ class Saml2IdpConfigurerUtils {
   static RequestMatcher getAuthnEndpointsRequestMatcher(final HttpSecurity httpSecurity) {
     final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
     final RequestMatcher requestMatcher = new OrRequestMatcher(
-        new AntPathRequestMatcher(settings.getEndpoints().getRedirectAuthnEndpoint(), HttpMethod.GET.name()),
-        new AntPathRequestMatcher(settings.getEndpoints().getPostAuthnEndpoint(), HttpMethod.POST.name()));
+        PathPatternRequestMatcher.pathPattern(HttpMethod.GET, settings.getEndpoints().getRedirectAuthnEndpoint()),
+        PathPatternRequestMatcher.pathPattern(HttpMethod.POST, settings.getEndpoints().getPostAuthnEndpoint()));
     // TODO: HoK endpoints
     return requestMatcher;
   }

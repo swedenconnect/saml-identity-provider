@@ -46,10 +46,10 @@ import org.opensaml.security.credential.UsageType;
 import org.opensaml.security.x509.X509Credential;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.authentication.preauth.AbstractPreAuthenticatedProcessingFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.StringUtils;
 
@@ -128,8 +128,8 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
   @Override
   void init(final HttpSecurity httpSecurity) {
     final IdentityProviderSettings settings = Saml2IdpConfigurerUtils.getIdentityProviderSettings(httpSecurity);
-    this.requestMatcher = new AntPathRequestMatcher(
-        settings.getEndpoints().getMetadataEndpoint(), HttpMethod.GET.name());
+    this.requestMatcher = PathPatternRequestMatcher.pathPattern(
+        HttpMethod.GET, settings.getEndpoints().getMetadataEndpoint());
   }
 
   /** {@inheritDoc} */

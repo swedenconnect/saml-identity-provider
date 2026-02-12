@@ -16,8 +16,8 @@
 package se.swedenconnect.spring.saml.idp.autoconfigure.redis;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundleKey;
 import org.springframework.boot.ssl.SslBundleRegistry;
@@ -42,7 +42,7 @@ import java.util.stream.StreamSupport;
  * @author Martin Lindström
  */
 @Configuration
-@EnableConfigurationProperties({ RedisProperties.class, RedisTlsProperties.class })
+@EnableConfigurationProperties({ DataRedisProperties.class, RedisTlsProperties.class })
 @Slf4j
 public class RedisTlsExtensionsConfiguration {
 
@@ -50,7 +50,7 @@ public class RedisTlsExtensionsConfiguration {
   private final SslBundleRegistry sslBundleRegistry;
 
   /** The Redis properties. */
-  private final RedisProperties redisProperties;
+  private final DataRedisProperties redisProperties;
 
   /** The extended Redis TLS properties. */
   private final RedisTlsProperties tlsProperties;
@@ -62,7 +62,7 @@ public class RedisTlsExtensionsConfiguration {
    * @param tlsProperties the extended Redis TLS properties
    * @param sslBundleRegistry for registering SslBundles
    */
-  public RedisTlsExtensionsConfiguration(final RedisProperties redisProperties,
+  public RedisTlsExtensionsConfiguration(final DataRedisProperties redisProperties,
       final RedisTlsProperties tlsProperties, final SslBundleRegistry sslBundleRegistry) {
     this.redisProperties = redisProperties;
     this.tlsProperties = tlsProperties;
@@ -71,7 +71,7 @@ public class RedisTlsExtensionsConfiguration {
 
   /**
    * Creates a {@link SslBundleRegistrationBean} that registers a {@link SslBundle} and updates the
-   * {@link RedisProperties} if the settings of {@link RedisTlsProperties} are assigned.
+   * {@link DataRedisProperties} if the settings of {@link RedisTlsProperties} are assigned.
    *
    * @return a SslBundleRegistrationBean
    * @throws Exception for KeyStore errors
@@ -86,7 +86,7 @@ public class RedisTlsExtensionsConfiguration {
    */
   public static class SslBundleRegistrationBean {
 
-    public SslBundleRegistrationBean(final RedisProperties redisProperties,
+    public SslBundleRegistrationBean(final DataRedisProperties redisProperties,
         final RedisTlsProperties tlsProperties, final SslBundleRegistry sslBundleRegistry) throws Exception {
 
       // If a bundle is configured, we use that ...

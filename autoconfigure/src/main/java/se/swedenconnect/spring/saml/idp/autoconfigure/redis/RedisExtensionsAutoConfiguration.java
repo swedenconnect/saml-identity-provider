@@ -18,11 +18,11 @@ package se.swedenconnect.spring.saml.idp.autoconfigure.redis;
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.data.redis.JedisClientConfigurationBuilderCustomizer;
-import org.springframework.boot.autoconfigure.data.redis.LettuceClientConfigurationBuilderCustomizer;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties;
+import org.springframework.boot.data.redis.autoconfigure.JedisClientConfigurationBuilderCustomizer;
+import org.springframework.boot.data.redis.autoconfigure.LettuceClientConfigurationBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisOperations;
@@ -33,14 +33,14 @@ import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsCo
  *
  * @author Martin Lindström
  */
-@AutoConfiguration(before = RedisAutoConfiguration.class)
+@AutoConfiguration(before = DataRedisAutoConfiguration.class)
 @ConditionalOnClass(RedisOperations.class)
-@EnableConfigurationProperties({ RedisProperties.class, RedisTlsProperties.class })
+@EnableConfigurationProperties({ DataRedisProperties.class, RedisTlsProperties.class })
 @Import(RedisTlsExtensionsConfiguration.class)
 public class RedisExtensionsAutoConfiguration {
 
   /** Spring Data Redis properties. */
-  private final RedisProperties redisProperties;
+  private final DataRedisProperties redisProperties;
 
   /** The Redis properties. */
   private final RedisTlsProperties redisTlsProperties;
@@ -52,7 +52,7 @@ public class RedisExtensionsAutoConfiguration {
    * @param redisTlsProperties the Redis properties
    * @param ignoredDummy dummy parameter to ensure that the TLS extensions have been processed
    */
-  public RedisExtensionsAutoConfiguration(final RedisProperties redisProperties,
+  public RedisExtensionsAutoConfiguration(final DataRedisProperties redisProperties,
       final RedisTlsProperties redisTlsProperties, final SslBundleRegistrationBean ignoredDummy) {
     this.redisProperties = redisProperties;
     this.redisTlsProperties = redisTlsProperties;

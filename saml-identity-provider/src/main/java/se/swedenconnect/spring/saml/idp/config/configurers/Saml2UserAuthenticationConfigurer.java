@@ -22,10 +22,10 @@ import java.util.Objects;
 import org.opensaml.saml.saml2.core.Assertion;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.AnyRequestMatcher;
 import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -274,11 +274,11 @@ public class Saml2UserAuthenticationConfigurer extends AbstractSaml2Configurer {
     public void addPath(final String path) {
       this.paths.add(Objects.requireNonNull(path, "path must not be null"));
       if (this.paths.size() == 1) {
-        this.matcher = new AntPathRequestMatcher(path);
+        this.matcher = PathPatternRequestMatcher.pathPattern(path);
       }
       else {
         this.matcher = new OrRequestMatcher(this.paths.stream()
-            .map(p -> (RequestMatcher) new AntPathRequestMatcher(p))
+            .map(p -> (RequestMatcher) PathPatternRequestMatcher.pathPattern(p))
             .toList());
 
       }
