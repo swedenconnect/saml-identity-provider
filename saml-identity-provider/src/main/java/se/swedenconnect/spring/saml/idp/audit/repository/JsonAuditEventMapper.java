@@ -15,20 +15,16 @@
  */
 package se.swedenconnect.spring.saml.idp.audit.repository;
 
-import java.io.IOException;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.boot.actuate.audit.AuditEvent;
+import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
+import tools.jackson.databind.ObjectMapper;
+
 import java.io.Serial;
-import java.io.UncheckedIOException;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-
-import org.springframework.boot.actuate.audit.AuditEvent;
-
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import se.swedenconnect.spring.saml.idp.Saml2IdentityProviderVersion;
 
 /**
  * A JSON {@link AuditEventMapper}.
@@ -53,23 +49,13 @@ public class JsonAuditEventMapper implements AuditEventMapper {
   /** {@inheritDoc} */
   @Override
   public String write(final AuditEvent event) {
-    try {
-      return this.mapper.writerFor(AuditEvent.class).writeValueAsString(event);
-    }
-    catch (final IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    return this.mapper.writerFor(AuditEvent.class).writeValueAsString(event);
   }
 
   /** {@inheritDoc} */
   @Override
   public AuditEvent read(final String event) {
-    try {
-      return this.mapper.readerFor(JsonAuditEvent.class).<JsonAuditEvent> readValue(event);
-    }
-    catch (final IOException e) {
-      throw new UncheckedIOException(e);
-    }
+    return this.mapper.readerFor(JsonAuditEvent.class).<JsonAuditEvent>readValue(event);
   }
 
   /**

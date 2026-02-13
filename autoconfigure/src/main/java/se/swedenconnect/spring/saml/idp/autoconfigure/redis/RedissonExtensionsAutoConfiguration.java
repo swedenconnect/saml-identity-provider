@@ -22,7 +22,7 @@ import org.redisson.config.HostPortNatMapper;
 import org.redisson.config.ReadMode;
 import org.redisson.config.SslVerificationMode;
 import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer;
-import org.redisson.spring.starter.RedissonAutoConfigurationV2;
+import org.redisson.spring.starter.RedissonAutoConfigurationV4;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * @author Martin Lindström
  */
 @AutoConfiguration(before = RedissonActivationAutoConfiguration.class)
-@ConditionalOnClass(RedissonAutoConfigurationV2.class)
+@ConditionalOnClass(RedissonAutoConfigurationV4.class)
 @EnableConfigurationProperties({DataRedisProperties.class, RedissonClusterProperties.class, RedisTlsProperties.class})
 @Import(RedisTlsExtensionsConfiguration.class)
 public class RedissonExtensionsAutoConfiguration {

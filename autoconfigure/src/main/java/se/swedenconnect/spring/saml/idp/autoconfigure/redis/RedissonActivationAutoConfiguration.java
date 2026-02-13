@@ -16,7 +16,7 @@
 package se.swedenconnect.spring.saml.idp.autoconfigure.redis;
 
 import org.redisson.Redisson;
-import org.redisson.spring.starter.RedissonAutoConfigurationV2;
+import org.redisson.spring.starter.RedissonAutoConfigurationV4;
 import org.redisson.spring.starter.RedissonProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -36,7 +36,7 @@ import org.springframework.data.redis.core.RedisOperations;
 @AutoConfigureBefore(DataRedisAutoConfiguration.class)
 //@ConditionalOnProperty(prefix = "spring.data.redis", name = "host")
 @Conditional(RedissonCondition.class)
-@ConditionalOnClass({ Redisson.class, RedisOperations.class, RedissonAutoConfigurationV2.class })
-@EnableConfigurationProperties({ RedissonProperties.class, DataRedisProperties.class })
-public class RedissonActivationAutoConfiguration extends RedissonAutoConfigurationV2 {
+@ConditionalOnClass({Redisson.class, RedisOperations.class, RedissonAutoConfigurationV4.class})
+@EnableConfigurationProperties({RedissonProperties.class, DataRedisProperties.class})
+public class RedissonActivationAutoConfiguration extends RedissonAutoConfigurationV4 {
 }
