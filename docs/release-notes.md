@@ -4,6 +4,12 @@
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/se.swedenconnect.spring.saml.idp/spring-saml-idp.svg)
 
+### Version 2.5.0
+
+Date: 
+
+- Upgraded to Spring Boot 4 and Spring 7. Also, Java 21 or higher is now required.
+
 ### Version 2.4.0
 
 Date: 2026-01-27
