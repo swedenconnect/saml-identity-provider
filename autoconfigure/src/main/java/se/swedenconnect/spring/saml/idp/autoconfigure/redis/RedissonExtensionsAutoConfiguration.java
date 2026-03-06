@@ -15,18 +15,18 @@
  */
 package se.swedenconnect.spring.saml.idp.autoconfigure.redis;
 
-import org.redisson.api.HostPortNatMapper;
 import org.redisson.config.BaseConfig;
 import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
+import org.redisson.config.HostPortNatMapper;
 import org.redisson.config.ReadMode;
 import org.redisson.config.SslVerificationMode;
 import org.redisson.spring.starter.RedissonAutoConfigurationCustomizer;
-import org.redisson.spring.starter.RedissonAutoConfigurationV2;
+import org.redisson.spring.starter.RedissonAutoConfigurationV4;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties;
 import org.springframework.boot.ssl.SslBundle;
 import org.springframework.boot.ssl.SslBundles;
 import org.springframework.context.annotation.Bean;
@@ -43,8 +43,8 @@ import java.util.stream.Collectors;
  * @author Martin Lindström
  */
 @AutoConfiguration(before = RedissonActivationAutoConfiguration.class)
-@ConditionalOnClass(RedissonAutoConfigurationV2.class)
-@EnableConfigurationProperties({ RedisProperties.class, RedissonClusterProperties.class, RedisTlsProperties.class })
+@ConditionalOnClass(RedissonAutoConfigurationV4.class)
+@EnableConfigurationProperties({DataRedisProperties.class, RedissonClusterProperties.class, RedisTlsProperties.class})
 @Import(RedisTlsExtensionsConfiguration.class)
 public class RedissonExtensionsAutoConfiguration {
 
@@ -52,7 +52,7 @@ public class RedissonExtensionsAutoConfiguration {
   private final SslBundles sslBundles;
 
   /** Spring Data Redis properties. */
-  private final RedisProperties redisProperties;
+  private final DataRedisProperties redisProperties;
 
   /** Redis TLS extensions. */
   private final RedisTlsProperties redisTlsProperties;
@@ -69,9 +69,9 @@ public class RedissonExtensionsAutoConfiguration {
    * @param clusterProperties the Redis cluster properties
    * @param ignoredDummy dummy to ensure that the TLS extensions have been processed
    */
-  public RedissonExtensionsAutoConfiguration(final SslBundles sslBundles, final RedisProperties redisProperties,
-      final RedisTlsProperties redisTlsProperties, final RedissonClusterProperties clusterProperties,
-      final SslBundleRegistrationBean ignoredDummy) {
+  public RedissonExtensionsAutoConfiguration(final SslBundles sslBundles, final DataRedisProperties redisProperties,
+                                             final RedisTlsProperties redisTlsProperties, final RedissonClusterProperties clusterProperties,
+                                             final SslBundleRegistrationBean ignoredDummy) {
     this.sslBundles = sslBundles;
     this.redisProperties = redisProperties;
     this.redisTlsProperties = redisTlsProperties;

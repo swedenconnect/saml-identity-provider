@@ -18,8 +18,8 @@ package se.swedenconnect.spring.saml.idp.autoconfigure.error;
 import java.util.Map;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
-import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
-import org.springframework.boot.web.servlet.error.ErrorAttributes;
+import org.springframework.boot.webmvc.error.DefaultErrorAttributes;
+import org.springframework.boot.webmvc.error.ErrorAttributes;
 import org.springframework.web.context.request.WebRequest;
 
 import jakarta.servlet.ServletException;

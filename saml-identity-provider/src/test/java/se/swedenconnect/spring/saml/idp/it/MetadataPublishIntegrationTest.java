@@ -15,14 +15,6 @@
  */
 package se.swedenconnect.spring.saml.idp.it;
 
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
-import java.io.ByteArrayInputStream;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,9 +29,8 @@ import org.opensaml.saml.saml2.metadata.KeyDescriptor;
 import org.opensaml.security.credential.UsageType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -47,6 +38,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -54,7 +46,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
 import se.swedenconnect.opensaml.sweid.saml2.attribute.AttributeConstants;
 import se.swedenconnect.opensaml.sweid.saml2.authn.psc.RequestedPrincipalSelection;
 import se.swedenconnect.opensaml.sweid.saml2.authn.psc.build.MatchValueBuilder;
@@ -72,13 +63,20 @@ import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonS
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.ContactPersonType;
 import se.swedenconnect.spring.saml.idp.settings.MetadataSettings.OrganizationSettings;
 
+import java.io.ByteArrayInputStream;
+import java.util.List;
+import java.util.Map;
+
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 /**
  * Test case for downloading IdP's metadata.
  *
  * @author Martin Lindström
  */
 @SpringBootTest
-@ContextConfiguration(classes = { ApplicationConfiguration.class })
+@ContextConfiguration(classes = {ApplicationConfiguration.class})
 @WebAppConfiguration
 @AutoConfigureMockMvc
 public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
@@ -87,6 +85,9 @@ public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
 
   @Autowired
   private WebApplicationContext webApplicationContext;
+
+  @MockitoBean
+  MetadataResolver metadataResolver;
 
   @BeforeEach
   public void setup() throws Exception {
@@ -99,7 +100,7 @@ public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
   public void testDownload() throws Exception {
 
     final MvcResult result = this.mvc.perform(
-        MockMvcRequestBuilders.get(EndpointSettings.SAML_METADATA_PUBLISH_ENDPOINT_DEFAULT))
+            MockMvcRequestBuilders.get(EndpointSettings.SAML_METADATA_PUBLISH_ENDPOINT_DEFAULT))
         // .andDo(MockMvcResultHandlers.print())
         .andExpect(status().isOk())
         .andReturn();
@@ -117,9 +118,9 @@ public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
     //
     final MediaType xmlType = new MediaType("application", "samlmetadata+xml");
     final MvcResult result2 = this.mvc.perform(
-        MockMvcRequestBuilders
-            .get(EndpointSettings.SAML_METADATA_PUBLISH_ENDPOINT_DEFAULT)
-            .accept(xmlType))
+            MockMvcRequestBuilders
+                .get(EndpointSettings.SAML_METADATA_PUBLISH_ENDPOINT_DEFAULT)
+                .accept(xmlType))
         .andExpect(status().isOk())
         .andExpect(MockMvcResultMatchers.content().contentType(xmlType))
         .andReturn();
@@ -131,7 +132,7 @@ public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
   }
 
   @Configuration
-  @Import({ CredentialConfiguration.class, Saml2IdpConfiguration.class })
+  @Import({CredentialConfiguration.class, Saml2IdpConfiguration.class})
   @EnableWebSecurity
   public static class ApplicationConfiguration {
 
@@ -147,7 +148,7 @@ public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
     @Qualifier("idp.credential.metadata")
     PkiCredential metadataCredential;
 
-    @MockBean
+    @Autowired
     MetadataResolver metadataResolver;
 
     @Bean
@@ -225,7 +226,7 @@ public class MetadataPublishIntegrationTest extends OpenSamlTestBase {
           }
         }
         if (encryption != null) {
-          final String[] algs = { "http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p",
+          final String[] algs = {"http://www.w3.org/2001/04/xmlenc#rsa-oaep-mgf1p",
               "http://www.w3.org/2009/xmlenc11#aes256-gcm",
               "http://www.w3.org/2009/xmlenc11#aes192-gcm",
               "http://www.w3.org/2009/xmlenc11#aes128-gcm"

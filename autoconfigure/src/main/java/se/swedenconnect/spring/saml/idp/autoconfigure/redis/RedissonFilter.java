@@ -27,7 +27,7 @@ import java.util.Objects;
  */
 public class RedissonFilter implements AutoConfigurationImportFilter {
 
-  public static final String DISABLE = "org.redisson.spring.starter.RedissonAutoConfigurationV2";
+  public static final String DISABLE = "org.redisson.spring.starter.RedissonAutoConfigurationV4";
 
   @Override
   public boolean[] match(final String[] autoConfigurationClasses,

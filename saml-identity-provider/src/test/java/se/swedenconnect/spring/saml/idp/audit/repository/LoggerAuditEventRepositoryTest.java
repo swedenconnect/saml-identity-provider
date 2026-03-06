@@ -19,7 +19,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -57,7 +57,7 @@ class LoggerAuditEventRepositoryTest {
   @Test
   void test() {
     final ObjectMapper objectMapper = new ObjectMapper();
-    objectMapper.findAndRegisterModules();
+    objectMapper.registeredModules();
     final AuditEventMapper mapper = new JsonAuditEventMapper(objectMapper);
     final LoggerAuditEventRepository repo = new LoggerAuditEventRepository("AUDIT", null, mapper, null);
 

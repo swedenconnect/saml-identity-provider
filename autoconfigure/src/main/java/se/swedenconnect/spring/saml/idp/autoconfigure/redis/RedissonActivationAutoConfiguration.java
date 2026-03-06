@@ -16,15 +16,14 @@
 package se.swedenconnect.spring.saml.idp.autoconfigure.redis;
 
 import org.redisson.Redisson;
-import org.redisson.spring.starter.RedissonAutoConfigurationV2;
+import org.redisson.spring.starter.RedissonAutoConfigurationV4;
 import org.redisson.spring.starter.RedissonProperties;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
+import org.springframework.boot.data.redis.autoconfigure.DataRedisProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.data.redis.core.RedisOperations;
 
@@ -34,10 +33,10 @@ import org.springframework.data.redis.core.RedisOperations;
  * @author Martin Lindström
  */
 @AutoConfiguration
-@AutoConfigureBefore(RedisAutoConfiguration.class)
+@AutoConfigureBefore(DataRedisAutoConfiguration.class)
 //@ConditionalOnProperty(prefix = "spring.data.redis", name = "host")
 @Conditional(RedissonCondition.class)
-@ConditionalOnClass({ Redisson.class, RedisOperations.class, RedissonAutoConfigurationV2.class })
-@EnableConfigurationProperties({ RedissonProperties.class, RedisProperties.class })
-public class RedissonActivationAutoConfiguration extends RedissonAutoConfigurationV2 {
+@ConditionalOnClass({Redisson.class, RedisOperations.class, RedissonAutoConfigurationV4.class})
+@EnableConfigurationProperties({RedissonProperties.class, DataRedisProperties.class})
+public class RedissonActivationAutoConfiguration extends RedissonAutoConfigurationV4 {
 }

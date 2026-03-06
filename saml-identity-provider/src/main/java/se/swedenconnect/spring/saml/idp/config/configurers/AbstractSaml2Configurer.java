@@ -15,7 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.config.configurers;
 
-import org.springframework.security.config.annotation.ObjectPostProcessor;
+import org.springframework.security.config.ObjectPostProcessor;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
