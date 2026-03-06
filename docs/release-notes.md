@@ -6,7 +6,7 @@
 
 ### Version 2.5.0
 
-Date: 
+Date: 2026-02-06
 
 - Upgraded to Spring Boot 4 and Spring 7. Also, Java 21 or higher is now required.
 
