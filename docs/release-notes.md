@@ -4,6 +4,12 @@
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/se.swedenconnect.spring.saml.idp/spring-saml-idp.svg)
 
+### Version 2.5.1
+
+Date: 
+
+- Redis autoconfiguration was excecuted even in the cases where it shouldn't.
+
 ### Version 2.5.0
 
 Date: 2026-02-06

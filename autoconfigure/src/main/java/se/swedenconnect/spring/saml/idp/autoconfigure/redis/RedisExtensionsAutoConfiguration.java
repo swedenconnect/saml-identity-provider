@@ -17,6 +17,7 @@ package se.swedenconnect.spring.saml.idp.autoconfigure.redis;
 
 import org.apache.hc.client5.http.ssl.NoopHostnameVerifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration;
@@ -25,6 +26,7 @@ import org.springframework.boot.data.redis.autoconfigure.JedisClientConfiguratio
 import org.springframework.boot.data.redis.autoconfigure.LettuceClientConfigurationBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisOperations;
 import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsConfiguration.SslBundleRegistrationBean;
 
@@ -35,6 +37,7 @@ import se.swedenconnect.spring.saml.idp.autoconfigure.redis.RedisTlsExtensionsCo
  */
 @AutoConfiguration(before = DataRedisAutoConfiguration.class)
 @ConditionalOnClass(RedisOperations.class)
+@ConditionalOnBean(RedisConnectionFactory.class)
 @EnableConfigurationProperties({ DataRedisProperties.class, RedisTlsProperties.class })
 @Import(RedisTlsExtensionsConfiguration.class)
 public class RedisExtensionsAutoConfiguration {
