@@ -6,13 +6,13 @@
 
 ### Version 2.5.1
 
-Date: 
+Date: 2026-03-10
 
-- Redis autoconfiguration was excecuted even in the cases where it shouldn't.
+- Redis autoconfiguration was excecuted even in the cases where it shouldn't. This has been fixed.
 
 ### Version 2.5.0
 
-Date: 2026-02-06
+Date: 2026-03-06
 
 - Upgraded to Spring Boot 4 and Spring 7. Also, Java 21 or higher is now required.
 
