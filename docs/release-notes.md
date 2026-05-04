@@ -4,6 +4,12 @@
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/se.swedenconnect.spring.saml.idp/spring-saml-idp.svg)
 
+### Version 2.5.2
+
+Date: 2026-05-04
+
+- Dependency updates only, especially updated to Bouncy Castle 1.84.
+
 ### Version 2.5.1
 
 Date: 2026-03-10

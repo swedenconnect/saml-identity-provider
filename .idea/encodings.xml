@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="Encoding">
+    <file url="file://$PROJECT_DIR$/autoconfigure/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/autoconfigure/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/saml-identity-provider/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/saml-identity-provider/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/client/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/demo-boot-idp/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/samples/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/starter/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/starter/src/main/resources" charset="UTF-8" />
+  </component>
+</project>
