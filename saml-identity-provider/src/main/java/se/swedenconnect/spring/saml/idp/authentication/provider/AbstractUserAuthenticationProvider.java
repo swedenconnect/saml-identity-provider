@@ -15,6 +15,7 @@
  */
 package se.swedenconnect.spring.saml.idp.authentication.provider;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +26,8 @@ import org.springframework.security.core.Authentication;
 import lombok.extern.slf4j.Slf4j;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthentication;
 import se.swedenconnect.spring.saml.idp.authentication.Saml2UserAuthenticationInputToken;
+import se.swedenconnect.spring.saml.idp.context.Saml2IdpContext;
+import se.swedenconnect.spring.saml.idp.context.Saml2IdpContextHolder;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatus;
 import se.swedenconnect.spring.saml.idp.error.Saml2ErrorStatusException;
 
@@ -117,6 +120,8 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
       return null;
     }
 
+    updateSsoDurationLimit();
+
     SsoVoter.Vote currentVote = SsoVoter.Vote.DONT_KNOW;
     for (final SsoVoter voter : this.ssoVoters) {
       final SsoVoter.Vote vote = voter.mayReuse(userAuth, token, authnContextUris);
@@ -159,6 +164,24 @@ public abstract class AbstractUserAuthenticationProvider implements UserAuthenti
    */
   public List<SsoVoter> ssoVoters() {
     return this.ssoVoters;
+  }
+
+  /**
+   * Updates the first SSO voter's duration limit in accordance with IdP settings
+   */
+  protected void updateSsoDurationLimit() {
+    final SsoVoter voter = this.ssoVoters.get(0);
+    if (!(voter instanceof BaseSsoVoter)) {
+      return;
+    }
+
+    final Saml2IdpContext context = Saml2IdpContextHolder.getContext();
+    if (context == null) {
+      return;
+    }
+
+    final Duration ssoLimit = context.getSettings().getSsoDurationLimit();
+    ((BaseSsoVoter) voter).setSsoDurationLimit(ssoLimit);
   }
 
 }
