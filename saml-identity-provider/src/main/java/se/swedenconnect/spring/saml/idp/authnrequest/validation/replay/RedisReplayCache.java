@@ -53,18 +53,23 @@ public class RedisReplayCache implements ReplayCache {
     final Long noRemoved = this.redisSet.removeRangeByScore(context, 0, Instant.now().getEpochSecond());
     log.trace("Removed {} expired entries in Redis replay cache", noRemoved);
 
-    // If the key is present, we return false, otherwise we add the key to the set and return true.
+    // Add the key to the set if it is not already present. This is one operation on the Redis server (ZADD NX),
+    // meaning that only one of any number of concurrent calls for the same key gets true.
     //
-    if (this.redisSet.rank(context, key) != null) {
-      log.debug("Key '{}' was present in Redis replay cache ({}), returning false", key, context);
+    final Boolean added = this.redisSet.addIfAbsent(context, key, expires.getEpochSecond());
+    if (added == null) {
+      log.warn("Redis did not report whether key '{}' was added to the replay cache ({}), returning false",
+          key, context);
       return false;
     }
-    else {
-      this.redisSet.add(context, key, expires.getEpochSecond());
+    if (added) {
       log.trace("Key '{}' was not present in Redis replay cache ({}), adding it and returning true", key, context);
       return true;
     }
-
+    else {
+      log.debug("Key '{}' was present in Redis replay cache ({}), returning false", key, context);
+      return false;
+    }
   }
 
 }
