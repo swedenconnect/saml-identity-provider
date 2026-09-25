@@ -50,12 +50,14 @@ public class InMemoryReplayCache implements ReplayCache {
     final long now = Instant.now().getEpochSecond();
     this.cache.entrySet().removeIf(e -> e.getValue() < now);
 
-    if (this.cache.containsKey(key)) {
+    // Add the key if it is not already present. The atomicity of putIfAbsent ensures that only one of any number
+    // of concurrent calls for the same key gets true.
+    //
+    if (this.cache.putIfAbsent(key, expires.getEpochSecond()) != null) {
       log.debug("Key '{}' was present in in-memory replay cache, returning false", key);
       return false;
     }
     else {
-      this.cache.put(key, expires.getEpochSecond());
       log.trace("Key '{}' was not present in in-memory replay cache, adding it and returning true", key);
       return true;
     }

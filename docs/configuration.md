@@ -248,9 +248,12 @@ attacks (i.e., that an authentication request is "replayed").
 If no [MessageReplayChecker](https://docs.swedenconnect.se/opensaml-addons/apidoc/se/swedenconnect/opensaml/saml2/response/replay/MessageReplayChecker.html) bean is provided by the application the
 IdP Spring Boot starter will create this bean (using the configuration settings below).
 
+An application may also provide its own OpenSAML `ReplayCache` bean. It is then used as it is, and no cache is created
+from the settings below. At startup, the log tells which cache is used and why.
+
 | Property | Description | Type | Default value |
 | :--- | :--- | :--- | :--- |
-| `type` | The type of replay checker. Supported values are "memory" and "redis". If set to "redis", Redis must be available and configured. | String | - |
+| `type` | The type of replay checker. Supported values are "memory" and "redis". If the property is not set, "redis" is used if Redis is available, otherwise "memory". If set to "redis" and Redis is not available, or if set to any other value, the application will not start. | String | - |
 | `expiration` | For how long should authentication request ID:s be stored in the cache before they expire? | [Duration](https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/Duration.html) | 5 minutes |
 | `context` | Under which context should the cache be stored? Applies to repositories that persist/distribute the cache. | String | `idp-replay-checker` |
 

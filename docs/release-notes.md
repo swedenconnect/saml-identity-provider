@@ -12,6 +12,13 @@ Date: _not yet released_
   writing them into the page. This affects all deployments that do not supply their own response page.
   What the browser posts to the Service Provider is unchanged.
 
+- The replay cache check is now one atomic operation, so that the same authentication request ID can not be accepted
+  more than once by concurrent calls.
+
+- The selection of replay cache is no longer ambiguous. If `saml.idp.replay.type` is not set, Redis is used when it is
+  available, otherwise an in-memory cache. Requesting Redis when it is not available, or giving an unknown value, now
+  makes the application fail at startup instead of continuing with an unclear setup. The log tells which cache is used.
+
 ### Version 2.5.2
 
 Date: 2026-05-04
