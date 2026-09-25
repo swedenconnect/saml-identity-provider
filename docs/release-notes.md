@@ -4,6 +4,14 @@
 
 ![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg) ![Maven Central](https://img.shields.io/maven-central/v/se.swedenconnect.spring.saml.idp/spring-saml-idp.svg)
 
+### Version 2.6.0
+
+Date: _not yet released_
+
+- The default response page now escapes the destination, the SAML response and the `RelayState` before
+  writing them into the page. This affects all deployments that do not supply their own response page.
+  What the browser posts to the Service Provider is unchanged.
+
 ### Version 2.5.2
 
 Date: 2026-05-04

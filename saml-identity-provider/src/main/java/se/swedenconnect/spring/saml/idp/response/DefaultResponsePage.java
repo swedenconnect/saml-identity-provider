@@ -20,6 +20,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.springframework.http.MediaType;
 import org.springframework.util.StringUtils;
+import org.springframework.web.util.HtmlUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -69,11 +70,14 @@ public class DefaultResponsePage implements ResponsePage {
     builder.append("  <title>SAML Response</title>").append(NEWLINE);
     builder.append("</head>").append(NEWLINE);
     builder.append("<body onload=\"document.forms[0].submit()\">").append(NEWLINE);
-    builder.append("  <form action=\"").append(destination).append("\" method=\"POST\">").append(NEWLINE);
-    builder.append("    <input type=\"hidden\" name=\"SAMLResponse\" value=\"").append(samlResponse).append("\" />")
+    builder.append("  <form action=\"").append(escapeAttributeValue(destination)).append("\" method=\"POST\">")
+        .append(NEWLINE);
+    builder.append("    <input type=\"hidden\" name=\"SAMLResponse\" value=\"")
+        .append(escapeAttributeValue(samlResponse)).append("\" />")
         .append(NEWLINE);
     if (StringUtils.hasText(relayState)) {
-      builder.append("    <input type=\"hidden\" name=\"RelayState\" value=\"").append(relayState).append("\" />")
+      builder.append("    <input type=\"hidden\" name=\"RelayState\" value=\"")
+          .append(escapeAttributeValue(relayState)).append("\" />")
           .append(NEWLINE);
     }
     builder.append("    <noscript>").append(NEWLINE);
@@ -88,6 +92,17 @@ public class DefaultResponsePage implements ResponsePage {
     builder.append("</html>").append(NEWLINE);
 
     return builder.toString();
+  }
+
+  /**
+   * Escapes a value so that it can be safely written as an HTML attribute value. The browser will decode the escaped
+   * value back to the original value before it is posted to the Service Provider.
+   *
+   * @param value the value to escape (may be null)
+   * @return the escaped value, or null if the given value was null
+   */
+  private static String escapeAttributeValue(final String value) {
+    return HtmlUtils.htmlEscape(value, StandardCharsets.UTF_8.name());
   }
 
 }

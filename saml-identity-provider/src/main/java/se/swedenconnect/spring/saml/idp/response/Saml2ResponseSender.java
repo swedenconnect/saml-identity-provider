@@ -58,7 +58,6 @@ public class Saml2ResponseSender {
       throws UnrecoverableSaml2IdpException {
 
     final String encodedResponse = this.encodeResponse(response);
-    // final String encodedRelayState = HTMLEncoder.encodeForHTMLAttribute(relayState);
 
     try {
       this.responsePage.sendResponse(httpServletRequest, httpServletResponse,
