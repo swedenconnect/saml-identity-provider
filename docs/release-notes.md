@@ -8,7 +8,9 @@
 
 Date: _not yet released_
 
--
+- The default response page now escapes the destination, the SAML response and the `RelayState` before
+  writing them into the page. This affects all deployments that do not supply their own response page.
+  What the browser posts to the Service Provider is unchanged.
 
 ### Version 2.5.2
 
