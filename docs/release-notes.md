@@ -6,7 +6,7 @@
 
 ### Version 2.6.0
 
-Date: _not yet released_
+Date: 2026-09-25
 
 - The default response page now escapes the destination, the SAML response and the `RelayState` before
   writing them into the page. This affects all deployments that do not supply their own response page.
