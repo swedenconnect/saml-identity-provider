@@ -19,6 +19,11 @@ Date: _not yet released_
   available, otherwise an in-memory cache. Requesting Redis when it is not available, or giving an unknown value, now
   makes the application fail at startup instead of continuing with an unclear setup. The log tells which cache is used.
 
+- An authentication request where `AssertionConsumerServiceIndex` is combined with `AssertionConsumerServiceURL` or
+  `ProtocolBinding` is now rejected. SAML Core states that these are mutually exclusive, and which of the values that
+  decided the outcome used to depend on the order of the entries in the SP metadata. Service Providers that send such
+  requests will be rejected after this change.
+
 ### Version 2.5.2
 
 Date: 2026-05-04
