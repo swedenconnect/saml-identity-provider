@@ -32,6 +32,10 @@ import java.util.Objects;
 /**
  * Asserts that the AssertionConsumerService information given in the {@code AuthnRequest} is registered in the SAML
  * metadata. Updates the {@link Saml2AuthnRequestAuthenticationToken} with this information.
+ * <p>
+ * A request where {@code AssertionConsumerServiceIndex} is combined with {@code AssertionConsumerServiceURL} or
+ * {@code ProtocolBinding} is rejected. According to SAML Core, Section 3.4.1, these are mutually exclusive.
+ * </p>
  *
  * @author Martin Lindström
  */
@@ -62,6 +66,28 @@ public class AssertionConsumerServiceValidator implements AuthnRequestValidator 
 
     final String assertionConsumerServiceUrl = authnRequest.getAssertionConsumerServiceURL();
     final Integer assertionConsumerServiceIndex = authnRequest.getAssertionConsumerServiceIndex();
+    final String protocolBinding = authnRequest.getProtocolBinding();
+
+    // According to SAML Core, Section 3.4.1, AssertionConsumerServiceIndex is mutually exclusive with
+    // AssertionConsumerServiceURL and ProtocolBinding.
+    //
+    if (assertionConsumerServiceIndex != null && (assertionConsumerServiceUrl != null || protocolBinding != null)) {
+      final String combinedWith;
+      if (assertionConsumerServiceUrl != null && protocolBinding != null) {
+        combinedWith = "AssertionConsumerServiceURL and ProtocolBinding";
+      }
+      else if (assertionConsumerServiceUrl != null) {
+        combinedWith = "AssertionConsumerServiceURL";
+      }
+      else {
+        combinedWith = "ProtocolBinding";
+      }
+      final String msg =
+          "AssertionConsumerServiceIndex in AuthnRequest must not be combined with " + combinedWith;
+      log.info("{} [{}]", msg, authnRequestToken.getLogString());
+      throw new UnrecoverableSaml2IdpException(
+          UnrecoverableSaml2IdpError.INVALID_ASSERTION_CONSUMER_SERVICE, msg, authnRequestToken);
+    }
 
     if (assertionConsumerServiceUrl == null && assertionConsumerServiceIndex == null) {
       log.info("No AssertionConsumerService information provided in AuthnRequest "
