@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.UnaryOperator;
 import java.util.stream.Collectors;
 
 import javax.xml.namespace.QName;
@@ -99,6 +100,9 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
   /** For customizing metadata. */
   private Customizer<EntityDescriptor> entityDescriptorCustomizer = Customizer.withDefaults();
 
+  /** For customizing metadata. */
+  private UnaryOperator<EntityDescriptorContainer> entityDescriptorContainerTransformer = (obj) -> obj;
+
   /** The metadata builder. */
   private EntityDescriptorBuilder entityDescriptorBuilder;
 
@@ -121,6 +125,19 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
   public Saml2IdpMetadataEndpointConfigurer entityDescriptorCustomizer(
       final Customizer<EntityDescriptor> metadataCustomizer) {
     this.entityDescriptorCustomizer = Objects.requireNonNull(metadataCustomizer, "metadataCustomizer must not be null");
+    return this;
+  }
+
+  /**
+   * Sets the transformer providing access to the {@link EntityDescriptorContainer} allowing the ability to customize how
+   * the published IdP metadata is constructed and updated.
+   *
+   * @param metadataContainerTransformer the transformer providing access to the {@link EntityDescriptor}
+   * @return the {@link Saml2IdpMetadataEndpointConfigurer} for further configuration
+   */
+  public Saml2IdpMetadataEndpointConfigurer entityDescriptorContainerTransformer(
+      final UnaryOperator<EntityDescriptorContainer> metadataContainerTransformer) {
+    this.entityDescriptorContainerTransformer = Objects.requireNonNull(metadataContainerTransformer, "metadataContainerTransformer must not be null");
     return this;
   }
 
@@ -471,7 +488,7 @@ public class Saml2IdpMetadataEndpointConfigurer extends AbstractSaml2Configurer 
     container.setValidity(settings.getMetadata().getValidityPeriod());
 
     final Saml2IdpMetadataEndpointFilter filter =
-        new Saml2IdpMetadataEndpointFilter(container, this.requestMatcher);
+        new Saml2IdpMetadataEndpointFilter(this.entityDescriptorContainerTransformer.apply(container), this.requestMatcher);
     httpSecurity.addFilterBefore(this.postProcess(filter), AbstractPreAuthenticatedProcessingFilter.class);
   }
 

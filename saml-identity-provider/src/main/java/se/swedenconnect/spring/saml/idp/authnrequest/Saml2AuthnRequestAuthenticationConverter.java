@@ -33,7 +33,6 @@ import org.opensaml.saml.common.SAMLVersion;
 import org.opensaml.saml.common.binding.BindingDescriptor;
 import org.opensaml.saml.common.binding.SAMLBindingSupport;
 import org.opensaml.saml.common.binding.decoding.SAMLMessageDecoder;
-import org.opensaml.saml.common.binding.security.impl.MessageLifetimeSecurityHandler;
 import org.opensaml.saml.common.binding.security.impl.ReceivedEndpointSecurityHandler;
 import org.opensaml.saml.common.messaging.context.SAMLMetadataContext;
 import org.opensaml.saml.common.messaging.context.SAMLPeerEntityContext;
@@ -74,6 +73,9 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
   /** Binding descriptor for POST. */
   private final BindingDescriptor postBindingDescriptor;
 
+  /** IdP settings */
+  private final IdentityProviderSettings settings;
+
   /**
    * Message handler which checks the validity of the SAML protocol message receiver endpoint against requirements
    * indicated in the message.
@@ -97,6 +99,7 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
   public Saml2AuthnRequestAuthenticationConverter(final MetadataResolver metadataResolver,
       final IdentityProviderSettings settings) {
     this.metadataResolver = Objects.requireNonNull(metadataResolver, "metadataResolver must not be null");
+    this.settings = Objects.requireNonNull(settings, "settings must not be null");
 
     // Initialize the binding descriptors ...
     //
@@ -128,8 +131,8 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
     }
     this.messageLifetimeSecurityHandler = new MessageLifetimeSecurityHandler();
     this.messageLifetimeSecurityHandler.setRequiredRule(true);
-    this.messageLifetimeSecurityHandler.setClockSkew(settings.getClockSkewAdjustment());
-    this.messageLifetimeSecurityHandler.setMessageLifetime(settings.getMaxMessageAge());
+    this.messageLifetimeSecurityHandler.setClockSkew(this.settings.getClockSkewAdjustment());
+    this.messageLifetimeSecurityHandler.setMessageLifetime(this.settings.getMaxMessageAge());
     try {
       this.messageLifetimeSecurityHandler.initialize();
     }
@@ -198,6 +201,12 @@ public class Saml2AuthnRequestAuthenticationConverter implements AuthenticationC
         log.error("{}", msg, e);
         throw new UnrecoverableSaml2IdpException(UnrecoverableSaml2IdpError.ENDPOINT_CHECK_FAILURE, msg, e, token);
       }
+
+      // Keep the message lifetime parameters updated - the settings provider may have
+      // received changes at runtime.
+      //
+      this.messageLifetimeSecurityHandler.setClockSkew(this.settings.getClockSkewAdjustment());
+      this.messageLifetimeSecurityHandler.setMessageLifetime(this.settings.getMaxMessageAge());
 
       // Check the message lifetime, i.e., that the recived message is not too old.
       //

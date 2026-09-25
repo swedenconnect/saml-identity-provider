@@ -44,7 +44,7 @@ public class IdentityProviderSettings extends AbstractSettings {
    *
    * @param settings the settings
    */
-  private IdentityProviderSettings(final Map<String, Object> settings) {
+  public IdentityProviderSettings(final Map<String, Object> settings) {
     super(settings);
   }
 
