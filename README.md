@@ -10,6 +10,12 @@ according to the [Swedish eID Framework specifications](https://docs.swedenconne
 
 -----
 
+## NOTE
+
+This repository has been replaced by https://github.com/swedenconnect/spring-authentication-server.
+
+No new development should be performed against it!
+
 ## About
 
 The repository comprises of the following modules:
